@@ -2452,16 +2452,16 @@ module otpu_mxu
   assign rw = rwp;
   logic [3:0] rmw_n;                          // rows' lanes in flight (any nonzero = busy)
 
-  // RMAX: the running max is kept as its sort key (mk = fkey(max); the max is always stored
+  // RMAX: the running max is kept as its sort key (mx_key = fkey(max); the max is always stored
   // ftz'd, so fkey(max) is the key it is compared by); written out through unkey.
-  logic [31:0] mk [MCOLS];
+  logic [31:0] mx_key [MCOLS];
   logic [MCOLS-1:0] mx_have;
   logic mx_done;
   function automatic f32_t unkey(input logic [31:0] k);
     return k[31] ? {1'b0, k[30:0]} : ~k;
   endfunction
   // rw's column hits, one-hot, computed from r1 and carried alongside u_rw (same length and
-  // enable; reset, as its valids: a hit updates mk and mx_have); the last stage a flop, not an
+  // enable; reset, as its valids: a hit updates mx_key and mx_have); the last stage a flop, not an
   // SRL tap. c_rmax is fixed while entries are in flight (the head changes only once drained)
   logic [NL-1:0][MCOLS-1:0] rh, rh_p, rwh, rxh;
   always_comb
@@ -2475,10 +2475,10 @@ module otpu_mxu
   // per column: the candidate key is selected by the hits alone. At most one lane hits a column
   // per cycle (lanes drain distinct columns) and rx / rw are exclusive (rx only for !c_acc
   // commands, rw only for c_acc ones). The compare is a stage later: each column's hit and key
-  // are registered at the advance (mq_h, mq_k) and compared with mk, and applied, the cycle after,
+  // are registered at the advance (mq_h, mq_k) and compared with mx_key, and applied, the cycle after,
   // advance or not (fkey of the fmadd's sum, the lanes' selection, a 32-bit compare and the
   // update's enable were one cycle: the m8 card at a 150 MHz equivalent, -0.057 ns, 10 levels).
-  // The running max holds: each column's keys reach mk one at a time, in order, each compared
+  // The running max holds: each column's keys reach mx_key one at a time, in order, each compared
   // with the max of those before it; a command completes only with the stage empty (c_drained).
   // WG > 1: a drain step's lanes are one result row's, all against one activation row (their
   // column), so a stage first takes the lanes' keys, a pair's max each (ql), then their max
@@ -2500,7 +2500,7 @@ module otpu_mxu
           mx_cand[j] = mx_cand[j] | fkey(ry[k]);
         end
       end
-      mx_upd[j] = mq_h[j] && (!mx_have[j] || mq_k[j] > mk[j]);
+      mx_upd[j] = mq_h[j] && (!mx_have[j] || mq_k[j] > mx_key[j]);
     end
   if (WG > 1) begin : g_mxg
     localparam int NQ = (NL + 1) / 2;
@@ -2657,7 +2657,7 @@ module otpu_mxu
         if (mxm[k]) begin
           tw_en[k] = 1'b1;
           tw_ad[k] = mxl[k];
-          tw_d[k] = unkey(mk[MW'(32'(mx_i) + 32'(k))]);
+          tw_d[k] = unkey(mx_key[MW'(32'(mx_i) + 32'(k))]);
         end
       end
     end
@@ -3153,7 +3153,7 @@ module otpu_mxu
       end
       // ---- RMAX: the stage's keys into the running max (every cycle), the advance's hits into it
       for (int j = 0; j < MCOLS; j++) begin
-        if (mx_upd[j]) mk[j] <= mq_k[j];
+        if (mx_upd[j]) mx_key[j] <= mq_k[j];
         if (mq_h[j]) mx_have[j] <= 1'b1;
       end
       mq_h <= mq_hn;
