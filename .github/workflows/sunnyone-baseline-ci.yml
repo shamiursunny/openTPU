@@ -60,6 +60,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+  # The MXU running-max key signal uses mx_key to avoid collision with otpu_pkg::mk.
   board-model-emulator:
     name: BCU1525 board-model emulator (Verilator + tiny-model equivalence)
     runs-on: ubuntu-latest
