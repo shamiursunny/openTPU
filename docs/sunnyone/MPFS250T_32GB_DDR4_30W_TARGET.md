@@ -1,3 +1,5 @@
+> **HISTORICAL / SUPERSEDED — 2026-11-23:** This document records an earlier feasibility investigation only. The 30 W ceiling has been retired, MPFS250T is not the current primary architecture candidate, and its 32 GB target is not the governing memory target. Use `MEMORY_CAPACITY_DECISION.md` and `ARCHITECTURE_DIRECTION_AND_CHIP_SELECTION_GATE_2026-11-23.md` for current decisions. Do not treat this file as a current design selection or validated capacity claim.
+
 # SUNNYONE AI-X — MPFS250T / 32 GB DDR4 / 30 W Target Definition
 
 Status: **Architecture proposal / feasibility gate — NOT an implemented or qualified chip**
