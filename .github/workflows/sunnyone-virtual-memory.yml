@@ -1,0 +1,26 @@
+name: SUNNYONE virtual DRAM RTL tests
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/mem/otpu_dram.sv'
+      - 'sim/verilator/tb_sunnyone_dram.sv'
+      - '.github/workflows/sunnyone-virtual-memory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  virtual-dram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Compile behavioural DRAM testbench
+        run: verilator --binary --timing -Wall -Wno-fatal --top-module tb_sunnyone_dram --Mdir /tmp/obj_dir rtl/mem/otpu_dram.sv sim/verilator/tb_sunnyone_dram.sv
+      - name: Run virtual memory tests
+        run: /tmp/obj_dir/Vtb_sunnyone_dram | tee /tmp/sunnyone-dram-test.log
+      - name: Require explicit pass marker
+        run: grep -q 'DRAMTEST PASS:' /tmp/sunnyone-dram-test.log
