@@ -61,3 +61,15 @@ Programmable accelerator architecture direction remains selected provisionally: 
 - Added `VIVADO_ACCESS_AND_VC1802_MEMORY_PLANNING_GATE_A1.12.11.16.40.md` with exact implementation acceptance gates and cost-controlled options.
 - No Vivado project/IP, DDRMC pin validation, XDC, DRC, implementation, DIMM compatibility proof, supplier quote, board or physical test has been completed.
 - Branch contains this milestone; comparison confirms main remains unchanged at pinned baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+
+
+## A1.12.11.16.41 — Open-toolchain FPGA platform down-select (2026-11-23)
+
+- Researched current open bitstream flows: ECP5/Trellis is the strongest mature option; Gowin GW2A/Apicula is usable for supported parts; GW5A support varies by exact part; AMD 7-Series remains partial/experimental; Versal has no complete open flow.
+- ECP5 is the preferred future hardware-learning prototype family because of mature open flow and board-level DDR3 options. This is not a board purchase or final accelerator selection.
+- Gowin GW2A boards are inexpensive but cited Tang Nano 20K external/in-package SDR SDRAM is only 64 Mbit (8 MB), unsuitable for meaningful model serving.
+- No open-flow candidate found that satisfies the project's provisional 128 GB memory objective. Even a hypothetical 256 MB board is 512x below 128 GB.
+- Decision: zero-spend software-first continuation. No board purchase authorised. ECP5 only if an exact SKU, memory BOM, reproducible build/program flow, useful test question and landed quote pass the purchase gate.
+- Added `OPEN_TOOLCHAIN_FPGA_PLATFORM_DOWNSELECT_A1.12.11.16.41.md`.
+- Sources: https://www.fpgaguide.com/topics/open-source-toolchains/ ; https://github.com/YosysHQ/apicula ; https://www.latticesemi.com/products/developmentboardsandkits/ecp5versadevelopmentkit ; https://boards.fpgadeveloper.com/list-of-fpga-dev-boards-by-device/
+- No physical board, bitstream, timing closure, DDR training, model inference or power/performance measurement was performed in this milestone.
