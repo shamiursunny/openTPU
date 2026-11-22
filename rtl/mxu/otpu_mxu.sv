@@ -1391,7 +1391,7 @@ module otpu_mxu
 `ifndef SYNTHESIS
           // no write lands in an entry a column still reads (av: a pop k cycles ago, its entry
           // at ar[k]): the issuer reuses no entry freed in the last AW cycles (occz)
-          logic [AD:0] av;
+          logic av [AD+1];
           assign av[0] = pop;
           always @(posedge clk) for (int k = 1; k <= AD; k++) av[k] <= !rst && av[k-1];
           always @(posedge clk)
