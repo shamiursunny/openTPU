@@ -29,6 +29,9 @@ Therefore:
 2. Keep PG353 soft DDR as a conditional option only if integrated-controller pin availability, device resources, required topology or latency/architecture justify it.
 3. Do not choose a Versal part until AMD Memory Interface Planning Tool and package pinout confirm the exact controller count, DDR interface width, ECC, DIMM topology, speed bin, ranks, density, 3DS support, and remaining I/O.
 4. Do not claim 128 GB/256 GB supported from controller marketing tables alone.
+5. A more credible 128 GB hypothesis is four independent 64-bit ECC channels, each with one 32 GB 2-rank x8 RDIMM (4 × 32 GB). AMD lists four DDRMCs for VC1802 and VC1902. Lenovo's memory reference lists 32 GB 2Rx8 RDIMM-A part 4ZC7A15123 and 4X77A12188 as candidate module references; neither is yet proven compatible with Versal SPD/training.
+6. Lead feasibility device/package: VC1802 / VSVD1760. Alternative: VC1902 / VSVD1760 for higher compute. AMD lists VC1802 with four DDRMCs, 300 AI Engine tiles and 1,600 DSP engines; VC1902 has four DDRMCs, 400 AI Engine tiles and 1,968 DSP engines. AMD AM013 lists both devices in VSVD1760. This is a lead down-select for Vivado/tool verification, not a final orderable part or purchase approval.
+7. For the initial one-slot, two-rank RDIMM topology, AMD DS957 lists up to 2933 Mb/s for Versal AI Core conditions. Theoretical four-channel payload peak is 4 × 64 bits × 2.933 GT/s ÷ 8 = 93.856 GB/s decimal, before protocol/NoC/controller losses; it is not a measured bandwidth result.
 5. Treat 128 GB as a conditional topology hypothesis only: e.g. two 64 GB RDIMMs in a supported dual-slot configuration would require the exact 64 GB modules to meet PG313's supported x8/3DS component and rank rules, and the exact Versal device/package to expose the required controller pins. Do not assume ordinary 64 GB 2Rx4 server DIMMs are compatible.
 6. Include the data-rate penalty of dual-slot/rank choices in bandwidth modelling; capacity can increase while per-controller data rate falls.
 
@@ -38,6 +41,10 @@ Official references:
 - AMD PG313 1.1, Memory Configuration Support: https://docs.amd.com/r/en-US/pg313-network-on-chip/Memory-Configuration-Support
 - AMD DS957, Versal AI Core DDR4/LPDDR4 controller data rates: https://docs.amd.com/r/en-US/ds957-versal-ai-core/DDR4-and-LPDDR4/4X-Memory-Interface-Controller
 - AMD PG313 1.1, DDR4 RDIMM/LRDIMM interfaces: https://docs.amd.com/r/en-US/pg313-network-on-chip/DDR4-RDIMM-and-LRDIMM-Interfaces
+- AMD Versal AI Core series device resources: https://www.amd.com/en/products/adaptive-socs-and-fpgas/versal/ai-core-series.html
+- AMD AM013 VC1802 package bank diagrams: https://docs.amd.com/r/en-US/am013-versal-pkg-pinout/Bank-Diagram-by-Package-for-VC1802
+- AMD AM013 VSVD1760 VC1802 pin map: https://docs.amd.com/r/en-US/am013-versal-pkg-pinout/VSVD1760-Package-VC1802-Pin-Map
+- Lenovo ThinkSystem Memory Reference: https://lenovopress.lenovo.com/lp1021-lenovo-thinksystem-memory-reference
 - AMD PG353, Soft DDR4 Controller: https://docs.amd.com/r/en-US/pg353-versal-acap-soft-ddr4-mem-ip
 
 ## Why no exact chip/part is selected yet
@@ -45,7 +52,7 @@ A final part choice would currently be false precision. The blocking evidence is
 - No measured W1/W2/W3 workload distribution, model mix, SLA or paying-customer demand.
 - No equivalent rented-GPU benchmark and no calibrated wall-power measurements.
 - No measured SRAM/bandwidth requirement derived from model traces and concurrency.
-- No selected Versal device/package with a completed memory planning report and verified board routing.
+- No completed Vivado memory-planning report or verified four-controller pinout for the lead VC1802 / VSVD1760 candidate.
 - No verified 128 GB RDIMM BOM, supplier availability, cost, thermal and signal-integrity design.
 - The new SUNNYONE benchmark-harness CI (run 45069537101) passed Python compilation and all six deterministic unit tests. The older openTPU emulator/Python qualification run 45065688493 remains stale/in_progress with no artifacts; its job logs are unavailable, so it is not a pass.
 - No synthesis/PPA, timing closure, place-and-route, thermal, reliability, or physical-board validation for a SUNNYONE candidate.
@@ -65,10 +72,10 @@ A final commercial chip/ASIC selection additionally requires validated customer 
 
 ## Current selection status
 - Architecture direction: SELECTED (provisional engineering baseline).
-- Versal integrated NoC DDR: FIRST ROUTE TO EVALUATE, not selected silicon; dual-slot/rank speed penalties must be modelled.
+- Versal integrated NoC DDR: FIRST ROUTE TO EVALUATE; four-channel VC1802 / VSVD1760 is the lead tool-feasibility candidate, not final silicon.
 - Versal PG353 soft DDR: CONDITIONAL ALTERNATIVE.
-- 128 GB DDR4 RDIMM: feasibility target, not proven.
+- 128 GB DDR4 RDIMM: four-channel 4 × 32 GB 2Rx8 hypothesis, not proven.
 - 256 GB: stretch investigation only.
-- Exact FPGA/SoC device/package: NOT SELECTED.
+- Exact FPGA/SoC device/package: lead candidate VC1802 / VSVD1760; final selection pending Vivado/pinout, DIMM and economic validation.
 - Final ASIC/production chip: NOT SELECTED.
 - Production readiness/tapeout: NOT CLAIMED.
