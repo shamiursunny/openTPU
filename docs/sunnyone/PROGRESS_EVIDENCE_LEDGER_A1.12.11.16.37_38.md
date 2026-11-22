@@ -50,3 +50,14 @@ Programmable accelerator architecture direction remains selected provisionally: 
 - The deterministic benchmark CI run 45069537101 passed all six unit tests and Python compilation for both benchmark scripts.
 - The older BCU1525 emulator/Python run 45065688493 remains stale/in_progress with no artifacts and unavailable logs.
 - Current branch has since advanced beyond the CI-tested commit through documentation-only device/memory decisions; the benchmark scripts and tests were unchanged after that successful run.
+
+
+## A1.12.11.16.40 — VC1802 Vivado access and memory-planning gate (2026-11-23)
+
+- AMD 2026.1 device-tier table confirms Versal AI Core is unavailable in BASIC and CORE; PRO/ENTERPRISE/GOLD support Versal.
+- AMD publishes PRO at USD 2,400 node-locked / USD 3,000 floating annually; confirm quote and terms before budgeting.
+- AMD documents a one-time 60-day evaluation with all-device access. Temporary evaluation is not a free long-term route.
+- Current shell check found no `vivado`, `v++` or `xsct` executable in standard paths. This does not establish the user's separate device/tool access.
+- Added `VIVADO_ACCESS_AND_VC1802_MEMORY_PLANNING_GATE_A1.12.11.16.40.md` with exact implementation acceptance gates and cost-controlled options.
+- No Vivado project/IP, DDRMC pin validation, XDC, DRC, implementation, DIMM compatibility proof, supplier quote, board or physical test has been completed.
+- Branch advanced to include this milestone; compare against main confirms 42 commits ahead, 0 behind. Main remains at pinned baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`.
