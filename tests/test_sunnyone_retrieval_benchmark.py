@@ -17,7 +17,7 @@ spec.loader.exec_module(module)
 class RetrievalMetricTests(unittest.TestCase):
     # Metrics are unit-tested without downloading model weights.
     def test_perfect_ranking(self):
-        result = module.ranking_metrics(["a", "b", "c"], ["a", "c"])
+        result = module.ranking_metrics(["a", "c", "b"], ["a", "c"])
         self.assertEqual(result["recall@3"], 1.0)
         self.assertEqual(result["mrr@3"], 1.0)
         self.assertAlmostEqual(result["ndcg@3"], 1.0)
