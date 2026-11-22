@@ -115,6 +115,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sunnyone-board-model-emulator-${{ github.sha }}
-          path: sunnyone-emulator-evidence/
+          path: |
+            sunnyone-emulator-evidence/
+            build/verilator/*.verilator.log
           if-no-files-found: warn
           retention-days: 30
