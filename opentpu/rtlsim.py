@@ -111,14 +111,21 @@ def build(top: str, sources: list[Path], params: dict | None = None) -> Path:
             cmd += [f"-G{k}={v}" for k, v in params.items()]
             cmd += [str(s) for s in sources]
             r = subprocess.run(cmd, capture_output=True, text=True)
+            diagnostic = [f"$ {' '.join(cmd)}", r.stdout, r.stderr]
             if r.returncode != 0 and "linker command failed" in r.stdout + r.stderr:
                 # the parallel make occasionally archives a stale object: rebuild the archive once
                 for f in tmp.glob("*__ALL.a"):
                     f.unlink()
-                r = subprocess.run(["make", "-C", str(tmp), "-f", f"V{top}.mk", "-j", "8"],
-                                   capture_output=True, text=True)
+                retry = ["make", "-C", str(tmp), "-f", f"V{top}.mk", "-j", "8"]
+                r = subprocess.run(retry, capture_output=True, text=True)
+                diagnostic.extend([f"$ {' '.join(retry)}", r.stdout, r.stderr])
             if r.returncode != 0 or not (tmp / f"V{top}").exists():
-                raise RuntimeError(f"verilator failed:\n{r.stdout[-4000:]}\n{r.stderr[-4000:]}")
+                # Keep the complete compiler output outside the temporary build directory so CI
+                # can upload it after the failed build has been cleaned up.
+                diagnostic_path = BUILD / f"{out.name}.verilator.log"
+                diagnostic_path.write_text("\\n".join(diagnostic))
+                raise RuntimeError(f"verilator failed (full diagnostics: {diagnostic_path}):\\n"
+                                   f"{r.stdout[-4000:]}\\n{r.stderr[-4000:]}")
             if out.exists():                    # an unfinished build's (no executable)
                 shutil.rmtree(out)
             tmp.rename(out)
