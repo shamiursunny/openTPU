@@ -1,0 +1,68 @@
+# SUNNYONE AI-X — Maximum RAM decision (2026-11-23)
+
+Status: architecture decision only; no hardware implementation or qualification claimed.
+
+## Decision
+
+Do not freeze MPFS250T as the primary device if 128 GB external RAM is a hard requirement. Microchip's MSS DDR4 controller is documented for up to 128 Gb total (16 GB) at specified memory case temperatures and a maximum 16 Gb die. Its separate fabric DDR interface needs its own device/package/IP proof; no 32 GB or 128 GB MPFS250T configuration is established here.
+
+For a 128 GB DDR4 target, investigate AMD Versal Adaptive SoC Soft DDR4 Memory Controller IP (PG353). AMD's guide lists support for DDR4 RDIMM up to 256 GB and LRDIMM up to 256 GB, with 3DS DIMM support, and SODIMM up to 128 GB. This is controller-IP capability, not proof that every Versal device/package can support the configuration.
+
+**Primary target for feasibility:** 128 GB ECC DDR4 RDIMM on a precisely selected Versal device/package, using the Soft DDR4 controller if the AMD Memory Interface Planning Tool and exact device/package pinout approve it.
+
+**Upper-bound investigation:** 256 GB RDIMM/LRDIMM only after exact 3DS, rank, density, package, controller and PCB compatibility are proven. Do not call this the committed target.
+
+## 30 W conflict
+
+No reviewed source proves that a Versal device plus 128 GB RDIMM, regulators, storage, networking and cooling can remain below 30 W during sustained inference. 30 W remains an unverified hard requirement. Run AMD Power Design Manager with worst-case process and realistic clocks/activity, include DIMM and board power, then measure prototype input power. If the 128 GB configuration exceeds 30 W, the requirements conflict; do not claim both.
+
+## Why MPFS250T is not the 128 GB choice
+
+Microchip's PolarFire SoC MSS DDR4 documentation states:
+- up to x32 DDR4 data width and dual rank;
+- maximum total DDR4 density 128 Gb (16 GB) below the stated temperature limit, with maximum die density 16 Gb;
+- lower allowed total density at higher memory case temperatures.
+The standard Icicle Kit has 2 GB LPDDR4, not 32/128 GB DDR4.
+
+MPFS250T remains a possible lower-power alternative only if its independently validated fabric-DDR capacity is sufficient and the user accepts a smaller memory target.
+
+## Required gates before freezing the Versal part
+
+1. Select exact device, package, speed grade and temperature grade.
+2. Generate PG353 configuration for the intended DDR4 RDIMM and prove the supported 128 GB topology.
+3. Confirm DIMM vendor part number, 3DS status, ranks, DRAM die density, ECC width, timing and refresh.
+4. Use AMD Memory Interface Planning Tool and package pinout to verify XPIO banks, byte lanes, clocks, address/control pins and voltage rails.
+5. Complete PCB signal-integrity, impedance, length matching, termination, power-integrity and thermal design.
+6. Generate Vivado implementation, timing and resource reports.
+7. Run memory training, full-address tests, stress, ECC/error injection and reset/recovery tests on hardware.
+8. Estimate worst-case board power in Power Design Manager; later measure idle, prefill, sustained decode and stress.
+9. Benchmark tokens/s, tokens/J, first-token latency, inter-token p50/p95/p99, model accuracy and 8-hour stability.
+
+## Design architecture
+
+- DDR4: model weights and large KV cache.
+- On-chip SRAM/BRAM/URAM: hot tiles, activations, queues and DMA staging.
+- Accelerator: tiled quantised matrix engine; INT8 correctness baseline, INT4 only after accuracy/overflow validation.
+- Runtime: memory QoS, bounded DMA queues, watchdog, ECC/error telemetry, temperature/power monitoring and controlled recovery.
+- Optimise sustained tokens/J and latency, not peak TOPS alone.
+
+## Status
+
+| Item | Status |
+|---|---|
+| 128 GB DDR4 RDIMM controller capability | Documented by AMD PG353; exact device/package not selected |
+| 128 GB on selected Versal device | NOT VERIFIED |
+| 256 GB option | Controller guide upper-bound; exact topology NOT VERIFIED |
+| 30 W total system | NOT VERIFIED |
+| RTL / synthesis / timing | NOT STARTED for Versal |
+| Physical DDR training and stress | NOT STARTED |
+| LLM performance and thermal stability | NOT TESTED |
+
+## Official references
+
+- AMD Versal Soft DDR4 SDRAM Memory Controller PG353: https://docs.amd.com/r/en-US/pg353-versal-acap-soft-ddr4-mem-ip/Features
+- AMD Versal Memory overview: https://www.amd.com/en/products/adaptive-socs-and-fpgas/technologies/memory.html
+- AMD Power Design Manager guidance: https://docs.amd.com/r/2024.1-English/ug1556-power-design-manager/Device-Configuration
+- Microchip PolarFire SoC MSS DDR density notice DS00005474A: https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/SupportingCollateral/cia/Update_to_the_Maximum_Supported_DDR_Memory_for_the_PolarFire_SoC_MSS_DDR_Controller.pdf
+
+This is a truthful architecture down-select, not a generated DDR controller, bitstream, validated PCB, measured 128 GB system or qualified 30 W chip.
