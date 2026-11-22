@@ -66,3 +66,29 @@ MPFS250T remains a possible lower-power alternative only if its independently va
 - Microchip PolarFire SoC MSS DDR density notice DS00005474A: https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/SupportingCollateral/cia/Update_to_the_Maximum_Supported_DDR_Memory_for_the_PolarFire_SoC_MSS_DDR_Controller.pdf
 
 This is a truthful architecture down-select, not a generated DDR controller, bitstream, validated PCB, measured 128 GB system or qualified 30 W chip.
+
+
+## Commercial objective and revised power policy (2026-11-23)
+
+The user has explicitly removed the former 30 W total-system ceiling. Power may increase when the additional throughput and revenue justify the incremental capital, electricity, cooling, maintenance and reliability costs.
+
+**New primary objective:** maximise risk-adjusted long-term net profit and achieve the fastest realistic investment recovery, while delivering reliable, competitive AI inference. Do not maximise watts, RAM capacity, peak TOPS or chip size in isolation. No replacement wattage ceiling is approved; derive the power envelope from workload benchmarks and a full-system TCO model.
+
+Compare at least three candidate configurations (efficient, balanced and high-throughput) using the same workloads, model quality, context lengths, concurrency and latency targets. For each, account for:
+- accelerator, memory, PCB, assembly, development/NRE, depreciation and replacement reserve;
+- effective memory bandwidth and capacity utilisation, not capacity alone;
+- whole-system power including SoC/FPGA, DRAM, regulators, storage, network and cooling;
+- electricity tariff, cooling overhead, maintenance, software and operations;
+- sustained useful tokens/s, latency distribution, accuracy, uptime and real utilisation;
+- realised selling price, billable utilisation, monthly revenue, fixed-cost coverage, operating cash flow, break-even utilisation and payback period.
+
+Use cost per million useful tokens as a core comparison:
+(monthly attributable TCO / monthly useful output tokens) × 1,000,000.
+Vendor benchmark figures are reference claims, not SUNNYONE performance evidence. Validate with reproducible workloads and physical measurements. A larger RAM configuration is justified only when workload working-set, KV-cache, concurrency or model-serving economics support its cost. More watts are justified only when incremental contribution margin exceeds incremental total cost.
+
+AMD UG1273 2026.1 recommends considering the integrated Versal DDR memory controller rather than automatically selecting the soft DDR4 controller. Compare the integrated NoC DDR route and PG353 soft DDR route for the exact device/package, including capacity, bandwidth, latency, pinout, power and implementation risk, before platform freeze:
+https://docs.amd.com/r/en-US/2026.1/ug1273-versal-acap-design/Soft-Memory-Controllers
+
+Required next gate: establish target customer/workload and service model, obtain real hardware and electricity quotations, build conservative/base/upside unit economics, then select device/package and power envelope. No profitability, payback, full-system power, 128 GB physical operation or silicon qualification is claimed at this stage.
+
+Status: 30 W hard ceiling RETIRED by user; new power envelope NOT YET SELECTED; TCO, revenue, break-even and payback NOT CALCULATED; exact Versal device/package NOT SELECTED.
