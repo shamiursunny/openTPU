@@ -5,8 +5,9 @@ on:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     paths:
       - 'rtl/mem/otpu_dram.sv'
-      - 'sim/verilator/tb_sunnyone_dram.sv'
       - 'rtl/mem/otpu_tmem.sv'
+      - 'rtl/tech/generic/otpu_tech_ram.sv'
+      - 'sim/verilator/tb_sunnyone_dram.sv'
       - 'sim/verilator/tb_sunnyone_tmem.sv'
       - '.github/workflows/sunnyone-virtual-memory.yml'
   workflow_dispatch:
@@ -27,7 +28,7 @@ jobs:
       - name: Require explicit DRAM pass marker
         run: grep -q 'DRAMTEST PASS:' /tmp/sunnyone-dram-test.log
       - name: Compile behavioural TMEM testbench
-        run: verilator --binary --timing -Wall -Wno-fatal --top-module tb_sunnyone_tmem --Mdir /tmp/obj_tmem rtl/mem/otpu_tmem.sv sim/verilator/tb_sunnyone_tmem.sv
+        run: verilator --binary --timing -Wall -Wno-fatal --top-module tb_sunnyone_tmem --Mdir /tmp/obj_tmem rtl/tech/generic/otpu_tech_ram.sv rtl/mem/otpu_tmem.sv sim/verilator/tb_sunnyone_tmem.sv
       - name: Run virtual TMEM tests
         run: /tmp/obj_tmem/Vtb_sunnyone_tmem | tee /tmp/sunnyone-tmem-test.log
       - name: Require explicit TMEM pass marker
