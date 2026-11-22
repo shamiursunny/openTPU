@@ -81,7 +81,7 @@ module tb_sunnyone_dram;
     // Wide W port returns two ordered 64-bit lanes (no channel hash).
     @(negedge clk); w_req=1; w_addr=8; tick(); wait_w();
     if (w_rdata !== 128'hcafebabef00dcafe55667788deadbeef) fail("W wide-lane ordering mismatch");
-    @(negedge clk); w_req=0; tick();
+    @(negedge clk); w_req=0; repeat(LAT) tick();
     if (!rd_idle) fail("read-idle did not assert after pipelines drained");
 
     $display("DRAMTEST PASS: A/SW/B/W, byte masks, tags, ordering, latency and idle");
