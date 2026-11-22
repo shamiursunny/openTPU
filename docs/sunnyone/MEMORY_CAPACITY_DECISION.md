@@ -1,94 +1,135 @@
-# SUNNYONE AI-X — Maximum RAM decision (2026-11-23)
+# SUNNYONE AI-X — Memory, power and commercial architecture decision
 
-Status: architecture decision only; no hardware implementation or qualification claimed.
+Date: 2026-11-23
+Status: planning decision only. No selected production device, validated memory topology, physical prototype, measured power, benchmark result, or profitability claim.
 
-## Decision
+## 1. Commercial objective and power policy
 
-Do not freeze MPFS250T as the primary device if 128 GB external RAM is a hard requirement. Microchip's MSS DDR4 controller is documented for up to 128 Gb total (16 GB) at specified memory case temperatures and a maximum 16 Gb die. Its separate fabric DDR interface needs its own device/package/IP proof; no 32 GB or 128 GB MPFS250T configuration is established here.
+The user has retired the former 30 W total-system ceiling. Power may increase when the additional sustained useful throughput and contribution margin justify the incremental hardware, electricity, cooling, maintenance, reliability and capital costs.
 
-For a 128 GB DDR4 target, investigate AMD Versal Adaptive SoC Soft DDR4 Memory Controller IP (PG353). AMD's guide lists support for DDR4 RDIMM up to 256 GB and LRDIMM up to 256 GB, with 3DS DIMM support, and SODIMM up to 128 GB. This is controller-IP capability, not proof that every Versal device/package can support the configuration.
+**Primary objective:** maximise risk-adjusted long-term net profit and achieve the fastest realistic recovery of initial investment, while providing reliable and competitive AI inference.
 
-**Primary target for feasibility:** 128 GB ECC DDR4 RDIMM on a precisely selected Versal device/package, using the Soft DDR4 controller if the AMD Memory Interface Planning Tool and exact device/package pinout approve it.
+There is no replacement wattage ceiling yet. Do not maximise watts, RAM capacity, peak TOPS or chip size in isolation. Derive the system power envelope from measured workload performance and a full-system total-cost-of-ownership (TCO) model.
 
-**Upper-bound investigation:** 256 GB RDIMM/LRDIMM only after exact 3DS, rank, density, package, controller and PCB compatibility are proven. Do not call this the committed target.
+A higher-power configuration is accepted only when its incremental contribution margin exceeds its incremental total cost and its reliability/capital risk remains commercially acceptable.
 
-## 30 W conflict
+## 2. Memory decision
 
-No reviewed source proves that a Versal device plus 128 GB RDIMM, regulators, storage, networking and cooling can remain below 30 W during sustained inference. 30 W remains an unverified hard requirement. Run AMD Power Design Manager with worst-case process and realistic clocks/activity, include DIMM and board power, then measure prototype input power. If the 128 GB configuration exceeds 30 W, the requirements conflict; do not claim both.
+Do not freeze Microchip PolarFire SoC MPFS250T as the primary device if 128 GB external RAM is a hard requirement. Microchip's MSS DDR4 controller documentation states up to 128 Gb total (16 GB) under specified temperature conditions and maximum 16 Gb die density. The separate fabric DDR route requires its own exact device/package/IP proof; no 32 GB or 128 GB MPFS250T configuration is established here.
 
-## Why MPFS250T is not the 128 GB choice
+AMD Versal PG353 Soft DDR4 controller documentation lists DDR4 RDIMM up to 256 GB and LRDIMM up to 256 GB, and SODIMM up to 128 GB, including 3DS DIMM support. This is controller-IP capability, not proof that a particular Versal device/package and board support a specific DIMM.
 
-Microchip's PolarFire SoC MSS DDR4 documentation states:
-- up to x32 DDR4 data width and dual rank;
-- maximum total DDR4 density 128 Gb (16 GB) below the stated temperature limit, with maximum die density 16 Gb;
-- lower allowed total density at higher memory case temperatures.
-The standard Icicle Kit has 2 GB LPDDR4, not 32/128 GB DDR4.
+- Initial high-capacity feasibility target: 128 GB ECC DDR4 RDIMM.
+- Stretch investigation: 256 GB RDIMM/LRDIMM, only after exact device, package, controller, DIMM topology and PCB feasibility are proven.
+- Capacity is not throughput. Evaluate bandwidth, rank/3DS support, latency, memory-controller efficiency, KV-cache traffic, concurrency and cost.
+- A memory size is justified only when the target workload's working set, model residency, KV cache or concurrency produces measurable economic value.
 
-MPFS250T remains a possible lower-power alternative only if its independently validated fabric-DDR capacity is sufficient and the user accepts a smaller memory target.
+## 3. DDR architecture down-select — not yet frozen
 
-## Required gates before freezing the Versal part
+Compare two Versal routes for the exact candidate device/package:
+1. Integrated Versal NoC DDR memory controller and supported external-memory interfaces.
+2. PG353 soft DDR4 SDRAM controller.
 
-1. Select exact device, package, speed grade and temperature grade.
-2. Generate PG353 configuration for the intended DDR4 RDIMM and prove the supported 128 GB topology.
-3. Confirm DIMM vendor part number, 3DS status, ranks, DRAM die density, ECC width, timing and refresh.
-4. Use AMD Memory Interface Planning Tool and package pinout to verify XPIO banks, byte lanes, clocks, address/control pins and voltage rails.
-5. Complete PCB signal-integrity, impedance, length matching, termination, power-integrity and thermal design.
-6. Generate Vivado implementation, timing and resource reports.
-7. Run memory training, full-address tests, stress, ECC/error injection and reset/recovery tests on hardware.
-8. Estimate worst-case board power in Power Design Manager; later measure idle, prefill, sustained decode and stress.
-9. Benchmark tokens/s, tokens/J, first-token latency, inter-token p50/p95/p99, model accuracy and 8-hour stability.
+Compare achievable capacity, bandwidth, latency, ECC, supported DIMM topology, pinout, XPIO/NoC resource use, clocking, power, Vivado support, implementation complexity, PCB signal integrity and cost. Use the exact AMD Memory Interface Planning Tool output, device/package documentation and generated IP configuration. Do not assume PG353 is automatically superior because its guide lists larger DIMM capacities.
 
-## Design architecture
+Do not name or freeze a Versal part number until both memory feasibility and resource/power economics have been checked.
 
-- DDR4: model weights and large KV cache.
-- On-chip SRAM/BRAM/URAM: hot tiles, activations, queues and DMA staging.
-- Accelerator: tiled quantised matrix engine; INT8 correctness baseline, INT4 only after accuracy/overflow validation.
-- Runtime: memory QoS, bounded DMA queues, watchdog, ECC/error telemetry, temperature/power monitoring and controlled recovery.
-- Optimise sustained tokens/J and latency, not peak TOPS alone.
+## 4. Candidate commercial configurations
 
-## Status
+Evaluate at least three candidates with identical workloads, models, quantisation quality, context lengths, concurrency, latency targets and uptime assumptions:
+
+- Efficient: minimum practical compute/memory configuration with low capital and operating cost.
+- Balanced: best expected long-term contribution margin and capacity to scale.
+- High-throughput: higher compute, memory bandwidth/capacity, power and cooling where incremental revenue can justify them.
+
+For every candidate include accelerator/board, RAM, PCB, power delivery, cooling, storage, networking, assembly, development/NRE, deployment, spares and replacement reserve.
+
+## 5. Financial model requirements
+
+Use three demand cases: conservative, base and upside. Do not assume full utilisation or guaranteed customers.
+
+Monthly revenue = billable useful output (or contracted capacity) × realised selling price, less discounts, credits, failed/invalid work and payment leakage.
+
+Monthly operating cost must include:
+- electricity from measured wall/input power × operating hours × actual tariff, with cooling overhead and power-conversion losses accounted for;
+- hosting/site, network, storage, maintenance, support, software, monitoring, security and administration;
+- depreciation/replacement reserve, spares, downtime and financing costs where applicable;
+- customer acquisition, payment processing, tax and other applicable costs.
+
+Monthly operating cash flow = collected revenue − cash operating costs − financing payments (show pre-tax and post-tax treatments separately where applicable).
+
+Break-even utilisation = fixed monthly costs / contribution available per unit of billable utilisation, using a clearly defined workload and pricing unit. State the algebra and assumptions; do not mix gross margin with net profit.
+
+Payback period is the first month cumulative net project cash flow recovers initial investment. Show cash-flow timing, working capital, ramp-up, replacement capex and scenario sensitivity. If payback is not achieved in the forecast horizon, state that plainly.
+
+Core technical/economic measures:
+- sustained useful tokens/s and tokens/J at the wall, not peak kernel TOPS;
+- first-token latency and inter-token p50/p95/p99;
+- model quality/accuracy and task completion quality;
+- uptime, failure rate, thermal throttling and sustained stability;
+- cost per million useful tokens = attributable total operating cost / useful output tokens × 1,000,000;
+- revenue per million useful tokens and contribution margin;
+- monthly fixed-cost coverage, break-even utilisation, operating cash flow and payback.
+
+Vendor claims are comparison references, not SUNNYONE performance evidence. Benchmark against commercially available alternatives on equivalent models, precision, context, concurrency, software and service levels.
+
+## 6. Product and revenue strategy
+
+Evaluate both business routes in the financial model:
+- Operate SUNNYONE inference infrastructure and sell API/service access.
+- Sell, lease or license accelerator hardware/software to customers or infrastructure providers.
+
+Also assess a hybrid route. Do not assume API service is automatically superior: customer acquisition, utilisation, pricing, support and working capital may make hardware licensing or a hybrid more attractive. Validate demand through interviews, letters of intent, paid pilots or other documented evidence before production-scale capex.
+
+## 7. Architecture direction (provisional)
+
+- External DDR: model weights and large KV cache.
+- On-chip BRAM/URAM/SRAM: hot tiles, activations, queues and DMA staging.
+- Tiled quantised matrix engine: INT8 correctness baseline; INT4 only after accuracy, overflow and stability tests.
+- DMA with bounded queues, backpressure and observable errors.
+- Memory QoS to prevent CPU, DMA, inference and telemetry starvation.
+- ECC/error reporting, memory training, refresh, watchdog, reset/recovery and thermal/power telemetry.
+- Model serving, batching, scheduling, quantisation and runtime optimisation are part of the product, not optional extras.
+
+The openTPU BCU1525/VU9P design remains a software/workload and implementation reference, not a validated candidate for the new 128 GB commercial platform. The pinned upstream source baseline remains FeSens/openTPU commit d84db55712aba0d40811d7762cb052f05d55b7e5. Keep main and the reference baseline unchanged.
+
+## 8. Next procedures and evidence gates
+
+1. Define target customer segments and representative workloads (model families/sizes, context, concurrency, prompt/decode mix, latency and quality).
+2. Compare API service, hardware sale/licensing and hybrid revenue routes; gather customer evidence and realistic price benchmarks.
+3. Build the conservative/base/upside TCO and cash-flow model using sourced quotations and the actual Bangladesh operating context where relevant.
+4. Define candidate system configurations and calculate the minimum memory capacity/bandwidth needed for each workload.
+5. Compare integrated Versal NoC DDR and PG353 soft DDR; validate 128 GB DIMM part number, ECC, ranks, 3DS, density, timing and training.
+6. Select exact Versal device/package only after Memory Interface Planning Tool, package pinout, resource and power checks.
+7. Produce architecture/resource estimates, Vivado synthesis/timing reports, and AMD Power Design Manager estimates under realistic worst-case clocks/activity.
+8. Design PCB SI/PI/thermal and power delivery; obtain manufacturing and component quotations.
+9. Prototype and measure wall power, memory bandwidth/latency, thermals and sustained inference.
+10. Benchmark identical workloads against alternatives; report tokens/s, tokens/J, latency percentiles, accuracy, uptime and cost per useful token.
+11. Run long-duration tests, memory stress, ECC/error injection, reset/recovery and fault handling.
+12. Recalculate unit economics using measured performance and actual costs; proceed to production investment only if customer demand and risk-adjusted returns justify it.
+
+## 9. Current status
 
 | Item | Status |
 |---|---|
-| 128 GB DDR4 RDIMM controller capability | Documented by AMD PG353; exact device/package not selected |
-| 128 GB on selected Versal device | NOT VERIFIED |
-| 256 GB option | Controller guide upper-bound; exact topology NOT VERIFIED |
-| 30 W total system | NOT VERIFIED |
-| RTL / synthesis / timing | NOT STARTED for Versal |
-| Physical DDR training and stress | NOT STARTED |
-| LLM performance and thermal stability | NOT TESTED |
+| 30 W hard ceiling | RETIRED by user |
+| Replacement power envelope | NOT SELECTED; derive from economics and measurements |
+| Primary objective | Risk-adjusted long-term profit and realistic investment recovery |
+| 128 GB DDR4 RDIMM | Feasibility target; exact Versal support NOT VERIFIED |
+| 256 GB RDIMM/LRDIMM | Stretch investigation only |
+| Versal device/package | NOT SELECTED |
+| Integrated DDR vs PG353 | Comparison REQUIRED |
+| TCO, pricing, revenue, break-even, payback | NOT CALCULATED |
+| Customer demand / paid pilot | NOT VERIFIED |
+| Versal RTL, synthesis, timing, PCB | NOT STARTED |
+| Physical power, thermal and inference results | NOT MEASURED |
 
-## Official references
+## Official technical references
 
 - AMD Versal Soft DDR4 SDRAM Memory Controller PG353: https://docs.amd.com/r/en-US/pg353-versal-acap-soft-ddr4-mem-ip/Features
 - AMD Versal Memory overview: https://www.amd.com/en/products/adaptive-socs-and-fpgas/technologies/memory.html
+- AMD Versal 2026.1 UG1273 memory controller guidance: https://docs.amd.com/r/en-US/2026.1/ug1273-versal-acap-design/Soft-Memory-Controllers
 - AMD Power Design Manager guidance: https://docs.amd.com/r/2024.1-English/ug1556-power-design-manager/Device-Configuration
 - Microchip PolarFire SoC MSS DDR density notice DS00005474A: https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/SupportingCollateral/cia/Update_to_the_Maximum_Supported_DDR_Memory_for_the_PolarFire_SoC_MSS_DDR_Controller.pdf
 
-This is a truthful architecture down-select, not a generated DDR controller, bitstream, validated PCB, measured 128 GB system or qualified 30 W chip.
-
-
-## Commercial objective and revised power policy (2026-11-23)
-
-The user has explicitly removed the former 30 W total-system ceiling. Power may increase when the additional throughput and revenue justify the incremental capital, electricity, cooling, maintenance and reliability costs.
-
-**New primary objective:** maximise risk-adjusted long-term net profit and achieve the fastest realistic investment recovery, while delivering reliable, competitive AI inference. Do not maximise watts, RAM capacity, peak TOPS or chip size in isolation. No replacement wattage ceiling is approved; derive the power envelope from workload benchmarks and a full-system TCO model.
-
-Compare at least three candidate configurations (efficient, balanced and high-throughput) using the same workloads, model quality, context lengths, concurrency and latency targets. For each, account for:
-- accelerator, memory, PCB, assembly, development/NRE, depreciation and replacement reserve;
-- effective memory bandwidth and capacity utilisation, not capacity alone;
-- whole-system power including SoC/FPGA, DRAM, regulators, storage, network and cooling;
-- electricity tariff, cooling overhead, maintenance, software and operations;
-- sustained useful tokens/s, latency distribution, accuracy, uptime and real utilisation;
-- realised selling price, billable utilisation, monthly revenue, fixed-cost coverage, operating cash flow, break-even utilisation and payback period.
-
-Use cost per million useful tokens as a core comparison:
-(monthly attributable TCO / monthly useful output tokens) × 1,000,000.
-Vendor benchmark figures are reference claims, not SUNNYONE performance evidence. Validate with reproducible workloads and physical measurements. A larger RAM configuration is justified only when workload working-set, KV-cache, concurrency or model-serving economics support its cost. More watts are justified only when incremental contribution margin exceeds incremental total cost.
-
-AMD UG1273 2026.1 recommends considering the integrated Versal DDR memory controller rather than automatically selecting the soft DDR4 controller. Compare the integrated NoC DDR route and PG353 soft DDR route for the exact device/package, including capacity, bandwidth, latency, pinout, power and implementation risk, before platform freeze:
-https://docs.amd.com/r/en-US/2026.1/ug1273-versal-acap-design/Soft-Memory-Controllers
-
-Required next gate: establish target customer/workload and service model, obtain real hardware and electricity quotations, build conservative/base/upside unit economics, then select device/package and power envelope. No profitability, payback, full-system power, 128 GB physical operation or silicon qualification is claimed at this stage.
-
-Status: 30 W hard ceiling RETIRED by user; new power envelope NOT YET SELECTED; TCO, revenue, break-even and payback NOT CALCULATED; exact Versal device/package NOT SELECTED.
+This document records a planning decision and procedure. It does not claim a generated controller, selected device, validated PCB, working 128 GB system, measured performance/power, profitability, silicon readiness or qualification.
