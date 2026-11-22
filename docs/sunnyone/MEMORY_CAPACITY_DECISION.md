@@ -17,12 +17,16 @@ A higher-power configuration is accepted only when its incremental contribution 
 
 Do not freeze Microchip PolarFire SoC MPFS250T as the primary device if 128 GB external RAM is a hard requirement. Microchip's MSS DDR4 controller documentation states up to 128 Gb total (16 GB) under specified temperature conditions and maximum 16 Gb die density. The separate fabric DDR route requires its own exact device/package/IP proof; no 32 GB or 128 GB MPFS250T configuration is established here.
 
-AMD Versal PG353 Soft DDR4 controller documentation lists DDR4 RDIMM up to 256 GB and LRDIMM up to 256 GB, and SODIMM up to 128 GB, including 3DS DIMM support. This is controller-IP capability, not proof that a particular Versal device/package and board support a specific DIMM.
+AMD Versal PG353 Soft DDR4 controller documentation lists DDR4 RDIMM up to 256 GB and LRDIMM up to 256 GB, and SODIMM up to 128 GB, including 3DS DIMM support. This is controller-IP capability, not proof that a particular Versal device/package and board support a specific DIMM. The preferred integrated NoC controller has its own PG313 topology limits: for 64-bit ECC DIMM interfaces it lists x8/x16 DDR4 and x8 DDR4 3DS; RDIMM supports up to two physical ranks and two slots, while LRDIMM supports up to four ranks in one slot or two ranks in two slots. AMD DS957 lists, for Versal AI Core, up to 2133 Mb/s for a two-rank RDIMM dual-slot setup, 2667 Mb/s for one-rank RDIMM dual-slot, and 2933 Mb/s for two-rank RDIMM single-slot. These rates are family and operating-condition specific.
 
 - Initial high-capacity feasibility target: 128 GB ECC DDR4 RDIMM.
 - Stretch investigation: 256 GB RDIMM/LRDIMM, only after exact device, package, controller, DIMM topology and PCB feasibility are proven.
 - Capacity is not throughput. Evaluate bandwidth, rank/3DS support, latency, memory-controller efficiency, KV-cache traffic, concurrency and cost.
 - A memory size is justified only when the target workload's working set, model residency, KV cache or concurrency produces measurable economic value.
+
+### 128 GB RDIMM feasibility hypothesis (not yet validated)
+
+A dual-slot integrated-controller topology could only be treated as a 128 GB candidate if the exact 64 GB RDIMM SKU is compatible with PG313's supported x8/3DS device-width, rank and topology rules, and the chosen Versal device/package exposes the required DDRMC pins. Do not assume common 64 GB 2Rx4 RDIMMs are supported by the 64-bit ECC interface: the PG313 table lists x8/x16 components for that interface, not x4. A high-capacity 3DS x8 module may be a more relevant candidate, but its actual part number, rank organisation, SPD, timing, voltage, availability and price must be verified. The DS957 dual-slot/two-rank speed penalty must be included in bandwidth and economic modelling. A 128 GB total capacity may also be achievable through multiple controllers, but controller count, package pinout, channel interleaving and routing are not yet established.
 
 ## 3. DDR architecture down-select — not yet frozen
 
