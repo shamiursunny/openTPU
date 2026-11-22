@@ -208,7 +208,7 @@ module otpu_actram #(
         sren[k] <= sren[k-1];
       end
 `ifndef SYNTHESIS
-    logic [ASK-1:0] suse;
+    logic suse [ASK];
     assign suse[0] = r_use;
     always @(posedge clk) for (int k = 1; k < ASK; k++) suse[k] <= suse[k-1];
     always @(posedge clk)
