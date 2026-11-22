@@ -83,6 +83,31 @@ module tb_sunnyone_tmem;
                l,r_data[0][l],new_base+32'(l));
   endtask
 
+
+  task automatic partial_lane_write;
+    @(negedge clk);
+    for (int l=0;l<LANES;l++) begin
+      w_en[0][l]=(l==1 || l==3);
+      w_req[0][l]=(l==1 || l==3);
+      w_addr[0][l]=32'(l);
+      w_data[0][l]=32'hE800_5000+32'(l);
+    end
+    w_gnt[0]=1;
+    @(negedge clk); w_en='0; w_req='0; w_gnt='0;
+    repeat(2) @(negedge clk);
+    r_en[0]='1; r_req[0]='1;
+    for (int l=0;l<LANES;l++) r_addr[0][l]=32'(l);
+    repeat(2) @(posedge clk); #1;
+    for (int l=0;l<LANES;l++) begin
+      logic [31:0] expected;
+      expected=(l==1 || l==3) ? 32'hE800_5000+32'(l) : 32'hD700_4000+32'(l);
+      if (r_data[0][l] !== expected)
+        $fatal(1,"TMEM partial-lane write lane %0d: got %h expected %h",
+               l,r_data[0][l],expected);
+    end
+    @(negedge clk); r_en='0; r_req='0;
+  endtask
+
   initial begin
     repeat(3) @(negedge clk); rst=0;
     repeat(2) @(negedge clk);
@@ -91,9 +116,10 @@ module tb_sunnyone_tmem;
     write_vector(0,32'h5A00_2000);
     read_vector(0,32'h5A00_2000);
     simultaneous_read_write(0,32'h5A00_2000,32'hD700_4000);
+    partial_lane_write();
     write_vector(5,32'hC300_3000);
     read_vector(5,32'hC300_3000);
-    $display("TMEMTEST PASS: reset, read/write ordering, staged-write bypass, four-bank readback, overwrite, wrapped mapping and read hold");
+    $display("TMEMTEST PASS: reset, read/write ordering, staged-write bypass, partial-lane writes, four-bank readback, overwrite, wrapped mapping and read hold");
     $finish;
   end
 endmodule
