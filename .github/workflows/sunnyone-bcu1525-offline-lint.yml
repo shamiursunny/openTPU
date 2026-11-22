@@ -1,0 +1,47 @@
+name: SUNNYONE AI-X BCU1525 Offline Lint
+
+on:
+  push:
+    branches:
+      - "qa/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bcu1525-offline-lint:
+    name: Offline checks + Verilator lint (UDIMM, RDIMM, memory top)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact triggering revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Install lint tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes verilator tcl
+          verilator --version
+          tclsh <<< 'puts [info patchlevel]'
+          make --version | head -n 1
+          python3 --version
+
+      - name: Run BCU1525 offline and RTL lint
+        run: |
+          set -o pipefail
+          mkdir -p sunnyone-lint-evidence
+          git rev-parse HEAD | tee sunnyone-lint-evidence/source-commit.txt
+          make -C boards/bcu1525 lint 2>&1 | tee sunnyone-lint-evidence/bcu1525-lint.log
+
+      - name: Upload lint evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-bcu1525-offline-lint-${{ github.sha }}
+          path: sunnyone-lint-evidence/
+          if-no-files-found: warn
+          retention-days: 30
