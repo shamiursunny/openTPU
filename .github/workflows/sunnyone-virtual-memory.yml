@@ -6,6 +6,8 @@ on:
     paths:
       - 'rtl/mem/otpu_dram.sv'
       - 'sim/verilator/tb_sunnyone_dram.sv'
+      - 'rtl/mem/otpu_tmem.sv'
+      - 'sim/verilator/tb_sunnyone_tmem.sv'
       - '.github/workflows/sunnyone-virtual-memory.yml'
   workflow_dispatch:
 permissions:
@@ -22,5 +24,11 @@ jobs:
         run: verilator --binary --timing -Wall -Wno-fatal --top-module tb_sunnyone_dram --Mdir /tmp/obj_dir rtl/mem/otpu_dram.sv sim/verilator/tb_sunnyone_dram.sv
       - name: Run virtual memory tests
         run: /tmp/obj_dir/Vtb_sunnyone_dram | tee /tmp/sunnyone-dram-test.log
-      - name: Require explicit pass marker
+      - name: Require explicit DRAM pass marker
         run: grep -q 'DRAMTEST PASS:' /tmp/sunnyone-dram-test.log
+      - name: Compile behavioural TMEM testbench
+        run: verilator --binary --timing -Wall -Wno-fatal --top-module tb_sunnyone_tmem --Mdir /tmp/obj_tmem rtl/mem/otpu_tmem.sv sim/verilator/tb_sunnyone_tmem.sv
+      - name: Run virtual TMEM tests
+        run: /tmp/obj_tmem/Vtb_sunnyone_tmem | tee /tmp/sunnyone-tmem-test.log
+      - name: Require explicit TMEM pass marker
+        run: grep -q 'TMEMTEST PASS:' /tmp/sunnyone-tmem-test.log
