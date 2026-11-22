@@ -1,4 +1,4 @@
-name: SUNNYONE workload harness tests
+name: SUNNYONE workload harness tests (metric fixture correction)
 
 on:
   push:
