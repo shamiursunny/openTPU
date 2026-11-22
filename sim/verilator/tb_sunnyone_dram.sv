@@ -56,7 +56,7 @@ module tb_sunnyone_dram;
     @(negedge clk); a_req=0;
 
     // Port A byte-enable preserves untouched bytes.
-    @(negedge clk); a_req=1; a_we=1; a_addr=4; a_wdata=32'h00aa0000; a_be=4'b0010;
+    @(negedge clk); a_req=1; a_we=1; a_addr=4; a_wdata=32'h0000aa00; a_be=4'b0010;
     tick(); @(negedge clk); a_req=0; a_we=0; a_be=0;
     a_req=1; tick(); wait_a();
     if (a_rdata[31:0] !== 32'h1122aa44) begin $display("A byte-enable got=%h expected=1122aa44",a_rdata[31:0]); fail("A byte-enable mismatch"); end
