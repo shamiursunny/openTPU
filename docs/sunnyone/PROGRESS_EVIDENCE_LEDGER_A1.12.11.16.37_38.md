@@ -74,3 +74,15 @@ Programmable accelerator architecture direction remains selected provisionally: 
 - Added `OPEN_TOOLCHAIN_FPGA_PLATFORM_DOWNSELECT_A1.12.11.16.41.md`.
 - Sources: https://www.fpgaguide.com/topics/open-source-toolchains/ ; https://github.com/YosysHQ/apicula ; https://www.latticesemi.com/products/developmentboardsandkits/ecp5versadevelopmentkit ; https://boards.fpgadeveloper.com/list-of-fpga-dev-boards-by-device/
 - No physical board, bitstream, timing closure, DDR training, model inference or power/performance measurement was performed in this milestone.
+
+
+## A1.12.11.16.42 — Virtual memory simulation gate (2026-11-23)
+
+- Inspected the existing full-chip Verilator testbench `sim/verilator/tb_top.sv`: it instantiates `otpu_top` with behavioural TMEM/IMEM/DRAM and supports program/DRAM images, run arguments, halt/error status and memory dumps.
+- Added standalone `sim/verilator/tb_sunnyone_dram.sv` to exercise the existing behavioural DRAM model's A, SW, B and wide W ports, byte masks, tag propagation, wide-lane ordering, configured read latency and idle drain.
+- Added `.github/workflows/sunnyone-virtual-memory.yml` to compile/run that testbench with Verilator and require an explicit PASS marker.
+- Corrected the test fixture's B-port address after reviewing wide-read word ordering.
+- **Execution status: NOT YET VERIFIED.** This environment has neither Verilator nor Icarus installed, outbound GitHub access is unavailable, and the GitHub connector did not expose a workflow-dispatch/list-runs action. The new workflow has been committed but no run result/artifact has been observed. Do not label the memory test as passed.
+- Full-chip `tb_top` execution remains blocked: a compiled program image and matching DRAM fixture are required; the earlier full RTL diagnostic found BLKANDNBLK mixed blocking/nonblocking assignment errors in `otpu_actram.sv` and `otpu_mxu.sv`. A warning suppression is diagnostic only, not an accepted RTL repair.
+- No RTL functional change was made. No chip-level simulation, TMEM stress test, full memory capacity test, randomised test, formal proof, timing/power result or physical qualification is claimed.
+- Next acceptance gates: obtain the memory-only CI PASS log; add TMEM bank/write/read/bypass tests; repair BLKANDNBLK with semantics-preserving RTL changes and regressions; compile full `tb_top`; run deterministic instruction/DRAM images and compare TMEM/DRAM dumps against software golden outputs; then run seeded random/reset/backpressure and multi-slice tests.
