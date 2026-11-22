@@ -15,6 +15,7 @@ sys.modules.setdefault("sentence_transformers", Fake())
 spec.loader.exec_module(module)
 
 class RetrievalMetricTests(unittest.TestCase):
+    # Metrics are unit-tested without downloading model weights.
     def test_perfect_ranking(self):
         result = module.ranking_metrics(["a", "b", "c"], ["a", "c"])
         self.assertEqual(result["recall@3"], 1.0)
