@@ -2,7 +2,8 @@
 
 Date: 2026-11-23
 Branch: sunnyone/commercial-profitability-architecture-2026-11-23
-Current branch head at report creation: 87fdc8df265af6dea61dbe0e14671fa91f869c42
+Branch head before this ledger refresh: 87fdc8df265af6dea61dbe0e14671fa91f869c42
+Latest verified branch commit before this refresh: 1035df4d0a41e4f24b4b802944136a195bd86f38
 Pinned upstream reference unchanged: FeSens/openTPU d84db55712aba0d40811d7762cb052f05d55b7e5
 
 ## Completed in this continuation
