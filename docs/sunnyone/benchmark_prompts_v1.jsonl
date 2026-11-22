@@ -1,0 +1,6 @@
+{"id":"W1-001","prompt":"Classify this support request into exactly one category (billing, technical, account, other). Return the category and one-sentence rationale. Request: I was charged twice for my monthly subscription."}
+{"id":"W1-002","prompt":"Extract invoice number, date, currency and total. Return JSON only. Text: Invoice INV-2048 dated 2026-10-04. Amount due: USD 148.20."}
+{"id":"W2-001","prompt":"Write a concise search query for retrieving policy documents about employee data retention and deletion schedules."}
+{"id":"W2-002","prompt":"Rank these snippets for the question 'What is the renewal date?': A: Contract expires on 30 June 2027. B: Support hours are 9-5. C: Invoice issued 4 April 2026. Return ranked IDs only."}
+{"id":"W3-001","prompt":"Summarise in exactly three bullet points, preserving dates and amounts: Supplier delivered 120 units on 2 October 2026. A further 30 units are delayed until 9 October. Purchase order total is GBP 4,500."}
+{"id":"W3-002","prompt":"Extract action items, owners and due dates. Use null if absent. Note: Priya to send the revised proposal by 28 November 2026. Finance will confirm the budget; no owner or deadline was stated."}
