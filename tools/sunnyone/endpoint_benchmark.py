@@ -28,7 +28,7 @@ def request_one(args, item, index):
         msg=choice.get("message") or {}
         return {"id":item.get("id",str(index)),"repeat":item.get("repeat",0),"status":"ok",
           "latency_s":elapsed,"input_tokens":usage.get("prompt_tokens"),
-          "output_tokens":usage.get("completion_tokens),"total_tokens":usage.get("total_tokens"),
+          "output_tokens":usage.get("completion_tokens"),"total_tokens":usage.get("total_tokens"),
           "finish_reason":choice.get("finish_reason"),"response_text":msg.get("content") or "","error":None}
     except Exception as exc:
         return {"id":item.get("id",str(index)),"repeat":item.get("repeat",0),"status":"error",
