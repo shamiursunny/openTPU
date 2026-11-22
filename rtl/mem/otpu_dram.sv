@@ -187,6 +187,7 @@ module otpu_dram #(
     av = '0;
     bv = '0;
     bt = '0;
+    wv = '0;
     for (int i = 0; i < WORDS; i++) mem[i] = '0;
     if ($value$plusargs("dir=%s", dir)) begin
       fd = $fopen($sformatf("%s/dram_%0d.bin", dir, SID), "rb");
