@@ -199,7 +199,7 @@ module otpu_actram #(
   // r_hi), and the columns' enables; r_use too in simulation, for the checks in g_row
   if (ASK > 0) begin : g_sk
     (* shreg_extract = "no" *) logic [GW+BW-1:0] sra [ASK];
-    (* shreg_extract = "no" *) logic [ASK-1:0][MCOLS-1:0] sren;
+    (* shreg_extract = "no" *) logic [MCOLS-1:0] sren [ASK];
     assign sra[0] = (GROUPS > 1) ? {r_grp[GW-1:0], r_blk[BW-1:0]} : (GW+BW)'(r_blk[BW-1:0]);
     assign sren[0] = ren;
     always_ff @(posedge clk)
