@@ -67,6 +67,6 @@ def main():
       "metadata":meta,"limitations":["No calibrated wall-power measurement","Non-streaming: no TTFT/inter-token timing",
       "No independent quality scoring","Token counts depend on server usage reporting"]}
     (out/(run_id+"-summary.json")).write_text(json.dumps(summary,indent=2),encoding="utf-8")
-    print(json.dumps(summary,indent=2)); return 1 if not good else 0
+    print(json.dumps(summary,indent=2)); return 1 if len(good) != len(rows) else 0
 
 if __name__=="__main__": raise SystemExit(main())
