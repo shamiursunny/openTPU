@@ -1,4 +1,4 @@
-name: SUNNYONE RTL functional smoke
+name: SUNNYONE RTL functional expansion
 on:
   push:
     branches:
@@ -27,7 +27,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
-      - name: RTL versus ISA functional tests
+      - name: Expanded RTL versus ISA tests
         run: >-
           pytest -q tests/test_rtl.py
-          -k "mlp_rtl or attention_decode_rtl or attention_layer_rtl"
+          -k "mlp_4bit_rtl or attention_decode_fsum_rtl or design_size_block_128_rtl"
