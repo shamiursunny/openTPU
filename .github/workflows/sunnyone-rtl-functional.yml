@@ -30,4 +30,4 @@ jobs:
       - name: Expanded RTL versus ISA tests
         run: >-
           pytest -q tests/test_rtl.py
-          -k "mlp_4bit_rtl or attention_decode_fsum_rtl or design_size_block_128_rtl"
+          -k "axi_read_bursts or axi_sw_partial_beat_order or axi_sw_rmw_fuzz"
