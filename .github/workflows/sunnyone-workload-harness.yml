@@ -1,0 +1,30 @@
+name: SUNNYONE workload harness tests
+
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'tools/sunnyone/endpoint_benchmark.py'
+      - 'tests/test_sunnyone_endpoint_benchmark.py'
+      - '.github/workflows/sunnyone-workload-harness.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  harness-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile benchmark harness
+        run: python -m py_compile tools/sunnyone/endpoint_benchmark.py
+      - name: Run deterministic harness tests
+        run: python -m unittest discover -s tests -p 'test_sunnyone_endpoint_benchmark.py' -v
