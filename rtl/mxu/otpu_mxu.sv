@@ -1363,7 +1363,7 @@ module otpu_mxu
           // reset, a BCU1525 build at 150 MHz (1,540 of these flip-flops, unpumped) had its worst
           // core paths from rst_mxu's copies into their R pins: no logic, 5.7 ns of route
           localparam int AD = wa_t(wa_sm(FC - 1)) + c - 1;     // the longest tap
-          (* shreg_extract = "no" *) logic [AD:0][PW-1:0] ar;
+          (* shreg_extract = "no" *) logic [PW-1:0] ar [AD+1];
           assign ar[0] = (c == 0) ? f_rdl[0] : rdl[(c == 0) ? 1 : c][0];
           always_ff @(posedge clk)
             for (int k = 1; k <= AD; k++) ar[k] <= ar[k-1];
