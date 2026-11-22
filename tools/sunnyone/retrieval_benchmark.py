@@ -9,6 +9,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import math
 import statistics
 import time
 from pathlib import Path
@@ -21,7 +22,7 @@ RERANK_REV = "e61197ed45024b0ed8a2d74b80b4d909f1255473"
 
 
 def dcg(relevances):
-    return sum((2 ** rel - 1) / np.log2(i + 2) for i, rel in enumerate(relevances))
+    return sum((2 ** rel - 1) / math.log2(i + 2) for i, rel in enumerate(relevances))
 
 
 def ranking_metrics(ranked_ids, relevant_ids, k_values=(1, 3, 5, 10)):
