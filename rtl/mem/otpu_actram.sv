@@ -198,7 +198,7 @@ module otpu_actram #(
   // ASK: stage s's read at tap s of a line (tap 0 the request): the block, every column's (no
   // r_hi), and the columns' enables; r_use too in simulation, for the checks in g_row
   if (ASK > 0) begin : g_sk
-    (* shreg_extract = "no" *) logic [ASK-1:0][GW+BW-1:0] sra;
+    (* shreg_extract = "no" *) logic [GW+BW-1:0] sra [ASK];
     (* shreg_extract = "no" *) logic [ASK-1:0][MCOLS-1:0] sren;
     assign sra[0] = (GROUPS > 1) ? {r_grp[GW-1:0], r_blk[BW-1:0]} : (GW+BW)'(r_blk[BW-1:0]);
     assign sren[0] = ren;
