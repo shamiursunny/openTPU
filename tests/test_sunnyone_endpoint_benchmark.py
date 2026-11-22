@@ -13,6 +13,7 @@ spec.loader.exec_module(bench)
 
 
 class Handler(BaseHTTPRequestHandler):
+    """Deterministic local OpenAI-compatible fixture for stream and non-stream modes."""
     def do_POST(self):
         length = int(self.headers.get("Content-Length", "0"))
         payload = json.loads(self.rfile.read(length))
