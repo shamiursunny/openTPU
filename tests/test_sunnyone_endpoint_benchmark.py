@@ -17,6 +17,13 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", "0"))
         payload = json.loads(self.rfile.read(length))
         self.send_response(200)
+        if not payload.get("stream"):
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            body = {"choices": [{"message": {"content": "hello world"}, "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 5, "completion_tokens": 2, "total_tokens": 7}}
+            self.wfile.write(json.dumps(body).encode())
+            return
         self.send_header("Content-Type", "text/event-stream")
         self.end_headers()
         events = [
