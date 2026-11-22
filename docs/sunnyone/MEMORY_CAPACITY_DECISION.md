@@ -26,7 +26,7 @@ AMD Versal PG353 Soft DDR4 controller documentation lists DDR4 RDIMM up to 256 G
 
 ### 128 GB RDIMM feasibility hypothesis (not yet validated)
 
-A dual-slot integrated-controller topology could only be treated as a 128 GB candidate if the exact 64 GB RDIMM SKU is compatible with PG313's supported x8/3DS device-width, rank and topology rules, and the chosen Versal device/package exposes the required DDRMC pins. Do not assume common 64 GB 2Rx4 RDIMMs are supported by the 64-bit ECC interface: the PG313 table lists x8/x16 components for that interface, not x4. A high-capacity 3DS x8 module may be a more relevant candidate, but its actual part number, rank organisation, SPD, timing, voltage, availability and price must be verified. The DS957 dual-slot/two-rank speed penalty must be included in bandwidth and economic modelling. A 128 GB total capacity may also be achievable through multiple controllers, but controller count, package pinout, channel interleaving and routing are not yet established.
+A more credible 128 GB hypothesis is four independent 64-bit ECC DDR4 channels, each populated with one 32 GB 2-rank x8 RDIMM: 4 × 32 GB = 128 GB. AMD's product table lists four DDRMCs for VC1802 and VC1902; Lenovo's published memory reference lists 32 GB 2Rx8 DDR4 RDIMM-A part 4ZC7A15123 and 4X77A12188. These are candidate reference modules, not proven Versal-compatible SKUs. PG313 supports x8 DDR4 components in the 64-bit ECC interface and up to two ranks per RDIMM. AMD DS957 lists 2-rank RDIMM in a single slot at up to 2933 Mb/s for Versal AI Core conditions. The initial lead device/package for Vivado and memory-planner feasibility is VC1802 / VSVD1760; VC1902 / VSVD1760 is the higher-compute alternative. The exact four DDRMC pin availability, 72-bit routing, SPD compatibility, rank/DRAM organisation, memory training and module procurement remain unverified. Do not use 64 GB 2Rx4 or 128 GB 4Rx4 3DS RDIMMs without proving their x4 compatibility: PG313's 64-bit ECC table does not list x4 components. The dual-slot/two-rank 2133 Mb/s rate penalty is avoided in the initial one-slot-per-controller hypothesis, but actual rates must be confirmed in Vivado.
 
 ## 3. DDR architecture down-select — not yet frozen
 
@@ -119,9 +119,9 @@ The openTPU BCU1525/VU9P design remains a software/workload and implementation r
 | 30 W hard ceiling | RETIRED by user |
 | Replacement power envelope | NOT SELECTED; derive from economics and measurements |
 | Primary objective | Risk-adjusted long-term profit and realistic investment recovery |
-| 128 GB DDR4 RDIMM | Feasibility target; exact Versal support NOT VERIFIED |
+| 128 GB DDR4 RDIMM | Four-channel 4 × 32 GB 2Rx8 hypothesis; exact Versal support NOT VERIFIED |
 | 256 GB RDIMM/LRDIMM | Stretch investigation only |
-| Versal device/package | NOT SELECTED |
+| Versal device/package | LEAD FEASIBILITY CANDIDATE: VC1802 / VSVD1760; NOT FINAL |
 | Integrated DDR vs PG353 | Comparison REQUIRED |
 | TCO, pricing, revenue, break-even, payback | NOT CALCULATED |
 | Customer demand / paid pilot | NOT VERIFIED |
