@@ -37,7 +37,7 @@ module tb_sunnyone_tmem;
     for (int l=0;l<LANES;l++) begin
       r_en[0][l]=1; r_req[0][l]=1; r_addr[0][l]=l;
     end
-    @(posedge clk); #1;
+    repeat(2) @(posedge clk); #1;
     for (int l=0;l<LANES;l++)
       if (r_data[0][l] !== base+32'(l))
         $fatal(1,"TMEM readback lane %0d: got %h expected %h",l,r_data[0][l],base+32'(l));
