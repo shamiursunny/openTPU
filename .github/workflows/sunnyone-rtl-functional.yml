@@ -1,0 +1,33 @@
+name: SUNNYONE RTL functional smoke
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/**'
+      - 'opentpu/**'
+      - 'tests/test_rtl.py'
+      - 'tests/conftest.py'
+      - '.github/workflows/sunnyone-rtl-functional.yml'
+      - 'pyproject.toml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rtl-functional:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: RTL versus ISA functional tests
+        run: >-
+          pytest -q tests/test_rtl.py
+          -k "mlp_rtl or attention_decode_rtl or attention_layer_rtl"
