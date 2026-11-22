@@ -36,3 +36,17 @@ Pinned upstream reference unchanged: FeSens/openTPU d84db55712aba0d40811d7762cb0
 
 ## Current design decision
 Programmable accelerator architecture direction remains selected provisionally: RISC-V control plane, tiled matrix engine, vector/SIMD, local SRAM, DMA, defined interconnect, ECC external memory and programmable runtime. Exact chip/FPGA/SoC part and production ASIC are NOT SELECTED. No production readiness claim.
+
+## A1.12.11.16.39 — Versal device/memory down-select
+- Lead feasibility candidate: AMD Versal AI Core VC1802 / VSVD1760.
+- Higher-compute alternative: VC1902 / VSVD1760.
+- Rationale: AMD lists four integrated DDRMCs on VC1802/VC1902. A plausible 128 GB target is four independent ECC 64-bit DDR4 channels, one 32 GB 2-rank x8 RDIMM per controller.
+- Reference DIMM SKUs from Lenovo's published memory reference: 4ZC7A15123 and 4X77A12188, both listed as 32 GB 2Rx8 DDR4 RDIMM-A. These are candidate references only, not validated Versal-compatible modules.
+- AMD DS957 lists up to 2933 Mb/s for a 2-rank, single-slot RDIMM topology under Versal AI Core conditions. Four-channel theoretical payload ceiling = 93.856 GB/s decimal, before overhead; not measured.
+- Exact VC1802 VSVD1760 pinout, all four DDRMC availability, Vivado memory planner, SPD/training, PCB, price, power and thermal gates remain open.
+- Detailed down-select: VERSAL_DEVICE_AND_128GB_MEMORY_TOPOLOGY_DOWNSELECT_A1.12.11.16.39.md.
+
+## Current branch and CI
+- The deterministic benchmark CI run 45069537101 passed all six unit tests and Python compilation for both benchmark scripts.
+- The older BCU1525 emulator/Python run 45065688493 remains stale/in_progress with no artifacts and unavailable logs.
+- Current branch has since advanced beyond the CI-tested commit through documentation-only device/memory decisions; the benchmark scripts and tests were unchanged after that successful run.
