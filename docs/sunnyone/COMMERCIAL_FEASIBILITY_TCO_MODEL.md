@@ -1,7 +1,7 @@
 # SUNNYONE AI-X — Commercial feasibility and TCO model specification
 
 Date: 2026-11-23
-Stage: Commercial discovery and architecture economics — specification, not yet populated with verified market quotations or measured hardware data.
+Stage: Commercial discovery and architecture economics — specification with initial public market reference points; not yet populated with verified customer demand, supplier quotations or measured hardware data.
 
 ## Purpose
 
@@ -104,7 +104,34 @@ G5 — Pilot economics: paid pilot or equivalent documented customer validation;
 
 G6 — Production investment: approve only when validated demand, manufacturing quotations, reliability evidence, risk-adjusted cash flow and funding plan support the investment.
 
-## H. Current evidence status (2026-11-23)
+## H. Initial market reference snapshot (retrieved 2026-11-23)
+
+These are public reference points for comparison only. They are not SUNNYONE selling prices, supplier quotes, customer demand, or a forecast. Re-check the original provider pages and conditions before investment decisions.
+
+### API token pricing examples (USD per 1 million tokens)
+
+- OpenAI official API pricing page: examples on the current page include GPT-6 Luna at $0.05 input / $0.25 output and GPT-6 Astra at $5 input / $25 output in the listed standard tier. Model, context, processing mode, caching and regional options change the rate. Source: https://developers.openai.com/api/docs/pricing
+- Anthropic official platform pricing page: examples include Claude Haiku 4.5 at $1 input / $5 output, Sonnet 5.5 at $2 / $10, and Opus 5.5 at $4 / $20. Source: https://platform.claude.com/docs/en/about-claude/pricing
+- Google Gemini Developer API pricing page includes multiple tiers and model rates; for example, the page lists Gemini 3.5 Flash-Lite at $0.30 input / $2.50 output in Standard paid pricing. Check the current model table and tier. Source: https://ai.google.dev/gemini-api/docs/pricing
+
+Do not compare a blended SUNNYONE cost to a single output-token list price. Model the real input/output mix, caching, batch discounts, tool calls, reasoning tokens, failed requests and quality-equivalent model selection.
+
+### GPU rental reference points
+
+Third-party market snapshots retrieved 2026-11-23 report H100 on-demand prices varying by provider, form factor, region, minimum instance size and terms. One tracker reports a November 22 H100 median of about $3.92/GPU-hour and a low listed price of $1.80; another reports a separate November 19 low listing of $2.59/GPU-hour. These are not interchangeable quotes and may include marketplace/spot or differing hardware variants. Sources:
+- https://tensorcore.si/gpu-cloud-pricing/
+- https://www.nvgpu.com/gpus/h100
+- https://uvik.net/blog/gpu-price-index/
+
+Use actual provider checkout/pricing pages and confirm region, GPU variant, minimum node size, CPU/RAM/network/storage charges, interruptibility, taxes and availability before treating a rate as a competitor cost.
+
+### Bangladesh electricity reference
+
+A June 2026 report on revised BERC tariffs states commercial and office low-voltage rates of Tk 15.36/kWh, with peak Tk 18.43 and off-peak Tk 13.82. Source: https://www.dhakatribune.com/bangladesh/power-energy/411666/how-much-does-electricity-tariff-increase-per
+
+This is only a preliminary tariff reference. Confirm the actual premises' consumer class, voltage, time-of-use meter, demand charge, power factor penalty, taxes, connection capacity and latest bill with the relevant utility/BERC schedule. A utility bulk purchase rate is not a customer's retail tariff. Do not use residential slab rates for a commercial data-centre model.
+
+## I. Current evidence status (2026-11-23)
 
 | Evidence item | Status |
 |---|---|
@@ -114,19 +141,21 @@ G6 — Production investment: approve only when validated demand, manufacturing 
 | 256 GB DDR4 | Stretch investigation only |
 | Exact Versal device/package | Not selected |
 | Integrated DDR vs PG353 | Comparison pending |
+| Public API price references | Initial research captured; not customer pricing |
+| H100 rental comparisons | Initial third-party snapshots captured; provider quotes unverified |
+| Bangladesh commercial tariff | Preliminary public reference; actual site tariff unverified |
 | Customer segment / target workload | Not yet specified |
 | Service vs hardware vs hybrid | All three to be modelled |
 | Real customer willingness-to-pay evidence | Not yet obtained |
 | Verified component/manufacturing quotations | Not yet obtained |
-| Bangladesh electricity/facility operating cost inputs | Not yet sourced |
 | Measured prototype wall power / tokens per second | Not available |
 | TCO / break-even / payback | Not calculated |
 | Paid pilot / production demand | Not verified |
 
-## I. Immediate next actions
+## J. Immediate next actions
 
 1. Define 2–3 initial customer segments and 3–5 representative workloads for each.
-2. Research comparable inference API prices and accelerator/hardware alternatives; record date, region, model, service tier and limits.
+2. Verify API and GPU competitor pricing at the exact model, region, hardware variant, service tier and purchase terms.
 3. Obtain local electricity, hosting, networking, component, PCB and assembly quotations; distinguish quote from estimate.
 4. Build a spreadsheet implementation of the formulas and scenario inputs; leave unknown cells blank rather than fabricating values.
 5. Select a minimum viable workload target before fixing memory capacity; determine whether 128 GB or 256 GB has a measurable customer/revenue use case.
@@ -136,6 +165,6 @@ G6 — Production investment: approve only when validated demand, manufacturing 
 
 ## References and traceability
 
-Technical memory/controller claims are tracked in MEMORY_CAPACITY_DECISION.md. AMD controller documentation is an IP capability reference, not a guarantee for a selected part or PCB. Vendor benchmark and price pages must be captured with retrieval date and conditions before they are used in financial assumptions.
+Technical memory/controller claims are tracked in MEMORY_CAPACITY_DECISION.md. AMD controller documentation is an IP capability reference, not a guarantee for a selected part or PCB. All market prices are dated references and must be refreshed before financial decisions.
 
 This specification is a planning artifact. It does not establish customer demand, market price, hardware performance, profitability, payback or production readiness.
