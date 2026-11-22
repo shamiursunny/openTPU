@@ -70,7 +70,7 @@ module tb_sunnyone_dram;
     @(negedge clk); a_req=0;
 
     // Port B masked two-word burst write and tagged read.
-    @(negedge clk); b_req=1; b_we=1; b_addr=12; b_wmask=2'b11;
+    @(negedge clk); b_req=1; b_we=1; b_addr=10; b_wmask=2'b11;
     b_wdata=64'hcafebabef00dcafe; tick();
     @(negedge clk); b_req=0; b_we=0; b_wmask=0; b_tag=1; b_req=1;
     tick(); wait_b();
