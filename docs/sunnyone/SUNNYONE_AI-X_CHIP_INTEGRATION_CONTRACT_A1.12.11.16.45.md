@@ -64,9 +64,9 @@ Minimum domains to budget:
 - Each external memory controller/PHY clock domain.
 - Optional SRAM/DRAM maintenance or telemetry domain.
 
-Every crossing needs an explicit synchronizer/FIFO or registered bridge, reset-release synchronisation, asynchronous assertion policy, and CDC/RDC report. PCIe reset must not accidentally reset a memory controller's CDC FIFO on only one side. The YPCB top's documented reset isolation is a useful reference, not an ASIC implementation.
+Every crossing needs an explicit synchronizer/FIFO or registered bridge, reset-release synchronisation, asynchronous assertion policy, and CDC/RDC report. PCIe reset must not accidentally reset a memory controller's CDC FIFO on only one side. The YPCB top's documented reset isolation is a useful reference, not an ASIC implementation. The new subsystem top uses two-stage synchronizers for both memory-calibration bits, memory-error and ECC-DED status into the core clock; all compute-memory ready/valid/data handshakes still require a memory adapter that presents them in the core clock domain.
 
-Run enable is gated by PCIe/link availability where required, stable clocks, memory calibration, ECC state and completed initialisation. A clock-loss or uncorrectable-memory error must stop/contain compute and surface a sticky error.
+Run enable is gated by PCIe/link availability where required, stable clocks, memory calibration, ECC state and completed initialisation. A clock-loss, calibration loss or uncorrectable-memory error must stop/contain compute and surface a sticky error; a load in flight is reset/aborted on fatal memory status.
 
 ## 5. Memory and reliability requirements
 
