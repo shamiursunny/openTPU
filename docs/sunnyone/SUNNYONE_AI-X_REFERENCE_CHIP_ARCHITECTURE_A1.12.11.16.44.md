@@ -54,6 +54,12 @@ Host server CPU + RAM + storage + network
 
 The diagram combines implemented openTPU blocks with explicitly unselected platform interfaces. It is not evidence that the whole system has been integrated into one production device.
 
+### ASIC integration boundary (important)
+
+`rtl/asic/otpu_asic_top.sv` is the current ASIC compute-block boundary: one slice plus its collective unit, with external memory-port handshakes and run/load/status control ports. It does **not** include the PCIe hard IP, XDMA, the board's `otpu_ctrl` AXI4-Lite BAR block, external DDR controller/PHY, IOMMU or a complete chip-level reset/clock/power/security wrapper. The board reference `otpu_board` includes `otpu_ctrl` and board-specific memory/clock crossings, but is not the ASIC top.
+
+Therefore, a chip-level integration wrapper remains to be designed and verified. It must define the host control/data interface, map run/load/status onto the ASIC block, connect DMA/memory ports to the chosen controller/PHY, and specify clock/reset/calibration/error contracts. Do not describe the present `otpu_asic_top` as a complete PCIe AI accelerator chip.
+
 ## 3. Functional blocks and contracts
 
 | Block | Responsibility | Evidence / implementation boundary |

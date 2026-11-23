@@ -4,7 +4,7 @@ Last updated: 2026-11-23 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest verified RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Current active branch head before this update: `def4c0961822c636d7cbb92732bd2637a059f50b`.
+Latest verified RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Current active branch head before this update: `aa6c5009cef161d83304786e95def718786bc6bd`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 
 ## 1. Product objective and decision rule
 
@@ -159,3 +159,10 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 
 - Added a dedicated CI job for `test_one_copy_tmem_of_128k_words`, separate from the ordinary regression suite. This test remains experimental because prior Verilator elaboration produced an internal tool error; the isolated rerun will distinguish a reproducible tool failure from an RTL/testbench issue.
 - Do not interpret a Verilator internal error as a functional RTL mismatch. Capture exact tool version, compile command and error log.
+
+
+## 17. ASIC top-level integration gap clarified
+
+- The current `rtl/asic/otpu_asic_top.sv` is a compute-block boundary (one slice + collective, memory-port handshakes and run/load/status signals), not a complete PCIe/host-connected chip top.
+- The board reference `otpu_board` has `otpu_ctrl` AXI4-Lite BAR control and board-specific memory/clock crossings, but that is not integrated into the ASIC top. A separate chip wrapper and platform-specific memory/host interface remain required.
+- `main` was checked and remains at `d84db55712aba0d40811d7762cb052f05d55b7e5`; all current work remains on the active branch.
