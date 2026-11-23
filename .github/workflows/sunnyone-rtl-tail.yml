@@ -1,0 +1,39 @@
+name: SUNNYONE remaining RTL tail regressions
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'tests/test_rtl.py'
+      - 'rtl/**'
+      - 'opentpu/**'
+      - 'sim/verilator/**'
+      - '.github/workflows/sunnyone-rtl-tail.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rtl-tail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: Remaining non-experimental RTL/ISA regressions
+        run: >-
+          pytest -q tests/test_rtl.py
+          -k "random_power_up or mxu_reads_on_the_card_tmem or one_copy_two_writers or one_copy_two_writes_replays_make_progress or collective_reads_held_behind_dma_reads or act_reads_follow_the_mm_rows or lane_count_does_not_change_results or ldc_sequential_is_the_card_bist"
+      - name: Archive RTL tail regression log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-rtl-tail-log
+          path: /tmp/sunnyone-rtl-tail.log
+          if-no-files-found: ignore

@@ -116,3 +116,13 @@ Verified baseline remains 99 RTL/ISA tests + 1 AXI-Lite isolation test passed on
 - The logical architecture is defined; exact FPGA/SoC/ASIC, package, external memory, tile scale, clock, power and production implementation remain unselected.
 - The current CI run `45222828630` runs previously unselected RTL/ISA tests and board tests. The prior 100 distinct passing tests are not intentionally repeated. The full-chip lint and virtual-memory workflows are also being refreshed to retain complete logs as downloadable CI artifacts.
 - Remaining RTL functions found by name-level audit: `test_one_copy_tmem_of_128k_words`, `test_random_power_up`, `test_mxu_reads_on_the_card_tmem`, `test_one_copy_two_writers`, `test_one_copy_two_writes_replays_make_progress`, `test_collective_reads_held_behind_dma_reads`, `test_act_reads_follow_the_mm_rows`, `test_lane_count_does_not_change_results`, `test_ldc_sequential_is_the_card_bist`. `test_one_copy_tmem_of_128k_words` remains excluded pending the known TMEM implementation/elaboration investigation; the other eight require disposition and test execution.
+
+
+## 12. Virtual-memory regression result (2026-11-23)
+
+Run [45224358374](https://github.com/shamiursunny/openTPU/actions/runs/45224358374), commit `77a7b751b9c1f64da2d4484e41d417a70445f7b8`, completed successfully:
+- Behavioural DRAM testbench: PASS marker verified; covers A/SW/B/W, byte masks, tags, ordering, latency and idle.
+- Behavioural TMEM testbench: PASS marker verified; covers reset, read/write ordering, staged-write bypass, partial-lane writes, four-bank readback, overwrite, wrapped mapping and read hold.
+- Multi-port TMEM testbench: PASS marker verified; covers concurrent read/write ports, distinct-bank writes, broadcast copies and external same-bank grant enforcement.
+- Full logs archived as artifact [sunnyone-virtual-memory-logs](https://github.com/shamiursunny/openTPU/actions/runs/45224358374/artifacts/14841304152).
+- Non-fatal warnings observed: DRAM conditional width, unused `nread`, blocking assignments in testbench/behavioral model; TMEM filename/module-name and timescale mismatch, width expansion, unused signals, and blocking assignments. These are not treated as RTL correctness proof or silently suppressed; triage is pending.
