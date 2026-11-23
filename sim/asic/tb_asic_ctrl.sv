@@ -109,7 +109,8 @@ module tb_asic_ctrl;
     read_reg(12'h028,32'd1,2'b00);
     read_reg(12'h02c,32'd1,2'b00);
     read_reg(12'h030,32'd1,2'b00);
-    read_reg(12'h1c,32'b0,2'b11);
+    read_reg(12'h01c,32'b0,2'b00);
+    read_reg(12'h0fc,32'b0,2'b11);
     $display("PASS: ASIC AXI-Lite control, independent AW/W, gating, load pulse, reset, register map");
     $finish;
   end
