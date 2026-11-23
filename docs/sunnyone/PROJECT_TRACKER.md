@@ -439,3 +439,15 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Hardened .github/workflows/sunnyone-asic-config.yml with Bash pipefail so pytest failure cannot be masked by tee. Workflow change is committed; GitHub Actions run after this change has not yet been observed.
 - ASIC endpoint/PHY/DMA RTL, memory-controller arbitration, real ECC PHY, PCIe BFM, formal/CDC, WG8 PPA, process/package and physical signoff remain open.
 - Branch head at this checkpoint: a0caa468d7c6e40efe5c63411875b4941486f3b4. main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No purchases or paid IP/licences.
+
+## 50. Hardware-selection correction and 36-bit address regression (2026-11-24)
+
+- Corrected section 48's wording: **BCU1525/VU9P is the golden WG8 performance/simulation reference, not the approved physical prototype.** Its VU9P Vivado licence requirement conflicts with the user's zero-spend/no-paid-licence rule.
+- Preserved the prior technology decision: VC1802/VSVD1760 was the high-capacity feasibility lead; VC1902 only the higher-compute alternative. Both are blocked for physical work because the required Vivado PRO/Enterprise licence is not authorised. Earlier 128-GiB DDR4/ECC figures remain unvalidated proposals, not design facts.
+- ECP5-5G Versa (LFE5UM5G-45F-VERSA-EVN) is the small open-flow demonstrator candidate only: PCIe x1 edge, 64M x16 DDR3 (1-Gbit/128-MiB), ECP5-5G. Project Trellis/Yosys/nextpnr supports the board. The open katsuo.pcie stack is explicitly a Gen1 x1 proof of concept with incomplete LTSSM, retransmission and flow control; it is **not** a qualified DMA endpoint. It cannot host the WG8 design or validate the 32-GiB memory subsystem. No purchase authorised.
+- The separate Lattice ECP5 PCI Express Development Kit is discontinued. Do not use it as a procurement recommendation.
+- Added sim/asic/tb_asic_aw36.sv and test_wg8_asic_aw36_high_address_decode_rtl in tests/test_native_dram.py. It checks a 16-GiB byte address through the AW=36/NCH=8/CB=128 native adapter, observing the expected channel and 26-bit local beat address without allocating a 64-GiB model. CI run [45246583075](https://github.com/shamiursunny/openTPU/actions/runs/45246583075) is queued; no pass claimed.
+- Hardened ASIC config CI with pipefail; run [45246174940](https://github.com/shamiursunny/openTPU/actions/runs/45246174940) is queued. WG8 PPA 45245713055, integrated ASIC lint 45245713119 and WG8 subsystem run 45245713352 also remain queued.
+- PCIe Gen2 bridge simulation [45239360365](https://github.com/shamiursunny/openTPU/actions/runs/45239360365) remains PASS (six scenarios); it is not a full PCIe endpoint qualification.
+- WG8 remains the logical ASIC candidate. PCIe Gen3 x16 remains its compatibility interface target. The manufacturable ASIC process/package remains open until real PDK, SRAM macros, PCIe PHY, memory controller/ECC IP, physical PPA and commercial economics are available.
+- main remains unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5. No hardware purchase, paid licence, paid IP or cloud expenditure.
