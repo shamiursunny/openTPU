@@ -20,9 +20,9 @@ Host server + service runtime + network
           |
 PCIe or validated host interface [not selected]
           |
-RISC-V management/control plane [architecture requirement; RTL not integrated]
+Host control registers (AXI4-Lite over PCIe BAR; implemented)
           |
-Command, scheduling, telemetry, security and fault management
+Sequencer, host control/status registers, counters and trace
           |
 Defined interconnect / DMA arbitration [system integration not implemented]
           |
@@ -41,7 +41,7 @@ External-memory controller / PHY [platform-specific; not in ASIC block]
 External memory + ECC + board power / cooling / sensors
 ```
 
-The host server is the initial software/benchmark integration boundary. The on-chip RISC-V management plane remains a required architectural block but must not be represented as implemented: no CPU RTL, boot ROM, secure boot chain or SoC integration is present in the current openTPU compute block. A host-controlled prototype can validate the compute tile before that management subsystem is integrated.
+The current reference is a host-controlled accelerator, not a CPU-led SoC: `otpu_board` integrates one or more slices, collective logic and `otpu_ctrl`; the host reaches the AXI4-Lite control register map through the PCIe bridge BAR. `otpu_mem_ch` arbitrates host XDMA and accelerator-native traffic into each memory controller, while `otpu_axi_split2` routes XDMA traffic across two channels by address bit 31. The board top owns clock crossings. The existing YPCB-00338 reference uses two DDR3 channels of 64-byte beats; other boards have different controller/channel topologies. No on-chip RISC-V CPU, boot ROM or secure boot chain is part of this current reference architecture. Do not add one unless a measured product requirement justifies it.
 
 ## 3. Compute-tile baseline
 
@@ -69,16 +69,13 @@ Existing RTL provides the sequencer, MXU, VPU, quantisation, DMA/stream engine, 
 
 ## 5. Host, interconnect, control and security
 
-Required system contracts, not yet all implemented:
-1. Host command and data interface with versioned register/descriptor ABI.
-2. DMA descriptors with bounds checking, alignment rules, ownership, completion and timeout semantics.
-3. Arbitration/fairness between host transfers, model traffic and accelerator DMA; batch host writes to avoid destructive memory turnarounds.
-4. Clock-domain crossing and reset sequencing with explicit calibration-ready gating.
-5. Telemetry: cycles, useful work, memory traffic/stalls, queue depth, temperature, errors, ECC events, throttling and uptime.
-6. Watchdog, fail-safe stop, reset/recovery, error containment and diagnosable fault codes.
-7. Secure boot, signed firmware/bitstream, authenticated update, debug lockdown and tenant/memory isolation before any untrusted multi-tenant deployment.
+Implemented reference interfaces:
+- `otpu_ctrl`: AXI4-Lite host control/status register map v5, reached through the PCIe bridge BAR. It exposes RUN/LOAD, calibration gating, halt/error/timeout/ECC status, cycles, retired instructions, memory request/stall counters, capabilities, build ID, temperature and trace controls.
+- `otpu_mem_ch`: separate asynchronous command/data/read FIFOs for accelerator-native traffic and XDMA host traffic; channel arbiter; read credits/tags; per-master ordering and write batching.
+- `otpu_axi_split2`: two-channel XDMA address split using address bit 31, preserving each master transaction's response ordering.
+- `otpu_board`: slice/collective/control integration and board-level clock crossings. The YPCB-00338 reference uses two DDR3 channels with 64-byte beats; do not assume this topology transfers to another package or memory technology.
 
-Existing PCIe board control RTL is a reference for host control, not proof of a selected PCIe generation, SoC bus, secure boot or production security implementation.
+Qualification still required: exhaustive AXI protocol/backpressure/error tests; CDC/RDC analysis; reset and calibration-loss fault injection; starvation/fairness and queue-overflow tests; ECC uncorrectable-error recovery; memory-controller timeout handling; host-driver recovery; security review of PCIe BAR access, DMA address isolation, firmware/bitstream provenance and debug interfaces. The current register map and board logic do not establish production secure boot, tenant isolation or a complete security architecture. Do not introduce an on-chip RISC-V management CPU by assumption; the existing host-controlled sequencer/control design is the baseline.
 
 ## 6. Software and model support
 
