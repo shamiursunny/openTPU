@@ -20,6 +20,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y iverilog
       - name: Compile and run control-wrapper testbench
         run: |
+          set -o pipefail
           iverilog -g2012 -Wall -s tb_asic_ctrl -o /tmp/tb_asic_ctrl rtl/asic/otpu_asic_ctrl.sv sim/asic/tb_asic_ctrl.sv
           vvp /tmp/tb_asic_ctrl | tee /tmp/sunnyone-asic-ctrl.log
           grep -F 'PASS: ASIC AXI-Lite control' /tmp/sunnyone-asic-ctrl.log
