@@ -6,6 +6,8 @@ module otpu_asic_ctrl #(
   parameter int TMEM_WORDS=65536, IMEM_WORDS=32768,
   parameter int MXU_IMPL=2, TMEM_IMPL=3, VPU_CL=2, ULANES=8,
   parameter bit HAS_DSTEP=1'b1, SEQ_WC=1'b1, ICACHE=1'b0,
+  parameter bit HOSTCAL=1'b0, CHASH=1'b0, PAIR=1'b1, HAS_TEMP=1'b0, HAS_I2C=1'b0,
+  parameter int PQ_WIN=1024, TRACE_DEPTH=0,
   parameter int CORE_KHZ=0, DDR_MTS=0, PLATFORM=256,
   parameter logic [31:0] BUILD_ID=32'b0, ARCH_HASH=32'b0
 ) (
@@ -41,8 +43,14 @@ module otpu_asic_ctrl #(
   localparam logic [31:0] ID_VALUE = 32'h4f545055;
   localparam logic [31:0] VERSION_VALUE = {D[15:0], MCOLS[7:0], LANES[7:0]};
   localparam logic [31:0] REGMAP_VALUE = 32'd5;
-  localparam logic [31:0] CAPS_VALUE = 32'h02000000 |
-      (HAS_DSTEP ? 32'h84000040 : 32'b0);
+  localparam logic [7:0] PQ_LOG2 = $clog2(PQ_WIN);
+  localparam logic [7:0] TRACE_LOG2 = TRACE_DEPTH != 0 ? $clog2(TRACE_DEPTH) : 8'd0;
+  localparam logic [31:0] CAPS_VALUE = {
+    1'b1, 1'b1, 1'b1, 1'b0, HOSTCAL, HAS_DSTEP, 2'd3,
+    PQ_LOG2, TRACE_LOG2, CHASH, HAS_DSTEP, PAIR, 1'b1,
+    (DDR_MTS != 0), HAS_I2C, HAS_TEMP, (TRACE_DEPTH != 0)
+  };
+  localparam logic [31:0] CAPS2_VALUE = ICACHE ? 32'h00001000 : 32'b0;
   localparam logic [31:0] CFG_UARCH_VALUE =
       {3'b0, ICACHE, 3'b0, SEQ_WC, ULANES[7:0], VPU_CL[7:0],
        TMEM_IMPL[3:0], MXU_IMPL[3:0]};
@@ -109,6 +117,7 @@ module otpu_asic_ctrl #(
       12'h048: read_mux = BUILD_ID;
       12'h054: read_mux = DDR_MTS;
       12'h058: read_mux = ACT_ROWS;
+      12'h05c: read_mux = CAPS2_VALUE;
       12'h080: read_mux = 32'd1;
       12'h084: read_mux = TMEM_WORDS;
       12'h088: read_mux = IMEM_WORDS;
