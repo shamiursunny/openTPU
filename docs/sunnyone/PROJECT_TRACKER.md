@@ -153,3 +153,9 @@ Warnings remain and are not suppressed as proven safe:
 - 7 `LATCH`: block-local temporaries in combinational logic at `rtl/seq/otpu_seq.sv:1153,1820`; inspect whether these are harmless local temporaries or actual inferred state.
 - 3 `UNOPTFLAT`: combinational paths through `otpu_slice.gnt`, `otpu_top.sc_gl` and `otpu_tmem.pq`; require structural review.
 Lint success with `-Wno-fatal` is not formal proof or timing closure.
+
+
+## 16. Experimental 128K one-copy TMEM isolation
+
+- Added a dedicated CI job for `test_one_copy_tmem_of_128k_words`, separate from the ordinary regression suite. This test remains experimental because prior Verilator elaboration produced an internal tool error; the isolated rerun will distinguish a reproducible tool failure from an RTL/testbench issue.
+- Do not interpret a Verilator internal error as a functional RTL mismatch. Capture exact tool version, compile command and error log.

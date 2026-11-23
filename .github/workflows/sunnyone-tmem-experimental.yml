@@ -1,0 +1,31 @@
+name: SUNNYONE isolated 128K one-copy TMEM investigation
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'tests/test_rtl.py'
+      - 'rtl/mem/otpu_tmem.sv'
+      - 'rtl/top/otpu_slice.sv'
+      - 'rtl/exp/tmem_nocopy/**'
+      - 'sim/verilator/**'
+      - '.github/workflows/sunnyone-tmem-experimental.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  one-copy-128k-isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: Isolated experimental 128K one-copy TMEM test
+        run: pytest -q tests/test_rtl.py -k one_copy_tmem_of_128k_words
