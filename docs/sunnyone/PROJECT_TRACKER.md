@@ -612,3 +612,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Latest focused mux run `45266097205` targets earlier testbench SHA `e53ad53287c56444e9f4306e78dfe83e110a0486`; it remains queued with job `138013284212`, no runner and no logs. Earlier mux runs `45265993286`, `45264350657`, `45263309565` and `45256841999` are also queued. The four broad runs `45266097228`, `45266097338`, `45266097275` and the focused mux run have no conclusions; all were queued at inspection.
 - The correction will trigger a new focused mux workflow on the updated testbench SHA. Inspect that run's exact SHA, compilation output and full simulation log before accepting the bench. No test pass is claimed.
 - Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; zero paid resources used. Multi-beat, fairness, partial-strobe memory effects, boundary/negative tests, reset with outstanding traffic and four-DIMM wrapper qualification remain open.
+
+
+## 69. Corrected host B checker has a dedicated queued Actions run (2026-11-24)
+
+- The host B-response checker correction in testbench commit `1ec347a8f093052582746d07df0269b8f03b6809` triggered focused workflow run [45266612413](https://github.com/shamiursunny/openTPU/actions/runs/45266612413), job `hmux-sim` (`138015075353`). Exact tested SHA matches the corrected testbench commit. At inspection, run and job were still queued; no runner, logs, compilation or simulation result is available.
+- Earlier focused run `45266097205` (SHA `e53ad53287c56444e9f4306e78dfe83e110a0486`) and prior runs remain queued. No pass is claimed. The tracker-only commit does not match the focused workflow's path filter and does not create another mux simulation run.
+- Static review confirms the workflow compiles the required three RTL source files and the dedicated testbench, then executes `obj_dir/Vtb_hmux`; executable correctness remains unverified until the job runs.
+- Feature branch only; main unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`; zero paid resources used.
