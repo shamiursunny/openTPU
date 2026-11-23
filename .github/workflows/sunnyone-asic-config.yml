@@ -11,6 +11,7 @@ on:
       - 'opentpu/target.py'
       - 'targets/**'
       - 'rtl/asic/**'
+      - 'rtl/mem/otpu_native_dram.sv'
       - '.github/workflows/sunnyone-asic-config.yml'
   workflow_dispatch:
 permissions:
@@ -43,12 +44,30 @@ jobs:
           sys.path.insert(0, "tools/asic")
           import flow
           sources = [str(p) for p in flow.sources("card")]
-          sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv"]
+          sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv",
+                      "rtl/mem/otpu_native_dram.sv", "rtl/asic/otpu_asic_mem_top.sv"]
           cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal",
                  "--top-module", "otpu_asic_chip_top", *sources]
           with open("/tmp/sunnyone-asic-chip-lint.log", "w") as log:
               result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
           print(open("/tmp/sunnyone-asic-chip-lint.log").read()[-12000:])
+          raise SystemExit(result.returncode)
+          PY
+      - name: Lint integrated WG8 native-memory top
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          import subprocess, sys
+          sys.path.insert(0, "tools/asic")
+          import flow
+          sources = [str(p) for p in flow.sources("nangate45-wg8")]
+          sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv",
+                      "rtl/mem/otpu_native_dram.sv", "rtl/asic/otpu_asic_mem_top.sv"]
+          cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal",
+                 "--top-module", "otpu_asic_mem_top", *sources]
+          with open("/tmp/sunnyone-asic-mem-lint.log", "w") as log:
+              result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
+          print(open("/tmp/sunnyone-asic-mem-lint.log").read()[-16000:])
           raise SystemExit(result.returncode)
           PY
       - name: Archive configuration test log
@@ -59,4 +78,5 @@ jobs:
           path: |
             /tmp/sunnyone-asic-config.log
             /tmp/sunnyone-asic-chip-lint.log
+            /tmp/sunnyone-asic-mem-lint.log
           if-no-files-found: ignore
