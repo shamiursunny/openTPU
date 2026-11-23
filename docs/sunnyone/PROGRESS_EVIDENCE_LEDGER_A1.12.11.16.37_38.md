@@ -36,7 +36,7 @@ Pinned upstream reference unchanged: FeSens/openTPU d84db55712aba0d40811d7762cb0
 - No actual costs, customer contracts, break-even, profit or payback calculation.
 
 ## Current design decision
-Programmable host-controlled accelerator architecture direction remains selected provisionally: host-server control/runtime, on-chip sequencer and AXI4-Lite control, tiled matrix engine, vector/SIMD, local SRAM, DMA, defined interconnect and ECC external memory. No on-chip RISC-V CPU or boot ROM is selected for the first version. Exact chip/FPGA/SoC part and production ASIC are NOT SELECTED. No production readiness claim.
+Programmable host-controlled accelerator architecture direction remains selected provisionally: host-server control/runtime, on-chip sequencer, the board reference's `otpu_ctrl` AXI4-Lite control block (ASIC integration pending), tiled matrix engine, vector/SIMD, local SRAM, DMA, defined interconnect and ECC external memory. No on-chip RISC-V CPU or boot ROM is selected for the first version. Exact chip/FPGA/SoC part and production ASIC are NOT SELECTED. No production readiness claim.
 
 ## A1.12.11.16.39 — Versal device/memory down-select
 - Lead feasibility candidate: AMD Versal AI Core VC1802 / VSVD1760.
