@@ -31,7 +31,8 @@ module otpu_asic_mem_top
   parameter bit HAS_TEMP=1'b0, HAS_I2C=1'b0,
   parameter int TRACE_DEPTH=0, CORE_KHZ=0, DDR_MTS=0, PLATFORM=256,
   parameter logic [31:0] BUILD_ID=32'b0, ARCH_HASH=32'b0,
-  parameter int APF=32, AD=64, RD=256/NCH, XD=64, QD=16, WQD=32
+  parameter int APF=32, AD=64, RD=256/NCH, XD=64, QD=16, WQD=32,
+  parameter int XSW=$clog2(FIFO_DEPTH), PCW=XSW+2, WFW=6
 ) (
   input logic clk, rst,
   input logic [1:0] mem_calib,
@@ -62,7 +63,7 @@ module otpu_asic_mem_top
   output logic [NCH-1:0] n_cwe,
   output logic [NCH-1:0][AW-1-$clog2(NCH*CB):0] n_caddr,
   output logic [NCH-1:0][1:0] n_csrc,
-  output logic [NCH-1:0][8:0] n_cslot,
+  output logic [NCH-1:0][XSW-1:0] n_cslot,
   output logic [NCH-1:0] n_wvalid,
   input logic [NCH-1:0] n_wready,
   output logic [NCH-1:0][CB*8-1:0] n_wdata,
@@ -74,7 +75,7 @@ module otpu_asic_mem_top
   output logic ld_busy, halted, error, wait_to,
   output logic [31:0] icount
 );
-  logic a_rdy, a_req, a_we, a_rvalid, sw_rdy, sw_req, b_rdy, b_req, b_tag, b_we;
+  logic a_rdy, a_req, a_we, a_rvalid, sw_rdy, sw_req, b_rdy, b_req, b_tag, b_we, a_inval;
   logic wr_idle, rd_idle, a_inval, pw_rdy, pw_req, pw_one;
   logic [WA-1:0] a_addr, sw_addr, b_addr, pw_addr;
   logic [31:0] a_wdata;
@@ -126,14 +127,14 @@ module otpu_asic_mem_top
     .b_req, .b_tag, .b_we, .b_wmask, .b_wdata, .b_addr, .b_par,
     .b_rvalid, .b_rtag, .b_rdata,
     .pw_rdy, .pw_req, .pw_addr, .pw_bv, .pw_bd, .pw_slot, .pw_one,
-    .ld_busy, .halted, .error, .wait_to, .a_inval(), .icount
+    .ld_busy, .halted, .error, .wait_to, .a_inval(a_inval), .icount
   );
 
   otpu_native_dram #(
     .D(D), .NCH(NCH), .CB(CB), .CHASH(CHASH), .SW_FILL(1'b1), .AB(AB),
     .AW(AW), .WA(WA), .SWW(QUANT_SWW), .XPOST(1'b0), .WPOST(1'b0),
     .SWG(1'b0), .RHB(1'b0), .WHB(1'b0), .APF(APF), .AD(AD), .RD(RD), .XD(XD),
-    .QD(QD), .WQD(WQD)
+    .QD(QD), .WQD(WQD), .XSW(XSW), .PCW(PCW), .WFW(WFW)
   ) u_mem (
     .clk, .rst, .a_flush(a_inval),
     .a_rdy_x(a_rdy), .a_req_x(a_req), .a_we_x(a_we), .a_addr_x(a_addr),
