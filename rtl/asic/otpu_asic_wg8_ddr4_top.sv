@@ -104,6 +104,27 @@ module otpu_asic_wg8_ddr4_top #(
   logic [7:0][3:0] ch_arlen;
   logic [7:0][1:0] ch_bresp, ch_rresp;
   logic [3:0][1:0] pair_bresp;
+  logic [3:0] dimm_rst_sync;
+  logic [7:0] bridge_arst;
+
+  // Reset crosses from the control domain into aclk: synchronise per DIMM, then
+  // release each bridge one aclk later than its pair, matching the proven BCU topology.
+  for (genvar d = 0; d < 4; d++) begin : g_reset_sync
+    (* ASYNC_REG = "TRUE" *) logic [1:0] rsync;
+    always_ff @(posedge aclk or posedge rst) begin
+      if (rst) rsync <= 2'b11;
+      else rsync <= {rsync[0], mem_reset[d]};
+    end
+    assign dimm_rst_sync[d] = rsync[1];
+  end
+  for (genvar ch = 0; ch < NCH; ch++) begin : g_bridge_reset
+    logic bridge_rst_q;
+    always_ff @(posedge aclk or posedge rst) begin
+      if (rst) bridge_rst_q <= 1'b1;
+      else bridge_rst_q <= dimm_rst_sync[ch/2];
+    end
+    assign bridge_arst[ch] = bridge_rst_q;
+  end
 
   initial begin
     if (AW != 36 || NCH != 8 || CB != 128 || CAW != 26 || FIFO_DEPTH < 2)
@@ -155,7 +176,7 @@ module otpu_asic_wg8_ddr4_top #(
       .n_rvalid(n_rvalid[ch]), .n_rdata(n_rdata[ch]), .n_wdone(n_wdone[ch]),
       .n_err(n_err[ch]),
       .p_we(), .p_q(), .p_slot(), .p_d(), .p_cntg(),
-      .aclk, .arst(mem_reset[ch/2]), .mwait(6'(MWAIT)),
+      .aclk, .arst(bridge_arst[ch]), .mwait(6'(MWAIT)),
       .m_awvalid(ch_awvalid[ch]), .m_awready(ch_awready[ch]),
       .m_awaddr(ch_awaddr[ch]), .m_awlen(ch_awlen[ch]),
       .m_wvalid(ch_wvalid[ch]), .m_wready(ch_wready[ch]),
@@ -171,7 +192,7 @@ module otpu_asic_wg8_ddr4_top #(
 
   for (genvar d = 0; d < 4; d++) begin : g_dimm
     otpu_mig_pair #(.IDW(4), .RD(32), .CL(CL), .NC(2), .BHW(0), .WOC(1), .RS(1'b0)) u_pair (
-      .clk(aclk), .rst(mem_reset[d]),
+      .clk(aclk), .rst(dimm_rst_sync[d]),
       .s_awvalid(ch_awvalid[2*d +: 2]), .s_awready(ch_awready[2*d +: 2]),
       .s_awaddr(ch_awaddr[2*d +: 2]), .s_awlen(ch_awlen[2*d +: 2]),
       .s_wvalid(ch_wvalid[2*d +: 2]), .s_wready(ch_wready[2*d +: 2]),
