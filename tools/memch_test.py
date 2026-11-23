@@ -365,6 +365,13 @@ def main(argv: list[str]) -> int:
         suites = ["func", "perf", "mut"]
     ok = True
     jobs = []                                   # (label, exe, log, args)
+    if "pcie" in suites:
+        # PCIe Gen2 x8's XDMA-side contract: 250 MHz xclk, 133.33 MHz core/controller,
+        # registered AXI split, two channel bridges, burst ordering, resets and CDC skew.
+        exe = build("xreg", BUILDS["xreg"])
+        for s in ["gen2xres", "gen2part", "gen2full", "gen2deep128", "gen2skewx", "xresetshortsh"]:
+            jobs.append((f"pcie-gen2 {s}", exe, OUT / "xreg" / f"pcie-{s}.log",
+                         SCEN[s] + FBASE))
     if "quick" in suites:
         exe = build("ldn", BUILDS["ldn"])
         jobs.append(("ldn default", exe, OUT / "ldn" / "default.log", SCEN["default"]))
