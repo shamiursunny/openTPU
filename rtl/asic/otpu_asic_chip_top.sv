@@ -14,7 +14,9 @@ module otpu_asic_chip_top
   parameter int TMEM_PMP=0, TMEM_PRK=0, TMEM_SDM=-1,
   parameter bit SEQ_WC=1'b1, ICACHE=1'b0,
   parameter int IC_LINES=16, IC_PF=2,
-  parameter bit COLL_GATHER=1'b0
+  parameter bit COLL_GATHER=1'b0,
+  parameter int CORE_KHZ=0, DDR_MTS=0, PLATFORM=256,
+  parameter logic [31:0] BUILD_ID=32'b0, ARCH_HASH=32'b0
 ) (
   input logic clk,
   input logic rst,
@@ -69,7 +71,13 @@ module otpu_asic_chip_top
   logic [31:0] ld_addr, ld_n;
   logic [7:0][31:0] rinit;
 
-  otpu_asic_ctrl #(.D(D), .MCOLS(MCOLS), .LANES(LANES)) u_ctrl (
+  otpu_asic_ctrl #(
+    .D(D), .MCOLS(MCOLS), .LANES(LANES), .ACT_BLOCKS(ACT_BLOCKS), .ACT_ROWS(ACT_ROWS),
+    .TMEM_WORDS(TMEM_WORDS), .IMEM_WORDS(IMEM_WORDS), .MXU_IMPL(MXU_IMPL),
+    .TMEM_IMPL(TMEM_IMPL), .VPU_CL(VPU_CL), .ULANES(ULANES), .HAS_DSTEP(HAS_DSTEP),
+    .SEQ_WC(SEQ_WC), .ICACHE(ICACHE), .CORE_KHZ(CORE_KHZ), .DDR_MTS(DDR_MTS),
+    .PLATFORM(PLATFORM), .BUILD_ID(BUILD_ID), .ARCH_HASH(ARCH_HASH)
+  ) u_ctrl (
     .clk, .rst, .mem_calib, .mem_error, .ecc_ded, .halted, .core_error(error),
     .ld_busy, .wr_idle, .wait_to, .a_inval, .icount,
     .a_req, .a_rdy, .b_req, .b_rdy, .b_we, .sw_req, .sw_rdy,
