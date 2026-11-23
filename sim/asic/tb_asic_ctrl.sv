@@ -101,6 +101,10 @@ module tb_asic_ctrl;
     write_reg(12'h008,32'h3,1,2'b10); // RUN + LOAD must be rejected atomically
     if (load_count != 0 || !run_rst) $fatal(1,"invalid CTRL command had side effects");
     write_reg(12'h008,32'h4,0,2'b00);
+    wr_idle=0;
+    write_reg(12'h008,32'h2,1,2'b10); // LOAD waits for accepted writes to drain
+    if (load_count != 0 || !run_rst) $fatal(1,"LOAD escaped write-drain gate");
+    wr_idle=1;
     write_reg(12'h008,32'h2,1,2'b00);
     if (load_count != 1 || !run_rst) $fatal(1,"LOAD pulse or stopped-state contract count=%0d",load_count);
     read_reg(12'h00c,32'h0000006c,2'b00); // LOADING remains set until busy is observed and drained
