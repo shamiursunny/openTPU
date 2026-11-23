@@ -120,11 +120,13 @@ module tb_hmux;
         m_rresp<=0; m_rlast<=1; m_rvalid<=1; ar_rp<=ar_rp+1; reads<=reads+1;
       end else if(m_rvalid && m_rready) m_rvalid<=0;
       if(p_rvalid && p_rready) begin
-        if(p_rid!=4'h2) $fatal(1,"pair RID mismatch: %h",p_rid);
+        if(p_rid!=4'h2 || p_rdata !== ({8{64'h0123456789abcdef}} ^ 512'd1))
+          $fatal(1,"pair R ID/data mismatch: %h",p_rid);
         pair_r<=pair_r+1;
       end
       if(h_rvalid && h_rready) begin
-        if(m_rid!=4'h4) $fatal(1,"host RID mismatch: %h",m_rid);
+        if(h_rdata !== {8{64'h0123456789abcdef}})
+          $fatal(1,"host R data mismatch");
         host_r<=host_r+1;
       end
     end
