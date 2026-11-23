@@ -295,3 +295,8 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Verilator 5.044 rerun [45232660602](https://github.com/shamiursunny/openTPU/actions/runs/45232660602), commit `f85595c02a4e8a2948d1fc4fe146ef3fd0ba6dec`: build job was still compiling at last poll after the `libfl-dev` dependency correction; no RTL matrix result yet.
 - Board-functional, subsystem, RTL-tail and software-core jobs on commit `a2ce7d9...` remain in progress. Their exact test totals are pending logs.
 - Branch head now includes the archived-PPA evidence correction and tracker update; main remains at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+
+
+## 35. Python packaging metadata maintenance (2026-11-23)
+
+- Changed `pyproject.toml` from deprecated table-form `license = { text = "Apache-2.0" }` to the SPDX string `license = "Apache-2.0"` (commit `411f7d38b149c7cccd73471a40d599670cc62e66`). This addresses the setuptools deprecation warning observed in CI; it does not change runtime behavior. The resulting package-install and test runs are pending.
