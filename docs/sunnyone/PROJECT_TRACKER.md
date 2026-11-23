@@ -354,3 +354,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Corrected run 45239360365 was queued at the last poll; no test result yet. Six Gen2 cases remain unqualified until this run completes.
 - Other outstanding runs 45235689166, 45235689172, 45235689174 and 45235689146 were still in progress at the last poll. Earlier same-branch evidence remains: full-chip lint passed after sequencer temporary initialisation; reset audit and RTL-tail tests passed on their respective commits; virtual DRAM and isolated 128K TMEM tests passed.
 - Architecture limitation unchanged: BCU1525/VU9P is the primary high-performance FPGA validation target, not the final ASIC. Current ASIC boundary still lacks PCIe/BAR, complete host-control integration, external memory controller/PHY, and complete chip-level reset/clock/security wrapper. Exact foundry process, package, ECC memory platform and commercial BOM remain unselected. No production/tapeout claim.
+
+
+## 42. ASIC chip-level integration contract (2026-11-24)
+
+- Added `docs/sunnyone/SUNNYONE_AI-X_CHIP_INTEGRATION_CONTRACT_A1.12.11.16.45.md`. It freezes the logical compute candidate at the existing Nangate45 `card` parameters (D128, MCOLS4, LANES8, MXU systolic, 64K TMEM, 32K IMEM, single slice) while explicitly retaining Nangate45 as a research proxy, not a manufacturable node.
+- Defined required chip blocks and interfaces: PCIe endpoint/hard IP, AXI4-Lite BAR, AXI4 DMA, DMA-to-A/SW/B memory adapter, compute core, external memory controller/PHY with ECC/calibration, clock/reset/power manager, DFT/security.
+- Specified run/load gating, register compatibility, reset/CDC behaviour, memory error semantics, DMA bounds and release gates. This is an integration contract, not implemented RTL; control wrapper, DMA adapter, PCIe IP, memory PHY and full-chip verification remain open.
+- Primary performance validation board remains BCU1525/VU9P; YPCB-00338 remains the secondary PCIe Gen2 bridge reference. Dedicated PCIe Gen2 CI is pinned to Verilator 5.044 after the first Verilator 5.020 testbench compile failure; corrected run 45239360365 was still queued at last poll. Do not claim a pass.
+- Outstanding CI runs 45235689166, 45235689172, 45235689174 and 45235689146 remain in progress at last poll; no results inferred.
+- main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No hardware purchase or paid licence.
