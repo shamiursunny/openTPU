@@ -4,7 +4,7 @@ Last updated: 2026-11-23 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest verified code baseline before this tracker commit: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`.
+Latest RTL/test baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Latest tracker commit before this update: `f9c3abb6e74b3294ef450a415635edd221a171d9`.
 
 ## 1. Product objective and decision rule
 
@@ -22,7 +22,7 @@ Zero-spend by default. No paid service, hardware purchase, or other expenditure 
 - Expanded RTL-versus-ISA tests.
 - AXI-Lite isolation reset regression (`pytest -q tests/test_axil_iso.py`).
 
-Setup, checkout, Python, Verilator, and dependency installation also succeeded. Exact test counts/log details have not yet been extracted; do not invent them. The prior run `45199414779` failed during collection because a module-level optional PyTorch skip prevented the dedicated AXI-Lite test from running; the test was isolated in `tests/test_axil_iso.py` to remove that dependency coupling.
+Exact log results: `tests/test_rtl.py` selection — **99 passed, 118 deselected** in 2037.95 s (0:33:57); `tests/test_axil_iso.py` — **1 passed** in 8.90 s. Total observed: 100 passed, 118 deselected across the two commands. Environment: Python 3.12.16, Verilator 5.032, Ubuntu 26.04 runner. Setup, checkout, Python, Verilator, and dependency installation succeeded. Warnings: Python packaging metadata deprecates the `project.license` TOML table (stated deadline 2027-02-18); GitHub warns checkout@v4/setup-python@v5 are targeting deprecated Node.js 20 and being forced to Node.js 24. No test failure or RTL warning appears in the captured job log. These are maintenance warnings, not evidence of functional failure. The prior run `45199414779` failed during collection because a module-level optional PyTorch skip prevented the dedicated AXI-Lite test from running; the test was isolated in `tests/test_axil_iso.py` to remove that dependency coupling.
 
 ## 3. Recent implementation / evidence
 
@@ -34,9 +34,9 @@ Setup, checkout, Python, Verilator, and dependency installation also succeeded. 
 
 ## 4. Immediate next actions
 
-1. Retrieve and inspect CI logs for run `45209168224`; record exact pass counts, test names, and any warnings. Preserve the distinction between workflow success and test coverage.
-2. Record the resulting tracker-update commit SHA and confirm branch head; never write to `main`.
-3. Expand RTL/ISA and fault/backpressure/reset regression coverage, prioritising reproducible tests and mutation checks.
+1. CI log audit completed: 99 RTL/ISA tests passed; 118 deselected; isolated AXI-Lite test passed (1). Warnings recorded above.
+2. Expand RTL/ISA and fault/backpressure/reset regression coverage, prioritising reproducible tests and mutation checks.
+3. Resolve or track the packaging license-metadata and GitHub action Node-runtime deprecation warnings; do not mix maintenance changes into functional RTL fixes.
 4. Run formal checks and full lint; classify warnings and unresolved findings rather than treating lint success as functional proof.
 5. Establish a reproducible Nangate45 research PPA flow and archive exact tool versions, constraints, scripts, and outputs. Treat it only as a research proxy, not commercial silicon validation.
 6. Build workload/trace and benchmark harnesses. Measure useful throughput, latency, memory bandwidth/utilisation, reliability, energy and full-system power on actual target hardware when available.
@@ -94,5 +94,5 @@ After every completed engineering stage or material decision:
 
 ## 9. Current next milestone
 
-**A1.12.11.16.35 — CI log audit and regression evidence capture.**
-Exit criteria: logs inspected; exact test outcomes/counts and warnings recorded; tracker updated with verified evidence; active branch and latest CI state confirmed.
+**A1.12.11.16.36 — Expanded regression coverage and mutation/fault-path audit.**
+Previous milestone A1.12.11.16.35 is complete: CI logs inspected; exact outcomes/counts and warnings recorded. Branch head was verified at `f9c3abb6e74b3294ef450a415635edd221a171d9` immediately before this tracker update. Run 45209168224 remains the verified passing CI evidence for RTL baseline `24b6780...`.
