@@ -406,3 +406,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The YPCB Gen2 XDMA bridge six-case simulation remains PASS (45239360365), but its two-channel/64-byte contract does not qualify the WG8 eight-channel/128-byte W-port interface. A dedicated WG8 memory-adapter simulation is still required.
 - V1 logical memory target is 32 GiB; 128 GiB is not selected. PCIe endpoint/hard IP, host DMA, 8-channel memory adapter/controller/PHY/ECC, DFT, foundry PDK, package, full PPA, CDC/RDC and physical validation remain open.
 - main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5. No paid resources or hardware purchases.
+
+
+## 47. WG8 native-memory subsystem integration (2026-11-24)
+
+- Added rtl/asic/otpu_asic_mem_top.sv: composes the WG8 ASIC control/compute top with rtl/mem/otpu_native_dram.sv and exposes eight native 128-byte memory-controller channels. Address width AW36, per-channel command address 26 bits, XSW=11 (matches FIFO_DEPTH2048), PCW=13, WFW6. ASIC mode uses SW_FILL=1, WPOST=0, SWG=0, XPOST=0, RHB=0 and WHB=0; native queues start from BCU WG8's APF8/AD16/RD16, XD64, QD16, WQD32. Calibration is aggregated into two v5 status groups; errors/DED are aggregated and synchronized.
+- The controller boundary is synchronous to core clk and must return reads in per-channel command order, increment n_wdone for accepted writes, support byte-mask writes with ECC correctness, and provide two aggregate calibration bits. This is not a DDR PHY/controller implementation.
+- Added CI lint for the integrated native-memory top in .github/workflows/sunnyone-asic-config.yml (run [45245142303](https://github.com/shamiursunny/openTPU/actions/runs/45245142303), queued at last poll).
+- Added tests/test_native_dram.py ASIC-mode regression: 8 channels × 128-byte beats, AB128, APF8/AD16/RD16, SW_FILL1, no FPGA-only WPOST/XPOST/SWG. It checks randomized A/SW/B/W traffic and scalar partial-write merge against the native memory model. The subsystem run [45245112317](https://github.com/shamiursunny/openTPU/actions/runs/45245112317) was queued before this new case was added; the new case still needs a fresh CI result.
+- WG8 PPA run [45245112312](https://github.com/shamiursunny/openTPU/actions/runs/45245112312) remains queued. No WG8 PPA or physical-board result is claimed. PCIe endpoint/DMA, actual ECC controller/PHY, DFT and physical signoff remain open.
+- main remains unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5.
