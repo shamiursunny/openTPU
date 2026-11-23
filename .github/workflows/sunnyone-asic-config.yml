@@ -56,5 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sunnyone-asic-config-log
-          path: /tmp/sunnyone-asic-config.log
+          path: |
+            /tmp/sunnyone-asic-config.log
+            /tmp/sunnyone-asic-chip-lint.log
           if-no-files-found: ignore
