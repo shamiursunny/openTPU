@@ -4,6 +4,7 @@ through the native memory model, against a reference memory, at the cards' chann
 two in between; and port W's rate on its own. Also through otpu_xstg's register stages between
 the traffic and the adapter (tb_ndram XSTG: otpu_board NAT_XSTG)."""
 import re
+from pathlib import Path
 
 import pytest
 
@@ -374,3 +375,16 @@ def test_port_b_goes_before_w_rtl(have_verilator, wstream):
     assert reads / cycles >= 0.95, out[-500:]
     if wstream:
         assert wr / cycles >= 0.5, out[-500:]
+
+
+
+def test_wg8_asic_aw36_high_address_decode_rtl(have_verilator):
+    """A 16-GiB byte address must retain its high bits through the 36-bit ASIC memory adapter.
+    The small testbench observes the native command directly, avoiding a 64-GiB simulation array."""
+    src = [rtlsim.RTL / "tech/generic/otpu_tech_ram.sv",
+           rtlsim.RTL / "mem/otpu_native_dram.sv",
+           Path(__file__).resolve().parents[1] / "sim/asic/tb_asic_aw36.sv"]
+    exe = rtlsim.build("tb_asic_aw36", src, {})
+    r = rtlsim.run_sim([str(exe)], timeout=180)
+    out = r.stdout + r.stderr
+    assert "PASS: 16-GiB byte address retained" in out, out[-2500:]
