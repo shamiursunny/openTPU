@@ -2603,9 +2603,12 @@ module otpu_mxu
       if (mxm[k] != (32'(mx_i) + 32'(k) < 32'(c_M)))
         $fatal(1, "otpu_mxu: RMAX lane %0d: mxm %0d, mx_i %0d, M %0d", k, mxm[k], mx_i, c_M);
   always @(posedge clk) if (!rst && rst_seen && mx_go)
-    for (int k = 0; k < LANES; k++)
+    for (int k = 0; k < LANES; k++) begin
+      if (mxm[k] && !mx_have[MW'(32'(mx_i) + 32'(k))])
+        $fatal(1, "otpu_mxu: RMAX lane %0d uses an uninitialised key (mx_i %0d)", k, mx_i);
       if (mxl[k] != h.mxo + 32'(mx_i) + 32'(k))
         $fatal(1, "otpu_mxu: RMAX lane %0d address %0h, mxo %0h, mx_i %0d", k, mxl[k], h.mxo, mx_i);
+    end
 `endif
 
   // TMEM's input stage (release r2, docs/tmem_nocopy.md 7): the read request is a register
