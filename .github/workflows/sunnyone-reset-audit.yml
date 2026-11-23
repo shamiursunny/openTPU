@@ -1,0 +1,39 @@
+name: SUNNYONE reset and power-up synthesis audit
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'tools/reset_audit.py'
+      - 'tests/test_reset_audit.py'
+      - 'rtl/**'
+      - 'targets/**'
+      - '.github/workflows/sunnyone-reset-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reset-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: Download pinned OSS CAD Suite with checksum verification
+        run: |
+          curl -fL --retry 3 -o /tmp/oss-cad-suite.tgz https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-11-23/oss-cad-suite-linux-x64-20261123.tgz
+          echo "c01d93f2f9091ba7eeb18540334fa0aaefa843b343cbdd627fd7669391de47ba  /tmp/oss-cad-suite.tgz" | sha256sum -c -
+          mkdir -p /opt/oss-cad-suite
+          tar -xzf /tmp/oss-cad-suite.tgz -C /opt
+          test -x /opt/oss-cad-suite/bin/yosys
+      - name: Verify Yosys slang frontend
+        run: /opt/oss-cad-suite/bin/yosys -m slang -q -p 'help read_slang'
+      - name: Run power-up/reset audit
+        env:
+          YOSYS: /opt/oss-cad-suite/bin/yosys
+        run: pytest -q tests/test_reset_audit.py

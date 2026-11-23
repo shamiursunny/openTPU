@@ -177,3 +177,9 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 
 - Added exact `otpu_asic_top` run/load/status and A/SW/B memory-port widths to the reference chip specification. At D=128, port B's chunk is 1,024 bits with a 32-bit byte-lane mask; this is not a DDR beat width.
 - Chip wrapper, PCIe/host interface and external memory-controller integration remain open.
+
+
+## 20. Dedicated synthesis-based reset audit
+
+- Added a dedicated workflow using a pinned OSS CAD Suite release (2026-11-23) with SHA-256 verification. It installs the Yosys slang frontend and runs `tests/test_reset_audit.py` rather than silently skipping it in the ordinary Verilator-only job.
+- This is a synthesis-based reset-state audit, not a formal proof of the entire chip.
