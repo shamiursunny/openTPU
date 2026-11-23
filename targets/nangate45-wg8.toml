@@ -52,6 +52,8 @@ MXU_QD = 4
 SE_R = 2
 DMA_DEPTH = 512
 DMA_LDQ = 1
+QUANT_R1 = true
+QUANT_PW = 2
 COLL_GATHER = false
 
 [tech]
