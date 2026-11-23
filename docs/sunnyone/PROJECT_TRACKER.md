@@ -603,3 +603,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - GitHub Actions created focused mux run [45266097205](https://github.com/shamiursunny/openTPU/actions/runs/45266097205) against testbench commit `e53ad53287c56444e9f4306e78dfe83e110a0486`. Job `hmux-sim` (138013284212) is still queued; no runner, compile output or simulation log exists. The broader workflows created on the same commit are also queued.
 - Latest tracker/feature branch commit before this tracker note: `8ff684291c68b791114a0ef9dba0efb111087d48`. `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No RTL functional change, no CI pass and no hardware qualification claim.
 - Next gate: wait for run 45266097205 to execute; inspect Verilator compile warnings/errors and runtime assertions; only then extend to multi-beat/fairness and four-DIMM traffic. No paid resources used.
+
+
+## 68. Host B-response checker corrected; Actions backlog still queued (2026-11-24)
+
+- Static review found the host B-response checker sampled the live DIMM-side `m_bid` when the host's buffered response handshook. The mux host interface has no BID output; a later DIMM B transaction can change live `m_bid` before the earlier host response is consumed. Removed the invalid live-ID assertion and instead check the requester-side `h_bresp` plus the host B-response handshake/count. Pair-side BID remains checked at the pair interface.
+- Testbench-only correction commit: `1ec347a8f093052582746d07df0269b8f03b6809`. This is not an RTL defect finding and is not a simulation result.
+- Latest focused mux run `45266097205` targets earlier testbench SHA `e53ad53287c56444e9f4306e78dfe83e110a0486`; it remains queued with job `138013284212`, no runner and no logs. Earlier mux runs `45265993286`, `45264350657`, `45263309565` and `45256841999` are also queued. The four broad runs `45266097228`, `45266097338`, `45266097275` and the focused mux run have no conclusions; all were queued at inspection.
+- The correction will trigger a new focused mux workflow on the updated testbench SHA. Inspect that run's exact SHA, compilation output and full simulation log before accepting the bench. No test pass is claimed.
+- Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; zero paid resources used. Multi-beat, fairness, partial-strobe memory effects, boundary/negative tests, reset with outstanding traffic and four-DIMM wrapper qualification remain open.
