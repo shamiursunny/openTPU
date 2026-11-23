@@ -48,7 +48,9 @@ No block may be treated as implemented merely because it appears in this logical
 - RUN is accepted only after memory calibration, loader completion and no fatal memory/clock error.
 - RUN falling stops new compute requests; outstanding writes must drain before host memory reuse. Reads in flight are discarded only under the documented reset/abort contract.
 - STATUS must expose HALTED, ERROR, LOADING, WR_IDLE, AXI/memory error, calibration, RUN, timeout and uncorrectable ECC.
-- CTRL bit 2 clears the local activity counters and sticky control-command error. The wrapper implements CYCLES/CYCLES_HI, ICOUNT, B_RD, B_WR, A_RD, SW_WR and B_STALL at the v5 offsets; external memory errors and ECC-DED remain separate STATUS bits.
+- STATUS follows v5 bit positions: HALTED, ERROR, LOADING, WR_IDLE, memory/AXI error, CALIB0, CALIB1, RUN, WAIT_TO and ECC_DED. Both calibration inputs must be high for RUN/LOAD.
+- CYCLES/CYCLES_HI, ICOUNT and B_RD/B_WR/A_RD/SW_WR/B_STALL are exposed at v5 offsets; counters increment on accepted requests (B_STALL on backpressure). CTRL bit 2 clears local activity counters and sticky command error.
+- REGMAP, CAPS and selected CFG registers expose slices, TMEM/IMEM/ACT sizes, uarch and platform. CFG_DRAM is zero until a memory topology is selected; CORE_KHZ, DDR_MTS, BUILD_ID and ARCH_HASH are build parameters.
 - Unsupported or reserved writes return a defined AXI-Lite response; no silent aliasing.
 - Host software must read immutable capability/configuration fields and reject incompatible binaries.
 
