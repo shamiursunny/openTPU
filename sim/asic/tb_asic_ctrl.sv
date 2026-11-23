@@ -77,7 +77,7 @@ module tb_asic_ctrl;
     // RUN is rejected until memory is ready; sticky control error is reported.
     write_reg(12'h008,32'h1,0,2'b10);
     if (!run_rst) $fatal(1,"RUN escaped memory-ready gate");
-    read_reg(12'h00c,32'h00000002,2'b00);
+    read_reg(12'h00c,32'h0000000a,2'b00);
 
     mem_ready=1;
     write_reg(12'h008,32'h2,1,2'b00);
