@@ -1,0 +1,29 @@
+name: SUNNYONE PCIe Gen2 XDMA bridge simulation
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/shell/otpu_mem_ch.sv'
+      - 'rtl/shell/otpu_axi_split2.sv'
+      - 'rtl/shell/otpu_afifo.sv'
+      - 'rtl/boards/ypcb-00338/otpu_native_sys.sv'
+      - 'sim/verilator/tb_memch.sv'
+      - 'sim/verilator/otpu_ldn_model.sv'
+      - 'sim/verilator/otpu_ldc_model.sv'
+      - 'sim/verilator/otpu_ldc_ch.v'
+      - 'tools/memch_test.py'
+      - '.github/workflows/sunnyone-pcie-gen2.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pcie-gen2-bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Verilator and build dependencies
+        run: sudo apt-get update && sudo apt-get install -y verilator make g++ python3
+      - name: Run PCIe Gen2 XDMA bridge scenarios
+        run: python tools/memch_test.py pcie
