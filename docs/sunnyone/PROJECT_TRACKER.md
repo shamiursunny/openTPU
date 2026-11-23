@@ -461,3 +461,10 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - AW36 high-address regression is still awaiting run [45246583075](https://github.com/shamiursunny/openTPU/actions/runs/45246583075); WG8 ASIC config [45246174940](https://github.com/shamiursunny/openTPU/actions/runs/45246174940), research PPA [45245713055](https://github.com/shamiursunny/openTPU/actions/runs/45245713055), integrated lint [45245713119](https://github.com/shamiursunny/openTPU/actions/runs/45245713119), and WG8 subsystem run [45245713352](https://github.com/shamiursunny/openTPU/actions/runs/45245713352) were queued at last poll. Do not infer success from queued jobs.
 - The control wrapper remains AXI-Lite only. PCIe endpoint, DMA, host/compute arbitration, physical memory controller/PHY, complete CDC/RDC, DFT, foundry PDK and signoff remain unimplemented/open.
 - Branch head at this checkpoint: 96bb1b11bc88ffbefb42df0bb8a99782b25ff5d7. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5.
+
+## 52. AW36 testbench review and address-map correction (2026-11-24)
+
+- Reviewed the high-address test against otpu_native_dram. With CHASH explicitly disabled, the 16-GiB byte address (34-bit word address 2^32) maps to channel 0, not channel 1; corrected the expected n_cvalid and n_caddr index. Expected channel-local beat address remains 26'h1000000. This was a test expectation correction, not an RTL datapath change.
+- The regression compiles only otpu_tech_ram + otpu_native_dram + tb_asic_aw36, then checks the PASS marker through the existing Verilator test fixture. It still awaits CI execution; no pass claimed.
+- Control RTL changes are on branch; a_we is wired from compute to the counter logic. Full-chip lint and ASIC control CI have not yet returned completed results.
+- Latest branch head: 399b3709b304a80ed493ebdfc9d1ab8a7b82275a. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5.
