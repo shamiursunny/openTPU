@@ -96,7 +96,7 @@ A Verilator 5.020 incompatibility was previously observed at `sim/verilator/tb_m
 
 ## 7. CI and evidence discipline
 
-**At the latest documented checkpoint (tracker section 59), host arbitration and AW35 work still has no verified completed CI result recorded in the tracker.** Historical queued jobs are not passes. A successful earlier commit does not qualify later RTL changes.
+**At the latest documented checkpoint (tracker section 61), host arbitration and AW35 work still has no verified completed CI result. The latest seven-workflow batch against RTL commit `b0caca731bf81506bae80c5c386de143aab774fd` is queued (run IDs in tracker section 61).** Historical queued jobs are not passes. A successful earlier commit does not qualify later RTL changes.
 
 Known historical run IDs and exact scope are recorded in PROJECT_TRACKER.md. In particular:
 - 45239360365: six YPCB PCIe Gen2 AXI bridge scenarios reported passed; limited scope as above.
