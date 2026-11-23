@@ -83,8 +83,8 @@ CONFIGS = {
 # are X only while the units' resets (srst two registers late: otpu_slice) have had one edge.
 ALLOW: list[tuple[str, str, str, str]] = [
     # TMEM, the ACT RAM, the RAMs
-    (r"mem/otpu_tmem\.sv", r"wi_addr|wi_data", "b",
-     "a write's address and data: taken only with its reset valid (wi_en)"),
+    (r"mem/otpu_tmem\.sv", r"wi_addr|wi_data|pa", "b",
+     "a write address/data payload, including the per-bank address derived from wi_addr: consumed only under reset-cleared wi_en / wi_gnt"),
     (r"mem/otpu_tmem\.sv", r"rpa|rpe|rpl", "b",
      "a read's replay copy: loaded while not replaying, read only under rpv/rpvb (reset)"),
     (r"mem/otpu_tmem\.sv", r"q|qa|qb|rq|pd|pss|bh|bk", "b",
@@ -161,7 +161,7 @@ ALLOW: list[tuple[str, str, str, str]] = [
     (r"mxu/otpu_mxu\.sv", r"r1", "v",
      "the ACC entry after r0 (lanes, addresses, new values): used under r1.v (rh; u_rwv's lanes "
      "beside its valid, read under rw.v)"),
-    (r"mxu/otpu_mxu\.sv", r"r_sw|alpha|mk|mq_k", "b",
+    (r"mxu/otpu_mxu\.sv", r"r_sw|alpha|mk|mq_k|mx_key", "b",
      "the Sw register, ASCALE's factors and RMAX's keys: written before read (mx_have, c_asc)"),
     (r"mxu/otpu_mxu\.sv", r"iq", "b", "IQ's entries: read only for iq_n's live entries (reset)"),
     (r"mxu/otpu_mxu\.sv", r"dw_n|dw_lst", "b",
