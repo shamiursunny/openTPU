@@ -7,7 +7,7 @@
 
 ## 1. Why the architecture changed
 
-The strongest existing model-inference evidence is the repository's **BCU1525-WG8** implementation, not the base two-slice BCU1525 configuration. The WG8 board target uses one wide slice, eight 128-byte virtual memory channels, 36-bit addressing and 32 GiB total memory. Its documented card runs include Qwen3.6-35B-A3B at 88.5%, Qwen3.8-27B at 90.6%, and GPT-OSS-20B at about 88% of the four DIMMs' 76.8 GB/s peak, with eight-token/logit bit-exact checks against the ISA simulator.
+The strongest existing model-inference evidence is the repository's **BCU1525-WG8** implementation, not the base two-slice BCU1525 configuration. The WG8 board target uses one wide slice, eight 128-byte virtual memory channels, 35-bit byte addressing and 32 GiB total memory. Its documented card runs include Qwen3.6-35B-A3B at 88.5%, Qwen3.8-27B at 90.6%, and GPT-OSS-20B at about 88% of the four DIMMs' 76.8 GB/s peak, with eight-token/logit bit-exact checks against the ISA simulator.
 
 These are FPGA-card results, not ASIC measurements. The FPGA implementation uses features that cannot be copied blindly into an ASIC (notably pumped SRAM and posted channel writes). The ASIC candidate therefore retains the proven WG8 dataflow while disabling those FPGA-specific paths and requires fresh PPA, timing and workload validation.
 
@@ -17,7 +17,7 @@ These are FPGA-card results, not ASIC measurements. The FPGA implementation uses
 |---|---:|
 | Slices | 1 |
 | D / MCOLS / WG | 128 / 8 / 8 |
-| NCH / CB / AW | 8 / 128 bytes / 36 bits |
+| NCH / CB / AW | 8 / 128 bytes / 35 bits |
 | Logical external memory | 32 GiB (8 × 4 GiB channels) |
 | ACT blocks / rows | 128 / 16 |
 | TMEM / IMEM | 128K / 32K words |
@@ -39,7 +39,7 @@ ASIC-specific deviations: TMEM_PMP=0, MXU_PUMP=0 and XPOST=0. The external memor
 - `rtl/asic/otpu_asic_mem_top.sv` integrates `otpu_native_dram` and exposes the eight native controller channels. It sets XSW=log2(FIFO_DEPTH)=11, PCW=13, uses 128-byte beats and starts with the BCU WG8 queue depths (APF8/AD16/RD16, XD64, QD16, WQD32). ASIC SW_FILL=1 read-merges partial scalar writes for ECC safety. The controller must return reads in per-channel command order, report accepted write beats in n_wdone, implement ECC-correct byte-mask writes for B-port traffic, and aggregate calibration/error/DED status.
 - Added an ASIC-mode regression in `tests/test_native_dram.py`: NCH8/CB128, AB128, APF8/AD16/RD16, SW_FILL1, WPOST/XPOST/SWG off. It checks random A/SW/B/W traffic and read-merge behaviour against the native memory model; CI result pending. This is adapter-level evidence, not full chip/PHY validation.
 - `targets/nangate45-wg8.toml` is the reproducible research target. `tools/asic/flow.py` now derives every supported ASIC-top parameter from the target's complete RTL parameter contract, including WG8, NCH8, CB128 and AW35. This permits a separate WG8 synthesis/PPA point instead of silently synthesizing the older WG1 point.
-- The host-facing PCIe endpoint and DMA are not yet integrated. The control interface is the BAR0 AXI4-Lite boundary; the data DMA and memory adapter remain external blocks.
+- The four host-facing 512-bit AXI data ports and per-DIMM arbitration are integrated in `otpu_asic_wg8_ddr4_top` using `otpu_mig_hmux`. The PCIe Gen3 x16 endpoint/PHY, DMA descriptor engine, global-to-DIMM address translation, IOMMU and host driver remain external/unimplemented. BAR0 AXI4-Lite is the control boundary.
 
 ## 4. Chip-level memory/host contract
 
