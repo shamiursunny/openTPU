@@ -514,3 +514,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The ASIC candidate remains AW=35/WA=33/CAW=25 as an intentional minimum-width implementation for exactly 32 GiB. Its four DIMM AXI interfaces remain 34 bits wide for reuse of existing pair/mux RTL; the top bit is asserted zero. No claim of an original AW36 capacity defect is retained.
 - Updated architecture specification A1.12.11.16.48 to distinguish the FPGA reference from the narrower ASIC implementation. The AW35 regression remains valid and is still awaiting CI.
 - This correction is recorded to prevent an incorrect engineering conclusion from propagating. All new host arbitration and AW35 changes still require completed CI and PPA evidence.
+
+
+## 58. Authoritative continuation baseline consolidated (2026-11-24)
+
+- Added [SUNNYONE_AI-X_AUTHORITATIVE_CONTINUATION_BASELINE_A1.12.11.16.53.md](SUNNYONE_AI-X_AUTHORITATIVE_CONTINUATION_BASELINE_A1.12.11.16.53.md) as the single session-start hand-off for architecture, commercial objective, branch discipline, implemented RTL boundaries, evidence rules, historical verification caveats and prioritised remaining gates.
+- The baseline links this tracker and the detailed WG8 architecture and DDR4 integration specifications. It preserves the AW36/32-GiB correction and explicitly separates FPGA/simulation evidence from ASIC physical validation.
+- Baseline document creation commit: a244508fbf4d0a932e7c212341a7529774dd2bd5. Feature branch only; main was not targeted.
+- This is documentation consolidation, not an RTL verification result. Latest host-arbitration/AW35/control CI must still be inspected by tested commit and completed job logs. No new test pass is claimed.
+- Next execution priority: establish current CI status and reproducible AW35/WG8 baseline, then implement adversarial four-DIMM host/accelerator dual-master verification. Continue through PCIe/DMA/IOMMU, DDR controller/PHY/ECC, formal/CDC/RDC, exact WG8 PPA and physical/commercial qualification gates.
