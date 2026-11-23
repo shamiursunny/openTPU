@@ -2,10 +2,10 @@
 module otpu_asic_chip_top
   import otpu_pkg::*;
 #(
-  parameter int D=128, MCOLS=4, ACT_BLOCKS=128, ACT_ROWS=8,
-  parameter int TMEM_WORDS=1<<16, IMEM_WORDS=1<<15, FIFO_DEPTH=1024,
-  parameter int LANES=8, WIN=16, MXU_IMPL=2, MXU_CL=16, MXU_E=4,
-  parameter int VPU_CL=2, ULANES=8, MXU_QD=2, WG=1, PQ_WIN=1024,
+  parameter int D=128, MCOLS=8, ACT_BLOCKS=128, ACT_ROWS=16,
+  parameter int TMEM_WORDS=1<<17, IMEM_WORDS=1<<15, FIFO_DEPTH=2048,
+  parameter int LANES=8, WIN=32, MXU_IMPL=2, MXU_CL=16, MXU_E=8,
+  parameter int VPU_CL=2, ULANES=8, MXU_QD=4, WG=8, PQ_WIN=1024,
   parameter int QUANT_XD=1024, QUANT_PW=1, QUANT_SWW=1,
   parameter bit QUANT_R1=1'b0, QUANT_SPLIT=1'b0, QUANT_HL=1'b0,
   parameter bit QUANT_QSTB=1'b0, QUANT_QSTHL=1'b0, QONCE=1'b0,
@@ -19,13 +19,13 @@ module otpu_asic_chip_top
   parameter bit MXU_WASK=1'b1, MXU_BRAW=1'b1, MXU_AASK=1'b1,
   parameter int MXU_RF_ROWS=0, MXU_SPL=0, MXU_PUMP=0,
   parameter int ACT_UCOLS=0, VPU_CNS=3, VPU_FSUM=0, VPU_SIG=0, VPU_MAC=0,
-  parameter int VPU_OUTER1=0, SE_R=0, DMA_DEPTH=128, DMA_LDQ=1,
-  parameter bit SEQ_WC=1'b1, ICACHE=1'b0, OUTER=1'b1,
-  parameter int IC_LINES=16, IC_PF=2,
-  parameter bit DSTEP2=1'b0, ST16S=1'b0, KT=1'b0,
-  parameter int ST16=0, XQB=0,
+  parameter int VPU_OUTER1=0, SE_R=2, DMA_DEPTH=512, DMA_LDQ=1,
+  parameter bit SEQ_WC=1'b1, ICACHE=1'b0, OUTER=1'b0,
+  parameter int IC_LINES=64, IC_PF=2,
+  parameter bit DSTEP2=1'b1, ST16S=1'b0, KT=1'b1,
+  parameter int ST16=1, XQB=0,
   parameter bit XPOST=1'b0,
-  parameter int NCH=2, CB=64, AW=32, WA=waw(AW), AB=(WG>1)?CB:32,
+  parameter int NCH=8, CB=128, AW=36, WA=waw(AW), AB=(WG>1)?CB:32,
   parameter bit COLL_GATHER=1'b0,
 
   // v5 host-control capability/configuration fields.
