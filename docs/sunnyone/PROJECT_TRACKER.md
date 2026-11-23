@@ -16,7 +16,7 @@ Zero-spend by default. No paid service, hardware purchase, or other expenditure 
 
 **Stage:** A1.12.11.16.34 — reproducible RTL regression / AXI-Lite reset isolation checkpoint.
 
-**Latest CI:** GitHub Actions run [45209168224](https://github.com/shamiursunny/openTPU/actions/runs/45209168224), commit `24b6780d20766595f54d68f6eb19d2aa3187e6e1`, job `rtl-functional` (ID `137812968373`).
+**Latest verified baseline:** run [45209168224](https://github.com/shamiursunny/openTPU/actions/runs/45209168224), commit `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Follow-up run [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099) is active on workflow-only changes; its LDC job passed, while its main job redundantly reruns the already-passed selection.
 
 **Observed result: PASS.** Job completed with success. Both workflow steps completed successfully:
 - Expanded RTL-versus-ISA tests.
@@ -36,9 +36,11 @@ Exact log results: `tests/test_rtl.py` selection — **99 passed, 118 deselected
 
 1. CI log audit completed: 99 RTL/ISA tests passed; 118 deselected; isolated AXI-Lite test passed (1). Warnings recorded above.
 2. Expand RTL/ISA and fault/backpressure/reset regression coverage, prioritising reproducible tests and mutation checks.
-3. Added a separate `ldc-host-write-cosim` CI job to run `pytest -q tests/test_rtl.py -k ldc_host_writes` without extending the 34-minute main regression job (workflow commit `66c708e573671136197c371a848cc9274ae394f2`). This exercises host-to-card writes concurrent with core memory traffic on the LDC path. No run for this workflow commit was visible in Actions at the time of inspection; execution remains unverified and must not be called passed.
-4. Resolve or track the packaging license-metadata and GitHub action Node-runtime deprecation warnings; do not mix maintenance changes into functional RTL fixes.
-4. Run formal checks and full lint; classify warnings and unresolved findings rather than treating lint success as functional proof.
+3. Follow-up run `45217729099`, commit `66c708e573671136197c371a848cc9274ae394f2`: LDC host-write concurrency passed (`1 passed, 216 deselected`, 224.66 s). This test was already included in the earlier 99-test selection, so this was a duplicate execution, not a new distinct test. The run also unnecessarily repeated the 99 RTL tests and AXI-Lite test because the workflow changed without source changes; compare `24b6780...` to `66c708e...` showed only workflow/tracker files changed. The main job was still active at checkpoint.
+4. Found a test-isolation defect: `tests/test_board.py` called `pytest.importorskip("torch")` and `pytest.importorskip("transformers")` at module scope (lines 671–672), causing all earlier host/board tests to be skipped when optional model dependencies were absent. Moved those imports into only the model tests/helpers.
+5. Replace the broad repeat workflow with two focused jobs: unrun core RTL/ISA tests and board/host tests; omit the previously passed 99-test selection, AXI-Lite isolation test, and duplicate standalone LDC job. Experimental one-copy TMEM IMPL=3 tests remain excluded pending separate diagnosis.
+6. Resolve or track the packaging license-metadata and GitHub action Node-runtime deprecation warnings; do not mix maintenance changes into functional RTL fixes.
+7. Run formal checks and full lint; classify warnings and unresolved findings rather than treating lint success as functional proof.
 5. Establish a reproducible Nangate45 research PPA flow and archive exact tool versions, constraints, scripts, and outputs. Treat it only as a research proxy, not commercial silicon validation.
 6. Build workload/trace and benchmark harnesses. Measure useful throughput, latency, memory bandwidth/utilisation, reliability, energy and full-system power on actual target hardware when available.
 7. Compare candidate FPGA/device/board options only after benchmark and interface evidence. No device selected and no FPGA purchase authorised.
@@ -95,5 +97,13 @@ After every completed engineering stage or material decision:
 
 ## 9. Current next milestone
 
-**A1.12.11.16.36 — Expanded regression coverage and mutation/fault-path audit.**
-Previous milestone A1.12.11.16.35 is complete: CI logs inspected; 99 RTL/ISA tests and 1 AXI-Lite isolation test passed; 118 tests were deselected. The dedicated LDC host-write concurrency job has been added but is not yet verified by a run. Branch head was verified at `66c708e573671136197c371a848cc9274ae394f2` before this tracker update. Run 45209168224 remains the verified passing CI evidence for RTL baseline `24b6780...`.
+**A1.12.11.16.36 — Unrun RTL/ISA and board regression coverage.**
+Verified baseline remains 99 RTL/ISA tests + 1 AXI-Lite isolation test passed on run `45209168224`. LDC host-write test also passed on run `45217729099`, but it duplicates one of those 99 tests; therefore there are 100 distinct passed test cases, not 101. The main job in `45217729099` is a redundant rerun caused by workflow-only changes. New workflow now targets previously unrun core tests and board/host tests, and optional model dependencies no longer skip the entire board test module. Do not rerun completed tests unless RTL/test sources change.
+
+
+## 10. Test de-duplication and newly unblocked coverage (2026-11-23)
+
+- Distinct verified cases: 99 selected RTL/ISA tests + 1 AXI-Lite isolation test = 100. The separate LDC job passed one test already included in the 99; it is a repeat execution, not test case 101.
+- Commit comparison `24b6780...` to `66c708e...` showed only workflow and tracker files changed. Thus the 99-test rerun in run `45217729099` adds no source-change validation.
+- `tests/test_board.py` had module-scope optional PyTorch/Transformers skips at lines 671–672. Those skips prevented every preceding board/host test from being collected when either optional dependency was absent. Optional imports are now local to the model-only tests/helpers.
+- New CI avoids repeating the passed RTL selection and AXI-Lite test; it targets previously unrun core RTL/ISA tests and the board/host suite. Experimental one-copy TMEM IMPL=3 tests remain excluded.

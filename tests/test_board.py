@@ -668,8 +668,11 @@ def test_stream_without_the_stream_engine_is_an_error(have_verilator):
 
 
 # ------------------------------------------------------------------------------ Qwen3
-torch = pytest.importorskip("torch")
-transformers = pytest.importorskip("transformers")
+def _optional_model_deps():
+    """Load optional model dependencies only inside model tests, not at module import."""
+    return pytest.importorskip("torch"), pytest.importorskip("transformers")
+
+
 
 
 @pytest.mark.parametrize("formats", ["", "attn=fp4,down=int4,head=fp4",
@@ -677,6 +680,7 @@ transformers = pytest.importorskip("transformers")
 def test_tiny_qwen3_on_board_model(have_verilator, formats):
     """Logits bit-identical to the ISA simulator; with per-kind weight formats too (int8,
     fp4 and int4 MMs in one layer), and per layer (a run, a layer block layout, each)."""
+    torch, transformers = _optional_model_deps()
     import dataclasses
     from opentpu.llm.qwen3 import Engine, Spec
     torch.manual_seed(0)
@@ -706,6 +710,7 @@ def test_tiny_qwen3_two_slices_on_board_model(have_verilator, nreg):
     each slice's DRAM, read back through the host's channel map, the ISA simulator's. nreg: the
     channels that cross an SLR on the board (1 and 3) through two otpu_native_reg each, as
     otpu_bcu_sys builds them."""
+    torch, transformers = _optional_model_deps()
     from opentpu.llm.qwen3 import Engine, Spec
     torch.manual_seed(0)
     hc = transformers.Qwen3Config(hidden_size=256, num_hidden_layers=2, num_attention_heads=4,
@@ -912,6 +917,7 @@ def test_tiny_qwen3_generate_on_board_model(have_verilator):
     DRAM state of a 248-token prefill on the ISA simulator, 12 tokens across the attention
     bucket boundary at 256 in one start (HALT CHAIN on the board's loader), token for token
     and the whole DRAM of the ISA simulator's run."""
+    torch, transformers = _optional_model_deps()
     from opentpu.llm.qwen3 import PREFILL_ROWS, Engine, Spec
     torch.manual_seed(0)
     hc = transformers.Qwen3Config(hidden_size=256, num_hidden_layers=2, num_attention_heads=4,
@@ -1320,6 +1326,7 @@ def test_wg_map_round_trip_on_board_model(have_verilator):
 def _tiny_qwen3_s4():
     """A tiny Qwen3 that maps onto 4 slices (hidden 512 = S x D, 4 KV heads, 2 per query
     group)."""
+    torch, transformers = _optional_model_deps()
     from opentpu.llm.qwen3 import Spec
     torch.manual_seed(0)
     hc = transformers.Qwen3Config(hidden_size=512, num_hidden_layers=2, num_attention_heads=8,
@@ -1334,6 +1341,7 @@ def _tiny_qwen3_s4():
 def _tiny_qwen35_s4():
     """A tiny Qwen3.5 that maps onto 4 slices: DeltaNet and attention layers, 8 DeltaNet heads
     (a pair a slice), 4 KV heads, hidden 512."""
+    torch, transformers = _optional_model_deps()
     from opentpu.llm.qwen35 import Spec
     kinds = ("linear", "linear", "attn")
     torch.manual_seed(0)

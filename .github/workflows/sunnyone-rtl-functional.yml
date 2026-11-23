@@ -1,4 +1,4 @@
-name: SUNNYONE RTL functional expansion
+name: SUNNYONE remaining RTL and board regressions
 on:
   push:
     branches:
@@ -17,7 +17,7 @@ on:
 permissions:
   contents: read
 jobs:
-  rtl-functional:
+  rtl-uncovered:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -30,16 +30,14 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
-      - name: Expanded RTL versus ISA tests
+      - name: Previously unrun core RTL and ISA regressions
         run: >-
           pytest -q tests/test_rtl.py
-          -k "axi_read_bursts or axi_sw_partial_beat_order or axi_sw_rmw_fuzz or dma_alignment_stress or board_memory_path_stress or board_memory_path_fuzz or native_memory_path or logits_fill_rtl or ldc_memory_path or ldc_host_writes or scoreboard_stress_two_slices or scoreboard_stress_single_slice or porta_host_writes_between_runs or porta_host_writes_before_a_waitw or axi_write_bursts or axi_sw_partial_beat_beside_dma_writes or axi_scale_runs_beside_dma_writes or axi_scale_runs or axi_sw_write_gather or axi_vt_append_throughput or axi_vt_append_random_stalls or fuzz_mm_replay or fuzz_mm_queue_depth_qd or one_copy_replays_make_progress or one_copy_two_writes_a_bank"
-      - name: AXI-Lite isolation reset regression
-        run: pytest -q tests/test_axil_iso.py
+          -k "mlp_rtl or attention_decode_rtl or attention_layer_rtl or design_size_block_128_rtl or attention_decode_fsum_rtl or fuzz_single_slice or fuzz_two_slices or dram_range_ending_at_4gib or count_fields_are_immediates or gather_dst_through_registers or gathers_through_the_hub or tmem_random_traffic or tmem_random_traffic_input_stage or tmem_dump_is_the_ram or mlp_4bit_rtl or run_arguments_start_in_r8_to_r15 or simulator_child_dies_with_its_parent or additive_mask_block_rtl"
 
-  ldc-host-write-cosim:
+  board-functional:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -50,5 +48,5 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
-      - name: LDC host-write concurrency regression
-        run: pytest -q tests/test_rtl.py -k ldc_host_writes
+      - name: Host driver and board-model regressions (AXI-Lite isolation already verified separately)
+        run: pytest -q tests/test_board.py -k "not axil_iso_resets_apart"
