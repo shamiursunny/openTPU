@@ -157,8 +157,7 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 
 ## 16. Experimental 128K one-copy TMEM isolation
 
-- Added a dedicated CI job for `test_one_copy_tmem_of_128k_words`, separate from the ordinary regression suite. This test remains experimental because prior Verilator elaboration produced an internal tool error; the isolated rerun will distinguish a reproducible tool failure from an RTL/testbench issue.
-- Do not interpret a Verilator internal error as a functional RTL mismatch. Capture exact tool version, compile command and error log.
+- Dedicated isolated run [45225974726](https://github.com/shamiursunny/openTPU/actions/runs/45225974726) passed `test_one_copy_tmem_of_128k_words`: **2 passed, 215 deselected** in 120.70 s. The earlier Verilator internal elaboration error did not reproduce. This removes the test from the current exclusion list; retain one-copy TMEM as a candidate pending full regression and PPA, not as a production freeze.
 
 
 ## 17. ASIC top-level integration gap clarified
@@ -166,3 +165,9 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 - The current `rtl/asic/otpu_asic_top.sv` is a compute-block boundary (one slice + collective, memory-port handshakes and run/load/status signals), not a complete PCIe/host-connected chip top.
 - The board reference `otpu_board` has `otpu_ctrl` AXI4-Lite BAR control and board-specific memory/clock crossings, but that is not integrated into the ASIC top. A separate chip wrapper and platform-specific memory/host interface remain required.
 - `main` was checked and remains at `d84db55712aba0d40811d7762cb052f05d55b7e5`; all current work remains on the active branch.
+
+
+## 18. One-copy TMEM investigation result
+
+- Isolated 128K one-copy test passed both parametrized cases under Verilator 5.032. Previous internal elaboration error is not reproducible in run `45225974726`.
+- One-copy TMEM remains a candidate for ASIC PPA comparison; do not freeze until all relevant regressions and physical macro/timing analysis pass.

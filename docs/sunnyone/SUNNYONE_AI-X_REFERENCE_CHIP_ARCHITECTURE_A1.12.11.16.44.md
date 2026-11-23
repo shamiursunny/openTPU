@@ -103,7 +103,7 @@ Use the existing one-slice YPCB-00338 m4 architecture as the functional card ref
 | Core clock | 133.33 MHz | YPCB-00338 build point only; not a target ASIC frequency |
 | External memory | 2 × DDR3-1066 channels | YPCB-00338 reference only |
 
-The YPCB configuration uses `TMEM_IMPL=3` with a board-specific pumped memory implementation. The Nangate45 research target also selects one-copy/replay TMEM but uses different macro timing assumptions. The ASIC documentation describes a three-copy banked TMEM (`TMEM_IMPL=1`) with a correctness-tested alternative and a larger macro-area cost. **Do not freeze one-copy TMEM for ASIC until its current Verilator elaboration issue is resolved and the exact synthesis/PPA comparison is reproducible.** Maintain a known-correct alternative.
+The YPCB configuration uses `TMEM_IMPL=3` with a board-specific pumped memory implementation. The Nangate45 research target also selects one-copy/replay TMEM but uses different macro timing assumptions. The ASIC documentation describes a three-copy banked TMEM (`TMEM_IMPL=1`) with a correctness-tested alternative and a larger macro-area cost. An isolated CI rerun of the 128K one-copy TMEM test passed (2 parametrized cases); the previously reported Verilator elaboration issue did not reproduce in that run. Do not freeze one-copy TMEM for ASIC until the broader regression and exact synthesis/PPA comparison are reproducible. Maintain a known-correct alternative.
 
 ## 5. Memory architecture and scaling
 
