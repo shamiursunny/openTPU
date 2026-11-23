@@ -86,16 +86,17 @@ module tb_asic_ctrl;
     write_reg(12'h008,32'h1,0,2'b10);
     if (!run_rst) $fatal(1,"RUN escaped memory-ready gate");
     read_reg(12'h00c,32'h0000000a,2'b00);
-    write_reg(12'h008,32'h4,1,2'b00); // CTRL.CLEAR clears counters and sticky command error
-    read_reg(12'h00c,32'h00000008,2'b00);
+    write_reg(12'h008,32'h4,1,2'b00); // error cannot clear while memory is unavailable
+    read_reg(12'h00c,32'h0000000a,2'b00);
 
     mem_calib=2'b11;
+    write_reg(12'h008,32'h4,1,2'b00);
     read_reg(12'h00c,32'h00000068,2'b00);
     ecc_ded=1;
     write_reg(12'h008,32'h1,0,2'b10);
     if (!run_rst) $fatal(1,"RUN escaped ECC-DED gate");
-    write_reg(12'h008,32'h4,1,2'b00);
     ecc_ded=0;
+    write_reg(12'h008,32'h4,1,2'b00);
     write_reg(12'h008,32'h3,1,2'b10); // RUN + LOAD must be rejected atomically
     if (load_count != 0 || !run_rst) $fatal(1,"invalid CTRL command had side effects");
     write_reg(12'h008,32'h4,0,2'b00);
