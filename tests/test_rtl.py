@@ -1685,3 +1685,27 @@ def test_additive_mask_block_rtl(have_verilator, board):
     drams, tmems, _ = rtlsim.run(cfg, [prog], [img.copy()], **kw)
     assert np.array_equal(np.asarray(tmems[0]).view(np.uint32), tm)
     assert np.array_equal(drams[0][:len(m.slices[0].dram)], m.slices[0].dram)
+
+
+def test_axi_vt_append_random_stalls(have_verilator):
+    """V-transpose appends remain bit-exact under randomized AXI back-pressure."""
+    cfg = Config(S=1, D=128, ACT_BLOCKS=16)
+    D, CAP, H = cfg.D, 256, 8
+    rng = np.random.default_rng(8517)
+    img = rng.integers(0, 256, 1 << 20, dtype=np.uint8)
+    img[:4 * H * D] = rng.standard_normal(H * D).astype(np.float32).view(np.uint8)
+    prog = [I.ld(0, 0, 4 * H * D)]
+    prog += [I.qst(0, 0x20000 + t, 0xE0000 + 64 * t, H, 1, D, D * CAP, CAP)
+             for t in range(4)]
+    prog.append(I.halt())
+    m = Machine(cfg, [prog], [img.copy()]).run()
+    drams, tmems, st = rtlsim.run(cfg, [prog], [img.copy()], axi=True, boot=True,
+                                  stall=40, seed=8517, lat=38,
+                                  uarch=rtlsim.BOARD_UARCH,
+                                  plusargs=["+axi_dram=1", "+axi_map=1", "+axi_tpc=16",
+                                            "+axi_tpu=15", "+axi_trp=3", "+axi_trcd=3",
+                                            "+axi_tras=5", "+axi_trc=7", "+axi_trfc=22",
+                                            "+axi_trefi=1040", "+axi_trmw=29"])
+    assert np.array_equal(drams[0], m.slices[0].dram)
+    assert np.array_equal(tmems[0], m.slices[0].tmem)
+    assert sum(d["rmw_a"] for d in st["axi_detail"]) == 0, st["axi_detail"]
