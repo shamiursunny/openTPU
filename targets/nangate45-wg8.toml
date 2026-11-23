@@ -4,7 +4,7 @@
 name = "nangate45-wg8"
 kind = "asic"
 platform_id = 256
-description = "Nangate45 research ASIC, WG8/36-bit address/32 GiB logical memory architecture"
+description = "Nangate45 research ASIC, WG8/35-bit address/32 GiB memory architecture"
 
 [arch]
 S = 1
@@ -15,7 +15,7 @@ ACT_BLOCKS = 128
 ACT_ROWS = 16
 TMEM_WORDS = 131072
 IMEM_WORDS = 32768
-AW = 36
+AW = 35
 DRAM_BYTES = 34359738368
 LANES = 8
 PAIR = false
