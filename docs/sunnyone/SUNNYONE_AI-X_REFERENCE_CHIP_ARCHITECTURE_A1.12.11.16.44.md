@@ -1,3 +1,5 @@
+<!-- Historical WG1/MCOLS4 research baseline. Superseded for the primary performance-led V1 candidate by SUNNYONE_AI-X_WG8_ASIC_ARCHITECTURE_A1.12.11.16.46.md. -->
+
 # SUNNYONE AI-X — Reference Chip Architecture and Implementation Specification
 
 **Revision:** A1.12.11.16.44  
