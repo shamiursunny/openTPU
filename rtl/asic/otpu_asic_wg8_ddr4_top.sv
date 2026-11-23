@@ -38,6 +38,29 @@ module otpu_asic_wg8_ddr4_top #(
   output logic s_rvalid,
   input  logic s_rready,
 
+  // Host DMA: one 512-bit AXI4 master per DIMM, already translated to that DIMM's local map.
+  input  logic [3:0] h_awvalid,
+  output logic [3:0] h_awready,
+  input  logic [3:0][33:0] h_awaddr,
+  input  logic [3:0][7:0] h_awlen,
+  input  logic [3:0] h_wvalid,
+  output logic [3:0] h_wready,
+  input  logic [3:0][511:0] h_wdata,
+  input  logic [3:0][63:0] h_wstrb,
+  input  logic [3:0] h_wlast,
+  output logic [3:0] h_bvalid,
+  input  logic [3:0] h_bready,
+  output logic [3:0][1:0] h_bresp,
+  input  logic [3:0] h_arvalid,
+  output logic [3:0] h_arready,
+  input  logic [3:0][33:0] h_araddr,
+  input  logic [3:0][7:0] h_arlen,
+  output logic [3:0] h_rvalid,
+  input  logic [3:0] h_rready,
+  output logic [3:0][511:0] h_rdata,
+  output logic [3:0][1:0] h_rresp,
+  output logic [3:0] h_rlast,
+
   // Four independent 8-GiB DIMM/controller ports, AXI4 512-bit, local address per DIMM.
   output logic [3:0] m_awvalid,
   input  logic [3:0] m_awready,
@@ -104,6 +127,14 @@ module otpu_asic_wg8_ddr4_top #(
   logic [7:0][3:0] ch_arlen;
   logic [7:0][1:0] ch_bresp, ch_rresp;
   logic [3:0][1:0] pair_bresp;
+  logic [3:0] p_awvalid, p_awready, p_wvalid, p_wready, p_wlast;
+  logic [3:0][3:0] p_awid, p_bid, p_arid, p_rid;
+  logic [3:0][33:0] p_awaddr, p_araddr;
+  logic [3:0][7:0] p_awlen, p_arlen;
+  logic [3:0][511:0] p_wdata, p_rdata;
+  logic [3:0][63:0] p_wstrb;
+  logic [3:0] p_bvalid, p_bready, p_arvalid, p_arready, p_rvalid, p_rready, p_rlast;
+  logic [3:0][1:0] p_bresp, p_rresp;
   logic [3:0] dimm_rst_sync;
   logic [7:0] bridge_arst;
 
@@ -205,6 +236,43 @@ module otpu_asic_wg8_ddr4_top #(
       .s_rvalid(ch_rvalid[2*d +: 2]), .s_rready(ch_rready[2*d +: 2]),
       .s_rdata(ch_rdata[2*d +: 2]), .s_rresp(ch_rresp[2*d +: 2]),
       .s_rlast(ch_rlast[2*d +: 2]),
+      .m_awvalid(p_awvalid[d]), .m_awready(p_awready[d]), .m_awid(p_awid[d]),
+      .m_awaddr(p_awaddr[d]), .m_awlen(p_awlen[d]),
+      .m_wvalid(p_wvalid[d]), .m_wready(p_wready[d]), .m_wdata(p_wdata[d]),
+      .m_wstrb(p_wstrb[d]), .m_wlast(p_wlast[d]),
+      .m_bvalid(p_bvalid[d]), .m_bready(p_bready[d]), .m_bid(p_bid[d]), .m_bresp(p_bresp[d]),
+      .m_arvalid(p_arvalid[d]), .m_arready(p_arready[d]), .m_arid(p_arid[d]),
+      .m_araddr(p_araddr[d]), .m_arlen(p_arlen[d]),
+      .m_rvalid(p_rvalid[d]), .m_rready(p_rready[d]), .m_rid(p_rid[d]),
+      .m_rdata(p_rdata[d]), .m_rresp(p_rresp[d]), .m_rlast(p_rlast[d])
+    );
+    for (genvar k = 0; k < 2; k++) begin : g_bresp
+      assign ch_bresp[2*d+k] = pair_bresp[d];
+    end
+  end
+
+  // Reuse the proven BCU1525 arbitration/ID/W-ordering block: host ID is bit 2,
+  // accelerator pair IDs occupy the remaining ID space. Host addresses are DIMM-local;
+  // PCIe DMA must perform the card-to-DIMM/channel address permutation before this boundary.
+  for (genvar d = 0; d < 4; d++) begin : g_host_mux
+    otpu_mig_hmux #(.IDW(4), .AW(34), .HB(2)) u_hmux (
+      .clk(aclk), .rst(dimm_rst_sync[d]),
+      .p_awvalid(p_awvalid[d]), .p_awready(p_awready[d]), .p_awid(p_awid[d]),
+      .p_awaddr(p_awaddr[d]), .p_awlen(p_awlen[d]),
+      .p_wvalid(p_wvalid[d]), .p_wready(p_wready[d]), .p_wdata(p_wdata[d]),
+      .p_wstrb(p_wstrb[d]), .p_wlast(p_wlast[d]),
+      .p_bvalid(p_bvalid[d]), .p_bready(p_bready[d]), .p_bid(p_bid[d]), .p_bresp(p_bresp[d]),
+      .p_arvalid(p_arvalid[d]), .p_arready(p_arready[d]), .p_arid(p_arid[d]),
+      .p_araddr(p_araddr[d]), .p_arlen(p_arlen[d]),
+      .p_rvalid(p_rvalid[d]), .p_rready(p_rready[d]), .p_rid(p_rid[d]),
+      .p_rdata(p_rdata[d]), .p_rresp(p_rresp[d]), .p_rlast(p_rlast[d]),
+      .h_awvalid(h_awvalid[d]), .h_awready(h_awready[d]), .h_awaddr(h_awaddr[d]), .h_awlen(h_awlen[d]),
+      .h_wvalid(h_wvalid[d]), .h_wready(h_wready[d]), .h_wdata(h_wdata[d]),
+      .h_wstrb(h_wstrb[d]), .h_wlast(h_wlast[d]),
+      .h_bvalid(h_bvalid[d]), .h_bready(h_bready[d]), .h_bresp(h_bresp[d]),
+      .h_arvalid(h_arvalid[d]), .h_arready(h_arready[d]), .h_araddr(h_araddr[d]), .h_arlen(h_arlen[d]),
+      .h_rvalid(h_rvalid[d]), .h_rready(h_rready[d]), .h_rdata(h_rdata[d]),
+      .h_rresp(h_rresp[d]), .h_rlast(h_rlast[d]),
       .m_awvalid(m_awvalid[d]), .m_awready(m_awready[d]), .m_awid(m_awid[d]),
       .m_awaddr(m_awaddr[d]), .m_awlen(m_awlen[d]),
       .m_wvalid(m_wvalid[d]), .m_wready(m_wready[d]), .m_wdata(m_wdata[d]),
@@ -215,8 +283,5 @@ module otpu_asic_wg8_ddr4_top #(
       .m_rvalid(m_rvalid[d]), .m_rready(m_rready[d]), .m_rid(m_rid[d]),
       .m_rdata(m_rdata[d]), .m_rresp(m_rresp[d]), .m_rlast(m_rlast[d])
     );
-    for (genvar k = 0; k < 2; k++) begin : g_bresp
-      assign ch_bresp[2*d+k] = pair_bresp[d];
-    end
   end
 endmodule
