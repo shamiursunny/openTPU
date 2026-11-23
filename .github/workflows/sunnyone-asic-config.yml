@@ -26,11 +26,31 @@ jobs:
           python-version: '3.12'
           cache: pip
       - name: Install project and test dependencies
-        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator
+          python -m pip install --upgrade pip pytest
+          python -m pip install -e .
       - name: Verify ASIC points, target contracts and simulator build cache
         run: >-
           pytest -q tests/test_asic_flow.py tests/test_target.py tests/test_rtlsim_build.py
           | tee /tmp/sunnyone-asic-config.log
+      - name: Lint integrated ASIC control and compute top
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          import subprocess, sys
+          sys.path.insert(0, "tools/asic")
+          import flow
+          sources = [str(p) for p in flow.sources("card")]
+          sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv"]
+          cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal",
+                 "--top-module", "otpu_asic_chip_top", *sources]
+          with open("/tmp/sunnyone-asic-chip-lint.log", "w") as log:
+              result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
+          print(open("/tmp/sunnyone-asic-chip-lint.log").read()[-12000:])
+          raise SystemExit(result.returncode)
+          PY
       - name: Archive configuration test log
         if: always()
         uses: actions/upload-artifact@v4
