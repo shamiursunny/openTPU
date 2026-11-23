@@ -127,7 +127,14 @@ module tb_top;
              .OUTER(OUTER), .DSTEP2(DSTEP2), .ST16(ST16), .ST16S(ST16S), .KT(KT), .MXU_SPL(MXU_SPL), .ICACHE(ICACHE), .IC_LINES(IC_LINES),
              .IC_PF(IC_PF), .AW(AW)) dut (
     .clk, .clk_f, .sys_rst, .rst, .rinit, .ld_start, .ld_addr, .ld_n, .ld_busy, .all_halted, .any_error,
-    .icount, .dump);
+    .icount, .dump,
+    // The single-card regression does not instantiate the optional inter-card link.
+    // Hold its receive side inactive and keep the link-side reset asserted.
+    .x2_s_tdata(), .x2_s_tvalid(), .x2_s_tlast(), .x2_s_tready('0),
+    .x2_m_tdata('0), .x2_m_tvalid('0), .x2_m_tlast('0), .x2_m_thdr('0),
+    .x2_m_tready(), .x2_up('0), .x2_rx_err('0), .x2_abort_in('0),
+    .x2_abort(), .x2_rst(1'b1), .x2_card('0), .x2_ncards(8'd1),
+    .coll_wd('0), .coll_status(), .x2_seq());
 
   // TMEM_PMP 1: clk_f (2 x clk) rises with each edge of clk, in clk's own process (no race between
   // the two domains); clk's edges stay where they are (the memory models' clocks are absolute)
