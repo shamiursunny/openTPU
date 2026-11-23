@@ -26,7 +26,7 @@ module otpu_asic_top
   parameter int ST16=0, XQB=0,
   parameter bit XPOST=1'b0,
   parameter int NCH=2, CB=64, AW=32, WA=waw(AW), AB=(WG>1)?CB:32,
-  parameter bit COLL_GATHER=1'b1
+  parameter bit COLL_GATHER=1'b0
 ) (
   input logic clk, sys_rst, rst,
   input logic [7:0][31:0] rinit,
