@@ -77,7 +77,7 @@ module tb_hmux;
       if(h_bvalid && h_bready) host_b<=host_b+1;
       if(m_arvalid && m_arready) begin arq[ar_wp]<=m_arid; ar_wp<=ar_wp+1; end
       if(!m_rvalid && ar_rp<ar_wp) begin
-        m_rid<=arq[ar_rp]; m_rdata<={16{64'h0123456789abcdef}} ^ {30'd0,ar_rp[3:0]};
+        m_rid<=arq[ar_rp]; m_rdata<={8{64'h0123456789abcdef}} ^ {508'd0,ar_rp[3:0]};
         m_rresp<=0; m_rlast<=1; m_rvalid<=1; ar_rp<=ar_rp+1; reads<=reads+1;
       end else if(m_rvalid && m_rready) m_rvalid<=0;
       if(p_rvalid && p_rready) pair_r<=pair_r+1;
