@@ -31,7 +31,7 @@ module otpu_asic_mem_top
   parameter bit HAS_TEMP=1'b0, HAS_I2C=1'b0,
   parameter int TRACE_DEPTH=0, CORE_KHZ=0, DDR_MTS=0, PLATFORM=256,
   parameter logic [31:0] BUILD_ID=32'b0, ARCH_HASH=32'b0,
-  parameter int APF=32, AD=64, RD=256/NCH, XD=64, QD=16, WQD=32,
+  parameter int APF=8, AD=16, RD=16, XD=64, QD=16, WQD=32,
   parameter int XSW=$clog2(FIFO_DEPTH), PCW=XSW+2, WFW=6
 ) (
   input logic clk, rst,
