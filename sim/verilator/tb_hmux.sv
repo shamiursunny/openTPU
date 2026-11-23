@@ -52,28 +52,32 @@ module tb_hmux;
   logic m_rlast=1;
   logic [3:0] awq[0:7], arq[0:7];
   integer aw_wp=0,aw_rp=0,ar_wp=0,ar_rp=0, writes=0,reads=0;
-  integer cycle=0;
+  integer cycle=0, pair_b=0, host_b=0, pair_r=0, host_r=0;
+  assign m_wready = !m_bvalid && ((cycle%7)!=2);
   otpu_mig_hmux #(.IDW(4),.AW(34),.HB(2)) dut(.*);
   always @(posedge clk) begin
     cycle <= cycle+1;
     if(rst) begin
-      m_awready<=0; m_wready<=0; m_arready<=0; m_bvalid<=0; m_rvalid<=0;
+      m_awready<=0; m_arready<=0; m_bvalid<=0; m_rvalid<=0;
       aw_wp<=0; aw_rp<=0; ar_wp<=0; ar_rp<=0; writes<=0; reads<=0;
     end else begin
       m_awready <= (cycle%5)!=1;
-      m_wready <= (cycle%7)!=2;
       m_arready <= (cycle%4)!=1;
       if(m_awvalid && m_awready) begin awq[aw_wp]<=m_awid; aw_wp<=aw_wp+1; end
       if(m_wvalid && m_wready && m_wlast) begin
         if(m_bvalid) $fatal(1,"B response slot unexpectedly occupied");
-        m_bid<=awq[aw_rp]; aw_rp<=aw_rp+1; m_bresp<=0; m_bvalid<=1; writes<=writes+1;
+        m_bid<=(m_awvalid && m_awready) ? m_awid : awq[aw_rp]; aw_rp<=aw_rp+1; m_bresp<=0; m_bvalid<=1; writes<=writes+1;
       end
       if(m_bvalid && m_bready) m_bvalid<=0;
+      if(p_bvalid && p_bready) pair_b<=pair_b+1;
+      if(h_bvalid && h_bready) host_b<=host_b+1;
       if(m_arvalid && m_arready) begin arq[ar_wp]<=m_arid; ar_wp<=ar_wp+1; end
       if(!m_rvalid && ar_rp<ar_wp) begin
         m_rid<=arq[ar_rp]; m_rdata<={16{64'h0123456789abcdef}} ^ {30'd0,ar_rp[3:0]};
         m_rresp<=0; m_rlast<=1; m_rvalid<=1; ar_rp<=ar_rp+1; reads<=reads+1;
       end else if(m_rvalid && m_rready) m_rvalid<=0;
+      if(p_rvalid && p_rready) pair_r<=pair_r+1;
+      if(h_rvalid && h_rready) host_r<=host_r+1;
     end
   end
   task automatic write_master(input bit host, input logic [3:0] id);
@@ -108,7 +112,7 @@ module tb_hmux;
     join
     wait(writes==2 && reads==2);
     repeat(8) @(posedge clk);
-    if(!p_bvalid || !h_bvalid) $fatal(1,"response routing incomplete");
+    if(pair_b!=1 || host_b!=1 || pair_r!=1 || host_r!=1) $fatal(1,"response routing mismatch: B pair/host=%0d/%0d R pair/host=%0d/%0d",pair_b,host_b,pair_r,host_r);
     $display("PASS: concurrent pair/host AW-W-B and AR-R routing; writes=%0d reads=%0d cycles=%0d",writes,reads,cycle);
     $finish;
   end
