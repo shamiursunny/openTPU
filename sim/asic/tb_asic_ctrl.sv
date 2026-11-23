@@ -67,6 +67,12 @@ module tb_asic_ctrl;
     if (sys_rst || !run_rst) $fatal(1,"loader reset release");
     read_reg(12'h000,32'h4f545055,2'b00);
     read_reg(12'h004,{16'd128,8'd4,8'd8},2'b00);
+    read_reg(12'h03c,32'd5,2'b00);
+    read_reg(12'h040,32'h86000040,2'b00);
+    read_reg(12'h084,32'd65536,2'b00);
+    read_reg(12'h088,32'd32768,2'b00);
+    read_reg(12'h094,32'h01080232,2'b00);
+    read_reg(12'h098,32'd256,2'b00);
 
     // AW-before-W and W-before-AW both must be accepted.
     write_reg(12'h010,32'h1000,0,2'b00);
@@ -84,6 +90,12 @@ module tb_asic_ctrl;
     read_reg(12'h00c,32'h00000008,2'b00);
 
     mem_calib=2'b11;
+    read_reg(12'h00c,32'h00000068,2'b00);
+    ecc_ded=1;
+    write_reg(12'h008,32'h1,0,2'b10);
+    if (!run_rst) $fatal(1,"RUN escaped ECC-DED gate");
+    write_reg(12'h008,32'h4,1,2'b00);
+    ecc_ded=0;
     write_reg(12'h008,32'h3,1,2'b10); // RUN + LOAD must be rejected atomically
     if (load_count != 0 || !run_rst) $fatal(1,"invalid CTRL command had side effects");
     write_reg(12'h008,32'h4,0,2'b00);
