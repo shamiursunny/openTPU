@@ -142,3 +142,14 @@ Run [45224916714](https://github.com/shamiursunny/openTPU/actions/runs/452249167
 - `tests/test_rtlsim_build.py`: simulator build cache/version/flags and concurrent build behaviour.
 
 This is configuration/unit evidence only; it does not execute OpenROAD synthesis, placement, routing or PPA.
+
+
+## 15. Full-chip lint result (2026-11-23)
+
+Run [45224358388](https://github.com/shamiursunny/openTPU/actions/runs/45224358388), commit `77a7b751b9c1f64da2d4484e41d417a70445f7b8`, **passed** full-chip Verilator lint. Full log archived as [sunnyone-fullchip-lint-log](https://github.com/shamiursunny/openTPU/actions/runs/45224358388/artifacts/14842227327).
+
+Warnings remain and are not suppressed as proven safe:
+- 19 `PINMISSING`: unconnected optional multi-card/collective ports at `sim/verilator/tb_top.sv:128`.
+- 7 `LATCH`: block-local temporaries in combinational logic at `rtl/seq/otpu_seq.sv:1153,1820`; inspect whether these are harmless local temporaries or actual inferred state.
+- 3 `UNOPTFLAT`: combinational paths through `otpu_slice.gnt`, `otpu_top.sc_gl` and `otpu_tmem.pq`; require structural review.
+Lint success with `-Wno-fatal` is not formal proof or timing closure.
