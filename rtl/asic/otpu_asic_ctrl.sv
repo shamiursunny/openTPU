@@ -135,22 +135,25 @@ module otpu_asic_ctrl #(
         if (write_addr[1:0] != 2'b00) s_bresp <= 2'b11;
         else case (write_addr)
           12'h008: if (write_strb[0]) begin
-            if (write_data[2]) begin
-              ctrl_error <= 1'b0;
-              cycle_count <= '0; b_rd_count <= '0; b_wr_count <= '0;
-              a_rd_count <= '0; sw_wr_count <= '0; b_stall_count <= '0;
-            end
-            if (write_data[0] && write_data[1]) begin
-              ctrl_error <= 1'b1; s_bresp <= 2'b10;
-            end else if (write_data[0]) begin
-              if (!mem_ready || ld_busy || mem_error) begin
-                ctrl_error <= 1'b1; s_bresp <= 2'b10;
-              end else begin run_rst <= 1'b0; cycle_count <= '0; end
+            // Validate the whole command before applying any side effects.
+            if ((write_data[0] && write_data[1]) ||
+                (write_data[0] && (!mem_ready || ld_busy || mem_error || ecc_ded)) ||
+                (!write_data[0] && write_data[1] &&
+                 (!mem_ready || ld_busy || mem_error || ecc_ded))) begin
+              ctrl_error <= 1'b1;
+              s_bresp <= 2'b10;
             end else begin
-              run_rst <= 1'b1;
-              if (write_data[1]) begin
-                if (mem_ready && !ld_busy && !mem_error) ld_start <= 1'b1;
-                else begin ctrl_error <= 1'b1; s_bresp <= 2'b10; end
+              if (write_data[2]) begin
+                ctrl_error <= 1'b0;
+                cycle_count <= '0; b_rd_count <= '0; b_wr_count <= '0;
+                a_rd_count <= '0; sw_wr_count <= '0; b_stall_count <= '0;
+              end
+              if (write_data[0]) begin
+                run_rst <= 1'b0;
+                cycle_count <= '0;
+              end else begin
+                run_rst <= 1'b1;
+                if (write_data[1]) ld_start <= 1'b1;
               end
             end
           end
