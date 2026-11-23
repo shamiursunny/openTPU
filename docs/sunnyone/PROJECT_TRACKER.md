@@ -287,3 +287,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - ORFS `nangate45-small` archived run: source baseline 2026-10-11 / commit `596d62fa`, D=32, MCOLS=2, LANES=4, 16K TMEM, 8K IMEM, 27 fitted macros. Reported die 7.024 mm², instance area 2.471 mm², macro area 1.308 mm², setup WNS -0.428 ns at a 2.5 ns constraint, vectorless estimated power 0.790 W, zero detailed-route DRC. The README reports 422 MHz register-to-register and 341 MHz including the port budget. Timing did not meet the requested 2.5 ns.
 - OpenLayout `cand2_3p3ns` archived run: 60% utilization, 2.049 mm square die, 27 macros. Global-route WNS +0.156 ns / hold +0.051 ns and zero reported DRC; vectorless power 0.555 W. Detailed extracted-parasitic setup is **-0.05 ns with 31 endpoints and TNS -0.54 ns** (hold +0.04 ns), so extracted setup timing did not close.
 - Both are predictive Nangate45/FreePDK45 proxies, use fitted/abstract memory macros, are older than the current feature-branch RTL, and have vectorless—not workload-calibrated—power. They are not physical silicon, commercial PPA or production signoff. The current exact feature-branch RTL still needs a reproducible PPA rerun; the larger card point remains unqualified.
+
+
+## 34. 128K TMEM qualification and latest toolchain status (2026-11-23)
+
+- Latest isolated one-copy 128K TMEM run [45232540127](https://github.com/shamiursunny/openTPU/actions/runs/45232540127), commit `a2ce7d939d09a4ea5718f3021f19fb8c7723b3d7`: **2 passed, 215 deselected** in 82.95 s. This confirms only the isolated 128K test's two parameter cases, not the full random-traffic matrix or PPA suitability.
+- Verilator 5.044 rerun [45232660602](https://github.com/shamiursunny/openTPU/actions/runs/45232660602), commit `f85595c02a4e8a2948d1fc4fe146ef3fd0ba6dec`: build job was still compiling at last poll after the `libfl-dev` dependency correction; no RTL matrix result yet.
+- Board-functional, subsystem, RTL-tail and software-core jobs on commit `a2ce7d9...` remain in progress. Their exact test totals are pending logs.
+- Branch head now includes the archived-PPA evidence correction and tracker update; main remains at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
