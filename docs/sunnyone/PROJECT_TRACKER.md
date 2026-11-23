@@ -596,3 +596,10 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Testbench commit: e53ad53287c56444e9f4306e78dfe83e110a0486. This fixes a testbench scoreboard assumption, not an RTL defect. No compile or simulation pass is claimed.
 - GitHub Actions remains queued; the previous targeted mux run is 45265993286 against `af37e33c8518090a34c2b68c8b61d523ea449e73`. A new run for the latest bench revision must be inspected once scheduled. Multi-beat and full four-DIMM qualification remain open.
 - Feature branch only; main unchanged; zero paid resources used.
+
+
+## 67. Latest R-checker revision queued for focused simulation (2026-11-24)
+
+- GitHub Actions created focused mux run [45266097205](https://github.com/shamiursunny/openTPU/actions/runs/45266097205) against testbench commit `e53ad53287c56444e9f4306e78dfe83e110a0486`. Job `hmux-sim` (138013284212) is still queued; no runner, compile output or simulation log exists. The broader workflows created on the same commit are also queued.
+- Latest tracker/feature branch commit before this tracker note: `8ff684291c68b791114a0ef9dba0efb111087d48`. `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No RTL functional change, no CI pass and no hardware qualification claim.
+- Next gate: wait for run 45266097205 to execute; inspect Verilator compile warnings/errors and runtime assertions; only then extend to multi-beat/fairness and four-DIMM traffic. No paid resources used.
