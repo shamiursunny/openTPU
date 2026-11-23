@@ -1,9 +1,13 @@
 // ASIC-side AXI4-Lite control block for otpu_asic_top.
 // BAR register semantics follow otpu_ctrl register map v5 for implemented counters/status.
 module otpu_asic_ctrl #(
-  parameter int D = 128,
-  parameter int MCOLS = 4,
-  parameter int LANES = 8
+  parameter int D=128, MCOLS=4, LANES=8,
+  parameter int ACT_BLOCKS=128, ACT_ROWS=8,
+  parameter int TMEM_WORDS=65536, IMEM_WORDS=32768,
+  parameter int MXU_IMPL=2, TMEM_IMPL=3, VPU_CL=2, ULANES=8,
+  parameter bit HAS_DSTEP=1'b1, SEQ_WC=1'b1, ICACHE=1'b0,
+  parameter int CORE_KHZ=0, DDR_MTS=0, PLATFORM=256,
+  parameter logic [31:0] BUILD_ID=32'b0, ARCH_HASH=32'b0
 ) (
   input logic clk, rst,
   input logic [1:0] mem_calib,
@@ -37,6 +41,11 @@ module otpu_asic_ctrl #(
   localparam logic [31:0] ID_VALUE = 32'h4f545055;
   localparam logic [31:0] VERSION_VALUE = {D[15:0], MCOLS[7:0], LANES[7:0]};
   localparam logic [31:0] REGMAP_VALUE = 32'd5;
+  localparam logic [31:0] CAPS_VALUE = (32'(1) << 25) |
+      (HAS_DSTEP ? ((32'(1) << 6) | (32'(1) << 26) | (32'(1) << 31)) : 32'b0);
+  localparam logic [31:0] CFG_UARCH_VALUE =
+      {3'b0, ICACHE, 3'b0, SEQ_WC, ULANES[7:0], VPU_CL[7:0],
+       TMEM_IMPL[3:0], MXU_IMPL[3:0]};
   logic mem_ready;
   logic aw_pending, w_pending, ctrl_error;
   logic [11:0] awaddr_q;
@@ -95,6 +104,19 @@ module otpu_asic_ctrl #(
       12'h034: read_mux = b_stall_count;
       12'h038: read_mux = scratch;
       12'h03c: read_mux = REGMAP_VALUE;
+      12'h040: read_mux = CAPS_VALUE;
+      12'h044: read_mux = CORE_KHZ;
+      12'h048: read_mux = BUILD_ID;
+      12'h054: read_mux = DDR_MTS;
+      12'h058: read_mux = ACT_ROWS;
+      12'h080: read_mux = 32'd1;
+      12'h084: read_mux = TMEM_WORDS;
+      12'h088: read_mux = IMEM_WORDS;
+      12'h08c: read_mux = ACT_BLOCKS;
+      12'h090: read_mux = 32'b0; // external memory topology not selected at the ASIC block boundary
+      12'h094: read_mux = CFG_UARCH_VALUE;
+      12'h098: read_mux = PLATFORM;
+      12'h09c: read_mux = ARCH_HASH;
       default: begin
         if (s_araddr >= 12'h060 && s_araddr <= 12'h07c && s_araddr[1:0] == 2'b00)
           read_mux = rinit[s_araddr[4:2]];
