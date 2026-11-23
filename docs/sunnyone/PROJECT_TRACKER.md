@@ -540,3 +540,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Corrected the module header in `rtl/asic/otpu_asic_wg8_ddr4_top.sv`: it previously implied that host/accelerator arbitration was still to be performed by an external memory subsystem, contradicting the four integrated `otpu_mig_hmux` instances below. The header now accurately states that one mux per DIMM shares host DMA and accelerator traffic; PCIe endpoint/PHY, descriptor engine, global address translation/IOMMU and DDR controller/PHY/ECC remain external.
 - Documentation-only RTL comment correction, commit b0caca731bf81506bae80c5c386de143aab774fd. No functional change and no test result claimed.
 - Next substantive task remains a real two-master simulation of `otpu_mig_hmux` under concurrent host and accelerator transactions, including AW/W/B ordering, AR/R ID routing, backpressure, partial strobes, 4-KiB burst boundaries and reset. Then extend coverage to all four DIMMs through the WG8 wrapper.
+
+
+## 61. Latest workflow batch and next verification gate (2026-11-24)
+
+- After the AW35 diagnostic correction and wrapper boundary-comment correction, GitHub created a fresh seven-workflow batch against commit `b0caca731bf81506bae80c5c386de143aab774fd`: RTL subsystems/WG8 memory 45254175439; reset/power-up audit 45254175518; ASIC/target config 45254175452; WG8 research PPA 45254175482; RTL tail 45254175429; RTL/board regressions 45254175448; full-chip lint 45254175538.
+- All seven were still `queued` at inspection. They provide no test, lint or PPA result. Earlier batch 45253612138, 45253612099, 45253612045, 45253612442, 45253611952, 45253612035 and 45253612066 also remained queued against the earlier commit `bf71ecc1230b97e756ef06418cca54e446632a86`.
+- Confirmed current feature branch HEAD is `46f6109ff267a3e20c17d382910ee18a9c739e0e` after this tracker update; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. The latest seven-workflow batch tested the RTL source commit before this tracker-only commit; no RTL changed after that batch.
+- Current testbench gap is confirmed in source: `sim/verilator/tb_bcuwg.sv` ties all `otpu_mig_hmux.h_*` inputs inactive, so `tests/test_bcuwg_board.py` cannot qualify host/accelerator concurrency. The next verification work must instantiate the actual mux with independent host and pair drivers and an AXI DIMM model, then integrate equivalent traffic into the four-DIMM wrapper bench.
+- No functional test pass is claimed; no physical validation or tapeout readiness; no paid resources; `main` unchanged.
