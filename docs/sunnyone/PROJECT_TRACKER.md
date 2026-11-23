@@ -533,3 +533,10 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Current Actions listing showed a large backlog of queued workflows; the newest listed jobs were still queued and tested older source commits (latest visible run head included a02473009179410f48c6a6528134857543a4447a). These are not completed results and do not validate the AW35/host-mux edits. After this commit, rerun/poll targeted wrapper lint, AW35 regression, config/control, full-chip lint, reset, subsystem and WG8 PPA workflows against the current branch head.
 - Code review confirmed the wrapper uses four `otpu_mig_hmux` instances and 34-bit DIMM-local AXI interfaces; current wrapper guards bit 33. The existing `tb_bcuwg.sv` board bench documents that its host side is idle, so it does not validate simultaneous host-DMA and accelerator traffic. Four-DIMM dual-master adversarial verification remains the next substantive verification task.
 - No CI pass is claimed from this inspection; no paid resources used; `main` untouched.
+
+
+## 60. Corrected stale WG8 wrapper boundary comment (2026-11-24)
+
+- Corrected the module header in `rtl/asic/otpu_asic_wg8_ddr4_top.sv`: it previously implied that host/accelerator arbitration was still to be performed by an external memory subsystem, contradicting the four integrated `otpu_mig_hmux` instances below. The header now accurately states that one mux per DIMM shares host DMA and accelerator traffic; PCIe endpoint/PHY, descriptor engine, global address translation/IOMMU and DDR controller/PHY/ECC remain external.
+- Documentation-only RTL comment correction, commit b0caca731bf81506bae80c5c386de143aab774fd. No functional change and no test result claimed.
+- Next substantive task remains a real two-master simulation of `otpu_mig_hmux` under concurrent host and accelerator transactions, including AW/W/B ordering, AR/R ID routing, backpressure, partial strobes, 4-KiB burst boundaries and reset. Then extend coverage to all four DIMMs through the WG8 wrapper.
