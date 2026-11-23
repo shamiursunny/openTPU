@@ -44,6 +44,12 @@ module otpu_asic_wg8_ddr4_top #(
   output logic [3:0][3:0] m_awid,
   output logic [3:0][33:0] m_awaddr,
   output logic [3:0][7:0] m_awlen,
+  output logic [3:0][2:0] m_awsize,
+  output logic [3:0][1:0] m_awburst,
+  output logic [3:0] m_awlock,
+  output logic [3:0][3:0] m_awcache,
+  output logic [3:0][2:0] m_awprot,
+  output logic [3:0][3:0] m_awqos,
   output logic [3:0] m_wvalid,
   input  logic [3:0] m_wready,
   output logic [3:0][511:0] m_wdata,
@@ -58,6 +64,12 @@ module otpu_asic_wg8_ddr4_top #(
   output logic [3:0][3:0] m_arid,
   output logic [3:0][33:0] m_araddr,
   output logic [3:0][7:0] m_arlen,
+  output logic [3:0][2:0] m_arsize,
+  output logic [3:0][1:0] m_arburst,
+  output logic [3:0] m_arlock,
+  output logic [3:0][3:0] m_arcache,
+  output logic [3:0][2:0] m_arprot,
+  output logic [3:0][3:0] m_arqos,
   input  logic [3:0] m_rvalid,
   output logic [3:0] m_rready,
   input  logic [3:0][3:0] m_rid,
@@ -101,6 +113,19 @@ module otpu_asic_wg8_ddr4_top #(
   // The control block exposes two calibration groups; both channels on each DIMM pair must pass.
   assign mem_calib_groups = {(&mem_calib[3:2]), (&mem_calib[1:0])};
   assign bridge_error = n_err;
+  // The paired bridge emits 512-bit, 64-byte INCR transactions.
+  assign m_awsize  = {4{3'd6}};
+  assign m_awburst = {4{2'b01}};
+  assign m_awlock  = '0;
+  assign m_awcache = {4{4'b0011}};
+  assign m_awprot  = '0;
+  assign m_awqos   = '0;
+  assign m_arsize  = {4{3'd6}};
+  assign m_arburst = {4{2'b01}};
+  assign m_arlock  = '0;
+  assign m_arcache = {4{4'b0011}};
+  assign m_arprot  = '0;
+  assign m_arqos   = '0;
 
   otpu_asic_mem_top #(
     .AW(AW), .NCH(NCH), .CB(CB), .FIFO_DEPTH(FIFO_DEPTH), .WG(8)
