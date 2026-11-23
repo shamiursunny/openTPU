@@ -110,7 +110,7 @@ module otpu_asic_wg8_ddr4_top #(
       $fatal(1, "otpu_asic_wg8_ddr4_top: expected WG8 AW36/NCH8/CB128/CAW26 configuration");
   end
 
-  // The control block exposes two calibration groups; both channels on each DIMM pair must pass.
+  // The control block exposes two calibration groups; both DIMMs in each group must pass.
   assign mem_calib_groups = {(&mem_calib[3:2]), (&mem_calib[1:0])};
   assign bridge_error = n_err;
   // The paired bridge emits 512-bit, 64-byte INCR transactions.
