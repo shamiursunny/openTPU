@@ -4,7 +4,7 @@ Last updated: 2026-11-23 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest verified RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Current active branch head before this update: `aa6c5009cef161d83304786e95def718786bc6bd`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+Latest verified RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Current active branch head before this update: `372c8fffce7dc4ac1368cbf0a636e50ffbc0c853`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 
 ## 1. Product objective and decision rule
 
@@ -183,3 +183,8 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 
 - Added a dedicated workflow using a pinned OSS CAD Suite release (2026-11-23) with SHA-256 verification. It installs the Yosys slang frontend and runs `tests/test_reset_audit.py` rather than silently skipping it in the ordinary Verilator-only job.
 - This is a synthesis-based reset-state audit, not a formal proof of the entire chip.
+
+
+## 21. Remaining RTL tail regression result
+
+Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/45224697471), commit `95cbec3af34c066d0a8a0e448c0c9a36b7c7e288`, passed **33 tests**, with 1 expected parameter skip and 183 deselected, in 900.01 s. Covered the remaining non-experimental test functions for random power-up, card TMEM reads, concurrent TMEM writers/replay progress, collective-vs-DMA reads, ACT-row gating, lane-count invariance and sequential LDC BIST. The single skip was the intentional invalid PAIR/ACT_ROWS parameter combination (`PAIR needs 2M <= MCOLS; M <= ACT_ROWS`), not a test failure.
