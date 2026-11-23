@@ -135,7 +135,7 @@ module tb_axil_iso;
   logic [1:0] bresp_q, rresp_q;
   logic [31:0] rdata_q;
   always_ff @(posedge clk) begin
-    if (m_rst || s_rst) expected_write <= 1'b0;
+    if (s_rst) expected_write <= 1'b0;
     else if (m_awready) begin
       expected_waddr <= m_awaddr;
       expected_wdata <= m_wdata;
