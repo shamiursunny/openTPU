@@ -48,11 +48,11 @@ No block may be treated as implemented merely because it appears in this logical
 - RUN is accepted only after memory calibration, loader completion and no fatal memory/clock error.
 - RUN falling stops new compute requests; outstanding writes must drain before host memory reuse. Reads in flight are discarded only under the documented reset/abort contract.
 - STATUS must expose HALTED, ERROR, LOADING, WR_IDLE, AXI/memory error, calibration, RUN, timeout and uncorrectable ECC.
-- Sticky control-command errors are readable at 0x1C and cleared by writing bit 0 = 1 (W1C); external memory errors remain a separate live status input.
+- CTRL bit 2 clears the local activity counters and sticky control-command error. The wrapper implements CYCLES/CYCLES_HI, ICOUNT, B_RD, B_WR, A_RD, SW_WR and B_STALL at the v5 offsets; external memory errors and ECC-DED remain separate STATUS bits.
 - Unsupported or reserved writes return a defined AXI-Lite response; no silent aliasing.
 - Host software must read immutable capability/configuration fields and reject incompatible binaries.
 
-This is the minimal implemented AXI-Lite control wrapper contract in `rtl/asic/otpu_asic_ctrl.sv`; it is now instantiated with `otpu_asic_top` by `rtl/asic/otpu_asic_chip_top.sv`. PCIe BAR transport and host DMA remain external. CI qualification is pending.
+This is the implemented AXI-Lite control wrapper contract in `rtl/asic/otpu_asic_ctrl.sv`; it is instantiated with `otpu_asic_top` by `rtl/asic/otpu_asic_chip_top.sv`. PCIe BAR transport and host DMA remain external. CI qualification is pending.
 
 ## 4. Clock and reset domains
 
