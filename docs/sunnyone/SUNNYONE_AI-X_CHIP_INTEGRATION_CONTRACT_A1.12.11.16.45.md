@@ -1,3 +1,5 @@
+<!-- Historical WG1/MCOLS4 integration contract. Superseded by SUNNYONE_AI-X_WG8_ASIC_ARCHITECTURE_A1.12.11.16.46.md. -->
+
 # SUNNYONE AI-X — ASIC Chip-Level Integration Contract
 
 **Revision:** A1.12.11.16.45  
