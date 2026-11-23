@@ -18,8 +18,9 @@ module otpu_asic_chip_top
 ) (
   input logic clk,
   input logic rst,
-  input logic mem_ready,
+  input logic [1:0] mem_calib,
   input logic mem_error,
+  input logic ecc_ded,
 
   // Host BAR0 AXI4-Lite control interface.
   input logic [11:0] s_awaddr,
@@ -69,8 +70,9 @@ module otpu_asic_chip_top
   logic [7:0][31:0] rinit;
 
   otpu_asic_ctrl #(.D(D), .MCOLS(MCOLS), .LANES(LANES)) u_ctrl (
-    .clk, .rst, .mem_ready, .mem_error, .halted, .core_error(error),
+    .clk, .rst, .mem_calib, .mem_error, .ecc_ded, .halted, .core_error(error),
     .ld_busy, .wr_idle, .wait_to, .a_inval, .icount,
+    .a_req, .a_rdy, .b_req, .b_rdy, .b_we, .sw_req, .sw_rdy,
     .s_awaddr, .s_awvalid, .s_awready, .s_wdata, .s_wstrb, .s_wvalid, .s_wready,
     .s_bresp, .s_bvalid, .s_bready, .s_araddr, .s_arvalid, .s_arready,
     .s_rdata, .s_rresp, .s_rvalid, .s_rready,
