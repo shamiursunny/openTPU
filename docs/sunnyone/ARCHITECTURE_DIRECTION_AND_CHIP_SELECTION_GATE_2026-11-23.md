@@ -7,7 +7,7 @@ Pinned openTPU reference: FeSens/openTPU d84db55712aba0d40811d7762cb052f05d55b7e
 
 ## Decision
 Proceed with a programmable, workload-oriented inference accelerator architecture, not a fixed-function single-model engine:
-- RISC-V host/control plane for boot, scheduling, telemetry, security, and system management.
+- Host-server control plane for boot orchestration, scheduling, telemetry, security policy and system management. The first-version accelerator contains no on-chip RISC-V CPU or boot ROM; its existing sequencer and AXI4-Lite control/status block remain the on-chip control mechanism. Add an embedded CPU only after a measured requirement justifies it.
 - Tiled matrix engine for dense linear algebra and attention projections, with supported low-precision formats selected by workload evidence.
 - Vector/SIMD datapath for elementwise operations, normalisation, quantisation/dequantisation, activation functions, and irregular kernels.
 - Explicit local SRAM scratchpads and DMA to reduce off-chip traffic; capacity/banking are sized from measured traces.

@@ -14,9 +14,9 @@ Zero-spend by default. No paid service, hardware purchase, or other expenditure 
 
 ## 2. Current stage
 
-**Stage:** A1.12.11.16.34 — reproducible RTL regression / AXI-Lite reset isolation checkpoint.
+**Stage:** A1.12.11.16.45 — remaining RTL/board qualification and reference-chip specification.
 
-**Latest verified baseline:** run [45209168224](https://github.com/shamiursunny/openTPU/actions/runs/45209168224), commit `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Follow-up run [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099) is active on workflow-only changes; its LDC job passed, while its main job redundantly reruns the already-passed selection.
+**Latest verified baseline:** run [45209168224](https://github.com/shamiursunny/openTPU/actions/runs/45209168224): 99 RTL/ISA tests + 1 AXI-Lite test passed. Run [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099) completed successfully but repeated those tests; its LDC test is a duplicate within the 99-test selection. Focused uncovered-test run [45222828630](https://github.com/shamiursunny/openTPU/actions/runs/45222828630), commit `7f29437bf26c73dac49693ca96e2b2aa60da4ae7`, is currently running; no result is assumed.
 
 **Observed result: PASS.** Job completed with success. Both workflow steps completed successfully:
 - Expanded RTL-versus-ISA tests.
@@ -107,3 +107,12 @@ Verified baseline remains 99 RTL/ISA tests + 1 AXI-Lite isolation test passed on
 - Commit comparison `24b6780...` to `66c708e...` showed only workflow and tracker files changed. Thus the 99-test rerun in run `45217729099` adds no source-change validation.
 - `tests/test_board.py` had module-scope optional PyTorch/Transformers skips at lines 671–672. Those skips prevented every preceding board/host test from being collected when either optional dependency was absent. Optional imports are now local to the model-only tests/helpers.
 - New CI avoids repeating the passed RTL selection and AXI-Lite test; it targets previously unrun core RTL/ISA tests and the board/host suite. Experimental one-copy TMEM IMPL=3 tests remain excluded.
+
+
+## 11. Reference chip architecture decision (A1.12.11.16.44)
+
+- Created `docs/sunnyone/SUNNYONE_AI-X_REFERENCE_CHIP_ARCHITECTURE_A1.12.11.16.44.md` as the consolidated logical architecture and implementation contract.
+- Resolved contradictory documents: first-version design is host-controlled, with host server runtime and the existing on-chip sequencer/`otpu_ctrl`; no on-chip RISC-V CPU or boot ROM is selected. A future embedded CPU requires a measured requirement.
+- The logical architecture is defined; exact FPGA/SoC/ASIC, package, external memory, tile scale, clock, power and production implementation remain unselected.
+- The current CI run `45222828630` runs previously unselected RTL/ISA tests and board tests. The prior 100 distinct passing tests are not intentionally repeated.
+- Remaining RTL functions found by name-level audit: `test_one_copy_tmem_of_128k_words`, `test_random_power_up`, `test_mxu_reads_on_the_card_tmem`, `test_one_copy_two_writers`, `test_one_copy_two_writes_replays_make_progress`, `test_collective_reads_held_behind_dma_reads`, `test_act_reads_follow_the_mm_rows`, `test_lane_count_does_not_change_results`, `test_ldc_sequential_is_the_card_bist`. `test_one_copy_tmem_of_128k_words` remains excluded pending the known TMEM implementation/elaboration investigation; the other eight require disposition and test execution.

@@ -112,7 +112,7 @@ The NanGate45 FreePDK45 flow is a research PPA proxy, not a manufacturable found
 - SRAM macro compiler, capacity, banking, ECC and physical organisation.
 - External memory type, capacity, channel topology, controller and PHY.
 - Host interface, PCIe/Ethernet generation and board topology.
-- On-chip RISC-V core choice, boot/security architecture and firmware.
+- No on-chip RISC-V CPU is selected for the first version. Any future embedded controller and secure-boot architecture require a separately justified requirement and design review.
 - Precision mix and per-model kernel coverage.
 - Power envelope, cooling, BOM, selling price and deployment model.
 
