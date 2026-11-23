@@ -15,6 +15,8 @@ module otpu_asic_chip_top
   parameter bit SEQ_WC=1'b1, ICACHE=1'b0,
   parameter int IC_LINES=16, IC_PF=2,
   parameter bit COLL_GATHER=1'b0,
+  parameter bit HOSTCAL=1'b0, CHASH=1'b0, PAIR=1'b1, HAS_TEMP=1'b0, HAS_I2C=1'b0,
+  parameter int PQ_WIN=1024, TRACE_DEPTH=0,
   parameter int CORE_KHZ=0, DDR_MTS=0, PLATFORM=256,
   parameter logic [31:0] BUILD_ID=32'b0, ARCH_HASH=32'b0
 ) (
@@ -88,7 +90,9 @@ module otpu_asic_chip_top
     .D(D), .MCOLS(MCOLS), .LANES(LANES), .ACT_BLOCKS(ACT_BLOCKS), .ACT_ROWS(ACT_ROWS),
     .TMEM_WORDS(TMEM_WORDS), .IMEM_WORDS(IMEM_WORDS), .MXU_IMPL(MXU_IMPL),
     .TMEM_IMPL(TMEM_IMPL), .VPU_CL(VPU_CL), .ULANES(ULANES), .HAS_DSTEP(HAS_DSTEP),
-    .SEQ_WC(SEQ_WC), .ICACHE(ICACHE), .CORE_KHZ(CORE_KHZ), .DDR_MTS(DDR_MTS),
+    .SEQ_WC(SEQ_WC), .ICACHE(ICACHE), .HOSTCAL(HOSTCAL), .CHASH(CHASH), .PAIR(PAIR),
+    .HAS_TEMP(HAS_TEMP), .HAS_I2C(HAS_I2C), .PQ_WIN(PQ_WIN), .TRACE_DEPTH(TRACE_DEPTH),
+    .CORE_KHZ(CORE_KHZ), .DDR_MTS(DDR_MTS),
     .PLATFORM(PLATFORM), .BUILD_ID(BUILD_ID), .ARCH_HASH(ARCH_HASH)
   ) u_ctrl (
     .clk, .rst, .mem_calib(calib_sync), .mem_error(memerr_sync), .ecc_ded(ecc_sync), .halted, .core_error(error),
