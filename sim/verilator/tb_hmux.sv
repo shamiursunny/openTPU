@@ -104,7 +104,7 @@ module tb_hmux;
         pair_b<=pair_b+1;
       end
       if(h_bvalid && h_bready) begin
-        if(m_bid!=4'h4) $fatal(1,"host BID mismatch: %h",m_bid);
+        if(h_bresp!=2'b00) $fatal(1,"host BRESP mismatch: %b",h_bresp);
         host_b<=host_b+1;
       end
       if(m_arvalid && m_arready) begin
