@@ -283,5 +283,15 @@ module otpu_asic_wg8_ddr4_top #(
       .m_rvalid(m_rvalid[d]), .m_rready(m_rready[d]), .m_rid(m_rid[d]),
       .m_rdata(m_rdata[d]), .m_rresp(m_rresp[d]), .m_rlast(m_rlast[d])
     );
+`ifndef SYNTHESIS
+    // Four 8-GiB DIMMs use only 33 local byte-address bits. The 34th AXI
+    // address bit is retained for interface compatibility but must never be set.
+    always_ff @(posedge aclk) if (!dimm_rst_sync[d]) begin
+      if ((h_awvalid[d] && h_awaddr[d][33]) || (h_arvalid[d] && h_araddr[d][33]))
+        $fatal(1, "WG8 host DMA address exceeds 8-GiB DIMM aperture");
+      if ((m_awvalid[d] && m_awaddr[d][33]) || (m_arvalid[d] && m_araddr[d][33]))
+        $fatal(1, "WG8 DIMM controller address exceeds 8-GiB aperture");
+    end
+`endif
   end
 endmodule
