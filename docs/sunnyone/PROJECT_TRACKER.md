@@ -468,3 +468,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The regression compiles only otpu_tech_ram + otpu_native_dram + tb_asic_aw36, then checks the PASS marker through the existing Verilator test fixture. It still awaits CI execution; no pass claimed.
 - Control RTL changes are on branch; a_we is wired from compute to the counter logic. Full-chip lint and ASIC control CI have not yet returned completed results.
 - Latest branch head: 399b3709b304a80ed493ebdfc9d1ab8a7b82275a. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5.
+
+## 53. WG8 four-DIMM ASIC memory integration boundary (2026-11-24)
+
+- Added rtl/asic/otpu_asic_wg8_ddr4_top.sv. It instantiates the existing ASIC core/native-memory top, eight otpu_hbm_ch native-to-AXI3 256-bit bridges, and four otpu_mig_pair 2-channel-to-AXI4 512-bit adapters.
+- Exposes four 34-bit-local-address, 512-bit DIMM/controller ports. AxSIZE=6 (64 bytes), AxBURST=INCR; fixed cache/protection/QoS attributes are explicit. Four DIMM calibration signals are reduced into two fail-closed status groups; any bridge's sticky protocol error is fed back to stop compute.
+- Added a Verilator lint step for otpu_asic_wg8_ddr4_top to sunnyone-asic-config.yml, using the BCU1525 WG8 generic source set plus ASIC top modules. The step is not yet confirmed because GitHub Actions jobs remain queued.
+- Added docs/sunnyone/SUNNYONE_AI-X_WG8_DDR4_INTEGRATION_A1.12.11.16.50.md describing the hierarchy, port contract and outstanding integration gates.
+- Critical limit: this is the accelerator-to-four-DIMM AXI integration boundary, **not** a complete SoC. PCIe endpoint/PHY, DMA engine, host/accelerator arbitration and shared ordering, IOMMU, DDR controller/PHY/ECC, foundry PDK, DFT and physical signoff remain open. The host DMA must be integrated into the same controller/interconnect ordering domain; do not attach it to a separate memory path.
+- Latest CI workflow run for the wrapper lint is [45251120714](https://github.com/shamiursunny/openTPU/actions/runs/45251120714), queued. ASIC control, PPA, reset, subsystem and RTL jobs are also queued; no results are inferred.
+- Latest branch head at this checkpoint: 7f9d9d5d653bf6eaa8c6d123bacb74f50c3c46ce. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5. No hardware or paid resources used.
