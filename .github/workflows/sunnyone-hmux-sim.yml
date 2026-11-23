@@ -1,0 +1,28 @@
+name: SUNNYONE shared DIMM host and accelerator mux simulation
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/boards/bcu1525/otpu_mig_hmux.sv'
+      - 'rtl/mem/otpu_axi_rs.sv'
+      - 'rtl/shell/otpu_mem_ch.sv'
+      - 'sim/verilator/tb_hmux.sv'
+      - '.github/workflows/sunnyone-hmux-sim.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hmux-sim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Build and run concurrent host/pair mux test
+        run: |
+          verilator --binary --timing --assert -Wall -Wno-fatal --top-module tb_hmux \
+            rtl/shell/otpu_mem_ch.sv rtl/mem/otpu_axi_rs.sv \
+            rtl/boards/bcu1525/otpu_mig_hmux.sv sim/verilator/tb_hmux.sv
+          ./obj_dir/Vtb_hmux
