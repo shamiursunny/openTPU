@@ -78,6 +78,9 @@ module tb_asic_ctrl;
     write_reg(12'h008,32'h1,0,2'b10);
     if (!run_rst) $fatal(1,"RUN escaped memory-ready gate");
     read_reg(12'h00c,32'h0000000a,2'b00);
+    read_reg(12'h01c,32'h00000001,2'b00);
+    write_reg(12'h01c,32'h1,1,2'b00);
+    read_reg(12'h00c,32'h00000008,2'b00);
 
     mem_ready=1;
     write_reg(12'h008,32'h2,1,2'b00);
