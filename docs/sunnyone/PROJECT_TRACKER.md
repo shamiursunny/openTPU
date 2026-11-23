@@ -486,3 +486,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Wrapper Verilator lint is wired into sunnyone-asic-config.yml and will elaborate the BCU1525 WG8 source set plus ASIC modules. The latest relevant run is [45251120714](https://github.com/shamiursunny/openTPU/actions/runs/45251120714), but it was queued at last poll. No lint pass claimed.
 - Multiple historical CI runs (including ASIC control, WG8 memory regression, full-chip lint, PPA and reset audit) have remained queued since 2026-11-23; the GitHub Actions runner queue is currently blocking verification. Do not claim these tests passed until jobs start and finish.
 - Latest source/doc commit at checkpoint: 2c8ea3acbfc17de16c516afab69aa00d01146e17. main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No purchase or paid tool/IP used.
+
+
+## 55. WG8 host-DMA and accelerator shared-DIMM arbitration (2026-11-24)
+
+- Integrated four instances of the existing BCU1525 `otpu_mig_hmux` into `rtl/asic/otpu_asic_wg8_ddr4_top.sv`: one 512-bit host AXI4 master per DIMM now shares the same DIMM AXI path with that DIMM's accelerator channel pair.
+- Arbitration preserves AXI4 write-data ownership/order with the existing owner FIFO, routes B/R responses using reserved host ID bit 2, and uses the existing W/R register slices. Host addresses at this boundary are 34-bit DIMM-local addresses; a PCIe DMA/address-translation block must still perform card-global-to-DIMM/channel mapping.
+- Updated `sunnyone-asic-config.yml` to include `rtl/boards/bcu1525/otpu_mig_hmux.sv` in the WG8 top lint source set. Updated integration specification A1.12.11.16.51.
+- This closes the previous missing RTL mux between host and accelerator at the DIMM port, but is **not** a PCIe endpoint or DMA engine. IOMMU/aperture enforcement, descriptor handling, MSI-X, global address translation, DDR controller/PHY/ECC, FLR/hot-reset, full CDC/RDC, formal, physical PPA and signoff remain open.
+- New lint and adversarial dual-master simulation have not yet completed. Existing queued workflow jobs must not be treated as passes. Next verification: compile/lint this top with hmux included, then build four-DIMM dual-master tests covering AW/W order, ID routing, overlapping-address visibility, partial writes, response stalls, reset and address remap.
+- No hardware, paid licence or paid IP used; `main` remains untouched.
