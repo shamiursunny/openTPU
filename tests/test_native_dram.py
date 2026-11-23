@@ -380,7 +380,7 @@ def test_port_b_goes_before_w_rtl(have_verilator, wstream):
 
 def test_wg8_asic_aw35_high_address_decode_rtl(have_verilator):
     """A 16-GiB byte address must retain its high bits through the 35-bit ASIC memory adapter.
-    The small testbench observes the native command directly, avoiding a 64-GiB simulation array."""
+    The small testbench observes the native command directly, avoiding a 32-GiB simulation array."""
     src = [rtlsim.RTL / "tech/generic/otpu_tech_ram.sv",
            rtlsim.RTL / "mem/otpu_native_dram.sv",
            Path(__file__).resolve().parents[1] / "sim/asic/tb_asic_aw35.sv"]
