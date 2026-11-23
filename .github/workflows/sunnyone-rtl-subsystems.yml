@@ -1,4 +1,4 @@
-name: SUNNYONE additional RTL subsystem regressions
+name: SUNNYONE RTL subsystems and WG8 memory regressions
 on:
   push:
     branches:
