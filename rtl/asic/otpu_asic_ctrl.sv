@@ -47,7 +47,7 @@ module otpu_asic_ctrl #(
       {3'b0, ICACHE, 3'b0, SEQ_WC, ULANES[7:0], VPU_CL[7:0],
        TMEM_IMPL[3:0], MXU_IMPL[3:0]};
   logic mem_ready;
-  logic aw_pending, w_pending, ctrl_error;
+  logic aw_pending, w_pending, ctrl_error, load_inflight, load_seen_busy;
   logic [11:0] awaddr_q;
   logic [31:0] wdata_q;
   logic [3:0] wstrb_q;
@@ -91,7 +91,7 @@ module otpu_asic_ctrl #(
       12'h008: read_mux = {31'b0, !run_rst};
       12'h00c: read_mux = {22'b0, ecc_ded, wait_to, !run_rst,
                            mem_calib[1], mem_calib[0], mem_error, wr_idle,
-                           ld_busy, (core_error | ctrl_error), halted};
+                           (ld_busy | load_inflight), (core_error | ctrl_error), halted};
       12'h010: read_mux = ld_addr;
       12'h014: read_mux = ld_n;
       12'h018: read_mux = cycle_count[31:0];
@@ -130,6 +130,7 @@ module otpu_asic_ctrl #(
       sys_rst <= 1'b1; run_rst <= 1'b1; ld_start <= 1'b0;
       ld_addr <= '0; ld_n <= '0; rinit <= '0; scratch <= '0;
       aw_pending <= 1'b0; w_pending <= 1'b0; awaddr_q <= '0;
+      load_inflight <= 1'b0; load_seen_busy <= 1'b0;
       wdata_q <= '0; wstrb_q <= '0; s_bresp <= 2'b00; s_bvalid <= 1'b0;
       s_rdata <= '0; s_rresp <= 2'b00; s_rvalid <= 1'b0; ctrl_error <= 1'b0;
       cycle_count <= '0; b_rd_count <= '0; b_wr_count <= '0;
@@ -137,6 +138,11 @@ module otpu_asic_ctrl #(
     end else begin
       sys_rst <= 1'b0;
       ld_start <= 1'b0;
+      if (load_inflight && ld_busy) load_seen_busy <= 1'b1;
+      if (load_inflight && load_seen_busy && !ld_busy) begin
+        load_inflight <= 1'b0;
+        load_seen_busy <= 1'b0;
+      end
       if (s_bvalid && s_bready) s_bvalid <= 1'b0;
       if (s_rvalid && s_rready) s_rvalid <= 1'b0;
       if (aw_take) begin aw_pending <= 1'b1; awaddr_q <= s_awaddr; end
@@ -159,9 +165,9 @@ module otpu_asic_ctrl #(
           12'h008: if (write_strb[0]) begin
             // Validate the whole command before applying any side effects.
             if ((write_data[0] && write_data[1]) ||
-                (write_data[0] && (!mem_ready || ld_busy || mem_error || ecc_ded)) ||
+                (write_data[0] && (!mem_ready || ld_busy || load_inflight || mem_error || ecc_ded)) ||
                 (!write_data[0] && write_data[1] &&
-                 (!mem_ready || ld_busy || mem_error || ecc_ded))) begin
+                 (!mem_ready || ld_busy || load_inflight || mem_error || ecc_ded))) begin
               ctrl_error <= 1'b1;
               s_bresp <= 2'b10;
             end else begin
@@ -175,7 +181,11 @@ module otpu_asic_ctrl #(
                 cycle_count <= '0;
               end else begin
                 run_rst <= 1'b1;
-                if (write_data[1]) ld_start <= 1'b1;
+                if (write_data[1]) begin
+                  ld_start <= 1'b1;
+                  load_inflight <= 1'b1;
+                  load_seen_busy <= 1'b0;
+                end
               end
             end
           end
