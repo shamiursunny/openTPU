@@ -60,6 +60,17 @@ The diagram combines implemented openTPU blocks with explicitly unselected platf
 
 Therefore, a chip-level integration wrapper remains to be designed and verified. It must define the host control/data interface, map run/load/status onto the ASIC block, connect DMA/memory ports to the chosen controller/PHY, and specify clock/reset/calibration/error contracts. Do not describe the present `otpu_asic_top` as a complete PCIe AI accelerator chip.
 
+### ASIC compute-block port contract
+
+At the `otpu_asic_top` boundary:
+- Run/load control: `sys_rst`, `rst`, eight 32-bit initial arguments (`R8..R15`), `ld_start`, `ld_addr`, `ld_n`; status includes `ld_busy`, `halted`, `error`, `wait_to`, `a_inval` and `icount`.
+- Port A: 32-bit address, 32-bit write data, 4 byte enables; 256-bit aligned read-data return with valid/ready/idle handshakes.
+- Scalar write port SW: 32-bit address/data and 4 byte enables.
+- Port B: 32-bit address, `D*8`-bit data and `D/4`-bit write mask, tag/parity and read-valid/tag return. At the reference `D=128`, this is 1,024 data bits and 32 mask bits per chunk.
+- A/SW/B ports use explicit ready, valid and idle contracts; the external memory adapter must translate these to the selected controller's beat, burst, ordering and credit rules.
+
+These are compute-block interfaces, not a DDR electrical interface. The YPCB-00338 reference memory path uses two 64-byte-beat DDR3 channels; do not apply that channel width to another device without a target-specific design.
+
 ## 3. Functional blocks and contracts
 
 | Block | Responsibility | Evidence / implementation boundary |

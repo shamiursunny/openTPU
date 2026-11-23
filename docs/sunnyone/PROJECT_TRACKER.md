@@ -171,3 +171,9 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 
 - Isolated 128K one-copy test passed both parametrized cases under Verilator 5.032. Previous internal elaboration error is not reproducible in run `45225974726`.
 - One-copy TMEM remains a candidate for ASIC PPA comparison; do not freeze until all relevant regressions and physical macro/timing analysis pass.
+
+
+## 19. ASIC interface contract documented
+
+- Added exact `otpu_asic_top` run/load/status and A/SW/B memory-port widths to the reference chip specification. At D=128, port B's chunk is 1,024 bits with a 32-bit byte-lane mask; this is not a DDR beat width.
+- Chip wrapper, PCIe/host interface and external memory-controller integration remain open.
