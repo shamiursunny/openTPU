@@ -478,3 +478,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Critical limit: this is the accelerator-to-four-DIMM AXI integration boundary, **not** a complete SoC. PCIe endpoint/PHY, DMA engine, host/accelerator arbitration and shared ordering, IOMMU, DDR controller/PHY/ECC, foundry PDK, DFT and physical signoff remain open. The host DMA must be integrated into the same controller/interconnect ordering domain; do not attach it to a separate memory path.
 - Latest CI workflow run for the wrapper lint is [45251120714](https://github.com/shamiursunny/openTPU/actions/runs/45251120714), queued. ASIC control, PPA, reset, subsystem and RTL jobs are also queued; no results are inferred.
 - Latest branch head at this checkpoint: 7f9d9d5d653bf6eaa8c6d123bacb74f50c3c46ce. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5. No hardware or paid resources used.
+
+## 54. WG8 DDR4 wrapper reset-domain hardening (2026-11-24)
+
+- Added per-DIMM active-high reset synchronisers into aclk in otpu_asic_wg8_ddr4_top; pair reset is released after two stages and each channel bridge one additional aclk cycle later. Core reset asynchronously asserts the synchronisers and deassertion is observed through the aclk stages.
+- Updated the integration document with the reset approach and its limitation: full CDC/RDC and reset fault-injection remain unverified.
+- Wrapper Verilator lint is wired into sunnyone-asic-config.yml and will elaborate the BCU1525 WG8 source set plus ASIC modules. The latest relevant run is [45251120714](https://github.com/shamiursunny/openTPU/actions/runs/45251120714), but it was queued at last poll. No lint pass claimed.
+- Multiple historical CI runs (including ASIC control, WG8 memory regression, full-chip lint, PPA and reset audit) have remained queued since 2026-11-23; the GitHub Actions runner queue is currently blocking verification. Do not claim these tests passed until jobs start and finish.
+- Latest source/doc commit at checkpoint: 2c8ea3acbfc17de16c516afab69aa00d01146e17. main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No purchase or paid tool/IP used.
