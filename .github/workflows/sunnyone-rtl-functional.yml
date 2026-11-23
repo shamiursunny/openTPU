@@ -26,8 +26,17 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-      - name: Install Verilator
-        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Build pinned Verilator 5.044 (fixes function inlining on NBA RHS)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git help2man perl python3 make autoconf g++ flex bison ccache libgoogle-perftools-dev numactl perl-doc
+          git clone --depth 1 --branch v5.044 https://github.com/verilator/verilator.git /tmp/verilator
+          cd /tmp/verilator
+          autoconf
+          ./configure
+          make -j2
+          sudo make install
+          verilator --version | grep -F 'Verilator 5.044'
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
       - name: Previously unrun core RTL and ISA regressions
