@@ -384,3 +384,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Control testbench now includes register map/capability checks, traffic counters, load-inflight gating, ECC and calibration gating, fatal memory-error abort, and sticky-error recovery. Latest run [45242112410](https://github.com/shamiursunny/openTPU/actions/runs/45242112410) is queued. Integrated ASIC-top lint run [45242138796](https://github.com/shamiursunny/openTPU/actions/runs/45242138796) and full-chip lint run [45242138766](https://github.com/shamiursunny/openTPU/actions/runs/45242138766) are queued; no pass claimed.
 - Older run 45235689174 (RTL-tail regression at commit 01e5184) completed successfully. Runs 45235689166 and 45235689172 remained in progress; do not treat them as passed.
 - Current ASIC subsystem still excludes PCIe endpoint/hard IP, host DMA, DMA-to-memory adapter, external memory controller/PHY/ECC implementation and DFT. Nangate45 remains a research proxy. The final manufacturable process, package, board, physical closure and full-chip production design remain open.
+
+
+## 45. Host register-map fidelity and current verification queue (2026-11-24)
+
+- Corrected ASIC CAPS/CAPS2 generation to mirror the existing v5 control block's field semantics: WAITW/GEN/MX, DSTEP, ARG, ACT_ROWS, PQ window, trace depth, channel hash, PAIR, 4-bit MM, DDR rate, temperature/I2C and trace flags. CAPS2 reports the supported ICACHE flag; other board-only features remain zero. The selected ASIC defaults yield CAPS=0xE70A0070 and CAPS2=0.
+- ASIC control test now checks CAPS/CAPS2, CFG sizes/uarch/platform, v5 status/counters, memory calibration/ECC/error gating, loader busy interlock and fail-closed stop on memory fault.
+- Latest control simulation [45242551921](https://github.com/shamiursunny/openTPU/actions/runs/45242551921) queued; integrated ASIC-top config/lint [45242533670](https://github.com/shamiursunny/openTPU/actions/runs/45242533670) and full-chip lint [45242533290](https://github.com/shamiursunny/openTPU/actions/runs/45242533290) queued. No results claimed.
+- PCIe Gen2 bridge simulation run 45239360365 remains PASS (six of six scenarios). RTL-tail run 45235689174 PASS; subsystem run 45235689166 and board/uncovered run 45235689172 remain in progress at last poll.
+- main verified unchanged: d84db55712aba0d40811d7762cb052f05d55b7e5. Feature branch only. No paid resources or hardware purchases.
