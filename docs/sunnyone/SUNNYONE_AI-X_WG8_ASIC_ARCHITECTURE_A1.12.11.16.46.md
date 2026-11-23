@@ -1,13 +1,13 @@
 # SUNNYONE AI-X — WG8 ASIC Architecture Candidate
 
-**Revision:** A1.12.11.16.47  
+**Revision:** A1.12.11.16.48  
 **Date:** 2026-11-24  
 **Status:** selected logical V1 candidate; RTL integration and verification in progress; not physical signoff  
 **Supersedes:** the WG1/MCOLS4 candidate in integration contract A1.12.11.16.45 for performance-led V1 evaluation.
 
 ## 1. Why the architecture changed
 
-The strongest existing model-inference evidence is the repository's **BCU1525-WG8** implementation, not the base two-slice BCU1525 configuration. The WG8 board target uses one wide slice, eight 128-byte virtual memory channels, 35-bit byte addressing and 32 GiB total memory. Its documented card runs include Qwen3.6-35B-A3B at 88.5%, Qwen3.8-27B at 90.6%, and GPT-OSS-20B at about 88% of the four DIMMs' 76.8 GB/s peak, with eight-token/logit bit-exact checks against the ISA simulator.
+The strongest existing model-inference evidence is the repository's **BCU1525-WG8** implementation, not the base two-slice BCU1525 configuration. The WG8 board target uses one wide slice, eight 128-byte virtual memory channels, an AW=36 address interface and 32 GiB configured memory. The ASIC V1 target deliberately uses AW=35, the minimum byte-address width sufficient for its 32-GiB map. Its documented card runs include Qwen3.6-35B-A3B at 88.5%, Qwen3.8-27B at 90.6%, and GPT-OSS-20B at about 88% of the four DIMMs' 76.8 GB/s peak, with eight-token/logit bit-exact checks against the ISA simulator.
 
 These are FPGA-card results, not ASIC measurements. The FPGA implementation uses features that cannot be copied blindly into an ASIC (notably pumped SRAM and posted channel writes). The ASIC candidate therefore retains the proven WG8 dataflow while disabling those FPGA-specific paths and requires fresh PPA, timing and workload validation.
 
@@ -44,7 +44,7 @@ ASIC-specific deviations: TMEM_PMP=0, MXU_PUMP=0 and XPOST=0. The external memor
 ## 4. Chip-level memory/host contract
 
 - A/SW/B/W handshakes and data are synchronous to the accelerator core clock inside the integrated native-memory wrapper. The external controller boundary is eight independent native channels.
-- A-read return is 1,024 bits; B data is 1,024 bits; W return is eight valid bits plus 8,192 data bits. The channel selector/parity is 3 bits. A/SW/B/W addresses are 33-bit word addresses derived from AW=35 byte addressing. Each native channel has 25 beat-address bits (4 GiB at 128 bytes/beat); each paired DIMM therefore carries 8 GiB. The downstream 34-bit AXI address buses retain one unused high bit, which must be zero and rejected if set.
+- A-read return is 1,024 bits; B data is 1,024 bits; W return is eight valid bits plus 8,192 data bits. The channel selector/parity is 3 bits. A/SW/B/W addresses are 33-bit word addresses derived from the ASIC's AW=35 byte-address interface. Each native channel has 25 beat-address bits (4 GiB at 128 bytes/beat); each paired DIMM therefore carries 8 GiB. The downstream 34-bit AXI address buses retain one unused high bit, which must be zero and rejected if set. The BCU1525 reference's AW=36 interface also supports this 32-GiB capacity because its separate DRAM_BYTES limit constrains the mapped region; AW=36 does not itself require 64 GiB.
 - The external memory controller must implement eight 128-byte channels, channel hashing, byte/partial-write semantics, per-channel ordered read returns, outstanding-request accounting, refresh/backpressure and ECC. It must aggregate physical calibration into the two v5 status groups; all eight channels must be ready before RUN/LOAD. Scalar partial writes are read-merged by SW_FILL; B-port masked writes still require ECC-aware byte-write handling.
 - PCIe endpoint/hard IP, BAR routing, host DMA descriptors, IOMMU aperture enforcement, DMA-to-memory arbitration and the external DDR controller/PHY are not part of current ASIC RTL.
 - The existing YPCB Gen2 bridge's six passing tests qualify a separate two-channel, 64-byte XDMA bridge. They do **not** qualify this eight-channel WG8 memory interface or PCIe PHY.
