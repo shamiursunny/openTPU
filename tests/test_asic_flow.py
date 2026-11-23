@@ -40,6 +40,13 @@ def test_points_are_the_asic_targets():
     card = flow.params("card")
     assert T.arch_hash(T.config("nangate45")) == \
         T.arch_hash(dataclasses.replace(T.config("ypcb-00338"), ACT_ROWS=8))
+    wg8 = flow.params("nangate45-wg8")
+    assert {k: wg8[k] for k in ("WG", "NCH", "CB", "AW", "MCOLS", "ACT_ROWS",
+                                 "MXU_E", "TMEM_WORDS", "TMEM_IMPL", "TMEM_PMP",
+                                 "DSTEP2", "ST16", "KT", "OUTER", "COLL_GATHER")} == \
+        dict(WG=8, NCH=8, CB=128, AW=36, MCOLS=8, ACT_ROWS=16, MXU_E=8,
+             TMEM_WORDS=131072, TMEM_IMPL=3, TMEM_PMP=0, DSTEP2=1,
+             ST16=1, KT=1, OUTER=0, COLL_GATHER=0)
     assert {k: card[k] for k in ("MCOLS", "ACT_ROWS", "MXU_E", "SEQ_WC", "TMEM_IMPL", "TMEM_NSB",
                                  "TMEM_RPL", "TMEM_TDP", "TMEM_GST", "TMEM_PMP", "RPB",
                                  "COLL_GATHER")} == \
