@@ -1,0 +1,40 @@
+name: SUNNYONE ASIC and target configuration checks
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'tests/test_asic_flow.py'
+      - 'tests/test_target.py'
+      - 'tests/test_rtlsim_build.py'
+      - 'tools/asic/**'
+      - 'opentpu/target.py'
+      - 'targets/**'
+      - 'rtl/asic/**'
+      - '.github/workflows/sunnyone-asic-config.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  asic-config:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: Verify ASIC points, target contracts and simulator build cache
+        run: >-
+          pytest -q tests/test_asic_flow.py tests/test_target.py tests/test_rtlsim_build.py
+          | tee /tmp/sunnyone-asic-config.log
+      - name: Archive configuration test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-asic-config-log
+          path: /tmp/sunnyone-asic-config.log
+          if-no-files-found: ignore

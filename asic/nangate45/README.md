@@ -71,7 +71,7 @@ Design points (`tools/asic/flow.py` POINTS, from the targets: arch, uarch, `core
 | small | nangate45-small | 32 | 2 | 4 | 16K | 8K | 32 (2 rows) | 64 | no | 2.5 ns |
 | card | nangate45 | 128 | 4 | 8 | 64K | 32K | 128 (4 rows) | 1024 | yes | 2.5 ns |
 
-Both: TMEM_IMPL 1 (banked: three copies of 1R1W bank RAMs), RPB 1, WPB 1, the systolic MXU
+small: TMEM_IMPL 1 (banked: three copies of 1R1W bank RAMs), RPB 1, WPB 1. card: TMEM_IMPL 3 (the one-copy/replay card point represented in the target), RPB 64, WPB 1. Both use the systolic MXU
 (MXU_IMPL 2) with the generic cells (`rtl/tech/generic/otpu_tech_dsp.sv`), WIN 16. `*-lm3la6`:
 the same with otpu_fpipe's LM 3 and LA 6 (see `docs/asic.md`: without retiming they move no logic).
 
