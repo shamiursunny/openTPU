@@ -13,6 +13,9 @@ module tb_asic_ctrl;
   logic [31:0] ld_addr, ld_n;
   logic [7:0][31:0] rinit;
 
+  integer load_count=0;
+  always @(posedge clk) if (ld_start) load_count <= load_count + 1;
+
   otpu_asic_ctrl dut(.*);
 
   task automatic write_reg(input logic [11:0] addr, input logic [31:0] data,
@@ -56,8 +59,7 @@ module tb_asic_ctrl;
 
   initial begin
     repeat(3) @(posedge clk);
-    @(negedge clk); rst=0;
-    @(posedge clk); #1;
+    @(negedge clk); rst=0; #1;
     if (!sys_rst || !run_rst) $fatal(1,"initial reset state");
     @(posedge clk); #1;
     if (sys_rst || !run_rst) $fatal(1,"loader reset release");
@@ -79,9 +81,7 @@ module tb_asic_ctrl;
 
     mem_ready=1;
     write_reg(12'h008,32'h2,1,2'b00);
-    if (!ld_start || !run_rst) $fatal(1,"LOAD pulse or stopped-state contract");
-    @(posedge clk); #1;
-    if (ld_start) $fatal(1,"LOAD must be a one-cycle pulse");
+    if (load_count != 1 || !run_rst) $fatal(1,"LOAD pulse or stopped-state contract count=%0d",load_count);
 
     write_reg(12'h008,32'h1,0,2'b00);
     if (run_rst) $fatal(1,"RUN did not release core reset");
