@@ -563,3 +563,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 
 - Follow-up bench correction commit `306fcf584cf5352be76d7cac5f2c863f0743e9ba`: the DIMM model now withholds WREADY until its corresponding AW has been accepted (or is accepted in the same cycle), while preserving independent AW/W channel timing. This avoids assuming AW must always be accepted before W at the DIMM interface.
 - The correction triggered current run `45256841999` (shared DIMM mux simulation) against `306fcf584cf5352be76d7cac5f2c863f0743e9ba`; it and the other workflows triggered by the commit were still queued at the latest poll. This is not an executed simulation result.
+
+
+## 63. Host-mux testbench write-owner model hardened (2026-11-24)
+
+- Static review found a scoreboard-model corner case: if a later AW handshakes on the same cycle as the final W beat of an older burst, the model selected the newly accepted AW ID instead of the oldest queued AW owner. Corrected the model to retire the oldest accepted AW first and use the same-cycle AW only when the queue was previously empty.
+- Added a fatal check if the DIMM model accepts a WLAST without an accepted AW owner. This strengthens the testbench model; it is not evidence of an RTL defect or a passing simulation.
+- Commit bfd8169668e1d9f54ae9d2d3533d9bc7fb72f685. A new targeted workflow run should be inspected against this commit. Previous six runs remain queued against 306fcf584cf5352be76d7cac5f2c863f0743e9ba; no CI result is claimed.
+- Feature branch only; main unchanged; no paid resources used.
