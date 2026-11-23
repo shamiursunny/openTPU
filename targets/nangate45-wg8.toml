@@ -52,6 +52,7 @@ MXU_QD = 4
 SE_R = 2
 DMA_DEPTH = 512
 DMA_LDQ = 1
+COLL_GATHER = false
 
 [tech]
 family = "asic"
