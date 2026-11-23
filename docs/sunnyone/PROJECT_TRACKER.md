@@ -4,7 +4,7 @@ Last updated: 2026-11-23 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest RTL/test baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Latest tracker commit before this update: `f9c3abb6e74b3294ef450a415635edd221a171d9`.
+Latest RTL/test baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Latest tracker commit before this update: `ac632ab845a599e82cc30a80428249b9451c3f6d`. Latest workflow change: `66c708e573671136197c371a848cc9274ae394f2`.
 
 ## 1. Product objective and decision rule
 
@@ -36,7 +36,8 @@ Exact log results: `tests/test_rtl.py` selection — **99 passed, 118 deselected
 
 1. CI log audit completed: 99 RTL/ISA tests passed; 118 deselected; isolated AXI-Lite test passed (1). Warnings recorded above.
 2. Expand RTL/ISA and fault/backpressure/reset regression coverage, prioritising reproducible tests and mutation checks.
-3. Resolve or track the packaging license-metadata and GitHub action Node-runtime deprecation warnings; do not mix maintenance changes into functional RTL fixes.
+3. Added a separate `ldc-host-write-cosim` CI job to run `pytest -q tests/test_rtl.py -k ldc_host_writes` without extending the 34-minute main regression job (workflow commit `66c708e573671136197c371a848cc9274ae394f2`). This exercises host-to-card writes concurrent with core memory traffic on the LDC path. No run for this workflow commit was visible in Actions at the time of inspection; execution remains unverified and must not be called passed.
+4. Resolve or track the packaging license-metadata and GitHub action Node-runtime deprecation warnings; do not mix maintenance changes into functional RTL fixes.
 4. Run formal checks and full lint; classify warnings and unresolved findings rather than treating lint success as functional proof.
 5. Establish a reproducible Nangate45 research PPA flow and archive exact tool versions, constraints, scripts, and outputs. Treat it only as a research proxy, not commercial silicon validation.
 6. Build workload/trace and benchmark harnesses. Measure useful throughput, latency, memory bandwidth/utilisation, reliability, energy and full-system power on actual target hardware when available.
@@ -95,4 +96,4 @@ After every completed engineering stage or material decision:
 ## 9. Current next milestone
 
 **A1.12.11.16.36 — Expanded regression coverage and mutation/fault-path audit.**
-Previous milestone A1.12.11.16.35 is complete: CI logs inspected; exact outcomes/counts and warnings recorded. Branch head was verified at `f9c3abb6e74b3294ef450a415635edd221a171d9` immediately before this tracker update. Run 45209168224 remains the verified passing CI evidence for RTL baseline `24b6780...`.
+Previous milestone A1.12.11.16.35 is complete: CI logs inspected; 99 RTL/ISA tests and 1 AXI-Lite isolation test passed; 118 tests were deselected. The dedicated LDC host-write concurrency job has been added but is not yet verified by a run. Branch head was verified at `66c708e573671136197c371a848cc9274ae394f2` before this tracker update. Run 45209168224 remains the verified passing CI evidence for RTL baseline `24b6780...`.
