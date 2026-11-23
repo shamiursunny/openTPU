@@ -16,7 +16,7 @@ module otpu_asic_ctrl #(
   input logic mem_error, ecc_ded,
   input logic halted, core_error, ld_busy, wr_idle, wait_to, a_inval,
   input logic [31:0] icount,
-  input logic a_req, a_rdy, b_req, b_rdy, b_we, sw_req, sw_rdy,
+  input logic a_req, a_we, a_rdy, b_req, b_rdy, b_we, sw_req, sw_rdy,
 
   input logic [11:0] s_awaddr,
   input logic s_awvalid,
