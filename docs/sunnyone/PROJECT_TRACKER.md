@@ -496,3 +496,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - This closes the previous missing RTL mux between host and accelerator at the DIMM port, but is **not** a PCIe endpoint or DMA engine. IOMMU/aperture enforcement, descriptor handling, MSI-X, global address translation, DDR controller/PHY/ECC, FLR/hot-reset, full CDC/RDC, formal, physical PPA and signoff remain open.
 - New lint and adversarial dual-master simulation have not yet completed. Existing queued workflow jobs must not be treated as passes. Next verification: compile/lint this top with hmux included, then build four-DIMM dual-master tests covering AW/W order, ID routing, overlapping-address visibility, partial writes, response stalls, reset and address remap.
 - No hardware, paid licence or paid IP used; `main` remains untouched.
+
+
+## 56. WG8 memory-capacity/address-width correction (2026-11-24)
+
+- Independent cross-check of `otpu_native_dram` address geometry found a real architecture inconsistency: AW=36 with NCH=8 and CB=128 gives 26 channel beat-address bits, i.e. 8 GiB per native channel and a 64-GiB logical address space, while the selected four-DIMM configuration is 32 GiB (4 GiB per channel, 8 GiB per DIMM).
+- Corrected the WG8 ASIC byte-address width to **AW=35** and channel beat-address width to **CAW=25**. This yields 25 × address bits at 128-byte beats = 4 GiB/channel; eight channels = 32 GiB; two channels per DIMM = 8 GiB. Word-address width is 33 bits.
+- Kept the existing 34-bit DIMM AXI port widths for compatibility with `otpu_hbm_ch`, `otpu_mig_pair` and `otpu_mig_hmux`; bit 33 is now explicitly unused and simulation-fatal if asserted on host or controller AW/AR. Updated the WG8 wrapper defaults/assertions, `targets/nangate45-wg8.toml`, architecture spec A1.12.11.16.47 and DDR4 integration spec A1.12.11.16.52.
+- Replaced the old AW36 high-address regression with AW35/WA33/CAW25 regression `sim/asic/tb_asic_aw35.sv`, and updated `tests/test_native_dram.py`. It retains the 16-GiB address check, which is valid within the 32-GiB design. This regression has not yet been run to completion in CI.
+- This corrects a substantive capacity over-addressing defect in the prior candidate; it is not merely a documentation change. WG8 wrapper lint, native adapter regression and synthesis/PPA must be rerun on the corrected AW35 candidate before accepting it.
+- Shared host/accelerator arbitration remains integrated through four `otpu_mig_hmux` instances; host address translation, IOMMU, PCIe endpoint/DMA, DDR PHY/controller/ECC, formal/CDC/RDC, physical PPA and foundry signoff remain open. `main` unchanged; no paid resources used.
