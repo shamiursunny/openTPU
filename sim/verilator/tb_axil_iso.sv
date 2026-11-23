@@ -126,11 +126,22 @@ module tb_axil_iso;
   logic [AW-1:0] sa_w, sa_r;
   logic [31:0]   sd_w;
   logic [3:0]    sd_strb;
+  logic [AW-1:0] expected_waddr;
+  logic [31:0]   expected_wdata;
+  logic [3:0]    expected_wstrb;
+  logic          expected_write = 1'b0;
   int            lat = 0, half = 0, stuck = 0;
   logic b_stalled_q = 1'b0, r_stalled_q = 1'b0;
   logic [1:0] bresp_q, rresp_q;
   logic [31:0] rdata_q;
   always_ff @(posedge clk) begin
+    if (m_rst || s_rst) expected_write <= 1'b0;
+    else if (m_awready) begin
+      expected_waddr <= m_awaddr;
+      expected_wdata <= m_wdata;
+      expected_wstrb <= m_wstrb;
+      expected_write <= 1'b1;
+    end
     if (s_rst) begin
       aw_have <= 1'b0; w_have <= 1'b0; ar_have <= 1'b0; s_bvalid <= 1'b0; s_rvalid <= 1'b0;
       s_awready <= 1'b0; s_wready <= 1'b0; s_arready <= 1'b0; half <= 0; stuck <= 0;
@@ -138,8 +149,19 @@ module tb_axil_iso;
       s_awready <= !aw_have && !ar_have && !s_bvalid && !s_rvalid && ($urandom % 100) < 50;
       s_wready  <= !w_have && !ar_have && !s_bvalid && !s_rvalid && ($urandom % 100) < 50;
       s_arready <= !aw_have && !w_have && !ar_have && !s_bvalid && !s_rvalid && ($urandom % 100) < 50;
-      if (s_awvalid && s_awready) begin aw_have <= 1'b1; sa_w <= s_awaddr; s_awready <= 1'b0; end
+      if (s_awvalid && s_awready) begin
+        if (BYPASS) begin
+          if (s_awaddr !== m_awaddr) sfail("bypass AW address changed");
+        end else if (!expected_write || s_awaddr !== expected_waddr)
+          sfail("isolated AW address changed");
+        aw_have <= 1'b1; sa_w <= s_awaddr; s_awready <= 1'b0;
+      end
       if (s_wvalid && s_wready) begin
+        if (BYPASS) begin
+          if (s_wdata !== m_wdata || s_wstrb !== m_wstrb)
+            sfail("bypass W data or strobe changed");
+        end else if (!expected_write || s_wdata !== expected_wdata || s_wstrb !== expected_wstrb)
+          sfail("isolated W data or strobe changed");
         w_have <= 1'b1; sd_w <= s_wdata; sd_strb <= s_wstrb; s_wready <= 1'b0;
       end
       if (s_arvalid && s_arready) begin
