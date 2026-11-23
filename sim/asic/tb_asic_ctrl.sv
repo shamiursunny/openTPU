@@ -83,6 +83,9 @@ module tb_asic_ctrl;
     read_reg(12'h00c,32'h00000008,2'b00);
 
     mem_ready=1;
+    write_reg(12'h008,32'h6,1,2'b10); // LOAD + unsupported CLEAR must be atomic
+    if (load_count != 0 || !run_rst) $fatal(1,"invalid CTRL command had side effects");
+    write_reg(12'h01c,32'h1,0,2'b00);
     write_reg(12'h008,32'h2,1,2'b00);
     if (load_count != 1 || !run_rst) $fatal(1,"LOAD pulse or stopped-state contract count=%0d",load_count);
 
