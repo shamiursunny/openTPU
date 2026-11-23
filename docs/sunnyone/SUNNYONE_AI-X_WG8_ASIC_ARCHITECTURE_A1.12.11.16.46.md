@@ -37,6 +37,7 @@ ASIC-specific deviations: TMEM_PMP=0, MXU_PUMP=0 and XPOST=0. The external memor
 - `rtl/asic/otpu_asic_top.sv` is parameterized for WG/NCH/CB/AW, wide A/SW/B addresses, channel parity, A-read width and the W-port request/data/slot interface. Its p_* posted-beat inputs remain explicit; ASIC top requires XPOST=0 for now.
 - `rtl/asic/otpu_asic_chip_top.sv` now defaults to the WG8 candidate and integrates AXI4-Lite v5 control with the compute block. It exposes the A/SW/B/W memory-adapter contract. Memory-calibration, memory-error and ECC-DED status cross into the core clock through two-stage synchronizers.
 - `rtl/asic/otpu_asic_mem_top.sv` integrates `otpu_native_dram` and exposes the eight native controller channels. It sets XSW=log2(FIFO_DEPTH)=11, PCW=13, uses 128-byte beats and starts with the BCU WG8 queue depths (APF8/AD16/RD16, XD64, QD16, WQD32). ASIC SW_FILL=1 read-merges partial scalar writes for ECC safety. The controller must return reads in per-channel command order, report accepted write beats in n_wdone, implement ECC-correct byte-mask writes for B-port traffic, and aggregate calibration/error/DED status.
+- Added an ASIC-mode regression in `tests/test_native_dram.py`: NCH8/CB128, AB128, APF8/AD16/RD16, SW_FILL1, WPOST/XPOST/SWG off. It checks random A/SW/B/W traffic and read-merge behaviour against the native memory model; CI result pending. This is adapter-level evidence, not full chip/PHY validation.
 - `targets/nangate45-wg8.toml` is the reproducible research target. `tools/asic/flow.py` now derives every supported ASIC-top parameter from the target's complete RTL parameter contract, including WG8, NCH8, CB128 and AW36. This permits a separate WG8 synthesis/PPA point instead of silently synthesizing the older WG1 point.
 - The host-facing PCIe endpoint and DMA are not yet integrated. The control interface is the BAR0 AXI4-Lite boundary; the data DMA and memory adapter remain external blocks.
 
@@ -55,7 +56,7 @@ The new `nangate45-wg8` target is a research proxy only. No WG8 synthesis/place/
 Required next gates:
 1. Compile/lint the WG8 top with the exact `nangate45-wg8` parameters.
 2. Run the WG8 Yosys SRAM probe and full PPA flow; compare one-copy and banked TMEM if the one-copy macro mapping fails.
-3. Build a dedicated WG8 memory-adapter simulation covering eight channels, 128-byte beats, W-port response routing, address hashing, partial writes, DMA/compute contention, resets, ECC injection and backpressure.
+3. Extend the new WG8 native-adapter regression to cover 36-bit high addresses, controller resets, DMA/compute contention and ECC error injection; integrate a real controller model.
 4. Integrate PCIe Gen3 x16 or better hard IP + DMA with a vendor/foundry-qualified controller; test host enumeration, BAR, DMA, reset/hot-reset and IOMMU isolation.
 5. Complete formal, CDC/RDC, DFT, multi-corner STA, IR/EM, SI/PI, thermal, package and physical signoff using an actual manufacturable PDK.
 6. Validate representative real models and whole-system economics. Choose power, memory capacity and clock from measured useful inference throughput, reliability, TCO and contribution margin.
