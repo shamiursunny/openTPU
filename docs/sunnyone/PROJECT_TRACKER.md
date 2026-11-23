@@ -193,3 +193,10 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 ## 22. CI pipeline failure propagation hardening
 
 - Added explicit Bash `set -o pipefail` to full-chip lint and virtual-memory simulation pipelines so a failing Verilator/simulator process cannot be hidden by a successful `tee` exit code. The workflows will rerun these quick checks with correct failure propagation.
+
+
+## 23. Pipefail-hardened lint and virtual-memory rerun
+
+- Run [45227797380](https://github.com/shamiursunny/openTPU/actions/runs/45227797380): full-chip Verilator lint passed again with explicit `set -o pipefail`; the same warning classes remain.
+- Run [45227797307](https://github.com/shamiursunny/openTPU/actions/runs/45227797307): DRAM, TMEM and multi-port TMEM compile/simulation/pass-marker checks all passed again with explicit pipeline failure propagation.
+- These reruns confirm the earlier successful results were not hidden by `tee` masking a failing process.
