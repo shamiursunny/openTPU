@@ -81,7 +81,7 @@ jobs:
           sources = ["rtl/" + p for p in target.sources("bcu1525-wg", family="generic")]
           sources += ["rtl/asic/otpu_asic_top.sv", "rtl/asic/otpu_asic_ctrl.sv",
                       "rtl/asic/otpu_asic_chip_top.sv", "rtl/mem/otpu_native_dram.sv",
-                      "rtl/asic/otpu_asic_mem_top.sv", "rtl/asic/otpu_asic_wg8_ddr4_top.sv"]
+                      "rtl/asic/otpu_asic_mem_top.sv", "rtl/boards/bcu1525/otpu_mig_hmux.sv", "rtl/asic/otpu_asic_wg8_ddr4_top.sv"]
           cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal",
                  "-Wno-WIDTHEXPAND", "-Wno-WIDTHTRUNC", "--top-module",
                  "otpu_asic_wg8_ddr4_top", *sources]
