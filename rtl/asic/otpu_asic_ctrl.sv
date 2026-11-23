@@ -185,7 +185,7 @@ module otpu_asic_ctrl #(
           12'h008: if (write_strb[0]) begin
             // Validate the whole command before applying any side effects.
             if ((write_data[0] && write_data[1]) ||
-                (write_data[0] && (!mem_ready || !wr_idle || ld_busy || load_inflight || mem_error || ecc_ded)) ||
+                (write_data[0] && (!mem_ready || (run_rst && !wr_idle) || ld_busy || load_inflight || mem_error || ecc_ded)) ||
                 (!write_data[0] && write_data[1] &&
                  (!run_rst || !mem_ready || !wr_idle || ld_busy || load_inflight || mem_error || ecc_ded))) begin
               ctrl_error <= 1'b1;
