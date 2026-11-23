@@ -2,21 +2,21 @@
 module tb_hmux;
   logic clk=0, rst=1;
   always #5 clk=~clk;
-  logic [1:0] p_awvalid=0,p_awready,p_wvalid=0,p_wready,p_bvalid,p_bready=2'b11;
-  logic [1:0][3:0] p_awid='0,p_bid;
-  logic [1:0][33:0] p_awaddr='0;
-  logic [1:0][7:0] p_awlen='0;
-  logic [1:0][511:0] p_wdata='0;
-  logic [1:0][63:0] p_wstrb='1;
-  logic [1:0] p_wlast=2'b11;
-  logic [1:0][1:0] p_bresp;
-  logic [1:0] p_arvalid=0,p_arready,p_rvalid,p_rready=2'b11;
-  logic [1:0][3:0] p_arid='0,p_rid;
-  logic [1:0][33:0] p_araddr='0;
-  logic [1:0][7:0] p_arlen='0;
-  logic [1:0][511:0] p_rdata;
-  logic [1:0][1:0] p_rresp;
-  logic [1:0] p_rlast;
+  logic p_awvalid=0,p_awready,p_wvalid=0,p_wready,p_bvalid,p_bready=1;
+  logic [3:0] p_awid='0,p_bid;
+  logic [33:0] p_awaddr='0;
+  logic [7:0] p_awlen='0;
+  logic [511:0] p_wdata='0;
+  logic [63:0] p_wstrb='1;
+  logic p_wlast=1;
+  logic [1:0] p_bresp;
+  logic p_arvalid=0,p_arready,p_rvalid,p_rready=1;
+  logic [3:0] p_arid='0,p_rid;
+  logic [33:0] p_araddr='0;
+  logic [7:0] p_arlen='0;
+  logic [511:0] p_rdata;
+  logic [1:0] p_rresp;
+  logic p_rlast;
   logic h_awvalid=0,h_awready,h_wvalid=0,h_wready,h_bvalid,h_bready=1;
   logic [33:0] h_awaddr='0;
   logic [7:0] h_awlen=0;
@@ -80,22 +80,22 @@ module tb_hmux;
     begin
       @(negedge clk);
       if(host) begin h_awaddr<=34'h1000+id*64; h_awlen<=0; h_awvalid<=1; end
-      else begin p_awaddr[0]<=34'h2000+id*64; p_awid[0]<=id; p_awlen[0]<=0; p_awvalid[0]<=1; end
-      do @(posedge clk); while(host ? !h_awready : !p_awready[0]);
-      @(negedge clk); if(host) h_awvalid<=0; else p_awvalid[0]<=0;
+      else begin p_awaddr<=34'h2000+id*64; p_awid<=id; p_awlen<=0; p_awvalid<=1; end
+      do @(posedge clk); while(host ? !h_awready : !p_awready);
+      @(negedge clk); if(host) h_awvalid<=0; else p_awvalid<=0;
       if(host) begin h_wdata<={8{64'hfeed000000000001}}; h_wstrb<=64'h00ff00ff00ff00ff; h_wlast<=1; h_wvalid<=1; end
-      else begin p_wdata[0]<={8{64'hcafe000000000002}}; p_wstrb[0]<=64'hff00ff00ff00ff00; p_wlast[0]<=1; p_wvalid[0]<=1; end
-      do @(posedge clk); while(host ? !h_wready : !p_wready[0]);
-      @(negedge clk); if(host) h_wvalid<=0; else p_wvalid[0]<=0;
+      else begin p_wdata<={8{64'hcafe000000000002}}; p_wstrb<=64'hff00ff00ff00ff00; p_wlast<=1; p_wvalid<=1; end
+      do @(posedge clk); while(host ? !h_wready : !p_wready);
+      @(negedge clk); if(host) h_wvalid<=0; else p_wvalid<=0;
     end
   endtask
   task automatic read_master(input bit host, input logic [3:0] id);
     begin
       @(negedge clk);
       if(host) begin h_araddr<=34'h3000+id*64; h_arlen<=0; h_arvalid<=1; end
-      else begin p_araddr[0]<=34'h4000+id*64; p_arid[0]<=id; p_arlen[0]<=0; p_arvalid[0]<=1; end
-      do @(posedge clk); while(host ? !h_arready : !p_arready[0]);
-      @(negedge clk); if(host) h_arvalid<=0; else p_arvalid[0]<=0;
+      else begin p_araddr<=34'h4000+id*64; p_arid<=id; p_arlen<=0; p_arvalid<=1; end
+      do @(posedge clk); while(host ? !h_arready : !p_arready);
+      @(negedge clk); if(host) h_arvalid<=0; else p_arvalid<=0;
     end
   endtask
   initial begin
@@ -108,7 +108,7 @@ module tb_hmux;
     join
     wait(writes==2 && reads==2);
     repeat(8) @(posedge clk);
-    if(p_bvalid[0] || !h_bvalid && writes!=2) $fatal(1,"response routing incomplete");
+    if(!p_bvalid || !h_bvalid) $fatal(1,"response routing incomplete");
     $display("PASS: concurrent pair/host AW-W-B and AR-R routing; writes=%0d reads=%0d cycles=%0d",writes,reads,cycle);
     $finish;
   end
