@@ -10,8 +10,7 @@ on:
       - 'tools/asic/**'
       - 'opentpu/target.py'
       - 'targets/**'
-      - 'rtl/asic/**'
-      - 'rtl/mem/otpu_native_dram.sv'
+      - 'rtl/**'
       - '.github/workflows/sunnyone-asic-config.yml'
   workflow_dispatch:
 permissions:
