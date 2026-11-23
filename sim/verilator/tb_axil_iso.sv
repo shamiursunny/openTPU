@@ -88,7 +88,7 @@ module tb_axil_iso;
       if (!w_pend && ($urandom % 100) < 10) begin
         w_pend <= 1'b1; w_sr <= 1'b0; w_age <= 0;
         m_awaddr <= AW'({$urandom % 64, 2'b00}); m_awvalid <= 1'b1;
-        m_wdata <= $urandom; m_wstrb <= 4'hf; m_wvalid <= 1'b0; w_gave <= 1'b0;
+        m_wdata <= $urandom; m_wstrb <= 4'($urandom); m_wvalid <= 1'b0; w_gave <= 1'b0;
       end else if (w_pend) begin
         w_age <= w_age + 1;
         if (!w_gave && ($urandom % 4) == 0) begin m_wvalid <= 1'b1; w_gave <= 1'b1; end
@@ -125,7 +125,11 @@ module tb_axil_iso;
   logic          aw_have = 1'b0, w_have = 1'b0, ar_have = 1'b0;
   logic [AW-1:0] sa_w, sa_r;
   logic [31:0]   sd_w;
+  logic [3:0]    sd_strb;
   int            lat = 0, half = 0, stuck = 0;
+  logic b_stalled_q = 1'b0, r_stalled_q = 1'b0;
+  logic [1:0] bresp_q, rresp_q;
+  logic [31:0] rdata_q;
   always_ff @(posedge clk) begin
     if (s_rst) begin
       aw_have <= 1'b0; w_have <= 1'b0; ar_have <= 1'b0; s_bvalid <= 1'b0; s_rvalid <= 1'b0;
@@ -135,7 +139,9 @@ module tb_axil_iso;
       s_wready  <= !w_have && !ar_have && !s_bvalid && !s_rvalid && ($urandom % 100) < 50;
       s_arready <= !aw_have && !w_have && !ar_have && !s_bvalid && !s_rvalid && ($urandom % 100) < 50;
       if (s_awvalid && s_awready) begin aw_have <= 1'b1; sa_w <= s_awaddr; s_awready <= 1'b0; end
-      if (s_wvalid && s_wready) begin w_have <= 1'b1; sd_w <= s_wdata; s_wready <= 1'b0; end
+      if (s_wvalid && s_wready) begin
+        w_have <= 1'b1; sd_w <= s_wdata; sd_strb <= s_wstrb; s_wready <= 1'b0;
+      end
       if (s_arvalid && s_arready) begin
         ar_have <= 1'b1; sa_r <= s_araddr; s_arready <= 1'b0; s_awready <= 1'b0;
         s_wready <= 1'b0; lat <= $urandom % 30;
@@ -143,7 +149,9 @@ module tb_axil_iso;
       if (aw_have && w_have && !s_bvalid) begin
         if (lat > 0) lat <= lat - 1;
         else begin
-          regs[sa_w[7:2]] <= sd_w; s_bvalid <= 1'b1; s_bresp <= 2'b00; n_sw++;
+          for (int b = 0; b < 4; b++)
+            if (sd_strb[b]) regs[sa_w[7:2]][8*b +: 8] <= sd_w[8*b +: 8];
+          s_bvalid <= 1'b1; s_bresp <= 2'b00; n_sw++;
         end
       end
       if (ar_have && !s_rvalid) begin
@@ -161,6 +169,22 @@ module tb_axil_iso;
       stuck <= ((s_bvalid && !s_bready) || (s_rvalid && !s_rready)) ? stuck + 1 : 0;
       if (half == TO) sfail("half a write with the slave");
       if (stuck == TO) sfail("a slave response nobody takes");
+    end
+  end
+
+  // A stalled master response must retain VALID and its complete payload until accepted.
+  always_ff @(posedge clk) begin
+    if (m_rst) begin
+      b_stalled_q <= 1'b0; r_stalled_q <= 1'b0;
+    end else begin
+      if (b_stalled_q && (!m_bvalid || m_bresp !== bresp_q))
+        mfail("B response changed or withdrew under backpressure");
+      if (r_stalled_q && (!m_rvalid || m_rresp !== rresp_q || m_rdata !== rdata_q))
+        mfail("R response changed or withdrew under backpressure");
+      b_stalled_q <= m_bvalid && !m_bready;
+      r_stalled_q <= m_rvalid && !m_rready;
+      if (m_bvalid && !m_bready) bresp_q <= m_bresp;
+      if (m_rvalid && !m_rready) begin rresp_q <= m_rresp; rdata_q <= m_rdata; end
     end
   end
 
