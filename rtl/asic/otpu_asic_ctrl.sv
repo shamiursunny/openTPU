@@ -187,7 +187,7 @@ module otpu_asic_ctrl #(
             if ((write_data[0] && write_data[1]) ||
                 (write_data[0] && (!mem_ready || ld_busy || load_inflight || mem_error || ecc_ded)) ||
                 (!write_data[0] && write_data[1] &&
-                 (!run_rst || !mem_ready || ld_busy || load_inflight || mem_error || ecc_ded))) begin
+                 (!run_rst || !mem_ready || !wr_idle || ld_busy || load_inflight || mem_error || ecc_ded))) begin
               ctrl_error <= 1'b1;
               s_bresp <= 2'b10;
             end else begin
