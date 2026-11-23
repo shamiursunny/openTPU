@@ -98,6 +98,11 @@ module tb_asic_ctrl;
     if (!run_rst) $fatal(1,"RUN escaped ECC-DED gate");
     ecc_ded=0;
     write_reg(12'h008,32'h4,1,2'b00);
+    wr_idle=0;
+    write_reg(12'h008,32'h1,0,2'b10); // RUN waits for stopped-state writes to drain
+    if (!run_rst) $fatal(1,"RUN escaped write-drain gate");
+    wr_idle=1;
+    write_reg(12'h008,32'h4,1,2'b00);
     write_reg(12'h008,32'h3,1,2'b10); // RUN + LOAD must be rejected atomically
     if (load_count != 0 || !run_rst) $fatal(1,"invalid CTRL command had side effects");
     write_reg(12'h008,32'h4,0,2'b00);
