@@ -215,3 +215,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Run `45225704236`: DMA/stream/quantisation/memory subsystem suite, running.
 - Run `45227519645`: pinned Yosys/Slang power-up/reset synthesis audit, running.
 - Do not claim these suites passed until their job conclusions and pytest summaries are inspected.
+
+
+## 26. Design and verification checkpoint
+
+- Logical architecture specification: `docs/sunnyone/SUNNYONE_AI-X_REFERENCE_CHIP_ARCHITECTURE_A1.12.11.16.44.md` is the current design reference. It defines a host-controlled programmable accelerator; it is not a tapeout-ready physical chip.
+- Remaining design-critical blockers: integrate host control into the ASIC top; select exact device/package and external memory; complete macro-aware PPA/timing; verify CDC/RDC, protocol/formal properties and lint warnings; qualify actual end-to-end model workloads and measured wall power; validate BOM/TCO, customer demand and payback; complete security/production signoff.
+- Current active CI runs remain: `45222828630` (uncovered RTL/ISA + board tests), `45225212165` (software core), `45225704236` (RTL subsystems), `45227519645` (Yosys/Slang reset audit). Their results are pending; inspect before claiming completion.
+- Latest verified branch head is recorded at this checkpoint; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
