@@ -176,3 +176,13 @@ G7 commercial: customer demand, quotes, full-system TCO and conservative payback
 G8 production: full ASIC signoff and manufacturing qualification.
 
 **Current disposition:** the logical accelerator architecture is defined as a host-controlled programmable MXU/VPU/DMA inference device using the existing openTPU ISA and compute blocks. The final physical chip, board and production RTL are not complete. Do not call the product tapeout-ready or commercially qualified.
+
+
+## 11. Historical Nangate45 research PPA evidence (not current signoff)
+
+Repository review found archived physical-design results that must be retained as research evidence rather than described as absent:
+
+- ORFS reference `asic/nangate45/results/small/`: documented as run on 2026-10-11 from upstream commit `596d62fa`, with ORFS revision `f395e4b6`, OpenROAD 26Q4 and Yosys 0.68+. It is the `nangate45-small` point: D=32, MCOLS=2, LANES=4, 16K TMEM words, 8K IMEM words, FIFO 64, three-copy banked TMEM, 27 fitted SRAM macros. The archived report gives 7.024 mm² die, 2.471 mm² placed instance area, 1.308 mm² macros, 0.428 ns negative setup slack against the 2.5 ns constraint, and 0.790 W vectorless estimated power at the reported 400 MHz activity assumption. The README reports 422 MHz register-to-register and 341 MHz including the port budget, with zero detailed-route DRC. This result does **not** meet the 2.5 ns timing target and is an older small configuration, not the card point or current feature-branch RTL.
+- OpenLayout planned-macro-placement archive `asic/nangate45/openlayout/results/cand2_3p3ns/`: 3.3 ns requested, 60% utilization, 2.049 mm square die, 27 macros. Global-route reports show setup WNS +0.156 ns and hold WNS +0.051 ns with no reported violating endpoints; detailed routing reports zero DRC violations after nine passes. The archived vectorless power estimate is 0.555 W. However, extraction with detailed routed parasitics reports setup WNS **-0.05 ns**, 31 violating endpoints and TNS -0.54 ns; hold remains +0.04 ns. Therefore this candidate also does **not** close extracted setup timing.
+- These are predictive Nangate45/FreePDK45 research proxies using fitted/abstract SRAM macros, not a manufacturable PDK, foundry quote, silicon measurement, or production power result. The vectorless power figures are not workload-calibrated and must not be used as actual chip power or tokens/J.
+- Re-run PPA on the current exact RTL commit with pinned toolchain, constraints, macro models and archived reports before making architecture or commercial decisions. The card-size point needs substantially more compute/memory resources and remains unqualified.
