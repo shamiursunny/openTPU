@@ -68,6 +68,19 @@ module otpu_asic_chip_top
   output logic [31:0] icount
 );
   logic sys_rst, run_rst, ld_start;
+  (* ASYNC_REG = "TRUE" *) logic [1:0] calib_meta, calib_sync;
+  (* ASYNC_REG = "TRUE" *) logic memerr_meta, memerr_sync, ecc_meta, ecc_sync;
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      calib_meta <= '0; calib_sync <= '0;
+      memerr_meta <= 1'b0; memerr_sync <= 1'b0;
+      ecc_meta <= 1'b0; ecc_sync <= 1'b0;
+    end else begin
+      calib_meta <= mem_calib; calib_sync <= calib_meta;
+      memerr_meta <= mem_error; memerr_sync <= memerr_meta;
+      ecc_meta <= ecc_ded; ecc_sync <= ecc_meta;
+    end
+  end
   logic [31:0] ld_addr, ld_n;
   logic [7:0][31:0] rinit;
 
@@ -78,7 +91,7 @@ module otpu_asic_chip_top
     .SEQ_WC(SEQ_WC), .ICACHE(ICACHE), .CORE_KHZ(CORE_KHZ), .DDR_MTS(DDR_MTS),
     .PLATFORM(PLATFORM), .BUILD_ID(BUILD_ID), .ARCH_HASH(ARCH_HASH)
   ) u_ctrl (
-    .clk, .rst, .mem_calib, .mem_error, .ecc_ded, .halted, .core_error(error),
+    .clk, .rst, .mem_calib(calib_sync), .mem_error(memerr_sync), .ecc_ded(ecc_sync), .halted, .core_error(error),
     .ld_busy, .wr_idle, .wait_to, .a_inval, .icount,
     .a_req, .a_rdy, .b_req, .b_rdy, .b_we, .sw_req, .sw_rdy,
     .s_awaddr, .s_awvalid, .s_awready, .s_wdata, .s_wstrb, .s_wvalid, .s_wready,
