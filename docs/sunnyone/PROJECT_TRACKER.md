@@ -428,3 +428,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Current WG8 CI runs on branch head acad738c572d6036a9a01b899b7cd2103927692b were queued at this checkpoint: ASIC configuration/integrated lint 45245713119; WG8 PPA 45245713055; uncovered RTL + board 45245713234; reset audit 45245713144; RTL subsystems/WG8 memory regression 45245713352; RTL tail 45245713131; full-chip lint 45245713175. No results inferred.
 - main verified unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5. No purchase or paid resource used.
 
+
+## 49. PCIe host/DMA architecture and CI hardening (2026-11-24)
+
+- Added docs/sunnyone/SUNNYONE_AI-X_PCIE_HOST_INTERFACE_A1.12.11.16.48.md.
+- Selected PCIe Gen3 x16 as the V1 compatibility target, matching BCU1525 WG8/XDMA. Logical host path: endpoint + DMA, BAR0 AXI4-Lite, 512-bit AXI4-MM DMA master, memory arbitration, four 512-bit controller ports paired from eight 128-byte logical channels. Raw one-direction line-rate ceiling is ~15.75 GB/s before protocol overhead; actual DMA throughput is unmeasured.
+- Defined host DMA descriptor, 64-bit address, byte-strobe, 4-KiB boundary, IOMMU, MSI-X, FLR/hot-reset, link-down and cross-master visibility requirements. This is a contract, not endpoint/DMA RTL.
+- Existing PCIe Gen2 XDMA bridge run 45239360365 passed six simulation scenarios; it is explicitly not PCIe PHY/link training or WG8 end-to-end PCIe qualification.
+- U55C was not selected for first port: 16-GiB HBM2 and its memory topology require a significant port from WG8's 32-GiB DDR4 reference. U250 remains an unqualified alternative. BCU1525/VU9P remains the golden FPGA board because the repository has the direct WG8 build, model and host path.
+- Hardened .github/workflows/sunnyone-asic-config.yml with Bash pipefail so pytest failure cannot be masked by tee. Workflow change is committed; GitHub Actions run after this change has not yet been observed.
+- ASIC endpoint/PHY/DMA RTL, memory-controller arbitration, real ECC PHY, PCIe BFM, formal/CDC, WG8 PPA, process/package and physical signoff remain open.
+- Branch head at this checkpoint: a0caa468d7c6e40efe5c63411875b4941486f3b4. main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No purchases or paid IP/licences.
