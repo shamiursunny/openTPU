@@ -1,0 +1,52 @@
+name: SUNNYONE WG8 ASIC research PPA
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'targets/nangate45-wg8.toml'
+      - 'rtl/asic/otpu_asic_top.sv'
+      - 'rtl/**'
+      - 'tools/asic/**'
+      - 'opentpu/target.py'
+      - '.github/workflows/sunnyone-asic-wg8-ppa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  wg8-ppa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record ORFS image
+        run: |
+          docker pull openroad/orfs:latest
+          docker image inspect openroad/orfs:latest --format '{{.Id}}' | tee /tmp/orfs-image-id.txt
+      - name: Probe WG8 SRAMs and generate ASIC design
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace openroad/orfs:latest \
+            bash -lc 'python3 tools/asic/flow.py prep nangate45-wg8'
+      - name: Run WG8 OpenROAD flow
+        run: |
+          python3 tools/asic/flow.py config nangate45-wg8
+          python3 tools/asic/flow.py run nangate45-wg8
+      - name: Generate PPA report
+        if: always()
+        run: |
+          python3 tools/asic/flow.py report nangate45-wg8 || true
+          find build/asic/nangate45-wg8 -maxdepth 5 -type f | sort | tail -200 > /tmp/wg8-files.txt
+      - name: Upload WG8 PPA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-nangate45-wg8-ppa
+          path: |
+            /tmp/orfs-image-id.txt
+            /tmp/wg8-files.txt
+            build/asic/nangate45-wg8/report.json
+            build/asic/nangate45-wg8/src/tiles.json
+            build/asic/nangate45-wg8/config.mk
+            build/asic/nangate45-wg8/constraint.sdc
+            build/asic/nangate45-wg8/work/reports/**
+          if-no-files-found: ignore
