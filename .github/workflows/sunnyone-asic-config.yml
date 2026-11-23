@@ -32,7 +32,8 @@ jobs:
           python -m pip install --upgrade pip pytest
           python -m pip install -e .
       - name: Verify ASIC points, target contracts and simulator build cache
-        run: >-
+        run: |
+          set -o pipefail
           pytest -q tests/test_asic_flow.py tests/test_target.py tests/test_rtlsim_build.py
           | tee /tmp/sunnyone-asic-config.log
       - name: Lint integrated ASIC control and compute top
