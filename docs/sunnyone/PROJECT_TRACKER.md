@@ -132,3 +132,13 @@ Run [45224358374](https://github.com/shamiursunny/openTPU/actions/runs/452243583
 
 - Added a zero-ORFS test job for `tests/test_asic_flow.py`, `tests/test_target.py` and `tests/test_rtlsim_build.py`. This validates target/ASIC parameter contracts and flow generation, not actual synthesis or PPA.
 - Corrected `asic/nangate45/README.md`: the small point uses banked `TMEM_IMPL=1`; the card point uses one-copy/replay `TMEM_IMPL=3`. This aligns the README with the target configuration and `test_asic_flow.py` expectations.
+
+
+## 14. ASIC/target contract verification result (2026-11-23)
+
+Run [45224916714](https://github.com/shamiursunny/openTPU/actions/runs/45224916714), commit `35193d82994a93bf48c34b2ee2f0c62e7c2a0fd6`, passed **66 tests in 3.80 s** across:
+- `tests/test_asic_flow.py`: ASIC point/parameter, source and SRAM mapping/config contracts.
+- `tests/test_target.py`: target loading, configuration and board/host target consistency.
+- `tests/test_rtlsim_build.py`: simulator build cache/version/flags and concurrent build behaviour.
+
+This is configuration/unit evidence only; it does not execute OpenROAD synthesis, placement, routing or PPA.
