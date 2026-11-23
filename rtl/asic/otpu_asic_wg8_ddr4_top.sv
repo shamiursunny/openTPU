@@ -3,7 +3,7 @@
 // intentionally external; the host DMA master must be arbitrated with these four AXI ports by the
 // selected memory-controller subsystem, with shared ordering and IOMMU protection.
 module otpu_asic_wg8_ddr4_top #(
-  parameter int AW = 36,
+  parameter int AW = 35,
   parameter int NCH = 8,
   parameter int CB = 128,
   parameter int FIFO_DEPTH = 2048,
@@ -158,7 +158,7 @@ module otpu_asic_wg8_ddr4_top #(
   end
 
   initial begin
-    if (AW != 36 || NCH != 8 || CB != 128 || CAW != 26 || FIFO_DEPTH < 2)
+    if (AW != 35 || NCH != 8 || CB != 128 || CAW != 25 || FIFO_DEPTH < 2)
       $fatal(1, "otpu_asic_wg8_ddr4_top: expected WG8 AW36/NCH8/CB128/CAW26 configuration");
   end
 
