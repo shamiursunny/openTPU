@@ -1,0 +1,68 @@
+# ASIC research target based on the measured BCU1525 WG8 inference architecture.
+# ASIC-specific changes: no FPGA 2x SRAM pump, no posted-channel write path, no FPGA PHY.
+[target]
+name = "nangate45-wg8"
+kind = "asic"
+platform_id = 256
+description = "Nangate45 research ASIC, WG8/36-bit address/32 GiB logical memory architecture"
+
+[arch]
+S = 1
+D = 128
+MCOLS = 8
+WG = 8
+ACT_BLOCKS = 128
+ACT_ROWS = 16
+TMEM_WORDS = 131072
+IMEM_WORDS = 32768
+AW = 36
+DRAM_BYTES = 34359738368
+LANES = 8
+PAIR = false
+DSTEP = true
+STREAM = true
+SEQ_WC = true
+OUTER = false
+DSTEP2 = true
+ST16 = "e6m9"
+KT = true
+
+[uarch]
+MXU_IMPL = 2
+MXU_CL = 16
+MXU_E = 8
+VPU_CL = 2
+ULANES = 8
+TMEM_IMPL = 3
+TMEM_NSB = 2
+TMEM_SBP = 3
+TMEM_SBH = 0
+TMEM_RPL = true
+TMEM_TDP = true
+TMEM_GST = true
+TMEM_PMP = 0
+RPB = 0
+WPB = 1
+WIN = 32
+FIFO_DEPTH = 2048
+TRACE_DEPTH = 0
+PQ_WIN = 1024
+CHASH = true
+MXU_QD = 4
+SE_R = 2
+DMA_DEPTH = 512
+DMA_LDQ = 1
+
+[tech]
+family = "asic"
+pdk = "nangate45"
+vendor = "open"
+
+[platform]
+board = "asic"
+core_mhz = 400.0
+mem = "port"
+channels_per_slice = 8
+channel_bytes = 4294967296
+beat_bytes = 128
+host = "port"
