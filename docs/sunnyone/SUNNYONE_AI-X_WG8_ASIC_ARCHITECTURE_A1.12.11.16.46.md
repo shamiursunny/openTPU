@@ -1,6 +1,6 @@
 # SUNNYONE AI-X — WG8 ASIC Architecture Candidate
 
-**Revision:** A1.12.11.16.46  
+**Revision:** A1.12.11.16.47  
 **Date:** 2026-11-24  
 **Status:** selected logical V1 candidate; RTL integration and verification in progress; not physical signoff  
 **Supersedes:** the WG1/MCOLS4 candidate in integration contract A1.12.11.16.45 for performance-led V1 evaluation.
@@ -38,13 +38,13 @@ ASIC-specific deviations: TMEM_PMP=0, MXU_PUMP=0 and XPOST=0. The external memor
 - `rtl/asic/otpu_asic_chip_top.sv` now defaults to the WG8 candidate and integrates AXI4-Lite v5 control with the compute block. It exposes the A/SW/B/W memory-adapter contract. Memory-calibration, memory-error and ECC-DED status cross into the core clock through two-stage synchronizers.
 - `rtl/asic/otpu_asic_mem_top.sv` integrates `otpu_native_dram` and exposes the eight native controller channels. It sets XSW=log2(FIFO_DEPTH)=11, PCW=13, uses 128-byte beats and starts with the BCU WG8 queue depths (APF8/AD16/RD16, XD64, QD16, WQD32). ASIC SW_FILL=1 read-merges partial scalar writes for ECC safety. The controller must return reads in per-channel command order, report accepted write beats in n_wdone, implement ECC-correct byte-mask writes for B-port traffic, and aggregate calibration/error/DED status.
 - Added an ASIC-mode regression in `tests/test_native_dram.py`: NCH8/CB128, AB128, APF8/AD16/RD16, SW_FILL1, WPOST/XPOST/SWG off. It checks random A/SW/B/W traffic and read-merge behaviour against the native memory model; CI result pending. This is adapter-level evidence, not full chip/PHY validation.
-- `targets/nangate45-wg8.toml` is the reproducible research target. `tools/asic/flow.py` now derives every supported ASIC-top parameter from the target's complete RTL parameter contract, including WG8, NCH8, CB128 and AW36. This permits a separate WG8 synthesis/PPA point instead of silently synthesizing the older WG1 point.
+- `targets/nangate45-wg8.toml` is the reproducible research target. `tools/asic/flow.py` now derives every supported ASIC-top parameter from the target's complete RTL parameter contract, including WG8, NCH8, CB128 and AW35. This permits a separate WG8 synthesis/PPA point instead of silently synthesizing the older WG1 point.
 - The host-facing PCIe endpoint and DMA are not yet integrated. The control interface is the BAR0 AXI4-Lite boundary; the data DMA and memory adapter remain external blocks.
 
 ## 4. Chip-level memory/host contract
 
 - A/SW/B/W handshakes and data are synchronous to the accelerator core clock inside the integrated native-memory wrapper. The external controller boundary is eight independent native channels.
-- A-read return is 1,024 bits; B data is 1,024 bits; W return is eight valid bits plus 8,192 data bits. The channel selector/parity is 3 bits. A/SW/B/W addresses are 34-bit word addresses derived from AW=36 byte addressing.
+- A-read return is 1,024 bits; B data is 1,024 bits; W return is eight valid bits plus 8,192 data bits. The channel selector/parity is 3 bits. A/SW/B/W addresses are 33-bit word addresses derived from AW=35 byte addressing. Each native channel has 25 beat-address bits (4 GiB at 128 bytes/beat); each paired DIMM therefore carries 8 GiB. The downstream 34-bit AXI address buses retain one unused high bit, which must be zero and rejected if set.
 - The external memory controller must implement eight 128-byte channels, channel hashing, byte/partial-write semantics, per-channel ordered read returns, outstanding-request accounting, refresh/backpressure and ECC. It must aggregate physical calibration into the two v5 status groups; all eight channels must be ready before RUN/LOAD. Scalar partial writes are read-merged by SW_FILL; B-port masked writes still require ECC-aware byte-write handling.
 - PCIe endpoint/hard IP, BAR routing, host DMA descriptors, IOMMU aperture enforcement, DMA-to-memory arbitration and the external DDR controller/PHY are not part of current ASIC RTL.
 - The existing YPCB Gen2 bridge's six passing tests qualify a separate two-channel, 64-byte XDMA bridge. They do **not** qualify this eight-channel WG8 memory interface or PCIe PHY.
