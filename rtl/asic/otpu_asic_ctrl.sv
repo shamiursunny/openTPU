@@ -173,7 +173,7 @@ module otpu_asic_ctrl #(
         if (b_we) b_wr_count <= b_wr_count + 1'b1;
         else b_rd_count <= b_rd_count + 1'b1;
       end
-      if (a_req && a_rdy) a_rd_count <= a_rd_count + 1'b1;
+      if (a_req && a_rdy && !a_we) a_rd_count <= a_rd_count + 1'b1;
       if (sw_req && sw_rdy) sw_wr_count <= sw_wr_count + 1'b1;
       if (b_req && !b_rdy) b_stall_count <= b_stall_count + 1'b1;
 
@@ -187,7 +187,7 @@ module otpu_asic_ctrl #(
             if ((write_data[0] && write_data[1]) ||
                 (write_data[0] && (!mem_ready || ld_busy || load_inflight || mem_error || ecc_ded)) ||
                 (!write_data[0] && write_data[1] &&
-                 (!mem_ready || ld_busy || load_inflight || mem_error || ecc_ded))) begin
+                 (!run_rst || !mem_ready || ld_busy || load_inflight || mem_error || ecc_ded))) begin
               ctrl_error <= 1'b1;
               s_bresp <= 2'b10;
             end else begin
