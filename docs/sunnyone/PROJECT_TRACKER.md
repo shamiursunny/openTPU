@@ -588,3 +588,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Testbench commit: af37e33c8518090a34c2b68c8b61d523ea449e73. Static review only; Verilator compilation and simulation are still unverified because the GitHub Actions runner queue has not started the earlier mux jobs. Do not treat the added assertions as passed.
 - Multi-beat bursts, sustained fairness, memory-side byte-effect modelling, 4-KiB boundary and malformed-transaction tests, reset with outstanding traffic, overlapping-address ordering and the four-DIMM wrapper remain unimplemented qualification work.
 - Feature branch only; main unchanged; no paid resources used.
+
+
+## 66. R-response checker corrected to respect buffered-channel timing (2026-11-24)
+
+- Static review found the host R checker sampled the DIMM-side live RID at the later host response handshake. Because the mux includes an R register slice, the DIMM may already be presenting a subsequent response; live DIMM RID is not a valid proxy for the buffered host response. Replaced that check with the expected host RDATA check and added the expected pair RID/RDATA check at each requester-side handshake.
+- Testbench commit: e53ad53287c56444e9f4306e78dfe83e110a0486. This fixes a testbench scoreboard assumption, not an RTL defect. No compile or simulation pass is claimed.
+- GitHub Actions remains queued; the previous targeted mux run is 45265993286 against `af37e33c8518090a34c2b68c8b61d523ea449e73`. A new run for the latest bench revision must be inspected once scheduled. Multi-beat and full four-DIMM qualification remain open.
+- Feature branch only; main unchanged; zero paid resources used.
