@@ -53,7 +53,7 @@ module tb_hmux;
   logic [3:0] awq[0:7], arq[0:7];
   integer aw_wp=0,aw_rp=0,ar_wp=0,ar_rp=0, writes=0,reads=0;
   integer cycle=0, pair_b=0, host_b=0, pair_r=0, host_r=0;
-  assign m_wready = !m_bvalid && ((cycle%7)!=2);
+  assign m_wready = !m_bvalid && ((cycle%7)!=2) && ((aw_rp<aw_wp) || (m_awvalid && m_awready));
   otpu_mig_hmux #(.IDW(4),.AW(34),.HB(2)) dut(.*);
   always @(posedge clk) begin
     cycle <= cycle+1;
