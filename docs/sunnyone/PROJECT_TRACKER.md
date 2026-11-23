@@ -500,9 +500,17 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 
 ## 56. WG8 memory-capacity/address-width correction (2026-11-24)
 
-- Independent cross-check of `otpu_native_dram` address geometry found a real architecture inconsistency: AW=36 with NCH=8 and CB=128 gives 26 channel beat-address bits, i.e. 8 GiB per native channel and a 64-GiB logical address space, while the selected four-DIMM configuration is 32 GiB (4 GiB per channel, 8 GiB per DIMM).
-- Corrected the WG8 ASIC byte-address width to **AW=35** and channel beat-address width to **CAW=25**. This yields 25 × address bits at 128-byte beats = 4 GiB/channel; eight channels = 32 GiB; two channels per DIMM = 8 GiB. Word-address width is 33 bits.
+- Cross-check of `otpu_native_dram` address geometry found that AW=36 allocates 26 channel beat-address bits, but **does not force a 64-GiB physical map**: the separate `DRAM_BYTES=32 GiB` configuration limits valid traffic to 4 GiB per channel. The established BCU1525-WG8 target itself uses AW=36 with 32 GiB configured memory. The earlier interpretation that AW=36 necessarily over-addressed the DIMMs was incorrect.
+- Kept the ASIC candidate at **AW=35** as a deliberate minimum-width optimisation for its 32-GiB map, with channel beat-address width **CAW=25**. This yields 4 GiB/channel; eight channels = 32 GiB; two channels per DIMM = 8 GiB. Word-address width is 33 bits. This is a valid narrowing choice, not a required capacity bug fix.
 - Kept the existing 34-bit DIMM AXI port widths for compatibility with `otpu_hbm_ch`, `otpu_mig_pair` and `otpu_mig_hmux`; bit 33 is now explicitly unused and simulation-fatal if asserted on host or controller AW/AR. Updated the WG8 wrapper defaults/assertions, `targets/nangate45-wg8.toml`, architecture spec A1.12.11.16.47 and DDR4 integration spec A1.12.11.16.52.
 - Replaced the old AW36 high-address regression with AW35/WA33/CAW25 regression `sim/asic/tb_asic_aw35.sv`, and updated `tests/test_native_dram.py`. It retains the 16-GiB address check, which is valid within the 32-GiB design. This regression has not yet been run to completion in CI.
-- This corrects a substantive capacity over-addressing defect in the prior candidate; it is not merely a documentation change. WG8 wrapper lint, native adapter regression and synthesis/PPA must be rerun on the corrected AW35 candidate before accepting it.
+- AW35 reduces one unused high address bit relative to the FPGA reference and should reduce address-path width slightly; it does not alter the selected memory capacity. WG8 wrapper lint, native adapter regression and synthesis/PPA must still be rerun on this AW35 candidate before accepting it.
 - Shared host/accelerator arbitration remains integrated through four `otpu_mig_hmux` instances; host address translation, IOMMU, PCIe endpoint/DMA, DDR PHY/controller/ECC, formal/CDC/RDC, physical PPA and foundry signoff remain open. `main` unchanged; no paid resources used.
+
+
+## 57. Address-width finding independently corrected (2026-11-24)
+
+- Corrected the prior section 56 interpretation: `AW` is the address-interface width, while `DRAM_BYTES` independently limits the mapped capacity. The repository's BCU1525-WG8 uses AW=36 with DRAM_BYTES=32 GiB; the upper channel-address bit is simply unused for that configured map. AW=36 does **not** imply that 64 GiB of physical memory exists or is addressed.
+- The ASIC candidate remains AW=35/WA=33/CAW=25 as an intentional minimum-width implementation for exactly 32 GiB. Its four DIMM AXI interfaces remain 34 bits wide for reuse of existing pair/mux RTL; the top bit is asserted zero. No claim of an original AW36 capacity defect is retained.
+- Updated architecture specification A1.12.11.16.48 to distinguish the FPGA reference from the narrower ASIC implementation. The AW35 regression remains valid and is still awaiting CI.
+- This correction is recorded to prevent an incorrect engineering conclusion from propagating. All new host arbitration and AW35 changes still require completed CI and PPA evidence.
