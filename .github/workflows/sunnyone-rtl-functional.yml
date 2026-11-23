@@ -30,4 +30,4 @@ jobs:
       - name: Expanded RTL versus ISA tests
         run: >-
           pytest -q tests/test_rtl.py
-          -k "axi_read_bursts or axi_sw_partial_beat_order or axi_sw_rmw_fuzz or dma_alignment_stress or board_memory_path_stress or board_memory_path_fuzz or native_memory_path or logits_fill_rtl or ldc_memory_path or ldc_host_writes or scoreboard_stress_two_slices or scoreboard_stress_single_slice or porta_host_writes_between_runs or porta_host_writes_before_a_waitw or axi_write_bursts or axi_sw_partial_beat_beside_dma_writes or axi_scale_runs"
+          -k "axi_read_bursts or axi_sw_partial_beat_order or axi_sw_rmw_fuzz or dma_alignment_stress or board_memory_path_stress or board_memory_path_fuzz or native_memory_path or logits_fill_rtl or ldc_memory_path or ldc_host_writes or scoreboard_stress_two_slices or scoreboard_stress_single_slice or porta_host_writes_between_runs or porta_host_writes_before_a_waitw or axi_write_bursts or axi_sw_partial_beat_beside_dma_writes or axi_scale_runs_beside_dma_writes or axi_scale_runs"
