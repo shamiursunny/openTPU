@@ -1181,6 +1181,7 @@ module otpu_seq
       for (int u = 0; u < NUNITS; u++)
         if (u != U_MXU && u != U_COLL) begin
           logic [WIN-1:0] c2;
+          c2 = '0;
           start_slot[u] = '0;
           for (int i = 0; i < WIN; i++)
             c2[i] = sv[i] && !sstarted[i] && soh[i][u] && (u != U_VPU || w_all_q[i]);
@@ -1198,6 +1199,8 @@ module otpu_seq
       for (int u = 0; u < NUNITS; u++)
         if (u != U_MXU && u != U_COLL && hz_inom[u]) begin
           logic [WIN-1:0] c2, r2;
+          c2 = '0;
+          r2 = '0;
           start_slot[u] = '0;
           for (int i = 0; i < WIN; i++) begin
             c2[i] = sv[i] && !sstarted[i] && soh[i][u];
@@ -1823,6 +1826,7 @@ module otpu_seq
       for (int i = 0; i < WIN; i++)
         if (sv[i] && !fin[i]) begin
           int u, y, k, kd;
+          u = 0; y = 0; k = 0; kd = 0;
           u = hz_unit(soh[i]);
           y = 0;
           for (int j = 0; j < WIN; j++) y += int'(sv[j] && soh[j][u] && older[j][i]);
@@ -1834,6 +1838,7 @@ module otpu_seq
           if (u == U_VPU && (hz_wcvx == 1 || (hz_wcvx == 2 && c_unit == U_VPU) ||
                              (hz_wcvx == 3 && c_unit != U_VPU))) begin
             logic [1:0] cf;
+            cf = '0;
             cf = conf_s(c_fp, sfp[i]);
             wc_dep[i] = cf[1];
             wc_depd[i] = cf[0];
