@@ -117,7 +117,7 @@ def params(point: str) -> dict:
     if "COLL_GATHER" in t.uarch:
         p["COLL_GATHER"] = int(t.uarch["COLL_GATHER"])
     top = (ROOT / "rtl" / ASIC_TOP).read_text()
-    names = set(re.findall(r"parameter\s+(?:int|bit|string|logic(?:\s*\[[^]]+\])?)\s+(\w+)\s*=", top.split(") (")[0]))
+    names = set(re.findall(r"(?:parameter\s+(?:int|bit|string|logic(?:\s*\[[^]]+\])?)\s+)?(\w+)\s*=", top.split(") (")[0]))
     return {k: v for k, v in p.items() if k in names}
 
 
