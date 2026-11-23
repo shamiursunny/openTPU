@@ -41,8 +41,8 @@ module otpu_asic_ctrl #(
   localparam logic [31:0] ID_VALUE = 32'h4f545055;
   localparam logic [31:0] VERSION_VALUE = {D[15:0], MCOLS[7:0], LANES[7:0]};
   localparam logic [31:0] REGMAP_VALUE = 32'd5;
-  localparam logic [31:0] CAPS_VALUE = (32'(1) << 25) |
-      (HAS_DSTEP ? ((32'(1) << 6) | (32'(1) << 26) | (32'(1) << 31)) : 32'b0);
+  localparam logic [31:0] CAPS_VALUE = 32'h02000000 |
+      (HAS_DSTEP ? 32'h84000040 : 32'b0);
   localparam logic [31:0] CFG_UARCH_VALUE =
       {3'b0, ICACHE, 3'b0, SEQ_WC, ULANES[7:0], VPU_CL[7:0],
        TMEM_IMPL[3:0], MXU_IMPL[3:0]};
