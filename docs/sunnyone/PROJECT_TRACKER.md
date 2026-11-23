@@ -205,3 +205,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 ## 24. Control-plane wording precision
 
 - Clarified that `otpu_ctrl` AXI4-Lite host control is present in the board reference but is not yet integrated into `otpu_asic_top`. The ASIC chip wrapper remains an explicit implementation task.
+
+
+## 25. Active verification queue at checkpoint
+
+- Active branch head at checkpoint: `7626778b06d508501ee9ed73b66530affee9a98c`; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Run `45222828630`: previously unrun core RTL/ISA selection and board/host regressions, both still running.
+- Run `45225212165`: core ISA/compiler/kernels/numerics/host software suite, running.
+- Run `45225704236`: DMA/stream/quantisation/memory subsystem suite, running.
+- Run `45227519645`: pinned Yosys/Slang power-up/reset synthesis audit, running.
+- Do not claim these suites passed until their job conclusions and pytest summaries are inspected.
