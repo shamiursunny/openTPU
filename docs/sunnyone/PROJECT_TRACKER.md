@@ -188,3 +188,8 @@ Lint success with `-Wno-fatal` is not formal proof or timing closure.
 ## 21. Remaining RTL tail regression result
 
 Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/45224697471), commit `95cbec3af34c066d0a8a0e448c0c9a36b7c7e288`, passed **33 tests**, with 1 expected parameter skip and 183 deselected, in 900.01 s. Covered the remaining non-experimental test functions for random power-up, card TMEM reads, concurrent TMEM writers/replay progress, collective-vs-DMA reads, ACT-row gating, lane-count invariance and sequential LDC BIST. The single skip was the intentional invalid PAIR/ACT_ROWS parameter combination (`PAIR needs 2M <= MCOLS; M <= ACT_ROWS`), not a test failure.
+
+
+## 22. CI pipeline failure propagation hardening
+
+- Added explicit Bash `set -o pipefail` to full-chip lint and virtual-memory simulation pipelines so a failing Verilator/simulator process cannot be hidden by a successful `tee` exit code. The workflows will rerun these quick checks with correct failure propagation.
