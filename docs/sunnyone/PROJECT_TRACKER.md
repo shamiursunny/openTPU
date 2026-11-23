@@ -580,3 +580,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The latest mux workflow run against the preceding testbench commit is 45263309565 (SHA bfd8169668e1d9f54ae9d2d3533d9bc7fb72f685); it remains queued. The earlier mux run 45256841999 (SHA 306fcf584cf5352be76d7cac5f2c863f0743e9ba) and five other runs in that batch also remain queued. The six workflows triggered by bfd8169668e1d9f54ae9d2d3533d9bc7fb72f685, including mux run 45263309565, were all queued at the latest poll. No compiler, simulation, lint or regression logs are available; no pass is claimed.
 - Current work is still a single-beat focused mux bench. Multi-beat traffic, fairness, byte-strobe memory effects, 4-KiB boundaries, ID-negative tests, reset under outstanding traffic, overlapping-address semantics and four-DIMM wrapper coverage remain open. CI execution is a prerequisite before extending or accepting this bench.
 - Feature branch only; main unchanged; zero paid resources used.
+
+
+## 65. Mux regression payload and response-ID checks strengthened (2026-11-24)
+
+- Extended the dedicated single-beat host/pair mux bench with explicit DIMM-side AW/AR ID, address and length checks; W data/strobe/owner checks against the oldest accepted AW; and pair/host B/R response-ID checks. This validates the existing one-beat stimulus contract and catches requester cross-routing or payload corruption if the bench executes.
+- Testbench commit: af37e33c8518090a34c2b68c8b61d523ea449e73. Static review only; Verilator compilation and simulation are still unverified because the GitHub Actions runner queue has not started the earlier mux jobs. Do not treat the added assertions as passed.
+- Multi-beat bursts, sustained fairness, memory-side byte-effect modelling, 4-KiB boundary and malformed-transaction tests, reset with outstanding traffic, overlapping-address ordering and the four-DIMM wrapper remain unimplemented qualification work.
+- Feature branch only; main unchanged; no paid resources used.
