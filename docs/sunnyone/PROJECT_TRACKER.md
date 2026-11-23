@@ -4,7 +4,7 @@ Last updated: 2026-11-23 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest verified RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Current active branch head before this update: `c6881211cfc6b7e6d959a9139a4594f66bd53215`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+Latest fully verified broad RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1` (99 RTL/ISA + 1 AXI-Lite passed); subsequent targeted 128K TMEM (2 passed), full-chip lint (success, 0 PINMISSING), and reset audit (4 passed) are recorded below. Current active branch head at this tracker update: `263719d0304b8571e73a1ef2a19c5149849617bc`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 
 ## 1. Product objective and decision rule
 
