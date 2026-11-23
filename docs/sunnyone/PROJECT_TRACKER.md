@@ -523,3 +523,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Baseline document creation commit: a244508fbf4d0a932e7c212341a7529774dd2bd5. Feature branch only; main was not targeted.
 - This is documentation consolidation, not an RTL verification result. Latest host-arbitration/AW35/control CI must still be inspected by tested commit and completed job logs. No new test pass is claimed.
 - Next execution priority: establish current CI status and reproducible AW35/WG8 baseline, then implement adversarial four-DIMM host/accelerator dual-master verification. Continue through PCIe/DMA/IOMMU, DDR controller/PHY/ECC, formal/CDC/RDC, exact WG8 PPA and physical/commercial qualification gates.
+
+
+## 59. Continuation baseline verified; WG8 diagnostic corrected (2026-11-24)
+
+- Verified the new authoritative continuation baseline is committed in GitHub. Added tracker section 58 and the consolidated baseline file; baseline creation commit a244508fbf4d0a932e7c212341a7529774dd2bd5, tracker update commit 42d9c18a292a3b4dc54af0ec5ce91ae69898676c.
+- Re-read the live WG8 DDR4 wrapper and found a stale configuration-fatal diagnostic that still named AW36/CAW26 despite the actual accepted configuration being AW35/CAW25. Corrected the diagnostic text only; no datapath or behaviour changed. Commit bf71ecc1230b97e756ef06418cca54e446632a86.
+- GitHub branch API confirmed active feature branch head before this edit was 42d9c18a292a3b4dc54af0ec5ce91ae69898676c and `main` remains d84db55712aba0d40811d7762cb052f05d55b7e5.
+- Current Actions listing showed a large backlog of queued workflows; the newest listed jobs were still queued and tested older source commits (latest visible run head included a02473009179410f48c6a6528134857543a4447a). These are not completed results and do not validate the AW35/host-mux edits. After this commit, rerun/poll targeted wrapper lint, AW35 regression, config/control, full-chip lint, reset, subsystem and WG8 PPA workflows against the current branch head.
+- Code review confirmed the wrapper uses four `otpu_mig_hmux` instances and 34-bit DIMM-local AXI interfaces; current wrapper guards bit 33. The existing `tb_bcuwg.sv` board bench documents that its host side is idle, so it does not validate simultaneous host-DMA and accelerator traffic. Four-DIMM dual-master adversarial verification remains the next substantive verification task.
+- No CI pass is claimed from this inspection; no paid resources used; `main` untouched.
