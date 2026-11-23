@@ -18,7 +18,7 @@ permissions:
   contents: read
 jobs:
   rtl-uncovered:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y git help2man perl python3 make autoconf g++ flex libfl-dev bison ccache libgoogle-perftools-dev numactl perl-doc
+          dpkg -L libfl-dev | grep -F '/FlexLexer.h'
+          test -f /usr/include/FlexLexer.h
           git clone --depth 1 --branch v5.044 https://github.com/verilator/verilator.git /tmp/verilator
           cd /tmp/verilator
           autoconf
