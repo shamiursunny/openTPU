@@ -571,3 +571,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Added a fatal check if the DIMM model accepts a WLAST without an accepted AW owner. This strengthens the testbench model; it is not evidence of an RTL defect or a passing simulation.
 - Commit bfd8169668e1d9f54ae9d2d3533d9bc7fb72f685. A new targeted workflow run should be inspected against this commit. Previous six runs remain queued against 306fcf584cf5352be76d7cac5f2c863f0743e9ba; no CI result is claimed.
 - Feature branch only; main unchanged; no paid resources used.
+
+
+## 64. Mux testbench read-data width corrected; CI remains runner-blocked (2026-11-24)
+
+- Static review found the DIMM read-data pattern used a 1,024-bit replication for a 512-bit AXI RDATA signal. Corrected it to eight 64-bit lanes and a width-matched 4-bit transaction variation. This is a testbench stimulus-width correction, not an RTL change or a simulation pass.
+- Testbench correction commit: 891f656aee6651a06574f4a5c2546b5475338d2c.
+- The latest mux workflow run against the preceding testbench commit is 45263309565 (SHA bfd8169668e1d9f54ae9d2d3533d9bc7fb72f685); it remains queued. The earlier mux run 45256841999 (SHA 306fcf584cf5352be76d7cac5f2c863f0743e9ba) and five other runs in that batch also remain queued. The six workflows triggered by bfd8169668e1d9f54ae9d2d3533d9bc7fb72f685, including mux run 45263309565, were all queued at the latest poll. No compiler, simulation, lint or regression logs are available; no pass is claimed.
+- Current work is still a single-beat focused mux bench. Multi-beat traffic, fairness, byte-strobe memory effects, 4-KiB boundaries, ID-negative tests, reset under outstanding traffic, overlapping-address semantics and four-DIMM wrapper coverage remain open. CI execution is a prerequisite before extending or accepting this bench.
+- Feature branch only; main unchanged; zero paid resources used.
