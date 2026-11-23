@@ -840,11 +840,16 @@ module otpu_tmem #(
 `endif
         end else begin : g_ram
         (* ram_style = "block" *) logic [31:0] mem [RD];
+        // Predecode write rows outside the sequential array-write statements. Besides making
+        // the RAM address boundary explicit, this avoids older Verilator releases' delayed-AST
+        // multiple-write failure when a function call appears in a nonblocking array LHS.
+        wire [RW-1:0] pw_row0 = ram_row(pw_a[b][0]);
+        wire [RW-1:0] pw_row1 = ram_row(pw_a[b][WPB-1]);
         if (PMP == 2) begin : g_pm2
           // the model of PMP 1 at the core clock: the write on a port of its own, both read ports
           always_ff @(posedge clk) begin
-            if (wh) mem[ram_row(pw_a[b][0])] <= wd;
-            if (wh1) mem[ram_row(pw_a[b][WPB-1])] <= wd1;
+            if (wh) mem[pw_row0] <= wd;
+            if (wh1) mem[pw_row1] <= wd1;
             if (s_en[b][k][1]) s_q[b][k][1] <= mem[s_a[b][k][1]];
           end
           always_ff @(posedge clk)
@@ -852,7 +857,7 @@ module otpu_tmem #(
         end else if (TDP) begin : g_tdp
           // port A: the write, else its side's read; read-first (a replay of the written word
           // takes the word before the write)
-          wire [RW-1:0] ra = wh ? ram_row(pw_a[b][0]) : s_a[b][k][1];
+          wire [RW-1:0] ra = wh ? pw_row0 : s_a[b][k][1];
 `ifdef SYNTHESIS
           // synthesis: the technology RAM (rtl/tech: inferred alike on an FPGA, the 1RW1R
           // macros on an ASIC, which leave mem empty); simulation keeps it inferred here (above)
