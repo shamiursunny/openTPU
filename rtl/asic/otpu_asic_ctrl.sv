@@ -183,7 +183,7 @@ module otpu_asic_ctrl #(
               s_bresp <= 2'b10;
             end else begin
               if (write_data[2]) begin
-                ctrl_error <= 1'b0;
+                ctrl_error <= (!mem_ready || mem_error || ecc_ded);
                 cycle_count <= '0; b_rd_count <= '0; b_wr_count <= '0;
                 a_rd_count <= '0; sw_wr_count <= '0; b_stall_count <= '0;
               end
