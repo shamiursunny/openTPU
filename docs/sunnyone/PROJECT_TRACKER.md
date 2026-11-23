@@ -364,3 +364,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Primary performance validation board remains BCU1525/VU9P; YPCB-00338 remains the secondary PCIe Gen2 bridge reference. Dedicated PCIe Gen2 CI is pinned to Verilator 5.044 after the first Verilator 5.020 testbench compile failure; corrected run 45239360365 was still queued at last poll. Do not claim a pass.
 - Outstanding CI runs 45235689166, 45235689172, 45235689174 and 45235689146 remain in progress at last poll; no results inferred.
 - main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No hardware purchase or paid licence.
+
+
+## 43. ASIC control + compute subsystem RTL (2026-11-24)
+
+- Implemented `rtl/asic/otpu_asic_ctrl.sv`: AXI4-Lite host register interface, independent AW/W acceptance, byte strobes, ID/version/status, program address/length, R8-R15, RUN/STOP and one-cycle LOAD, memory-ready/error gating, sticky command error with W1C at 0x1C, SLVERR/DECERR handling and atomic rejection of invalid RUN+LOAD/CLEAR commands.
+- Implemented `rtl/asic/otpu_asic_chip_top.sv`: instantiates the selected ASIC compute block and the new control wrapper. Default parameters match the Nangate45 card research point (D128/MCOLS4/LANES8, one-copy unpumped TMEM, WAITC, BAR-only collective).
+- Added `sim/asic/tb_asic_ctrl.sv` and `.github/workflows/sunnyone-asic-ctrl.yml`; test covers AW-before-W/W-before-AW, byte-register read/write, reset, RUN gating, LOAD pulse, sticky-error clear, atomic invalid command and unmapped-register DECERR.
+- First control test run 45240514018 failed only because the test expected STATUS=0x02 and omitted WR_IDLE bit3; observed 0x0A was correct. Test expectation was corrected, then expanded with atomic-command and W1C checks. Latest run 45241007135 is queued; no pass claimed.
+- Updated `.github/workflows/sunnyone-asic-config.yml` to lint `otpu_asic_chip_top` using the card target's exact source list; run 45240984173 is queued. Full-chip lint run 45240983745 is queued.
+- Important boundary: this is a control+compute subsystem, **not a complete PCIe chip**. PCIe endpoint/hard IP, host DMA engine, DMA-to-A/SW/B memory adapter, external DRAM controller/PHY/ECC, DFT, CDC/RDC and package/physical implementation are still not integrated. Current PPA flow still measures `otpu_asic_top` core only, not the new wrapper. No production or tapeout claim.
+- main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No hardware purchases or paid licences.
