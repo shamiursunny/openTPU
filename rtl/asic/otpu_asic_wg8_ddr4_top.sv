@@ -1,7 +1,7 @@
 // WG8 ASIC integration boundary: compute/native memory adapter + eight native-to-AXI bridges
-// + four two-channel 512-bit DIMM ports. PCIe endpoint/DMA and foundry DDR PHY/controller IP are
-// intentionally external; the host DMA master must be arbitrated with these four AXI ports by the
-// selected memory-controller subsystem, with shared ordering and IOMMU protection.
+// + four two-channel 512-bit DIMM ports. Four host DMA AXI masters are arbitrated with the
+// accelerator pairs by one otpu_mig_hmux per DIMM. PCIe endpoint/PHY, DMA descriptor engine,
+// card-global address translation/IOMMU, and foundry DDR controller/PHY/ECC remain external.
 module otpu_asic_wg8_ddr4_top #(
   parameter int AW = 35,
   parameter int NCH = 8,
