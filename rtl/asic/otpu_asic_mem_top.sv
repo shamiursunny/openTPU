@@ -75,7 +75,7 @@ module otpu_asic_mem_top
   output logic ld_busy, halted, error, wait_to,
   output logic [31:0] icount
 );
-  logic a_rdy, a_req, a_we, a_rvalid, sw_rdy, sw_req, b_rdy, b_req, b_tag, b_we, a_inval;
+  logic a_rdy, a_req, a_we, a_rvalid, sw_rdy, sw_req, b_rdy, b_req, b_tag, b_we;
   logic wr_idle, rd_idle, a_inval, pw_rdy, pw_req, pw_one;
   logic [WA-1:0] a_addr, sw_addr, b_addr, pw_addr;
   logic [31:0] a_wdata;
