@@ -300,3 +300,9 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 ## 35. Python packaging metadata maintenance (2026-11-23)
 
 - Changed `pyproject.toml` from deprecated table-form `license = { text = "Apache-2.0" }` to the SPDX string `license = "Apache-2.0"` (commit `411f7d38b149c7cccd73471a40d599670cc62e66`). This addresses the setuptools deprecation warning observed in CI; it does not change runtime behavior. The resulting package-install and test runs are pending.
+
+
+## 36. Packaging fix CI checkpoint (2026-11-23)
+
+- The SPDX-string packaging metadata change is at commit `411f7d38b149c7cccd73471a40d599670cc62e66`. It triggered fresh software-core, RTL-uncovered/board and subsystem workflows: [45233793565](https://github.com/shamiursunny/openTPU/actions/runs/45233793565), [45233793490](https://github.com/shamiursunny/openTPU/actions/runs/45233793490), and [45233793442](https://github.com/shamiursunny/openTPU/actions/runs/45233793442). All were still running when checked.
+- The pinned Verilator 5.044 build in run [45232660602](https://github.com/shamiursunny/openTPU/actions/runs/45232660602) remained in its build step; the earlier attempt failed only because `FlexLexer.h` was missing. The corrected build with `libfl-dev` has not yet produced a tool-version confirmation or RTL test result.
