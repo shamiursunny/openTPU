@@ -126,11 +126,11 @@ These are evidence-gated decisions, not omissions to fill with guesses.
 4. Derive operator, SRAM, external-memory and concurrency traces from the same representative workload.
 5. Re-evaluate efficient/balanced/high-throughput configurations using measured workload and TCO inputs.
 6. Only then select exact device/package and memory topology, generate vendor IP, validate pins/resources, and design a board.
-7. Integrate the RISC-V management plane and secure system contracts; complete physical and production signoff.
+7. Complete host/IOMMU/DMA security contracts and recovery design. Do not add an on-chip CPU without a demonstrated requirement; complete physical and production signoff only after device selection.
 
 ## 11. Evidence snapshot
 
-- Latest reported RTL CI run `45188429921`: **99 passed, 118 deselected**. This is a selected regression, not complete chip qualification.
+- Run `45209168224`: **99 RTL/ISA tests + 1 AXI-Lite test passed**. Run `45217729099` completed successfully but repeated the prior selection; its separate LDC test duplicates one of the 99 cases. Run `45222828630` is executing previously unselected RTL/ISA and board tests. These are selected regressions, not complete chip qualification.
 - Branch reference at this baseline: `1cf9bd914f5f104eb186fa796d6be7df0d978072`.
 - Pinned FeSens/openTPU reference remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 - `main` must remain untouched; all project changes stay on the active development branch.

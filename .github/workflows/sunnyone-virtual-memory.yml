@@ -40,3 +40,11 @@ jobs:
         run: /tmp/obj_tmem_multi/Vtb_sunnyone_tmem_multi | tee /tmp/sunnyone-tmem-multi-test.log
       - name: Require explicit multi-port TMEM pass marker
         run: grep -q 'TMEM_MULTI PASS:' /tmp/sunnyone-tmem-multi-test.log
+
+      - name: Archive virtual-memory regression logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-virtual-memory-logs
+          path: /tmp/sunnyone-*-test.log
+          if-no-files-found: ignore

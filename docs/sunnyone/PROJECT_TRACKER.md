@@ -4,7 +4,7 @@ Last updated: 2026-11-23 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest RTL/test baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Latest tracker commit before this update: `ac632ab845a599e82cc30a80428249b9451c3f6d`. Latest workflow change: `66c708e573671136197c371a848cc9274ae394f2`.
+Latest verified RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1`. Current active branch head before this update: `def4c0961822c636d7cbb92732bd2637a059f50b`.
 
 ## 1. Product objective and decision rule
 
@@ -114,5 +114,5 @@ Verified baseline remains 99 RTL/ISA tests + 1 AXI-Lite isolation test passed on
 - Created `docs/sunnyone/SUNNYONE_AI-X_REFERENCE_CHIP_ARCHITECTURE_A1.12.11.16.44.md` as the consolidated logical architecture and implementation contract.
 - Resolved contradictory documents: first-version design is host-controlled, with host server runtime and the existing on-chip sequencer/`otpu_ctrl`; no on-chip RISC-V CPU or boot ROM is selected. A future embedded CPU requires a measured requirement.
 - The logical architecture is defined; exact FPGA/SoC/ASIC, package, external memory, tile scale, clock, power and production implementation remain unselected.
-- The current CI run `45222828630` runs previously unselected RTL/ISA tests and board tests. The prior 100 distinct passing tests are not intentionally repeated.
+- The current CI run `45222828630` runs previously unselected RTL/ISA tests and board tests. The prior 100 distinct passing tests are not intentionally repeated. The full-chip lint and virtual-memory workflows are also being refreshed to retain complete logs as downloadable CI artifacts.
 - Remaining RTL functions found by name-level audit: `test_one_copy_tmem_of_128k_words`, `test_random_power_up`, `test_mxu_reads_on_the_card_tmem`, `test_one_copy_two_writers`, `test_one_copy_two_writes_replays_make_progress`, `test_collective_reads_held_behind_dma_reads`, `test_act_reads_follow_the_mm_rows`, `test_lane_count_does_not_change_results`, `test_ldc_sequential_is_the_card_bist`. `test_one_copy_tmem_of_128k_words` remains excluded pending the known TMEM implementation/elaboration investigation; the other eight require disposition and test execution.
