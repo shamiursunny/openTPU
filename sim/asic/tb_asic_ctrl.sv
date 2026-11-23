@@ -1,7 +1,9 @@
 module tb_asic_ctrl;
   logic clk=0, rst=1;
   always #5 clk=~clk;
-  logic mem_ready=0, mem_error=0, halted=0, core_error=0, ld_busy=0, wr_idle=1, wait_to=0, a_inval=0;
+  logic [1:0] mem_calib=0;
+  logic mem_error=0, ecc_ded=0, halted=0, core_error=0, ld_busy=0, wr_idle=1, wait_to=0, a_inval=0;
+  logic a_req=0, a_rdy=1, b_req=0, b_rdy=1, b_we=0, sw_req=0, sw_rdy=1;
   logic [31:0] icount=32'h1234;
   logic [11:0] s_awaddr=0, s_araddr=0;
   logic s_awvalid=0, s_awready, s_wvalid=0, s_wready, s_bvalid, s_bready=0;
@@ -78,14 +80,13 @@ module tb_asic_ctrl;
     write_reg(12'h008,32'h1,0,2'b10);
     if (!run_rst) $fatal(1,"RUN escaped memory-ready gate");
     read_reg(12'h00c,32'h0000000a,2'b00);
-    read_reg(12'h01c,32'h00000001,2'b00);
-    write_reg(12'h01c,32'h1,1,2'b00);
+    write_reg(12'h008,32'h4,1,2'b00); // CTRL.CLEAR clears counters and sticky command error
     read_reg(12'h00c,32'h00000008,2'b00);
 
-    mem_ready=1;
-    write_reg(12'h008,32'h6,1,2'b10); // LOAD + unsupported CLEAR must be atomic
+    mem_calib=2'b11;
+    write_reg(12'h008,32'h3,1,2'b10); // RUN + LOAD must be rejected atomically
     if (load_count != 0 || !run_rst) $fatal(1,"invalid CTRL command had side effects");
-    write_reg(12'h01c,32'h1,0,2'b00);
+    write_reg(12'h008,32'h4,0,2'b00);
     write_reg(12'h008,32'h2,1,2'b00);
     if (load_count != 1 || !run_rst) $fatal(1,"LOAD pulse or stopped-state contract count=%0d",load_count);
 
@@ -94,8 +95,21 @@ module tb_asic_ctrl;
     write_reg(12'h008,32'h0,1,2'b00);
     if (!run_rst) $fatal(1,"STOP did not assert core reset");
 
-    read_reg(12'h018,32'h1234,2'b00);
-    read_reg(12'h0fc,32'b0,2'b11);
+    // Verify memory-traffic counters are counted on accepted requests only.
+    @(negedge clk); b_req=1; b_we=0;
+    @(posedge clk); @(negedge clk); b_req=0;
+    @(negedge clk); b_req=1; b_we=1;
+    @(posedge clk); @(negedge clk); b_req=0;
+    @(negedge clk); a_req=1;
+    @(posedge clk); @(negedge clk); a_req=0;
+    @(negedge clk); sw_req=1;
+    @(posedge clk); @(negedge clk); sw_req=0;
+    read_reg(12'h020,32'h1234,2'b00);
+    read_reg(12'h024,32'd1,2'b00);
+    read_reg(12'h028,32'd1,2'b00);
+    read_reg(12'h02c,32'd1,2'b00);
+    read_reg(12'h030,32'd1,2'b00);
+    read_reg(12'h1c,32'b0,2'b11);
     $display("PASS: ASIC AXI-Lite control, independent AW/W, gating, load pulse, reset, register map");
     $finish;
   end
