@@ -393,3 +393,16 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Latest control simulation [45242551921](https://github.com/shamiursunny/openTPU/actions/runs/45242551921) queued; integrated ASIC-top config/lint [45242533670](https://github.com/shamiursunny/openTPU/actions/runs/45242533670) and full-chip lint [45242533290](https://github.com/shamiursunny/openTPU/actions/runs/45242533290) queued. No results claimed.
 - PCIe Gen2 bridge simulation run 45239360365 remains PASS (six of six scenarios). RTL-tail run 45235689174 PASS; subsystem run 45235689166 and board/uncovered run 45235689172 remain in progress at last poll.
 - main verified unchanged: d84db55712aba0d40811d7762cb052f05d55b7e5. Feature branch only. No paid resources or hardware purchases.
+
+
+## 46. WG8 performance-led ASIC candidate selected (2026-11-24)
+
+- Corrected the architecture selection: the strongest documented real-card inference evidence is specifically BCU1525-WG8, not the base BCU1525/WG1 target. New decision record: docs/sunnyone/SUNNYONE_AI-X_WG8_ASIC_ARCHITECTURE_A1.12.11.16.46.md. Earlier WG1/MCOLS4 documents .44/.45 are marked historical/superseded for the primary V1 candidate.
+- Selected logical ASIC candidate: one slice, D128/MCOLS8/WG8, NCH8/CB128/AW36, 32 GiB logical memory, 128K TMEM, 32K IMEM, ACT_ROWS16, MXU_E8, MXU_QD4, WIN32, FIFO2048, SE_R2/DMA_DEPTH512, DSTEP2/ST16 e6m9/KT enabled, OUTER off, one-copy TMEM at core clock, TMEM_PMP=0, MXU_PUMP=0, XPOST=0, BAR-only collective.
+- BCU1525-WG8 is a performance reference, not an ASIC equivalence claim. Its FPGA-specific pumped SRAM/posted channel path is deliberately disabled for ASIC. Fresh ASIC PPA and workload validation are mandatory.
+- Parameterized rtl/asic/otpu_asic_top.sv for WG/NCH/CB/AW, wide A/SW/B addresses, 1,024-bit A/B data, 3-bit channel selector and W-port data/slot. rtl/asic/otpu_asic_chip_top.sv now defaults to WG8 and exposes the W port; XPOST is explicitly rejected until posted-beat clock/data integration exists.
+- Added targets/nangate45-wg8.toml; updated tools/asic/flow.py to derive full RTL parameters from opentpu.target.rtl_params, including WG8/NCH8/CB128/AW36. Added test assertions for the WG8 parameter tuple.
+- Added .github/workflows/sunnyone-asic-wg8-ppa.yml. Run [45244170656](https://github.com/shamiursunny/openTPU/actions/runs/45244170656) is queued; no synthesis/PPA result yet. ASIC configuration/test runs 45243820830 and related jobs are also queued. The PPA flow still measures otpu_asic_top core only, not PCIe, control wrapper or external memory controllers.
+- The YPCB Gen2 XDMA bridge six-case simulation remains PASS (45239360365), but its two-channel/64-byte contract does not qualify the WG8 eight-channel/128-byte W-port interface. A dedicated WG8 memory-adapter simulation is still required.
+- V1 logical memory target is 32 GiB; 128 GiB is not selected. PCIe endpoint/hard IP, host DMA, 8-channel memory adapter/controller/PHY/ECC, DFT, foundry PDK, package, full PPA, CDC/RDC and physical validation remain open.
+- main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5. No paid resources or hardware purchases.
