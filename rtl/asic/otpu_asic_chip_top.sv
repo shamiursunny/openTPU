@@ -119,7 +119,7 @@ module otpu_asic_chip_top
   ) u_ctrl (
     .clk, .rst, .mem_calib(calib_sync), .mem_error(memerr_sync), .ecc_ded(ecc_sync),
     .halted, .core_error(error), .ld_busy, .wr_idle, .wait_to, .a_inval, .icount,
-    .a_req, .a_rdy, .b_req, .b_rdy, .b_we, .sw_req, .sw_rdy,
+    .a_req, .a_we, .a_rdy, .b_req, .b_rdy, .b_we, .sw_req, .sw_rdy,
     .s_awaddr, .s_awvalid, .s_awready, .s_wdata, .s_wstrb, .s_wvalid, .s_wready,
     .s_bresp, .s_bvalid, .s_bready, .s_araddr, .s_arvalid, .s_arready,
     .s_rdata, .s_rresp, .s_rvalid, .s_rready,
