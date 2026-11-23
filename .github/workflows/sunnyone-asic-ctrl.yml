@@ -1,0 +1,32 @@
+name: SUNNYONE ASIC AXI-Lite control verification
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/asic/otpu_asic_ctrl.sv'
+      - 'sim/asic/tb_asic_ctrl.sv'
+      - '.github/workflows/sunnyone-asic-ctrl.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  axi-lite-control:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Compile and run control-wrapper testbench
+        run: |
+          iverilog -g2012 -Wall -s tb_asic_ctrl -o /tmp/tb_asic_ctrl rtl/asic/otpu_asic_ctrl.sv sim/asic/tb_asic_ctrl.sv
+          vvp /tmp/tb_asic_ctrl | tee /tmp/sunnyone-asic-ctrl.log
+          grep -F 'PASS: ASIC AXI-Lite control' /tmp/sunnyone-asic-ctrl.log
+      - name: Archive simulation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-asic-ctrl-log
+          path: /tmp/sunnyone-asic-ctrl.log
+          if-no-files-found: ignore
