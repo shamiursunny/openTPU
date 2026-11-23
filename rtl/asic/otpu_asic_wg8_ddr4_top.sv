@@ -159,7 +159,7 @@ module otpu_asic_wg8_ddr4_top #(
 
   initial begin
     if (AW != 35 || NCH != 8 || CB != 128 || CAW != 25 || FIFO_DEPTH < 2)
-      $fatal(1, "otpu_asic_wg8_ddr4_top: expected WG8 AW36/NCH8/CB128/CAW26 configuration");
+      $fatal(1, "otpu_asic_wg8_ddr4_top: expected WG8 AW35/NCH8/CB128/CAW25 configuration");
   end
 
   // The control block exposes two calibration groups; both DIMMs in each group must pass.
