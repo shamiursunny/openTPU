@@ -97,6 +97,7 @@ module otpu_asic_ctrl #(
       12'h010: read_mux = ld_addr;
       12'h014: read_mux = ld_n;
       12'h018: read_mux = icount;
+      12'h01c: read_mux = {31'b0, ctrl_error}; // sticky control error, W1C
       default: begin
         if (s_araddr >= 12'h060 && s_araddr <= 12'h07c &&
             s_araddr[1:0] == 2'b00)
@@ -172,6 +173,7 @@ module otpu_asic_ctrl #(
             end
             12'h010: ld_addr <= byte_merge(ld_addr, write_data, write_strb);
             12'h014: ld_n <= byte_merge(ld_n, write_data, write_strb);
+            12'h01c: if (write_strb[0] && write_data[0]) ctrl_error <= 1'b0;
             default: begin
               if (write_addr >= 12'h060 && write_addr <= 12'h07c &&
                   write_addr[1:0] == 2'b00)
