@@ -153,10 +153,14 @@ module otpu_asic_ctrl #(
           case (write_addr)
             12'h008: begin
               if (write_strb[0]) begin
-                if (write_data[0]) begin
-                  if (write_data[1] || !mem_ready || ld_busy || mem_error) begin
+                // Reject unsupported CLEAR and conflicting RUN+LOAD atomically.
+                if (write_data[2] || (write_data[0] && write_data[1])) begin
+                  ctrl_error <= 1'b1;
+                  s_bresp <= 2'b10;
+                end else if (write_data[0]) begin
+                  if (!mem_ready || ld_busy || mem_error) begin
                     ctrl_error <= 1'b1;
-                    s_bresp <= 2'b10; // SLVERR
+                    s_bresp <= 2'b10;
                   end else run_rst <= 1'b0;
                 end else begin
                   run_rst <= 1'b1;
@@ -164,10 +168,6 @@ module otpu_asic_ctrl #(
                     if (mem_ready && !ld_busy && !mem_error) ld_start <= 1'b1;
                     else begin ctrl_error <= 1'b1; s_bresp <= 2'b10; end
                   end
-                end
-                if (write_data[2]) begin
-                  ctrl_error <= 1'b1;
-                  s_bresp <= 2'b10; // counter clear is not implemented by this ASIC block
                 end
               end
             end
