@@ -40,6 +40,21 @@ def test_random_traffic_on_the_adapter_rtl(have_verilator, nch, cb, seed, stall)
     assert fill > 100 and masked == 0, out[-500:]          # (SW_FILL: partial beats read first)
 
 
+
+@pytest.mark.parametrize("seed,stall", [(1, 0), (2, 30)])
+def test_wg8_asic_native_memory_contract_rtl(have_verilator, seed, stall):
+    """ASIC WG8 mode: eight 128-byte channels, full-beat A scale reads, SW_FILL for ECC-safe
+    partial scalar writes, and no FPGA-only WPOST/XPOST/half-beat path."""
+    out = _run(8, 128, f"+seed={seed}", f"+axi_seed={seed}", f"+axi_stall={stall}",
+               "+epochs=20", "+ops=2000",
+               params={"AB": 128, "APF": 8, "AD": 16, "RD": 16,
+                       "SW_FILL": 1, "WPOST": 0, "XPOST": 0, "SWG": 0})
+    cyc, brd, bwr, ard, awr, sw, wrd = map(int, DONE.search(out).groups())
+    assert min(brd, bwr, ard, awr, sw, wrd) > 1000, out[-800:]
+    fill, beats, masked = map(int, SWQ.search(out).groups())
+    assert fill > 100 and masked == 0, out[-800:]
+
+
 @pytest.mark.parametrize("nch,cb", [(8, 128), (2, 64)])
 @pytest.mark.parametrize("seed,stall", [(1, 0), (2, 30)])
 def test_random_traffic_without_fill_reads_rtl(have_verilator, nch, cb, seed, stall):
