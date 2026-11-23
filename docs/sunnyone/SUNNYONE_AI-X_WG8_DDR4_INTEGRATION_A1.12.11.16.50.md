@@ -43,3 +43,7 @@ The four AXI4 ports are accelerator-side controller interfaces. A production SoC
 ## Platform and cost
 
 BCU1525/VU9P remains the WG8 performance reference, not an authorised purchase. Its current Vivado licence constraint conflicts with zero-spend. ECP5-5G Versa remains a reduced open-tool demonstrator only and cannot host WG8 or qualify PCIe DMA. No FPGA, IP, software licence or cloud service purchase is authorised.
+
+## Clock/reset handling added in RTL
+
+The wrapper accepts one core clock and one DIMM/AXI clock. Each active-high per-DIMM reset is synchronised into the AXI clock domain using a two-stage reset synchroniser; each channel bridge is released one additional AXI-clock cycle after its DIMM pair. Core reset asynchronously asserts these synchronisers and their deassertion is observed through the AXI-clock stages. This follows the staged reset pattern in the BCU WG8 board integration. This is not a substitute for full CDC/RDC analysis or reset fault-injection verification.
