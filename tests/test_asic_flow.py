@@ -22,7 +22,7 @@ def test_points_are_the_asic_targets():
     """Every ASIC target is a point; a point's parameters are otpu_asic_top's (names, the
     target's values) and its clock the target's core_mhz."""
     top = (ROOT / "rtl/asic/otpu_asic_top.sv").read_text()
-    names = set(re.findall(r"parameter\s+(?:int|bit)\s+(\w+)\s*=", top.split(") (")[0]))
+    names = set(re.findall(r"(?:parameter\s+(?:int|bit|string|logic(?:\s*\[[^]]+\])?)\s+)?(\w+)\s*=", top.split(") (")[0]))
     asic = [t for t in T.names() if T.load(t).kind == "asic"]
     assert asic and set(asic) <= set(flow.POINTS)
     for p in flow.POINTS:
