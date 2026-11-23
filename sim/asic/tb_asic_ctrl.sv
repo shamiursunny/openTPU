@@ -112,6 +112,12 @@ module tb_asic_ctrl;
     if (run_rst) $fatal(1,"RUN did not release core reset");
     write_reg(12'h008,32'h0,1,2'b00);
     if (!run_rst) $fatal(1,"STOP did not assert core reset");
+    write_reg(12'h008,32'h1,0,2'b00);
+    mem_error=1; @(posedge clk); #1;
+    if (!run_rst) $fatal(1,"fatal memory error did not stop compute");
+    read_reg(12'h00c,32'h0000007a,2'b00);
+    @(negedge clk); mem_error=0;
+    write_reg(12'h008,32'h4,1,2'b00);
 
     // Verify memory-traffic counters are counted on accepted requests only.
     @(negedge clk); b_req=1; b_we=0;
