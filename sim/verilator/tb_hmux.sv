@@ -66,7 +66,11 @@ module tb_hmux;
       if(m_awvalid && m_awready) begin awq[aw_wp]<=m_awid; aw_wp<=aw_wp+1; end
       if(m_wvalid && m_wready && m_wlast) begin
         if(m_bvalid) $fatal(1,"B response slot unexpectedly occupied");
-        m_bid<=(m_awvalid && m_awready) ? m_awid : awq[aw_rp]; aw_rp<=aw_rp+1; m_bresp<=0; m_bvalid<=1; writes<=writes+1;
+        if(aw_rp>=aw_wp && !(m_awvalid && m_awready))
+          $fatal(1,"W beat accepted without an accepted AW owner");
+        // W belongs to the oldest accepted AW, not a newer AW accepted in this cycle.
+        m_bid <= (aw_rp<aw_wp) ? awq[aw_rp] : m_awid;
+        aw_rp<=aw_rp+1; m_bresp<=0; m_bvalid<=1; writes<=writes+1;
       end
       if(m_bvalid && m_bready) m_bvalid<=0;
       if(p_bvalid && p_bready) pair_b<=pair_b+1;
