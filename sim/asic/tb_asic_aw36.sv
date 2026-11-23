@@ -49,7 +49,7 @@ module tb_asic_aw36;
   otpu_native_dram #(
     .D(128), .NCH(NCH), .CB(CB), .QD(4), .WQD(4),
     .RD(2), .AD(2), .XD(2), .APF(1), .AB(CB),
-    .SW_FILL(1'b1), .WPOST(1'b0), .XPOST(1'b0),
+    .SW_FILL(1'b1), .WPOST(1'b0), .XPOST(1'b0), .CHASH(1'b0),
     .SWG(1'b0), .RHB(1'b0), .WHB(1'b0), .AW(AW), .WA(WA)
   ) dut (
     .clk, .rst, .a_flush,
@@ -69,11 +69,11 @@ module tb_asic_aw36;
     if (!rst) begin
       cycles <= cycles + 1;
       if (|n_cvalid) begin
-        if (n_cvalid !== 8'b0000_0010)
+        if (n_cvalid !== 8'b0000_0001)
           $fatal(1,"AW36 channel decode wrong: n_cvalid=%h",n_cvalid);
-        if (n_caddr[1] !== 26'h1000000)
+        if (n_caddr[0] !== 26'h1000000)
           $fatal(1,"AW36 channel address truncated: got=%h expected=1000000",n_caddr[1]);
-        $display("PASS: 16-GiB byte address retained through AW36 decode; channel=1 local-beat=0x1000000");
+        $display("PASS: 16-GiB byte address retained through AW36 decode; channel=0 local-beat=0x1000000");
         $finish;
       end
       if (cycles > 100) $fatal(1,"AW36 command timeout");
