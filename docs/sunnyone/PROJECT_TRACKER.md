@@ -455,9 +455,9 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 ## 51. ASIC control safety review and regression expansion (2026-11-24)
 
 - Independent RTL review found two control issues: A_RD counted A writes as reads, and LOAD was not explicitly rejected while RUN was active.
-- Corrected rtl/asic/otpu_asic_ctrl.sv: A_RD increments only on accepted a_req && a_rdy && !a_we; LOAD now rejects when run_rst is deasserted (compute running), in addition to calibration, busy, in-flight, memory-error and ECC-DED gates.
-- Added a_we to control wrapper input and connected it from otpu_asic_chip_top; sim/asic/tb_asic_ctrl.sv now verifies LOAD-while-running rejection and A read/write counter distinction.
+- Corrected rtl/asic/otpu_asic_ctrl.sv: A_RD increments only on accepted a_req && a_rdy && !a_we; LOAD now rejects when run_rst is deasserted (compute running) or wr_idle is low; RUN also waits for wr_idle. Both commands retain calibration, busy, in-flight, memory-error and ECC-DED gates.
+- Added a_we to control wrapper input and connected it from otpu_asic_chip_top; sim/asic/tb_asic_ctrl.sv now verifies LOAD-while-running rejection, RUN/LOAD write-drain gating and A read/write counter distinction.
 - Hardened .github/workflows/sunnyone-asic-ctrl.yml with set -o pipefail; it is triggered by control RTL/testbench changes. CI outcome not yet observed.
 - AW36 high-address regression is still awaiting run [45246583075](https://github.com/shamiursunny/openTPU/actions/runs/45246583075); WG8 ASIC config [45246174940](https://github.com/shamiursunny/openTPU/actions/runs/45246174940), research PPA [45245713055](https://github.com/shamiursunny/openTPU/actions/runs/45245713055), integrated lint [45245713119](https://github.com/shamiursunny/openTPU/actions/runs/45245713119), and WG8 subsystem run [45245713352](https://github.com/shamiursunny/openTPU/actions/runs/45245713352) were queued at last poll. Do not infer success from queued jobs.
 - The control wrapper remains AXI-Lite only. PCIe endpoint, DMA, host/compute arbitration, physical memory controller/PHY, complete CDC/RDC, DFT, foundry PDK and signoff remain unimplemented/open.
-- Branch head at this checkpoint: 578d62cc1feccd74ba11a285ae0b916b2fcca68c. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5.
+- Branch head at this checkpoint: 256b9dc2c56b8a554b1032f32e3bda9e2c08935e. main unchanged at d84db55712aba0d40811d7762cb052f05d55b7e5.
