@@ -138,6 +138,17 @@ module otpu_asic_ctrl #(
     end else begin
       sys_rst <= 1'b0;
       ld_start <= 1'b0;
+      // Fail closed if a memory channel loses calibration or reports a fatal error.
+      if (!run_rst && (!mem_ready || mem_error || ecc_ded)) begin
+        run_rst <= 1'b1;
+        ctrl_error <= 1'b1;
+      end
+      if ((load_inflight || ld_busy) && (!mem_ready || mem_error || ecc_ded)) begin
+        sys_rst <= 1'b1;
+        load_inflight <= 1'b0;
+        load_seen_busy <= 1'b0;
+        ctrl_error <= 1'b1;
+      end
       if (load_inflight && ld_busy) load_seen_busy <= 1'b1;
       if (load_inflight && load_seen_busy && !ld_busy) begin
         load_inflight <= 1'b0;
