@@ -105,27 +105,20 @@ ASIC_TOP = "asic/otpu_asic_top.sv"
 
 
 def params(point: str) -> dict:
-    """otpu_asic_top's parameters for the point's target: the sizes and uarch, and the optional
-    ones where the target states them (MXU_E; TMEM_IMPL 3's knobs; SEQ_WC on; COLL_GATHER, the
-    collective unit without GATHER as the card builds it). RPB 0 is every read lane
-    (NRP x LANES, as opentpu.target.rtl_params)."""
+    """The parameters accepted by otpu_asic_top, derived from the full target contract."""
     t = T.load(POINTS[point]["target"])
-    a, u = t.arch, t.uarch
-    p = dict(D=a["D"], MCOLS=a["MCOLS"], ACT_BLOCKS=a["ACT_BLOCKS"], ACT_ROWS=t.act_rows,
-             TMEM_WORDS=a["TMEM_WORDS"], IMEM_WORDS=a["IMEM_WORDS"],
-             FIFO_DEPTH=u["FIFO_DEPTH"], LANES=a["LANES"], WIN=u["WIN"],
-             MXU_IMPL=u["MXU_IMPL"], MXU_CL=u["MXU_CL"], VPU_CL=u["VPU_CL"],
-             ULANES=u["ULANES"], HAS_DSTEP=int(a["DSTEP"]), TMEM_IMPL=u["TMEM_IMPL"],
-             RPB=u["RPB"] or T.NRP * a["LANES"], WPB=u["WPB"])
-    if u.get("MXU_E"):
-        p["MXU_E"] = u["MXU_E"]
-    if u["TMEM_IMPL"] == 3:
-        p.update({k: int(u[k]) for k in T.TMEM3_KEYS if k in u})
-    if a["SEQ_WC"]:
-        p["SEQ_WC"] = 1
-    if "COLL_GATHER" in u:
-        p["COLL_GATHER"] = int(u["COLL_GATHER"])
-    return p
+    p = T.rtl_params(t)
+    p["HAS_DSTEP"] = p.pop("DSTEP")
+    # Omit parameters equal to the RTL defaults; keep explicit zeroes when they disable a feature.
+    if not p.get("MXU_E", 0):
+        p.pop("MXU_E", None)
+    if not p.get("SEQ_WC", 0):
+        p.pop("SEQ_WC", None)
+    if "COLL_GATHER" in t.uarch:
+        p["COLL_GATHER"] = int(t.uarch["COLL_GATHER"])
+    top = (ROOT / "rtl" / ASIC_TOP).read_text()
+    names = set(re.findall(r"parameter\\s+(?:int|bit|string|logic(?:\\s*\\[[^]]+\\])?)\\s+(\\w+)\\s*=", top.split(") (")[0]))
+    return {k: v for k, v in p.items() if k in names}
 
 
 def clock_ns(point: str) -> float:
