@@ -44,8 +44,8 @@ No block may be treated as implemented merely because it appears in this logical
 ### Host register behaviour
 
 - Reset must leave RUN deasserted and the compute block held in reset.
-- LOAD is accepted only while stopped and memory is calibrated/available; it generates a single-cycle loader request using PROG_ADDR and PROG_N.
-- RUN is accepted only after memory calibration, loader completion and no fatal memory/clock error.
+- LOAD is accepted only while stopped and both memory channels are calibrated/available; it generates a single-cycle loader request using PROG_ADDR and PROG_N. The wrapper holds LOADING until it observes `ld_busy` assert and then deassert.
+- RUN is accepted only after memory calibration, the complete LOAD busy cycle, and no fatal memory/ECC/clock error; RUN is blocked while a load is in flight.
 - RUN falling stops new compute requests; outstanding writes must drain before host memory reuse. Reads in flight are discarded only under the documented reset/abort contract.
 - STATUS must expose HALTED, ERROR, LOADING, WR_IDLE, AXI/memory error, calibration, RUN, timeout and uncorrectable ECC.
 - STATUS follows v5 bit positions: HALTED, ERROR, LOADING, WR_IDLE, memory/AXI error, CALIB0, CALIB1, RUN, WAIT_TO and ECC_DED. Both calibration inputs must be high for RUN/LOAD.
