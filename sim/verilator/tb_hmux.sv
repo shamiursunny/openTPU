@@ -63,25 +63,70 @@ module tb_hmux;
     end else begin
       m_awready <= (cycle%5)!=1;
       m_arready <= (cycle%4)!=1;
-      if(m_awvalid && m_awready) begin awq[aw_wp]<=m_awid; aw_wp<=aw_wp+1; end
+      if(m_awvalid && m_awready) begin
+        if(m_awid==4'h4) begin
+          if(m_awaddr!=34'h1000 || m_awlen!=0) $fatal(1,"host AW payload mismatch");
+        end else if(m_awid==4'h1) begin
+          if(m_awaddr!=34'h2040 || m_awlen!=0) $fatal(1,"pair AW payload mismatch");
+        end else $fatal(1,"unexpected DIMM AWID %h",m_awid);
+        awq[aw_wp]<=m_awid; aw_wp<=aw_wp+1;
+      end
       if(m_wvalid && m_wready && m_wlast) begin
         if(m_bvalid) $fatal(1,"B response slot unexpectedly occupied");
         if(aw_rp>=aw_wp && !(m_awvalid && m_awready))
           $fatal(1,"W beat accepted without an accepted AW owner");
         // W belongs to the oldest accepted AW, not a newer AW accepted in this cycle.
+        if(aw_rp<aw_wp) begin
+          if(awq[aw_rp]==4'h4) begin
+            if(m_wdata !== {8{64'hfeed000000000001}} ||
+               m_wstrb !== 64'h00ff00ff00ff00ff || !m_wlast)
+              $fatal(1,"host W payload/owner mismatch");
+          end else if(awq[aw_rp]==4'h1) begin
+            if(m_wdata !== {8{64'hcafe000000000002}} ||
+               m_wstrb !== 64'hff00ff00ff00ff00 || !m_wlast)
+              $fatal(1,"pair W payload/owner mismatch");
+          end else $fatal(1,"unexpected queued AW owner %h",awq[aw_rp]);
+        end else if(m_awid==4'h4) begin
+          if(m_wdata !== {8{64'hfeed000000000001}} ||
+             m_wstrb !== 64'h00ff00ff00ff00ff || !m_wlast)
+            $fatal(1,"same-cycle host W payload/owner mismatch");
+        end else if(m_awid==4'h1) begin
+          if(m_wdata !== {8{64'hcafe000000000002}} ||
+             m_wstrb !== 64'hff00ff00ff00ff00 || !m_wlast)
+            $fatal(1,"same-cycle pair W payload/owner mismatch");
+        end
         m_bid <= (aw_rp<aw_wp) ? awq[aw_rp] : m_awid;
         aw_rp<=aw_rp+1; m_bresp<=0; m_bvalid<=1; writes<=writes+1;
       end
       if(m_bvalid && m_bready) m_bvalid<=0;
-      if(p_bvalid && p_bready) pair_b<=pair_b+1;
-      if(h_bvalid && h_bready) host_b<=host_b+1;
-      if(m_arvalid && m_arready) begin arq[ar_wp]<=m_arid; ar_wp<=ar_wp+1; end
+      if(p_bvalid && p_bready) begin
+        if(p_bid!=4'h1) $fatal(1,"pair BID mismatch: %h",p_bid);
+        pair_b<=pair_b+1;
+      end
+      if(h_bvalid && h_bready) begin
+        if(m_bid!=4'h4) $fatal(1,"host BID mismatch: %h",m_bid);
+        host_b<=host_b+1;
+      end
+      if(m_arvalid && m_arready) begin
+        if(m_arid==4'h4) begin
+          if(m_araddr!=34'h3000 || m_arlen!=0) $fatal(1,"host AR payload mismatch");
+        end else if(m_arid==4'h2) begin
+          if(m_araddr!=34'h4080 || m_arlen!=0) $fatal(1,"pair AR payload mismatch");
+        end else $fatal(1,"unexpected DIMM ARID %h",m_arid);
+        arq[ar_wp]<=m_arid; ar_wp<=ar_wp+1;
+      end
       if(!m_rvalid && ar_rp<ar_wp) begin
         m_rid<=arq[ar_rp]; m_rdata<={8{64'h0123456789abcdef}} ^ {508'd0,ar_rp[3:0]};
         m_rresp<=0; m_rlast<=1; m_rvalid<=1; ar_rp<=ar_rp+1; reads<=reads+1;
       end else if(m_rvalid && m_rready) m_rvalid<=0;
-      if(p_rvalid && p_rready) pair_r<=pair_r+1;
-      if(h_rvalid && h_rready) host_r<=host_r+1;
+      if(p_rvalid && p_rready) begin
+        if(p_rid!=4'h2) $fatal(1,"pair RID mismatch: %h",p_rid);
+        pair_r<=pair_r+1;
+      end
+      if(h_rvalid && h_rready) begin
+        if(m_rid!=4'h4) $fatal(1,"host RID mismatch: %h",m_rid);
+        host_r<=host_r+1;
+      end
     end
   end
   task automatic write_master(input bit host, input logic [3:0] id);
