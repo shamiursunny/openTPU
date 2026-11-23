@@ -36,3 +36,19 @@ jobs:
           -k "axi_read_bursts or axi_sw_partial_beat_order or axi_sw_rmw_fuzz or dma_alignment_stress or board_memory_path_stress or board_memory_path_fuzz or native_memory_path or logits_fill_rtl or ldc_memory_path or ldc_host_writes or scoreboard_stress_two_slices or scoreboard_stress_single_slice or porta_host_writes_between_runs or porta_host_writes_before_a_waitw or axi_write_bursts or axi_sw_partial_beat_beside_dma_writes or axi_scale_runs_beside_dma_writes or axi_scale_runs or axi_sw_write_gather or axi_vt_append_throughput or axi_vt_append_random_stalls or fuzz_mm_replay or fuzz_mm_queue_depth_qd or one_copy_replays_make_progress or one_copy_two_writes_a_bank"
       - name: AXI-Lite isolation reset regression
         run: pytest -q tests/test_axil_iso.py
+
+  ldc-host-write-cosim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: LDC host-write concurrency regression
+        run: pytest -q tests/test_rtl.py -k ldc_host_writes
