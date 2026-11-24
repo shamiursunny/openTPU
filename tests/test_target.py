@@ -275,7 +275,7 @@ def test_wg_target():
     assert T.arch_hash(dataclasses.replace(c, OUTER=True)) != p["ARCH_HASH"]
     assert not T.build_config(t).OUTER and T.build_config(t, OUTER=1).OUTER
     assert all(T.config(n).OUTER and "OUTER" not in T.rtl_params(n) for n in T.names()
-               if n not in WG_TARGETS)
+               if n not in WG_ARCH_TARGETS)
     u = T.sim_uarch(t)
     assert (u["NCH"], u["CB"], u["TMEM_IMPL"], u["QUANT_R1"], p["QUANT_R1"]) == (8, 128, 3, 1, 1)
     assert (u["QUANT_PW"], p["QUANT_PW"]) == (2, 2)
