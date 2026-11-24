@@ -1,10 +1,10 @@
 # SUNNYONE AI-X — Project Resume and Fresh-Session Continuation Guide
 
-**Last updated:** 2026-11-24 (Asia/Dhaka)  
+**Last updated:** 2026-11-25 (Asia/Dhaka)  
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Feature-branch code/CI checkpoint:** `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb` (documentation-only commits follow; verify live branch HEAD before every continuation)  
+**Feature-branch documentation checkpoint before this resume update:** `135f10057e10369aff11cbafe25c3b509fe5f031` (documentation-only commits follow; verify live branch HEAD before every continuation)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
@@ -183,3 +183,61 @@ It does **not** mean the chip is fabricated, physically signed off, packaged, bo
 - Master register update adding this guide and the three-file protocol: `2b168ed918b2434347b212d7b79d700558dcc48e`; latest tracker-pointer refresh: `34c4e3bf85e4826590266a1f613bfa4abc815181`.
 - Chronological tracker entry documenting the resume guide and three-file protocol: `a8e91b44dd148d77f1f5ffc56d930fefc9e4dd3b`.
 - These are document-update commits, not a final project release SHA. Always query the live branch head and `main` before continuing.
+
+
+## 11. Historical test-pass audit and workflow status — 2026-11-25
+
+**Read this section first when resuming.** The historical GitHub Actions audit has now been reconciled with actual job logs and pytest summaries. There are already well over 100 verified passing test executions in the project. The strongest single-run aggregate is **377 passed, 1 intentional skip, 0 failed** across 14 subsystem/memory jobs in Run [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703), exact SHA `ec0fe8329df06e5204a1c082df133b62b434846b`.
+
+### Confirmed passes to preserve
+
+| Area | Run | Exact SHA | Verified result |
+|---|---|---|---|
+| Subsystem + memory regression matrix | [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703) | `ec0fe8329df06e5204a1c082df133b62b434846b` | 14 jobs; 377 passed, 1 intentional geometry skip, 0 failed |
+| RTL tail | [45454717008](https://github.com/shamiursunny/openTPU/actions/runs/45454717008) | `4a2dd86b6b7f61b96d8cb0f2e5d5e573c85349e9` | 33 passed, 1 documented skip, 183 deselected |
+| 128K one-copy TMEM isolated test | [45465292891](https://github.com/shamiursunny/openTPU/actions/runs/45465292891) | `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f` | 2 passed, 215 deselected |
+| Reset audit | [45455745271](https://github.com/shamiursunny/openTPU/actions/runs/45455745271) | `dc34e3a51c27c01af6296015cd206ab8336d6bda` | 4 passed |
+| Full-chip Verilator lint | [45455745243](https://github.com/shamiursunny/openTPU/actions/runs/45455745243) | `dc34e3a51c27c01af6296015cd206ab8336d6bda` | Workflow/job success; lint scope only |
+| Four-instance HMUX directed simulation | [45454389445](https://github.com/shamiursunny/openTPU/actions/runs/45454389445) | `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc` | 3-beat host/pair AW-W-B and AR-R, backpressure; 2 write bursts, 6 read beats, 25 cycles |
+| Global-to-DIMM address-map formal | [45457143624](https://github.com/shamiursunny/openTPU/actions/runs/45457143624) | `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb` | 14 assertions, 813 variables, 2,152 clauses, SAT SUCCESS |
+| ASIC AXI-Lite control | [45248945992](https://github.com/shamiursunny/openTPU/actions/runs/45248945992) | `ae997da8a993e962dd18de0fb1240f3d5656b3a2` | PASS marker: independent AW/W, gating, load pulse, reset, register map |
+| Earlier selected RTL/ISA and AXI-Lite | [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099) | `66c708e573671136197c371a848cc9274ae394f2` | 99 passed plus 1 separate AXI-Lite isolation test; one LDC overlap means 100 distinct selected cases, not 101 |
+| Virtual DRAM/TMEM behavioural tests | [45453893286](https://github.com/shamiursunny/openTPU/actions/runs/45453893286) | `487fe6b93a83e4b86e5565b80de9b7f33c407436` | DRAMTEST, TMEMTEST and TMEM_MULTI PASS markers |
+
+The 377 matrix breakdown is recorded in tracker section 126. It comprises: MX multiply/replay 17; quantizer modes 15; QHL 7; collective hub/DMA/scoreboard 128; floating point 8; wait-state 11; stream 14; quantizer corners/ties 8; instruction cache 23; address-window 20 plus one intentional skip; SPLITQ 5; QST/QSTB 13; reset audit 4; native DRAM/technology RAM 104.
+
+### Workflow history — interpretation
+
+The feature-branch GitHub Actions query returned 705 run records, including 314 with SUCCESS conclusion. These are workflow-run successes, not 314 unique test cases. They include retries, old commits and workflow-only retriggers. The successful history includes subsystem/memory, TMEM, RTL-tail, reset audit, full-chip lint, HMUX simulation, virtual DRAM, AXI-Lite, PCIe bridge, functional RTL and workload-harness workflows. The queried history had no successful workflow run for remaining RTL/board regressions, software-core or WG8 research PPA. Do not state that the whole pipeline is green.
+
+The one skip in the 377-pass matrix is the 64-GiB address-window test whose “address beyond DRAM” condition is inapplicable because every representable address is DRAM at that geometry. Keep it as a skip, not a pass. The detailed workflow-by-workflow success/failure inventory and exact source SHAs are in tracker section 126.
+
+### Live work at the last poll (2026-11-25)
+
+Queued:
+- ASIC/config Run `45465384680`, SHA `65f28fc09ede79581ba97845165733d1caef45b1`.
+- Remaining RTL/board Run `45465292882`, SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`.
+- RTL subsystem/memory Run `45465292903`, SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`.
+
+In progress:
+- Software-core Run `45465292772`, SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`.
+- ASIC/config Run `45465292665`, SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`.
+- RTL-tail Run `45465292944`, SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`.
+- Earlier PPA Run `45455745851`, SHA `dc34e3a51c27c01af6296015cd206ab8336d6bda`, still in progress at the poll.
+- Other older retries and board/RTL jobs may remain active or queued; query the live run list before assuming any state.
+
+**Do not treat any queued/in-progress job as passed.** Fetch final job steps/logs, verify exact source SHA, and record test counts. If a log is unavailable (e.g. BlobNotFound), retry later rather than infer a result.
+
+### Immediate next actions
+
+1. Poll the live Actions run history and inspect the jobs for Runs 45465384680, 45465292882, 45465292903, 45465292772, 45465292665 and 45465292944, then the PPA and older board/RTL retries.
+2. For ASIC/config, inspect the three integrated lint stages, four-DIMM host AXI simulation, global address-map simulation and four-DIMM HMUX contention simulation separately. Do not carry lint success from SHA 51f3b9... onto SHA 86f9... or 65f2... .
+3. If the four-DIMM host test times out, inspect the timeout-only HMUX probes (AW owner enqueue and W-slice signals) before changing any synthesizable RTL. The underlying stall is not yet diagnosed.
+4. Continue software-core, board, RTL-tail and subsystem tests. No successful software-core workflow was found in the historical audit; this is a priority gap.
+5. Continue the Nangate45 research PPA flow. No successful WG8 PPA workflow or verified area/timing/power result exists.
+6. Update the master handoff register, this resume and chronological tracker together after material changes. Tracker section 126 contains the audit method and evidence table. Re-fetch all documents after updates.
+7. Before further engineering, verify live feature branch HEAD and `main`; preserve feature-branch-only changes. The last independently verified `main` SHA remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, but it must be checked again before work.
+
+### Continuation status
+
+This project has a substantial, auditable body of passing simulation and RTL tests, including a 377-pass matrix. That does **not** mean all tests are complete, the final release SHA is fully regressed, or the design is production/tapeout/silicon ready. PCIe endpoint/PHY, DDR controller/PHY, SRAM hard macros, DFT, physical design/signoff, package, board electrical validation, real-hardware workload metrics and commercial validation remain open.
