@@ -12,6 +12,7 @@ on:
       - 'targets/**'
       - 'rtl/**'
       - 'sim/verilator/tb_asic_wg8_ddr4.sv'
+      - 'sim/verilator/tb_asic_global_addr_map.sv'
       - 'sim/verilator/tb_asic_wg8_hmux_contention.sv'
       - 'sim/verilator/asic_sram_lint_stubs.sv'
       - '.github/workflows/sunnyone-asic-config.yml'
@@ -134,6 +135,27 @@ jobs:
                   raise SystemExit(f"{mode}: expected host-address aperture fatal was not observed")
               print(f"PASS: {mode} correctly rejected an address outside the 8-GiB DIMM aperture")
           PY
+      - name: Simulate global-to-DIMM address mapping
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess
+          cmd = ["verilator", "--binary", "--timing", "--assert", "-Wall", "-Wno-fatal",
+                 "--Mdir", "obj_dir_global_addr_map", "--top-module", "tb_asic_global_addr_map",
+                 "rtl/asic/otpu_asic_global_addr_map.sv", "sim/verilator/tb_asic_global_addr_map.sv"]
+          log_path = "/tmp/sunnyone-asic-global-addr-map-build.log"
+          with open(log_path, "w") as log:
+              result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
+          with open(log_path) as log:
+              print(log.read()[-12000:])
+          if result.returncode:
+              raise SystemExit(result.returncode)
+          result = subprocess.run(["./obj_dir_global_addr_map/Vtb_asic_global_addr_map"],
+                                  capture_output=True, text=True)
+          print(result.stdout)
+          print(result.stderr)
+          raise SystemExit(result.returncode)
+          PY
       - name: Simulate four-DIMM host/accelerator mux contention
         run: |
           set -euo pipefail
@@ -169,4 +191,5 @@ jobs:
             /tmp/sunnyone-asic-wg8-ddr4-lint.log
             /tmp/sunnyone-asic-wg8-ddr4-sim-build.log
             /tmp/sunnyone-asic-hmux-contention-build.log
+            /tmp/sunnyone-asic-global-addr-map-build.log
           if-no-files-found: ignore
