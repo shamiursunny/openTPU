@@ -135,7 +135,7 @@ module tb_asic_wg8_ddr4;
             (w_complete[d] || (m_wvalid[d] && m_wready[d]))) begin
           m_bvalid[d]<=1'b1;
           m_bid[d] <= (m_awvalid[d] && m_awready[d]) ? m_awid[d] : awid_hold[d];
-          m_bresp[d]<=2'b00;
+          m_bresp[d]<=2'(d);
         end else if (m_bvalid[d] && m_bready[d]) begin
           m_bvalid[d]<=1'b0;
           aw_accepted[d]<=1'b0;
@@ -160,16 +160,16 @@ module tb_asic_wg8_ddr4;
           m_rvalid[d]<=1'b1;
           m_rid[d]<=arid_hold[d];
           m_rdata[d]<=controller_read_pattern(d,int'(r_beat[d]));
-          m_rresp[d]<=2'b00;
+          m_rresp[d]<=2'(r_beat[d] % 4);
           m_rlast[d]<= (r_beat[d] == 8'(burst_beats(d)-1));
         end
         if (h_bvalid[d] && h_bready[d]) begin
-          if (h_bresp[d]!==2'b00) $fatal(1,"DIMM%0d host BRESP mismatch",d);
+          if (h_bresp[d]!==2'(d)) $fatal(1,"DIMM%0d host BRESP mismatch",d);
           b_seen[d]<=1'b1;
         end
         if (h_rvalid[d] && h_rready[d]) begin
           if (h_rdata[d] !== controller_read_pattern(d,int'(r_host_beat[d])) ||
-              h_rresp[d]!==2'b00 ||
+              h_rresp[d]!==2'(r_host_beat[d] % 4) ||
               h_rlast[d] !== (r_host_beat[d] == 8'(burst_beats(d)-1)))
             $fatal(1,"DIMM%0d host R payload/response/last mismatch beat=%0d",d,r_host_beat[d]);
           if (h_rlast[d]) r_seen[d]<=1'b1;
@@ -226,17 +226,29 @@ module tb_asic_wg8_ddr4;
   initial begin
     repeat(6) @(posedge aclk);
     @(negedge aclk); rst=0;
-    fork
-      drive_port(0);
-      drive_port(1);
-      drive_port(2);
-      drive_port(3);
-    join
-    wait(b_seen==4'hf && r_seen==4'hf);
-    repeat(5) @(posedge aclk);
-    if (bridge_error!==8'h00) $fatal(1,"unexpected bridge error: %h",bridge_error);
-    $display("PASS: four WG8 DIMM ports; 1/2/4/8-beat writes and reads, partial strobes, W-before-AW, 4-KiB boundary-aligned burst and independent backpressure");
-    $finish;
+    if ($test$plusargs("bad_aw")) begin
+      wait (dut.dimm_rst_sync[0] === 1'b0);
+      @(negedge aclk); h_awaddr[0]=34'h200000000; h_awvalid[0]=1'b1;
+      repeat(3) @(posedge aclk);
+      $fatal(1,"expected host AW aperture fatal was not raised");
+    end else if ($test$plusargs("bad_ar")) begin
+      wait (dut.dimm_rst_sync[0] === 1'b0);
+      @(negedge aclk); h_araddr[0]=34'h200000000; h_arvalid[0]=1'b1;
+      repeat(3) @(posedge aclk);
+      $fatal(1,"expected host AR aperture fatal was not raised");
+    end else begin
+      fork
+        drive_port(0);
+        drive_port(1);
+        drive_port(2);
+        drive_port(3);
+      join
+      wait(b_seen==4'hf && r_seen==4'hf);
+      repeat(5) @(posedge aclk);
+      if (bridge_error!==8'h00) $fatal(1,"unexpected bridge error: %h",bridge_error);
+      $display("PASS: four WG8 DIMM ports; 1/2/4/8-beat writes and reads, W-before-AW, partial/zero strobes, all BRESP/RRESP codes, 4-KiB boundary-aligned bursts and independent backpressure");
+      $finish;
+    end
   end
 
   initial begin
