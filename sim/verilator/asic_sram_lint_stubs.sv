@@ -1,5 +1,5 @@
 // Lint-only black boxes for the ASIC SRAM macro leaves. These declarations let
-// Verilator elaborate the ASIC technology wrappers without pretending that macro
+// the lint tool elaborates the ASIC technology wrappers without pretending that macro
 // functionality, timing, or physical implementation has been verified.
 (* blackbox *)
 module otpu_sram_1r1w #(
