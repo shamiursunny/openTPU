@@ -74,6 +74,28 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+      - name: Install pinned Yosys with Slang for reset audit
+        if: matrix.group == 'Reset audit'
+        run: |
+          set -euo pipefail
+          version=2026-11-23
+          archive="oss-cad-suite-linux-x64-20261123.tgz"
+          url="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${version}/${archive}"
+          curl --fail --location --retry 3 --retry-delay 2 "${url}" --output "${RUNNER_TEMP}/${archive}"
+          echo "c01d93f2f9091ba7eeb18540334fa0aaefa843b343cbdd627fd7669391de47ba  ${RUNNER_TEMP}/${archive}" | sha256sum --check
+          tar -xzf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}"
+          yosys="${RUNNER_TEMP}/oss-cad-suite/bin/yosys"
+          test -x "${yosys}"
+          if "${yosys}" -m slang -Q -p 'help read_slang' >/dev/null 2>&1; then
+            echo "YOSYS=${yosys}" >> "${GITHUB_ENV}"
+          elif "${yosys}" -Q -p 'help read_slang' >/dev/null 2>&1; then
+            echo "YOSYS=${yosys}" >> "${GITHUB_ENV}"
+          else
+            echo "Pinned OSS CAD Suite Yosys does not expose read_slang" >&2
+            exit 1
+          fi
+          echo "${RUNNER_TEMP}/oss-cad-suite/bin" >> "${GITHUB_PATH}"
+          "${yosys}" -V
       - name: Run selected regression group
         env:
           TEST_TARGETS: ${{ matrix.tests }}
