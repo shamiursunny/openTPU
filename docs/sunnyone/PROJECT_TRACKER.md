@@ -882,3 +882,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - PPA workflow Run [45402124448](https://github.com/shamiursunny/openTPU/actions/runs/45402124448) targets the corrected commit and remains queued at this update. Earlier Run [45402104710](https://github.com/shamiursunny/openTPU/actions/runs/45402104710) targets the intermediate workflow revision and must not be used to qualify the corrected workflow. No WG8 synthesis/PPA result exists yet.
 - The workflow still uses the public mutable release tag only to select the image at the start of each run; it records and pins the resolved image ID within that run. This improves run-level reproducibility, but a future run may pull a newer tag. A stable registry digest should be pinned in the target if a reviewed digest is established.
 - No RTL or target parameters changed. Nangate45 remains a research proxy, not a foundry PDK or silicon signoff. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 91. Correct stale WG8 ASIC-flow test expectation for AW35 and queue config verification (2026-11-24)
+
+- Cross-checked the selected target source `targets/nangate45-wg8.toml` (AW=35, DRAM_BYTES=32 GiB), the authoritative WG8 architecture specification (AW=35), and `opentpu/target.py::rtl_params` (passes the target's AW through unchanged when AW>32).
+- Found a stale assertion in `tests/test_asic_flow.py::test_points_are_the_asic_targets` that expected `AW=36` for the `nangate45-wg8` target. This contradicted the selected AW35 minimum-width 32-GiB ASIC candidate and would have failed the target contract check once this workflow ran.
+- Corrected only the test expectation from AW36 to AW35. No target, RTL, architecture parameter, or capacity changed. This aligns the regression with the previously documented and selected AW35 design; the BCU FPGA's separate AW36 reference remains distinct.
+- Commit: `dfca4d4c1810b442083e3e767482b6f9e41456ae`; test blob `62c400fc238b6429d356cc7518e4c479c6e7d18b`.
+- Exact-SHA ASIC configuration workflow Run [45402313680](https://github.com/shamiursunny/openTPU/actions/runs/45402313680) is queued at this update. Its pytest and integrated WG8 lint logs have not yet been inspected. Do not mark the correction validated until the run completes.
+- The discovery does not establish an RTL defect; it establishes a stale test expectation. The chosen logical memory map remains 32 GiB, AW35, eight 4-GiB native channels, four 8-GiB DIMM ports.
+- Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
