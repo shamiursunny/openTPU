@@ -43,7 +43,8 @@ def test_points_are_the_asic_targets():
     wg8 = flow.params("nangate45-wg8")
     assert {k: wg8[k] for k in ("WG", "NCH", "CB", "AW", "MCOLS", "ACT_ROWS",
                                  "MXU_E", "TMEM_WORDS", "TMEM_IMPL", "TMEM_PMP",
-                                 "DSTEP2", "ST16", "KT", "OUTER", "COLL_GATHER")} == \
+                                 "QUANT_R1", "QUANT_PW", "DSTEP2", "ST16", "KT",
+                                 "OUTER", "COLL_GATHER")} == \
         dict(WG=8, NCH=8, CB=128, AW=35, MCOLS=8, ACT_ROWS=16, MXU_E=8,
              TMEM_WORDS=131072, TMEM_IMPL=3, TMEM_PMP=0, QUANT_R1=1, QUANT_PW=2, DSTEP2=1,
              ST16=1, KT=1, OUTER=0, COLL_GATHER=0)
