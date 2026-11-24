@@ -318,7 +318,7 @@ Observed output was beat 2 (\`feed000200000002\`, full strobe) while the scorebo
 
 Correction commit \`68baca1a080e952b20327c90d63a6f66c6a1ee70\` changes the response condition to require either an already-completed W burst or a same-cycle accepted WLAST beat. Only \`sim/verilator/tb_asic_wg8_ddr4.sv\` changed. No synthesizable RTL, payload expectations or acceptance checks changed.
 
-**A02 is IN PROGRESS pending exact-SHA verification.** Immediately after commit, the combined status was empty and no associated workflow run was returned. Re-query Actions; do not assume a workflow has started or passed. The corrected multi-beat test, both negative-aperture tests and the complete ASIC/config job log must pass on the exact SHA before closing A02.
+**A02 is IN PROGRESS pending exact-SHA verification.** Immediately after commit, the combined status was empty and the commit-workflow lookup returned no associated run. That lookup exposes PR-triggered runs only, and combined status is not a complete Actions run listing; push-triggered run existence is therefore UNKNOWN, not confirmed absent. Check the repository Actions history before deciding whether a manual retrigger is needed; do not assume a workflow has started or passed. The corrected multi-beat test, both negative-aperture tests and the complete ASIC/config job log must pass on the exact SHA before closing A02.
 
 A03's four-instance host/accelerator contention and HMUX assertion stage was skipped in the preceding integrated run after A02 failed. It remains IN PROGRESS and must be checked after A02 passes. The standalone address-map SAT proof passed 14 assertions on its own historical SHA, but integrated address-map simulation remains unverified.
 
