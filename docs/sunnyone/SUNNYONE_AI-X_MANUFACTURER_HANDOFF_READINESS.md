@@ -356,3 +356,7 @@ The former 30 W total-system ceiling remains retired. No replacement wattage lim
 - Comment-only ASIC/config workflow retrigger commit: `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`; no workflow commands or RTL changed.
 - The immediate commit-workflow lookup still returned no run for either commit. No new test result exists yet. Check Actions again; do not report a run as started or passed without a run/job record.
 - Current latest tracker record: Section 128. Main remains untouched at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+
+
+### Latest job-state correction — 2026-11-25
+The latest re-poll supersedes the earlier snapshot in this addendum: uncovered-RTL job `138698481369` in Run `45465292882` is **CANCELLED** (not IN_PROGRESS); board-functional job `138698482005` remains IN_PROGRESS. Software-core job `138698481416` remains IN_PROGRESS; all 14 jobs in subsystem Run `45465292903` remain QUEUED; PPA job `138664562707` in Run `45455745851` remains IN_PROGRESS. A09 therefore requires a fresh exact-SHA execution. See tracker Section 129.
