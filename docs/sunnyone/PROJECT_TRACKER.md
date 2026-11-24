@@ -1368,3 +1368,17 @@ For each new continuation, query the live Actions history and inspect successful
 - Earlier run [45480699954](https://github.com/shamiursunny/openTPU/actions/runs/45480699954), SHA `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`, remained QUEUED at last poll. It contains the earlier non-corrected diagnostic source and must not be used to qualify the corrected instrumentation.
 - Concurrent older workflows on SHA `e1f46ee...` remained open at last poll: software-core [45479454796] IN_PROGRESS; board-functional and uncovered RTL [45479454775] IN_PROGRESS; subsystem matrix [45479454701] QUEUED; RTL tail [45479454581] IN_PROGRESS. The isolated 128K TMEM run [45479454629] completed SUCCESS. The older ASIC/config run [45479454587] is a diagnostic compile failure, not a DUT simulation result.
 - Next: poll all six corrected-SHA workflows; retrieve the corrected ASIC/config job log. If compilation passes, capture the exact DIMM2 W mismatch fields and classify owner/handshake state before any RTL change. Keep main untouched and preserve the four-DIMM test expectations.
+
+
+## 131. Corrected-SHA workflow queue transition (2026-11-25)
+
+Latest re-poll of the six workflows on corrected testbench SHA `76966009274be54ce26d87e333744b5cc17f72b4` supersedes Section 130's initial all-QUEUED snapshot:
+
+- ASIC/config Run [45481815682](https://github.com/shamiursunny/openTPU/actions/runs/45481815682), job `138756664096`: **QUEUED**.
+- Board-functional/uncovered RTL Run [45481815901](https://github.com/shamiursunny/openTPU/actions/runs/45481815901): board-functional job `138756665399` **QUEUED**; uncovered-RTL job `138756666235` **IN_PROGRESS**, currently building pinned Verilator 5.044.
+- Software-core Run [45481815819](https://github.com/shamiursunny/openTPU/actions/runs/45481815819), job `138756667852`: **QUEUED**.
+- RTL-tail Run [45481815780](https://github.com/shamiursunny/openTPU/actions/runs/45481815780), job `138756664573`: **IN_PROGRESS**, installing project/test dependencies.
+- RTL subsystems/WG8 Run [45481815735](https://github.com/shamiursunny/openTPU/actions/runs/45481815735): all 14 jobs remain **QUEUED**.
+- Isolated 128K TMEM Run [45481815691](https://github.com/shamiursunny/openTPU/actions/runs/45481815691), job `138756665688`: **IN_PROGRESS**, executing the isolated experimental test.
+- No corrected-SHA ASIC/config simulation result exists yet. Do not treat the static generate fix as validated until Run 45481815682 compiles and its four-DIMM simulation completes.
+- The branch's next step remains polling the ASIC/config run first, then capturing the DIMM2 diagnostic values if the build succeeds. Do not make any DUT RTL change before that evidence.
