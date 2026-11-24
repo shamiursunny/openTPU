@@ -65,14 +65,31 @@ module tb_asic_wg8_ddr4;
   logic [3:0] aw_accepted='0, w_complete='0, r_active='0;
   logic [3:0][3:0] awid_hold='0, arid_hold='0;
   logic [3:0] b_seen='0, r_seen='0;
+  logic [3:0][7:0] w_beat='0, r_beat='0, r_host_beat='0;
 
-  function automatic logic [511:0] host_write_pattern(input integer d);
-    logic [63:0] word;
-    begin word=64'hfeed000000000001 ^ {32'd0,d[31:0]}; host_write_pattern={8{word}}; end
+  function automatic integer burst_beats(input integer d);
+    case (d)
+      0: burst_beats=1;
+      1: burst_beats=2;
+      2: burst_beats=4;
+      default: burst_beats=8;
+    endcase
   endfunction
-  function automatic logic [511:0] controller_read_pattern(input integer d);
+  function automatic logic [511:0] host_write_pattern(input integer d, input integer beat);
     logic [63:0] word;
-    begin word=64'h0123456789abcdef ^ d; controller_read_pattern={8{word}}; end
+    begin word=64'hfeed000000000000 ^ (64'(d)<<32) ^ 64'(beat); host_write_pattern={8{word}}; end
+  endfunction
+  function automatic logic [63:0] host_write_strobe(input integer d, input integer beat);
+    case ((d+beat)%4)
+      0: host_write_strobe=64'hffffffffffffffff;
+      1: host_write_strobe=64'h00000000ffffffff;
+      2: host_write_strobe=64'h5555555555555555;
+      default: host_write_strobe=64'h0000000000000000;
+    endcase
+  endfunction
+  function automatic logic [511:0] controller_read_pattern(input integer d, input integer beat);
+    logic [63:0] word;
+    begin word=64'h0123456789abcdef ^ (64'(d)<<32) ^ 64'(beat); controller_read_pattern={8{word}}; end
   endfunction
 
   always_comb begin
@@ -94,20 +111,25 @@ module tb_asic_wg8_ddr4;
       aw_accepted<='0; w_complete<='0; r_active<='0;
       awid_hold<='0; arid_hold<='0;
       b_seen<='0; r_seen<='0;
+      w_beat<='0; r_beat<='0; r_host_beat<='0;
     end else begin
       for (int d=0; d<4; d++) begin
         if (m_awvalid[d] && m_awready[d]) begin
-          if (m_awid[d]!==4'h4 || m_awlen[d]!==8'd0 ||
+          if (m_awid[d]!==4'h4 || m_awlen[d]!==8'(burst_beats(d)-1) ||
               m_awaddr[d] !== h_awaddr[d] || m_awaddr[d][33] !== 1'b0 ||
               m_awsize[d]!==3'd6 || m_awburst[d]!==2'b01)
             $fatal(1,"DIMM%0d host AW routing/attributes mismatch id=%h addr=%h len=%0d",d,m_awid[d],m_awaddr[d],m_awlen[d]);
           aw_accepted[d]<=1'b1;
           awid_hold[d]<=m_awid[d];
+          w_beat[d]<='0;
         end
         if (m_wvalid[d] && m_wready[d]) begin
-          if (m_wdata[d] !== host_write_pattern(d) || m_wstrb[d] !== 64'hffffffffffffffff || !m_wlast[d])
-            $fatal(1,"DIMM%0d host W payload mismatch",d);
-          w_complete[d]<=1'b1;
+          if (m_wdata[d] !== host_write_pattern(d,int'(w_beat[d])) ||
+              m_wstrb[d] !== host_write_strobe(d,int'(w_beat[d])) ||
+              m_wlast[d] !== (w_beat[d] == 8'(burst_beats(d)-1)))
+            $fatal(1,"DIMM%0d host W payload/last mismatch beat=%0d",d,w_beat[d]);
+          if (m_wlast[d]) w_complete[d]<=1'b1;
+          else w_beat[d]<=w_beat[d]+1'b1;
         end
         if (!m_bvalid[d] &&
             (aw_accepted[d] || (m_awvalid[d] && m_awready[d])) &&
@@ -119,55 +141,84 @@ module tb_asic_wg8_ddr4;
           m_bvalid[d]<=1'b0;
           aw_accepted[d]<=1'b0;
           w_complete[d]<=1'b0;
+          w_beat[d]<='0;
         end
         if (m_arvalid[d] && m_arready[d]) begin
-          if (m_arid[d]!==4'h4 || m_arlen[d]!==8'd0 ||
+          if (m_arid[d]!==4'h4 || m_arlen[d]!==8'(burst_beats(d)-1) ||
               m_araddr[d] !== h_araddr[d] || m_araddr[d][33] !== 1'b0 ||
               m_arsize[d]!==3'd6 || m_arburst[d]!==2'b01)
             $fatal(1,"DIMM%0d host AR routing/attributes mismatch id=%h addr=%h len=%0d",d,m_arid[d],m_araddr[d],m_arlen[d]);
           arid_hold[d]<=m_arid[d];
           r_active[d]<=1'b1;
+          r_beat[d]<='0;
+          r_host_beat[d]<='0;
         end
         if (m_rvalid[d] && m_rready[d]) begin
           m_rvalid[d]<=1'b0;
-          r_active[d]<=1'b0;
+          if (m_rlast[d]) r_active[d]<=1'b0;
+          else r_beat[d]<=r_beat[d]+1'b1;
         end else if (r_active[d] && !m_rvalid[d]) begin
           m_rvalid[d]<=1'b1;
           m_rid[d]<=arid_hold[d];
-          m_rdata[d]<=controller_read_pattern(d);
+          m_rdata[d]<=controller_read_pattern(d,int'(r_beat[d]));
           m_rresp[d]<=2'b00;
-          m_rlast[d]<=1'b1;
+          m_rlast[d]<= (r_beat[d] == 8'(burst_beats(d)-1));
         end
         if (h_bvalid[d] && h_bready[d]) begin
           if (h_bresp[d]!==2'b00) $fatal(1,"DIMM%0d host BRESP mismatch",d);
           b_seen[d]<=1'b1;
         end
         if (h_rvalid[d] && h_rready[d]) begin
-          if (h_rdata[d] !== controller_read_pattern(d) ||
-              h_rresp[d]!==2'b00 || h_rlast[d]!==1'b1)
-            $fatal(1,"DIMM%0d host R payload/response mismatch",d);
-          r_seen[d]<=1'b1;
+          if (h_rdata[d] !== controller_read_pattern(d,int'(r_host_beat[d])) ||
+              h_rresp[d]!==2'b00 ||
+              h_rlast[d] !== (r_host_beat[d] == 8'(burst_beats(d)-1)))
+            $fatal(1,"DIMM%0d host R payload/response/last mismatch beat=%0d",d,r_host_beat[d]);
+          if (h_rlast[d]) r_seen[d]<=1'b1;
+          else r_host_beat[d]<=r_host_beat[d]+1'b1;
         end
       end
     end
   end
 
   task automatic drive_port(input integer d);
+    integer beats;
     begin
       // Do not mistake a combinational READY value during reset for an accepted transfer.
       // Each DIMM has its own two-flop reset synchroniser; wait for its release before
       // presenting VALID, and require READY to be a known logic 1 at the sampling edge.
       wait (dut.dimm_rst_sync[d] === 1'b0);
+      beats=burst_beats(d);
       @(negedge aclk);
-      h_awaddr[d]=34'h1000+(34'(d)*34'd64); h_awlen[d]=0; h_awvalid[d]=1;
+      h_awaddr[d]=(d==3) ? 34'h1e00 : 34'h1000+(34'(d)*34'd64);
+      h_awlen[d]=8'(beats-1);
+      if (d==0) begin
+        // AXI4 permits WVALID to precede AWVALID. The mux must hold the W beat until
+        // the corresponding AW has been accepted; no W transfer may occur beforehand.
+        h_wdata[d]=host_write_pattern(d,0);
+        h_wstrb[d]=host_write_strobe(d,0);
+        h_wlast[d]=(beats==1);
+        h_wvalid[d]=1;
+        @(posedge aclk);
+        if (h_wready[d] !== 1'b0) $fatal(1,"DIMM%0d accepted W before its AW",d);
+        @(negedge aclk);
+      end
+      h_awvalid[d]=1;
       do @(posedge aclk); while(h_awready[d] !== 1'b1);
       @(negedge aclk); h_awvalid[d]=0;
 
-      h_wdata[d]=host_write_pattern(d); h_wstrb[d]='1; h_wlast[d]=1; h_wvalid[d]=1;
-      do @(posedge aclk); while(h_wready[d] !== 1'b1);
-      @(negedge aclk); h_wvalid[d]=0;
+      for (int b=(d==0 ? 0 : 0); b<beats; b++) begin
+        if (d!=0 || b!=0) begin
+          h_wdata[d]=host_write_pattern(d,b);
+          h_wstrb[d]=host_write_strobe(d,b);
+          h_wlast[d]=(b==beats-1);
+          h_wvalid[d]=1;
+        end
+        do @(posedge aclk); while(h_wready[d] !== 1'b1);
+        @(negedge aclk); h_wvalid[d]=0;
+      end
 
-      h_araddr[d]=34'h3000+(34'(d)*34'd64); h_arlen[d]=0; h_arvalid[d]=1;
+      h_araddr[d]=(d==3) ? 34'h3e00 : 34'h3000+(34'(d)*34'd64);
+      h_arlen[d]=8'(beats-1); h_arvalid[d]=1;
       do @(posedge aclk); while(h_arready[d] !== 1'b1);
       @(negedge aclk); h_arvalid[d]=0;
     end
@@ -185,7 +236,7 @@ module tb_asic_wg8_ddr4;
     wait(b_seen==4'hf && r_seen==4'hf);
     repeat(5) @(posedge aclk);
     if (bridge_error!==8'h00) $fatal(1,"unexpected bridge error: %h",bridge_error);
-    $display("PASS: four independent WG8 DIMM ports; host AW/W/B and AR/R routed on all four ports with independent backpressure");
+    $display("PASS: four WG8 DIMM ports; 1/2/4/8-beat writes and reads, partial strobes, W-before-AW, 4-KiB boundary-aligned burst and independent backpressure");
     $finish;
   end
 
