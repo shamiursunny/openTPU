@@ -12,6 +12,7 @@ on:
       - 'targets/**'
       - 'rtl/**'
       - 'sim/verilator/tb_asic_wg8_ddr4.sv'
+      - 'sim/verilator/tb_asic_wg8_hmux_contention.sv'
       - 'sim/verilator/asic_sram_lint_stubs.sv'
       - '.github/workflows/sunnyone-asic-config.yml'
   workflow_dispatch:
@@ -117,6 +118,27 @@ jobs:
           print(result.stderr)
           raise SystemExit(result.returncode)
           PY
+      - name: Simulate four-DIMM host/accelerator mux contention
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess, sys
+          sys.path.insert(0, "tools/asic")
+          import opentpu.target as target
+          sources = ["rtl/" + p for p in target.sources("bcu1525-wg", family="generic")]
+          sources += ["sim/verilator/tb_asic_wg8_hmux_contention.sv"]
+          cmd = ["verilator", "--binary", "--timing", "--assert", "-Wall", "-Wno-fatal",
+                 "--top-module", "tb_asic_wg8_hmux_contention", *sources]
+          with open("/tmp/sunnyone-asic-hmux-contention-build.log", "w") as log:
+              result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
+          print(open("/tmp/sunnyone-asic-hmux-contention-build.log").read()[-18000:])
+          if result.returncode:
+              raise SystemExit(result.returncode)
+          result = subprocess.run(["./obj_dir/Vtb_asic_wg8_hmux_contention"], capture_output=True, text=True)
+          print(result.stdout)
+          print(result.stderr)
+          raise SystemExit(result.returncode)
+          PY
       - name: Archive configuration test log
         if: always()
         uses: actions/upload-artifact@v4
@@ -128,4 +150,5 @@ jobs:
             /tmp/sunnyone-asic-mem-lint.log
             /tmp/sunnyone-asic-wg8-ddr4-lint.log
             /tmp/sunnyone-asic-wg8-ddr4-sim-build.log
+            /tmp/sunnyone-asic-hmux-contention-build.log
           if-no-files-found: ignore
