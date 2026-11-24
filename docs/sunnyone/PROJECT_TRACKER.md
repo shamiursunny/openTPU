@@ -777,3 +777,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Run 69 remains active on the previous workflow revision SHA `4a6d240314e569c4fdc4d4d2334b4e51dae7e238`; its Reset audit job is still queued and has not yet exercised the first installer revision.
 - The environment-activation revision triggered Run 70, [45373821692](https://github.com/shamiursunny/openTPU/actions/runs/45373821692), on exact SHA `cf4155ec1d27c48e50f69cf6314274857a28ba0f`. At inspection, all 14 jobs were queued. No result is claimed for Run 70.
 - The two runs temporarily duplicate the matrix while GitHub Actions processes the queue. No RTL or test source changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+
+## 82. Resolve the 64-GiB Address-window skip: intentional boundary case (2026-11-24)
+
+- Inspected the full `tests/test_aw_rtl.py` source at the current feature branch. The five address-window parameter instances include one deliberate skip in `test_beyond_the_dram_stops_the_board_model`: the fixture parameter `caw=26` is the 64-GiB board model; the test explicitly skips it with reason `64 GiB: every address is DRAM`.
+- This is correct for the current model parameters: the board has eight channels and each channel is `1 << (caw + 7)` bytes; at CAW 26 this is 8 GiB/channel × 8 = 64 GiB = (2^{36}) bytes. The modeled core address width is AW=36, so every representable 36-bit byte address lies within the 64-GiB DRAM range. There is no out-of-range address at bit 35 to test on that configuration.
+- At CAW 25, the model is 32 GiB = (2^{35}) bytes while AW remains 36; the corresponding test injects a store at (2^{35}) and expects the board model to stop with `beyond its 2^32 bytes` (the model's diagnostic wording). That is the meaningful boundary-guard instance and remains executed.
+- Therefore, do not force this 64-GiB case to run, relabel it as a pass, or treat it as evidence of 64-GiB physical hardware support. Its skip is a valid not-applicable parameter instance; the remaining four reset-audit skips are a separate toolchain issue being addressed in Sections 80–81.
+- Current feature branch contains this analysis. No test or RTL changed. Runs 69 and 70 remain in progress/queued at inspection; Reset audit has not yet started, so no new reset-audit execution result is claimed.
