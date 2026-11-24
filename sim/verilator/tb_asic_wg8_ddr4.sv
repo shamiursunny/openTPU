@@ -121,7 +121,6 @@ module tb_asic_wg8_ddr4;
             $fatal(1,"DIMM%0d host AW routing/attributes mismatch id=%h addr=%h len=%0d",d,m_awid[d],m_awaddr[d],m_awlen[d]);
           aw_accepted[d]<=1'b1;
           awid_hold[d]<=m_awid[d];
-          w_beat[d]<='0;
         end
         if (m_wvalid[d] && m_wready[d]) begin
           if (m_wdata[d] !== host_write_pattern(d,int'(w_beat[d])) ||
