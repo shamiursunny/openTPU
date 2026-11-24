@@ -417,3 +417,14 @@ This section supersedes the A02 failure diagnosis and pending-state snapshots in
 - The 4-DIMM contention bench source contains simultaneous host/accelerator AW and AR requests, round-robin grant expectations, two-beat W ordering, response-ID routing checks and independent backpressure. Source inspection does not count as simulation evidence.
 - PPA remains open: WG8 PPA Run [45455745851](https://github.com/shamiursunny/openTPU/actions/runs/45455745851) failed. Its 1.56-GB artifact is retained; no PPA values or silicon metrics are accepted. Defer bulk download until a targeted log extraction is available.
 - Continue with the ASIC/config run first, then the independent same-SHA regressions. Keep all statuses SHA-scoped and do not promote queued/in-progress jobs to PASS. Main remains unchanged; no paid resources used.
+
+
+### 16. Exact-SHA integrated ASIC/config gate passed — 2026-11-25
+
+- ASIC/config Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), job `138775349960`, completed SUCCESS on code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+- Three integrated lint stages passed, covering ASIC control/compute, WG8 native-memory and WG8 four-DIMM AXI tops.
+- Four-DIMM WG8 host AXI integration simulation, global-to-DIMM address-map simulation and four-instance host/accelerator mux contention simulation all completed successfully. This is meaningful scoped RTL integration evidence and closes the immediate A02/A03 run gate on this SHA; it does not replace full protocol/formal/CDC/RDC verification, physical design or silicon qualification.
+- Isolated 128K one-copy TMEM job [45487119017](https://github.com/shamiursunny/openTPU/actions/runs/45487119017), job `138775350575`, also completed SUCCESS on the same code SHA.
+- Same-SHA board-functional, uncovered RTL, software-core and RTL-tail jobs remain in progress; all 14 subsystem/WG8 jobs remain queued at this poll. These are not passed and must be reconciled individually.
+- PPA is still open; prior WG8 PPA run failed and supplies no accepted area/timing/power result. Manufacturer release gate remains OPEN. Production PCIe/SerDes, DDR controller/PHY, macros, PDK, package, DFT, physical signoff, board electrical and measured workload evidence remain outstanding.
+- Preserve zero-spend, feature-branch-only changes, exact-SHA evidence and no tapeout/manufacturing-readiness overclaim.
