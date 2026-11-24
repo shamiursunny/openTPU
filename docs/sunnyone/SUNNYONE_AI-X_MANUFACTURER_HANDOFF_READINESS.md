@@ -349,3 +349,10 @@ This addendum supersedes any earlier “current next action” text in Sections 
 6. Update this register, the project resume and chronological tracker with exact SHA/run/job evidence. Never promote queued/running jobs to PASS.
 
 The former 30 W total-system ceiling remains retired. No replacement wattage limit is approved. Hardware power, memory size and compute configuration remain evidence-led decisions based on representative workloads, full-system TCO, measured wall power and incremental contribution margin.
+
+
+### Workflow retrigger addendum — 2026-11-25
+- Diagnostic testbench commit: `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`.
+- Comment-only ASIC/config workflow retrigger commit: `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`; no workflow commands or RTL changed.
+- The immediate commit-workflow lookup still returned no run for either commit. No new test result exists yet. Check Actions again; do not report a run as started or passed without a run/job record.
+- Current latest tracker record: Section 128. Main remains untouched at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
