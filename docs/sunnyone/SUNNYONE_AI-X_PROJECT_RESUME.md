@@ -416,3 +416,35 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 - No standalone log artifact was produced because `/tmp/sunnyone-rtl-tail.log` did not exist; job log is the available evidence.
 - Still pending at latest poll: board-functional, uncovered RTL, software-core, Stream RTL, MX multiply/replay; 12 further subsystem/WG8 jobs queued.
 - Continue polling exact-SHA runs. No PPA or manufacturer release conclusion changes.
+
+
+
+## 17. Live continuation update — 2026-11-25 (post-poll)
+
+### Verified repository state
+- Feature branch: `sunnyone/commercial-profitability-architecture-2026-11-23`; live branch HEAD at the start of this update: `06766e101f5451830638705eb616291df8b4ef7b`.
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5` (re-queried; unchanged).
+- Compare `68baca1a080e952b20327c90d63a6f66c6a1ee70...06766e101f5451830638705eb616291df8b4ef7b`: 22 commits, all changes confined to the three SUNNYONE documentation files. No RTL/source changes occurred after the verified code SHA `68baca...`.
+
+### Exact-SHA CI status on code SHA 68baca1a080e952b20327c90d63a6f66c6a1ee70
+- ASIC/config Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079): SUCCESS. Detailed log review confirms the four-DIMM 1/2/4/8-beat AXI cases, W-before-AW, partial/zero strobes, all BRESP/RRESP codes, 4-KiB boundary-aligned bursts, independent backpressure, both expected-fatal AW/AR aperture checks, 32-GiB global map and four-instance HMUX contention/ID routing.
+- RTL-tail Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/45487118908): SUCCESS; 33 passed, 1 parameter-inapplicable skip, 183 deselected. Deselected tests are not covered.
+- Isolated 128K one-copy TMEM Run [45487119017](https://github.com/shamiursunny/openTPU/actions/runs/45487119017): SUCCESS; no verified test count recorded here.
+- RTL subsystem/WG8 Run [45487118947](https://github.com/shamiursunny/openTPU/actions/runs/45487118947): 11 of 14 jobs completed SUCCESS; Address-window and Native DRAM/technology RAM remain IN_PROGRESS; Reset audit remains QUEUED. Do not call the workflow complete or infer test totals from job count.
+- Remaining RTL/board Run [45487118979]: board-functional and uncovered-RTL jobs ended CANCELLED. Software-core Run [45487119094] ended CANCELLED. Their partial pytest progress is not a pass and must be rerun on a reviewed SHA with adequate runtime.
+
+### Corrected task interpretation
+- A02 four-DIMM AXI multi-beat/negative-aperture gate: PASS on exact code SHA `68baca...`.
+- A03 integrated four-DIMM HMUX contention/ID-routing gate: PASS on exact code SHA `68baca...`.
+- The subsystem workflow remains PARTIAL: 11 successful jobs, 2 in progress and 1 queued at the latest poll.
+- The earlier short summary of “249 passing subsystem tests” is not retained as an authoritative count because a complete, reconciled per-job pytest total was not established in this continuation. Use only test counts captured from actual job logs and do not sum overlapping workflows.
+- The failed PPA run [45455745851](https://github.com/shamiursunny/openTPU/actions/runs/45455745851) remains FAILED. No area, timing, power or PPA figure is accepted.
+
+### Immediate next work
+1. Poll the two remaining subsystem jobs and queued reset audit in Run 45487118947; inspect full logs and exact test summaries.
+2. Re-run cancelled board-functional, uncovered-RTL and software-core suites separately or in appropriately sized jobs; avoid cancellation-driven loss of evidence.
+3. Inspect the PPA failure's targeted ORFS/Yosys logs and mapping threshold behaviour; do not bulk-download the historical 1.56-GB artifact. Produce a reproducible successful research PPA flow before reporting metrics.
+4. Resolve or formally disposition the WIDTHTRUNC and UNOPTFLAT warnings with explicit address-width/boundary evidence and structural analysis; do not suppress warnings.
+5. Preserve feature-branch-only, zero-spend, exact-SHA evidence. Update this resume, master handoff and tracker together after each material result.
+
+**Release decision:** simulation evidence has advanced materially, with A02/A03 passing on `68baca...`; full regression and manufacturer release gates remain OPEN. No fabrication, tapeout, physical signoff, board, silicon or commercial-performance readiness is established.
