@@ -4,7 +4,7 @@
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Branch HEAD immediately before this final resume-file refresh:** `34c4e3bf85e4826590266a1f613bfa4abc815181` (the resume refresh itself creates a newer HEAD; always verify live)  
+**Feature-branch checkpoint before this documentation refresh:** `c09447bafa3460d4acc74b35c4f7e6bdf40b9857` (verify live HEAD before every continuation)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
@@ -71,60 +71,51 @@ No final power ceiling exists. The former 30 W system cap was explicitly retired
 
 ## 5. Latest checkpoint and known corrections
 
-Last verified branch HEAD before this resume-file change: `c4748c78d88e1660dc12dd6be981674dea5a962d`. Main was independently verified at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Re-verify both before any work.
+Feature-branch checkpoint before this documentation refresh: `c09447bafa3460d4acc74b35c4f7e6bdf40b9857`. Main was independently re-verified unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Re-verify both before any work.
 
-### A01 — four-DIMM host-path simulation (OPEN; highest priority)
+### A01 — four-DIMM host-path simulation (DONE — scoped single-beat integration)
 
 Earlier diagnostic Run [45425750505](https://github.com/shamiursunny/openTPU/actions/runs/45425750505), job `138557141766`, SHA `b41669fe1d67a3f7dcb84d86a960cdb4b9167ad8`, timed out at cycle 20,000. State showed host WVALID=1111, WREADY=0000, host AWVALID=0000, controller AWVALID=0000, and no AW accepted. Source review found the bench started traffic before each DIMM's two-flop reset synchroniser released reset and used `while (!READY)`, which is unsafe for X/reset-time combinational READY.
 
 Correction commit: `ec0fe8329df06e5204a1c082df133b62b434846b`, file `sim/verilator/tb_asic_wg8_ddr4.sv`. The bench now waits for `dut.dimm_rst_sync[d] === 1'b0` and requires READY to be exactly `1'b1` before advancing. No DUT RTL or transaction payload changed.
 
-**Verification run:** [45428347822](https://github.com/shamiursunny/openTPU/actions/runs/45428347822), SHA `ec0fe8329df06e5204a1c082df133b62b434846b). It was QUEUED at the last poll. Retrieve status, jobs and full log. A01 remains open until four-port simulation passes and logs are inspected. If it still fails, use the actual new diagnostic state; do not assume this fix resolved it.
+**Verified pass:** [45428347822](https://github.com/shamiursunny/openTPU/actions/runs/45428347822), job `138566432055`, exact SHA `ec0fe8329df06e5204a1c082df133b62b434846b`. Full job log reports: `PASS: four independent WG8 DIMM ports; host AW/W/B and AR/R routed on all four ports with independent backpressure`; Verilator finished at 210 ns. This closes only the current single-beat four-port host-path test. It does not close A02 multi-beat/protocol coverage or A03 host/accelerator contention. The integrated lint logs still contain width-expansion/truncation, UNOPTFLAT and MODDUP warnings for triage under A11.
 
-### A04 — Nangate45 research PPA (OPEN)
+### A04 — Nangate45 research PPA (IN PROGRESS; synthesis mapping blocker diagnosed)
 
-PPA Run [45426849673](https://github.com/shamiursunny/openTPU/actions/runs/45426849673), job `138561067049`, SHA `21e1d56c5c6bcafc8d45a49f5aa8920516bad068`, failed before ORFS: a literal backslash-n was written into the Docker image ID file, and Docker returned `invalid reference format`. No synthesis or PPA result was produced by this attempt.
+The earlier Docker image-ID defect was fixed in workflow commit `e212fe714eac17e339a2cc9090bee293a8ba6c09`. Verification Run [45428370570](https://github.com/shamiursunny/openTPU/actions/runs/45428370570), job `138566505337`, exact SHA `e212fe714eac17e339a2cc9090bee293a8ba6c09`, successfully pulled and pinned ORFS image `sha256:02c90ad9cb0efb19f7881bf1bf43330dacb5323eac756af6e1604042ec60d21a`, ran the SRAM probe, enumerated 288 macro instances / 14 sizes / about 3,538 KiB, and entered ORFS/Yosys synthesis. It then failed at Yosys memory mapping: three MXU result-FIFO copies are each 64 x 672 = 43,008 bits, exceeding `SYNTH_MEMORY_MAX_BITS=16384`.
 
-Workflow correction commit: `e212fe714eac17e339a2cc9090bee293a8ba6c09`, file `.github/workflows/sunnyone-asic-wg8-ppa.yml`. The printf format now writes a real newline. It preserves full ORFS `run.log`, trailing diagnostic excerpt, work logs/reports/results, image ID, macro inventory and constraints/config.
+Source review confirms `otpu_ram_1r1w_ra` is intentionally asynchronous-read and write-first; substituting the existing synchronous fakeram45 macros would change semantics. The evidence-led research-flow correction therefore raises the flip-flop mapping threshold to 65,536 bits and documents that these three copies remain flip-flops in the proxy. This is a high-area mapping, not a foundry SRAM solution or a final physical architecture.
 
-**Verification run:** [45428370570](https://github.com/shamiursunny/openTPU/actions/runs/45428370570), SHA `e212fe714eac17e339a2cc9090bee293a8ba6c09`. It was QUEUED at the last poll. Retrieve its final result and artifact. If ORFS starts, inspect the complete log and reports, identify exact failing stage or report measured results. Nangate45 is a research proxy only, not production PDK evidence.
+Flow correction commit: `0b67e65deb7fcc457b10bb825304db752689b3e7`, `tools/asic/flow.py`. Mapping limitation documentation commit: `c09447bafa3460d4acc74b35c4f7e6bdf40b9857`, `asic/nangate45/README.md`. **A new exact-SHA PPA run for the flow change has not yet been identified/verified.** A04 remains open until that run gets through synthesis and the complete ORFS reports are inspected. Nangate45 remains a research proxy only; no area, timing or power result is yet available.
 
 ### Other runs requiring reconciliation
 
 Runs triggered from testbench commit `ec0fe832...`:
-- [45428347806](https://github.com/shamiursunny/openTPU/actions/runs/45428347806) — board-functional and uncovered RTL.
-- [45428348086](https://github.com/shamiursunny/openTPU/actions/runs/45428348086) — RTL tail.
-- [45428347706](https://github.com/shamiursunny/openTPU/actions/runs/45428347706) — software-core / ISA.
-- [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703) — subsystem and WG8 memory matrix.
+- [45428347806](https://github.com/shamiursunny/openTPU/actions/runs/45428347806) — board-functional and uncovered RTL. Board-functional rerun job `138652132132` is in progress; uncovered RTL job `138652135885` is still cancelled and needs rerun after the current attempt completes.
+- [45428348086](https://github.com/shamiursunny/openTPU/actions/runs/45428348086) — RTL-tail job `138566421070` completed successfully, but the expected log artifact was not produced; its exact pytest count remains unverified.
+- [45428347706](https://github.com/shamiursunny/openTPU/actions/runs/45428347706) — software-core rerun job `138652190796` is in progress.
+- [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703) — all 14 subsystem/memory jobs completed successfully on SHA `ec0fe832...`; retrieved summaries total **374 passed, 1 skipped**, with no failed tests. The skipped test's reason was not present in the captured summary, so retain this as scoped/partial until classified.
 
-These were queued at the last poll. Also reconcile older diagnostic-SHA runs:
-- [45425750624](https://github.com/shamiursunny/openTPU/actions/runs/45425750624) — board/remaining RTL (previously in progress).
-- [45425750818](https://github.com/shamiursunny/openTPU/actions/runs/45425750818) — RTL tail (later completed successfully; retrieve job log and exact counts).
-- [45425750779](https://github.com/shamiursunny/openTPU/actions/runs/45425750779) — software-core (previously in progress).
-- [45425750683](https://github.com/shamiursunny/openTPU/actions/runs/45425750683) — subsystem/memory matrix (previously queued).
-
-Older evidence remains scoped only: Run 68 had 373 passed/5 skipped; Run 72 had 377 passed/1 intentional 64-GiB skip; target/config run 45414724190 had 66 passed; RTL-tail run 45417561286 had 33 passed/1 geometry skip/183 deselected; selected MX, quantizer and stream suites passed 17, 15, 8 and 14 tests respectively; isolated TMEM run 45417561463 had 2 passed/215 deselected. None is full regression.
+Older diagnostic-SHA runs [45425750624](https://github.com/shamiursunny/openTPU/actions/runs/45425750624), [45425750779](https://github.com/shamiursunny/openTPU/actions/runs/45425750779) were cancelled; [45425750818](https://github.com/shamiursunny/openTPU/actions/runs/45425750818) RTL-tail passed on its own SHA; and [45425750683](https://github.com/shamiursunny/openTPU/actions/runs/45425750683) subsystem jobs passed on their own SHA. Do not transfer those results to `ec0fe832...` or later SHAs.
 
 ## 6. Task register and next work order
 
 The authoritative M01–M14, A01–A12 and H01–H12 task table is in Section 9 of the master handoff register. In brief:
 - M01–M14 are completed or partially evidenced scoped tasks.
-- A01 four-DIMM simulation and A04 PPA diagnosis remain active blockers.
-- A02 expanded four-DIMM AXI protocol tests and A03 four-DIMM host/accelerator contention are not started.
-- A05 research synthesis/PPA, A06 subsystem matrix, A07 software/ISA, A08 board-functional, A09 uncovered RTL, A11 lint warning closure and A12 formal protocol properties remain incomplete/partial.
-- A10 final complete regression on one immutable release SHA is not started.
+- A01's single-beat four-DIMM host-path simulation now passes on exact SHA `ec0fe832...`; A02 expanded AXI protocol tests and A03 host/accelerator contention remain not started.
+- A04 is in progress: ORFS reached Yosys synthesis and exposed three 43,008-bit asynchronous-read result-FIFO memories exceeding the 16,384-bit synthesis threshold; the evidence-led 65,536-bit FF-mapping correction is committed, but its PPA rerun is not yet verified.
+- A05 remains in progress with no PPA metrics. A06 matrix has 374 passes and 1 skip across 14 successful jobs; skip reason still needs classification. A07 software-core and A08 board-functional reruns are in progress; A09 uncovered RTL rerun remains pending.
+- A11 lint warning closure and A12 full formal protocol properties remain partial. A10 final complete regression on one immutable release SHA is not started.
 - H01–H12 describe external manufacturer/physical/commercial work; see master register for exact status and evidence.
 
 Recommended order:
-1. Retrieve current status and logs for A01 run 45428347822 and A04 run 45428370570.
-2. Diagnose/fix A01 minimally and rerun until pass; do not hide or weaken tests.
-3. Diagnose/fix A04 until the PPA workflow reliably starts and full ORFS logs/reports are available. Report proxy metrics only when sourced from actual reports.
-4. Reconcile all active and older matrix runs by exact SHA, job and log. Rerun necessary failures on a later controlled SHA.
-5. Add A02 expanded AXI protocol coverage and A03 contention/fairness tests after A01 passes.
-6. Close remaining A05–A09, A11 and A12 with scoped evidence.
-7. Run A10 complete regression on one immutable release SHA.
-8. Build and checksum a reproducible manufacturer feasibility-review package, with every external dependency disclosed.
-9. Only after all objective gates are met, update all three documents to final completion state. Manufacturer/physical/silicon gates remain separate and cannot be claimed complete by simulation.
+1. Locate and inspect the new PPA workflow run triggered by flow commit `0b67e65...`; verify it uses the corrected 65,536-bit threshold and exact commit SHA.
+2. Retrieve board-functional job `138652132132` and software-core job `138652190796`; rerun uncovered RTL job `138652135885` once its workflow run is no longer active.
+3. Classify the one skipped test in subsystem/memory run 45428347703 and retrieve the exact RTL-tail pytest count (the successful job did not upload its expected log).
+4. Add A02 expanded AXI protocol coverage and A03 four-DIMM host/accelerator contention/fairness tests after the baseline single-beat path is stable.
+5. Complete A04/A05 research synthesis and PPA only from reproducible reports; continue A06–A09, A11 and A12 with exact-SHA evidence.
+6. Run A10 complete regression on one immutable release SHA.
 
 ## 7. Exact continuation workflow for a new ChatGPT window
 
