@@ -140,9 +140,10 @@ module tb_asic_wg8_ddr4;
           if (m_wlast[d]) w_complete[d]<=1'b1;
           else w_beat[d]<=w_beat[d]+1'b1;
         end
+        // The response model must wait for the final W beat, not any W handshake.
         if (!m_bvalid[d] &&
             (aw_accepted[d] || (m_awvalid[d] && m_awready[d])) &&
-            (w_complete[d] || (m_wvalid[d] && m_wready[d]))) begin
+            (w_complete[d] || (m_wvalid[d] && m_wready[d] && m_wlast[d]))) begin
           m_bvalid[d]<=1'b1;
           m_bid[d] <= (m_awvalid[d] && m_awready[d]) ? m_awid[d] : awid_hold[d];
           m_bresp[d]<=2'(d);
