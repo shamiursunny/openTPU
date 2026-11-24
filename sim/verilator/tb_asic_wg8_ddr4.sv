@@ -154,17 +154,21 @@ module tb_asic_wg8_ddr4;
 
   task automatic drive_port(input integer d);
     begin
+      // Do not mistake a combinational READY value during reset for an accepted transfer.
+      // Each DIMM has its own two-flop reset synchroniser; wait for its release before
+      // presenting VALID, and require READY to be a known logic 1 at the sampling edge.
+      wait (dut.dimm_rst_sync[d] === 1'b0);
       @(negedge aclk);
       h_awaddr[d]=34'h1000+(34'(d)*34'd64); h_awlen[d]=0; h_awvalid[d]=1;
-      do @(posedge aclk); while(!h_awready[d]);
+      do @(posedge aclk); while(h_awready[d] !== 1'b1);
       @(negedge aclk); h_awvalid[d]=0;
 
       h_wdata[d]=host_write_pattern(d); h_wstrb[d]='1; h_wlast[d]=1; h_wvalid[d]=1;
-      do @(posedge aclk); while(!h_wready[d]);
+      do @(posedge aclk); while(h_wready[d] !== 1'b1);
       @(negedge aclk); h_wvalid[d]=0;
 
       h_araddr[d]=34'h3000+(34'(d)*34'd64); h_arlen[d]=0; h_arvalid[d]=1;
-      do @(posedge aclk); while(!h_arready[d]);
+      do @(posedge aclk); while(h_arready[d] !== 1'b1);
       @(negedge aclk); h_arvalid[d]=0;
     end
   endtask
