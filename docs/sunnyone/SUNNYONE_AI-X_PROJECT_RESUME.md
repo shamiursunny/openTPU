@@ -241,3 +241,35 @@ In progress:
 ### Continuation status
 
 This project has a substantial, auditable body of passing simulation and RTL tests, including a 377-pass matrix. That does **not** mean all tests are complete, the final release SHA is fully regressed, or the design is production/tapeout/silicon ready. PCIe endpoint/PHY, DDR controller/PHY, SRAM hard macros, DFT, physical design/signoff, package, board electrical validation, real-hardware workload metrics and commercial validation remain open.
+
+
+## 6. Live continuation checkpoint — 2026-11-25
+
+**Do not resume from the older queued-run list in Section 5.** The master task register's Section 11 and tracker Section 127 supersede it.
+
+### Current code/evidence checkpoint
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Latest diagnostic RTL/testbench-only commit: `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`.
+- That commit changes only the failure message in `sim/verilator/tb_asic_wg8_ddr4.sv` so a repeated W-channel mismatch reports actual/expected WDATA, WSTRB, WLAST, owner-FIFO and handshake state. No synthesizable RTL changed.
+- Documentation synchronisation commits: tracker `99973c70b6f47507d9ff627c1dfdcd13dc592086`; master register `355b5f1b67b6cb2cd17b50618bd6a52b8b4d6e5f`. Re-fetch the live branch head after any later documentation updates.
+- Main remains protected at `d84db55712aba0d40811d7762cb052f05d55b7e5`; re-verify before future edits.
+
+### Fresh CI facts
+- ASIC/config Run 45465384680 on SHA `65f28fc09ede79581ba97845165733d1caef45b1`: all three integrated ASIC lint stages passed; four-DIMM host simulation failed at 135 ns with `DIMM2 host W payload/last mismatch beat=0`. Address-map and HMUX stages were skipped by fail-fast.
+- Earlier Run 45465292665 on SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f` failed on the same assertion. This is repeatable across two SHAs.
+- Diagnostic commit `e1f46ee...` had no associated workflow run returned by the first commit-workflow query. Check again; do not assume it triggered.
+- RTL-tail Run 45465292944 passed 33 tests, with 1 parameter-inapplicable skip and 183 deselected.
+- Board-functional and uncovered-RTL Run 45465292882 were still running; software-core Run 45465292772 was still running; all 14 jobs in subsystem Run 45465292903 were queued at the last poll.
+- WG8 PPA Run 45454389335 on SHA `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc` failed inside ORFS with exit 2. Artifact 14960636530 contains the detailed run evidence. Do not claim area/timing/power. Older Run 45455745851 was still running at the last poll.
+- Historical 377-pass / 1 intentional-skip subsystem matrix, address-map SAT proof, and directed HMUX pass remain valid only for their exact historical SHAs.
+
+### Next execution order
+1. Check whether the exact diagnostic commit triggered the ASIC/config workflow. If no run exists, trigger the existing workflow on the active branch/commit using an approved push-trigger path; do not change synthesizable RTL just to trigger CI.
+2. Inspect the detailed DIMM2 diagnostic values and identify the mismatching field and owner/handshake state.
+3. Fix only the proven testbench or RTL cause. Re-run four-DIMM normal and negative-aperture scenarios.
+4. Once A02 passes, run the address-map simulation and four-instance HMUX contention/assertion steps.
+5. Retrieve final board, uncovered RTL, software-core and subsystem logs. Inspect PPA artifact 14960636530 and diagnose ORFS exit 2.
+6. Update all three governing documents and verify exact branch/main refs.
+
+### Strategy guardrails
+The former 30 W total-system ceiling remains retired. No replacement wattage ceiling is selected. Optimise risk-adjusted long-term net profit and realistic payback through measured useful inference, full-system TCO, wall power/cooling, reliability and incremental contribution margin. Do not maximise watts, RAM or peak TOPS alone. Keep the zero-spend rule and do not claim production/tapeout readiness.
