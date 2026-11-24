@@ -1049,3 +1049,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The PPA evidence-collection workflow correction is recorded in section 104; its next run must include `build/asic/nangate45-wg8/run.log`, ORFS logs/reports/results and the exact image ID. No new PPA result is yet claimed.
 - The diagnostic four-DIMM simulation remains a blocker. Do not promote the design to manufacturer implementation handoff until its timeout is understood and the expanded AXI integration tests pass.
 - Feature branch only; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 106. Establish authoritative live manufacturer-handoff task register (2026-11-24)
+
+- Expanded `docs/sunnyone/SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md` with Section 9, the single authoritative status register for simulation readiness and manufacturer handoff. Update commit: `ee6f8f718ee0e157aea435e633a715e05860f9c4`.
+- The register separates evidence-verified completed/scoped tasks (M01–M14), failed/incomplete simulation and CI tasks (A01–A12), and manufacturer/physical dependencies (H01–H12). It defines statuses, acceptance evidence, release gates and a continuation protocol requiring the register and chronological tracker to be updated in the same work session.
+- Important: “DONE” in the register is explicitly scoped to the named test or document; it does not imply full-chip verification. The four-DIMM simulation timeout and PPA exit-code-2 failure remain open. Previously running/queued matrix jobs are not promoted to complete without retrieved results.
+- Current next priorities remain A01 (diagnose and pass four-DIMM host-path simulation) and A04 (retrieve full ORFS log from the next run and diagnose PPA flow). The full final-SHA regression and manufacturer package remain not complete.
+- The master register is intended to prevent task/status drift across continuation chats. Before any further implementation, read it and verify current branch/commit and CI evidence. After each task, update both this register and this tracker with exact SHA/run IDs/results.
+- Latest verified task-register update commit: `ee6f8f718ee0e157aea435e633a715e05860f9c4`. Feature branch remains `sunnyone/commercial-profitability-architecture-2026-11-23`; no changes to `main` and no paid resources used.
