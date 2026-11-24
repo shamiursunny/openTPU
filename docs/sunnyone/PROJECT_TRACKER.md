@@ -730,3 +730,29 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The six selections sum to all 65 parameterized/direct instances across all 15 test functions. They use explicit pytest node IDs, not `-k`, so each job collects only its assigned tests; no test functions or parameter cases were removed, skipped, weakened or deselected from the combined regression coverage. Existing non-quantisation groups are retained unchanged. The workflow continues to use a 45-minute per-job timeout, `max-parallel: 2`, `fail-fast: false`, `pipefail` and per-job log artifacts. Added `--durations=20` to expose slowest cases in each completed job's log.
 - The updated workflow was fetched back and verified. It triggered run [45357051033](https://github.com/shamiursunny/openTPU/actions/runs/45357051033), run number 68, on exact SHA `6d0462a9b7b4e69a5b3f97e4a807a8d1f2d10331`. At first inspection, Stream RTL and MX multiply/replay RTL were in progress; the other 12 matrix jobs were queued. No Run 68 test outcome is yet claimed.
 - This is CI orchestration only; no RTL, Python implementation, test function or test parameter source was changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+
+## 79. Run 68 full matrix success; all 65 quantisation cases executed (2026-11-24)
+
+- Workflow run [45357051033](https://github.com/shamiursunny/openTPU/actions/runs/45357051033), run number 68, completed with overall conclusion `success` on exact tested SHA `6d0462a9b7b4e69a5b3f97e4a807a8d1f2d10331`. All 14 matrix jobs completed with job conclusion success. Every job log was retrieved and its pytest summary inspected.
+- Actual pytest summaries:
+  - Floating-point RTL: **8 passed** in 150.45s.
+  - Collective hub, DMA and scoreboard: **128 passed** in 310.72s.
+  - Address-window RTL: **20 passed, 1 skipped** in 1398.97s. The skipped case is `64 GiB: every address is DRAM`; no 64 GiB validation is claimed.
+  - Stream RTL: **14 passed** in 945.01s.
+  - MX multiply and replay RTL: **17 passed** in 580.50s.
+  - QHL RTL: **7 passed** in 746.80s.
+  - Instruction-cache RTL: **23 passed** in 879.22s.
+  - Quantizer modes RTL: **15 passed** in 686.68s.
+  - Quantizer corners and tie rounding RTL: **8 passed** in 643.70s.
+  - SPLITQ RTL: **5 passed** in 382.26s.
+  - QST and QSTB RTL: **13 passed** in 981.92s.
+  - Wait-state RTL: **11 passed** in 225.07s.
+  - Native DRAM and technology RAM: **104 passed** in 1696.65s.
+  - Reset audit: **4 skipped** in 0.05s because Yosys+Slang is unavailable, as described in section 76; no reset-audit assertions ran.
+- Quantisation coverage: the six explicit pytest-node selections produced **65 passed** across all 15 test functions and all parameter instances in `tests/test_quant_rtl.py`: MX multiply/replay 17; quantizer modes 15; quantizer corners/ties 8; SPLITQ 5; QHL 7; QST/QSTB 13. This resolves the previous Run 67 quantisation timeout without deselecting, skipping or weakening tests.
+- Aggregate actual pytest summaries: **373 passed, 5 skipped**, zero reported failures. The workflow itself concluded success. Distinguish this from the five skips: one Address-window 64-GiB-labelled case and four environment-gated reset-audit cases. No reset audit pass is claimed.
+- `--durations=20` was enabled for each group; slowest cases are recorded in the archived per-job logs. Longest completed group was Address-window at 1398.97s (23m 18s); Native DRAM/technology RAM completed in 1696.65s (28m 16s), both within the 45-minute job timeout. Six quantisation groups completed between 382.26s and 981.92s. Workflow retains `max-parallel: 2`, `fail-fast: false`, `pipefail` and per-job log artifacts.
+- This is successful bounded RTL regression evidence for the listed tests at the exact SHA above. It is not complete formal verification, exhaustive AXI protocol proof, full-chip validation, PCIe/DDR electrical validation, physical PPA, thermal/package signoff or silicon readiness.
+- No RTL or test source was modified for this run; the preceding change was CI matrix orchestration only. Tracker entry appended separately. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
