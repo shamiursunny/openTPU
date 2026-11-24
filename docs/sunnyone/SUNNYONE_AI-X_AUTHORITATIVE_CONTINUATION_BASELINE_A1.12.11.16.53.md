@@ -203,3 +203,8 @@ At the start of each continuation:
 8. Leave `main` unchanged and avoid paid resources absent explicit authorisation.
 
 **Operating principle:** engineering progress is code plus reproducible evidence. A planned test is not a test result; a passing simulation is not physical validation; a logical architecture is not a manufacturable chip.
+
+
+## 13. Consolidated V1 logical design candidate
+
+The consolidated logical architecture and interface contract is now recorded in `docs/sunnyone/SUNNYONE_AI-X_V1_FINAL_LOGICAL_DESIGN_CANDIDATE_A1.12.11.16.54.md`. It selects WG8 / one slice / AW35 / 32-GiB logical memory / four 512-bit DIMM-local AXI ports / four per-DIMM host-pair muxes / AXI4-Lite control, while explicitly retaining PCIe endpoint/PHY, DMA/IOMMU, DDR controller/PHY, production PDK, package, DFT, physical signoff, board and silicon validation as open blockers. This is a logical V1 candidate, not a tapeout or production-ready specification. Use the new document together with this baseline and the WG8/DDR integration documents; do not infer physical completion from the consolidated design.
