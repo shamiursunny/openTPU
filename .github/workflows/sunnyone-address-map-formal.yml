@@ -1,0 +1,46 @@
+name: SUNNYONE Global Address Map Formal Proof
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/asic/otpu_asic_global_addr_map.sv'
+      - 'formal/otpu_asic_global_addr_map_formal.sv'
+      - '.github/workflows/sunnyone-address-map-formal.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  address-map-formal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned YosysHQ OSS CAD Suite
+        run: |
+          set -euo pipefail
+          version=2026-11-23
+          archive="oss-cad-suite-linux-x64-20261123.tgz"
+          url="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${version}/${archive}"
+          curl --fail --location --retry 3 --retry-delay 2 "${url}" --output "${RUNNER_TEMP}/${archive}"
+          echo "c01d93f2f9091ba7eeb18540334fa0aaefa843b343cbdd627fd7669391de47ba  ${RUNNER_TEMP}/${archive}" | sha256sum --check
+          tar -xzf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}"
+          source "${RUNNER_TEMP}/oss-cad-suite/environment"
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" >> "${GITHUB_ENV}"
+          IFS=: read -r -a suite_path_entries <<< "${PATH}"
+          for path_entry in "${suite_path_entries[@]}"; do
+            if [ -n "${path_entry}" ]; then printf '%s\n' "${path_entry}" >> "${GITHUB_PATH}"; fi
+          done
+          yosys -V
+      - name: Prove 32-GiB global-to-DIMM map and inverse properties
+        run: |
+          set -euo pipefail
+          yosys -Q -l /tmp/sunnyone-address-map-formal.log -p 'read_verilog -formal -sv rtl/asic/otpu_asic_global_addr_map.sv formal/otpu_asic_global_addr_map_formal.sv; prep -top otpu_asic_global_addr_map_formal -flatten; sat -prove-asserts -verify -show-ports'
+          tail -n 120 /tmp/sunnyone-address-map-formal.log
+      - name: Archive formal proof log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-address-map-formal-log
+          path: /tmp/sunnyone-address-map-formal.log
+          if-no-files-found: ignore
