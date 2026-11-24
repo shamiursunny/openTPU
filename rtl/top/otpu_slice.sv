@@ -931,11 +931,15 @@ module otpu_slice
   // TMEM_RPL: a group whose port replays a lost read is held (tm_frz, a register); the
   // collective, which is not replayed, reads only where its request does not lose (tm_bx)
   logic [NG-1:0] rpl_hold, rpl_frz;
+  // Keep the registered replay-freeze path separate from the collective's local
+  // TMEM block qualification. Combining both outputs in one process obscures the
+  // fact that rpl_frz itself does not depend on the collective grant.
   always_comb
-    for (int g = 0; g < NG; g++) begin
+    for (int g = 0; g < NG; g++)
       rpl_frz[g] = TMEM_RPL && g != G_VPU && g != G_COLL && (tm_frz & grp_rports(g)) != '0;
+  always_comb
+    for (int g = 0; g < NG; g++)
       rpl_hold[g] = rpl_frz[g] || (TMEM_RPL && g == G_COLL && tm_bx[P_COLL] && |rq_en[P_COLL]);
-    end
   always_comb begin
     for (int g = 0; g < NG; g++) begin
       aok[g] = !rpl_hold[g];
@@ -949,8 +953,10 @@ module otpu_slice
     end
     gnt_m = aok;
     gnt_m[G_COLL] = coll_gnt;
-    cgl_m = aok[G_COLL];
   end
+  // The collective's local availability is independent of the top-level global
+  // coll_gnt input; keep this assignment outside the grant-selection process.
+  always_comb cgl_m = aok[G_COLL];
 
   logic [NG-1:0] gnt_k, gnt_q, gnt_x, gnt_s;
   logic          cgl_k, cgl_q, cgl_x, cgl_s;
