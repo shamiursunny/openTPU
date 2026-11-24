@@ -58,17 +58,17 @@ module tb_hmux;
   logic r_active=0;
   logic [3:0] r_active_id;
   logic [7:0] r_active_len;
-  function automatic logic [511:0] write_pattern(input bit host, input integer beat);
+  function automatic logic [511:0] write_pattern(input bit host, input logic [7:0] beat);
     logic [63:0] word;
     begin
-      word = (host ? 64'hfeed000000000001 : 64'hcafe000000000002) ^ {{32{1'b0}}, beat[31:0]};
+      word = (host ? 64'hfeed000000000001 : 64'hcafe000000000002) ^ {56'd0, beat};
       write_pattern = {8{word}};
     end
   endfunction
-  function automatic logic [511:0] read_pattern(input integer beat);
+  function automatic logic [511:0] read_pattern(input logic [7:0] beat);
     logic [63:0] word;
     begin
-      word = 64'h0123456789abcdef ^ {{32{1'b0}}, beat[31:0]};
+      word = 64'h0123456789abcdef ^ {56'd0, beat};
       read_pattern = {8{word}};
     end
   endfunction
