@@ -17,7 +17,7 @@ from opentpu.isasim import Config, board_config
 
 # the targets at WG 8 (weight groups, the channel bridges' adapter knobs): the BCU1525 at one
 # slice (targets/bcu1525-wg.toml), at two (bcu1525-s2.toml) and two cards of those (bcu1525-x2)
-WG_TARGETS = {"bcu1525-wg", "bcu1525-s2", "bcu1525-x2"}
+WG_TARGETS = {"bcu1525-wg", "bcu1525-s2", "bcu1525-x2", "nangate45-wg8"}
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -1003,8 +1003,12 @@ def test_dram_address_bits(tmp_path):
     BCU1525 at WG 8: AW 36, its 32 GiB as 8 virtual channels of 4 GiB (two a DIMM), the RTL's
     AW, DRAM_LOG2 and CH_LOG2 from it."""
     for n in T.names():
-        if n not in ("bcu1525-wg", "bcu1525-s2", "bcu1525-x2"):
+        if n not in ("bcu1525-wg", "bcu1525-s2", "bcu1525-x2", "nangate45-wg8"):
             assert T.config(n).AW == 32 and "AW" not in T.rtl_params(n), n
+    # The ASIC WG8 research target has a 35-bit address space and 32 GiB logical DRAM.
+    ca = T.config("nangate45-wg8")
+    assert (ca.AW, ca.DRAM_BYTES) == (35, 1 << 35)
+    assert T.rtl_params("nangate45-wg8")["AW"] == 35
     # (the BCU1525 at two slices: 16 GiB a slice, 8 virtual channels of 2 GiB, AW 36 as one's)
     t2 = T.load("bcu1525-s2")
     assert (T.config(t2).AW, T.config(t2).DRAM_BYTES) == (36, 1 << 34)
