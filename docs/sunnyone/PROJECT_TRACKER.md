@@ -871,3 +871,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Broader CI for prior testbench SHA `3456e78a...` is also active: subsystem matrix Run 45401273989, software-core Run 45401273945, RTL-tail Run 45401274009, and remaining RTL/board Run 45401273668. These do not validate the newer `4437e1d...` revision. The isolated 128K one-copy TMEM investigation Run 45401273637 completed successfully on `3456e78a...`; its scope is only that isolated investigation.
 - No RTL or architectural parameter change in this step. The focused test remains a single-DIMM, two-requester, three-beat directed test, not full four-DIMM or AXI protocol qualification. Outstanding Gate B items remain those listed in the authoritative baseline.
 - Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 90. Pin WG8 PPA container by immutable image ID within each CI run (2026-11-24)
+
+- Reviewed `.github/workflows/sunnyone-asic-wg8-ppa.yml`. Previously, the workflow recorded the pulled `openroad/orfs:latest` image ID but the later `tools/asic/flow.py run` could still resolve the mutable `latest` tag. That weakened reproducibility if the tag moved between preparation and the OpenROAD run.
+- Updated the workflow to pull the tag once, capture the immutable local image ID, persist it as `ORFS_IMAGE` through `GITHUB_ENV`, and use that exact image ID for the Yosys/Slang SRAM probe. The later flow script receives the same `ORFS_IMAGE` and therefore uses the same local image ID for Docker-backed OpenROAD. The image ID is archived as `/tmp/orfs-image-id.txt`.
+- During review, caught and corrected a doubled-backslash printf formatting issue before accepting the workflow: the committed source now contains exactly `printf '%s\\n' "${image_id}"`, which writes a real newline.
+- Corrected workflow commit: `db871f66916134769909a2c42296307b0fec7479`; workflow blob `fa2f3d2012da3b299effa0080fd1c9e78707433e`.
+- PPA workflow Run [45402124448](https://github.com/shamiursunny/openTPU/actions/runs/45402124448) targets the corrected commit and remains queued at this update. Earlier Run [45402104710](https://github.com/shamiursunny/openTPU/actions/runs/45402104710) targets the intermediate workflow revision and must not be used to qualify the corrected workflow. No WG8 synthesis/PPA result exists yet.
+- The workflow still uses the public mutable release tag only to select the image at the start of each run; it records and pins the resolved image ID within that run. This improves run-level reproducibility, but a future run may pull a newer tag. A stable registry digest should be pinned in the target if a reviewed digest is established.
+- No RTL or target parameters changed. Nangate45 remains a research proxy, not a foundry PDK or silicon signoff. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
