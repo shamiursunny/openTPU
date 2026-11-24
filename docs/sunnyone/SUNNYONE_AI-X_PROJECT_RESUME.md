@@ -208,7 +208,7 @@ The 377 matrix breakdown is recorded in tracker section 126. It comprises: MX mu
 
 ### Workflow history — interpretation
 
-The feature-branch GitHub Actions query returned 705 run records, including 314 with SUCCESS conclusion. These are workflow-run successes, not 314 unique test cases. They include retries, old commits and workflow-only retriggers. The successful history includes subsystem/memory, TMEM, RTL-tail, reset audit, full-chip lint, HMUX simulation, virtual DRAM, AXI-Lite, PCIe bridge, functional RTL and workload-harness workflows. The queried history had no successful workflow run for remaining RTL/board regressions, software-core or WG8 research PPA. Do not state that the whole pipeline is green.
+The feature-branch GitHub Actions query returned 705 run records, including 316 with SUCCESS conclusion. These are workflow-run successes, not 316 unique test cases. They include retries, old commits and workflow-only retriggers. The successful history includes subsystem/memory, TMEM, RTL-tail, reset audit, full-chip lint, HMUX simulation, virtual DRAM, AXI-Lite, PCIe bridge, functional RTL and workload-harness workflows. The queried history had no successful workflow run for remaining RTL/board regressions, software-core or WG8 research PPA. Do not state that the whole pipeline is green.
 
 The one skip in the 377-pass matrix is the 64-GiB address-window test whose “address beyond DRAM” condition is inapplicable because every representable address is DRAM at that geometry. Keep it as a skip, not a pass. The detailed workflow-by-workflow success/failure inventory and exact source SHAs are in tracker section 126.
 
