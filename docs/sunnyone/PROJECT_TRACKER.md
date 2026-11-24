@@ -904,3 +904,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Testbench commit `4d5a30dc12a6bfba0529a3748e551137a8dde4ee`; declaration cleanup commit `812010e049c842beae0d98c5720e9c7839abda97`; workflow commit `22a0fbfdcb531a7982bf42cab86d4eb9c2729f60`.
 - Exact-SHA ASIC/configuration run [45402825174](https://github.com/shamiursunny/openTPU/actions/runs/45402825174) is queued at this update. The testbench has not yet been compiled or run; no four-DIMM pass is claimed.
 - Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 93. Strengthen four-DIMM wrapper bench against unknowns and width warnings (2026-11-24)
+
+- Reviewed the new four-DIMM host-path bench before its first CI compile. Removed initial values from signals driven by `always_comb`, explicitly sized the DIMM-index contributions to the host address pattern, and explicitly zero-extended the data-pattern index.
+- Strengthened controller-side checks to use case inequality for IDs, lengths, address high-bit, burst size/type, response codes and final bridge-error status. Unknown/X values can no longer silently pass a two-state `if` condition as if the expected value were present.
+- Latest four-DIMM bench commit: `716fb74676e9e6cdbb8842d927d62ff2c47580b7`; the ASIC/config workflow is [Run 45402976553](https://github.com/shamiursunny/openTPU/actions/runs/45402976553), exact tested SHA `716fb74676e9e6cdbb8842d927d62ff2c47580b7`. At this update it is queued; no compilation or simulation result yet.
+- The testbench is intended to verify the real four-DIMM wrapper's four host-facing paths, not just four isolated mux copies. It still does not exercise accelerator-pair traffic simultaneously on all DIMMs, real PCIe DMA, IOMMU, DDR controller/PHY or electrical behaviour.
+- No RTL or architecture parameter changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
