@@ -4,7 +4,7 @@
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Feature-branch checkpoint before this documentation refresh:** `9c550d41ff00a6521cf551f6ab1b08b5f87263f5` (verify live HEAD before every continuation)  
+**Feature-branch checkpoint before this documentation refresh:** `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb` (verify live HEAD before every continuation)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
@@ -71,7 +71,7 @@ No final power ceiling exists. The former 30 W system cap was explicitly retired
 
 ## 5. Latest checkpoint and known corrections
 
-Feature-branch checkpoint before this documentation refresh: `c09447bafa3460d4acc74b35c4f7e6bdf40b9857`. Main was independently re-verified unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Re-verify both before any work.
+Feature-branch checkpoint before this documentation refresh: `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb`. Main was independently re-verified unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Re-verify both before any work.
 
 ### A01 — four-DIMM host-path simulation (DONE — scoped single-beat integration)
 
@@ -129,12 +129,12 @@ The authoritative M01–M14, A01–A12 and H01–H12 task table is in Section 9 
 - A04 corrected-flow Run `45452183549` remains active on SHA `0b67e65...`; latest-code PPA Run `45454389335` is queued on `fc3bdc...`. No PPA metrics exist yet. A05 remains in progress.
 - A06 latest matrix Run `45454026458` uses pytest `-rs` to reveal skip reasons. Latest A07/A08/A09 runs are queued on `487fe6b...`; earlier retries on `ec0fe832...` remain active/cancelled and must be reconciled. A11 structural warning fixes and A12 assertion set are committed but unverified.
 - A11 lint warning closure and A12 full formal protocol properties remain partial. A10 final complete regression on one immutable release SHA is not started.
-- H01–H04 and H07–H11 cover manufacturer/physical/hardware dependencies. H05 has a source-derived host DMA/descriptor interface specification at `docs/sunnyone/SUNNYONE_AI-X_HOST_DMA_AND_GLOBAL_ADDRESS_MAP_SPEC.md`; PCIe/DMA RTL, descriptor ABI and driver remain open. H06 now also has a standalone global-to-DIMM decoder and inverse-bijection testbench; ASIC/config Run `45455874266` on `d3a75f...` is queued. A combinational formal harness and pinned-Yosys SAT workflow were added. First formal Run `45456060346` failed because Yosys emitted `$check` cells not accepted by the SAT pass; workflow commit `9c550d41ff00a6521cf551f6ab1b08b5f87263f5` adds `chformal -assert`, and rerun `45456545394` on `9c550d...` is queued. Neither the simulation nor formal proof has passed yet. The decoder is not integrated into a DMA engine or ASIC top, so end-to-end global routing remains open. H12 has an evidence-based profitability measurement framework at `docs/sunnyone/SUNNYONE_AI-X_COMMERCIAL_PROFITABILITY_MEASUREMENT_MODEL.md`; numeric ROI/power decisions remain blocked on measured performance, physical PPA, full-system power, manufacturer quotations and demand/pricing evidence.
+- H01–H04 and H07–H11 cover manufacturer/physical/hardware dependencies. H05 has a source-derived host DMA/descriptor interface specification at `docs/sunnyone/SUNNYONE_AI-X_HOST_DMA_AND_GLOBAL_ADDRESS_MAP_SPEC.md`; PCIe/DMA RTL, descriptor ABI and driver remain open. H06 now also has a standalone global-to-DIMM decoder and inverse-bijection testbench; ASIC/config Run `45455874266` on `d3a75f...` is queued. A combinational formal harness and pinned-Yosys SAT workflow were added. First formal Run `45456060346` failed because Yosys emitted `$check` cells not accepted by the SAT pass. The attempted `chformal -assert` change at `9c550d...` was incomplete because `-assert` selects a constraint type but does not lower `$check`; queued Run `45456545394` is superseded. Workflow commit `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb` now uses `chformal -lower`; corrected formal Run `45457143624` on `0d6128...` is queued. Neither the simulation nor formal proof has passed yet. The decoder is not integrated into a DMA engine or ASIC top, so end-to-end global routing remains open. H12 has an evidence-based profitability measurement framework at `docs/sunnyone/SUNNYONE_AI-X_COMMERCIAL_PROFITABILITY_MEASUREMENT_MODEL.md`; numeric ROI/power decisions remain blocked on measured performance, physical PPA, full-system power, manufacturer quotations and demand/pricing evidence.
 
 Recommended order:
 1. Inspect consolidated ASIC/config Run `45455874266` on exact SHA `d3a75f...` for A02 multi-beat/response/negative-address tests, A03 contention/HMUX_FORMAL assertions and H06 address-map simulation.
 2. Inspect full-chip lint Run `45454389561` on exact SHA `fc3bdc...` for MODDUP/UNOPTFLAT cleanup and exposed width warnings.
-3. Inspect H06 formal rerun `45456545394` on exact SHA `9c550d...` and standalone address-map simulation Run `45455874266` on `d3a75f...`; the first formal attempt failed at Yosys SAT cell conversion and the rerun is pending.
+3. Inspect H06 formal rerun `45457143624` on exact SHA `0d6128...` and standalone address-map simulation Run `45455874266` on `d3a75f...`; the first formal attempt failed at Yosys SAT cell conversion, the intermediate `45456545394` script is superseded, and the `chformal -lower` rerun is pending.
 4. Inspect subsystem Run `45454026458` on exact SHA `ec151e...` for pytest skip reasons and exact counts.
 5. Retrieve corrected-flow PPA Run `45454389335`, latest software-core Run `45453893300`, board/uncovered Run `45453893567` and RTL-tail Run `45453893412`; reconcile older active attempts by exact SHA.
 6. Complete A04/A05 research synthesis and PPA only from reproducible reports; continue A06–A09, A11 and A12 with exact-SHA evidence and add a real HMUX formal proof harness.
