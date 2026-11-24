@@ -2,7 +2,7 @@
 module tb_hmux;
   logic clk=0, rst=1;
   always #5 clk=~clk;
-  logic p_awvalid=0,p_awready,p_wvalid=0,p_wready,p_bvalid,p_bready=1;
+  logic p_awvalid=0,p_awready,p_wvalid=0,p_wready,p_bvalid,p_bready;
   logic [3:0] p_awid='0,p_bid;
   logic [33:0] p_awaddr='0;
   logic [7:0] p_awlen='0;
@@ -10,21 +10,21 @@ module tb_hmux;
   logic [63:0] p_wstrb='1;
   logic p_wlast=1;
   logic [1:0] p_bresp;
-  logic p_arvalid=0,p_arready,p_rvalid,p_rready=1;
+  logic p_arvalid=0,p_arready,p_rvalid,p_rready;
   logic [3:0] p_arid='0,p_rid;
   logic [33:0] p_araddr='0;
   logic [7:0] p_arlen='0;
   logic [511:0] p_rdata;
   logic [1:0] p_rresp;
   logic p_rlast;
-  logic h_awvalid=0,h_awready,h_wvalid=0,h_wready,h_bvalid,h_bready=1;
+  logic h_awvalid=0,h_awready,h_wvalid=0,h_wready,h_bvalid,h_bready;
   logic [33:0] h_awaddr='0;
   logic [7:0] h_awlen=0;
   logic [511:0] h_wdata='0;
   logic [63:0] h_wstrb='1;
   logic h_wlast=1;
   logic [1:0] h_bresp;
-  logic h_arvalid=0,h_arready,h_rvalid,h_rready=1;
+  logic h_arvalid=0,h_arready,h_rvalid,h_rready;
   logic [33:0] h_araddr='0;
   logic [7:0] h_arlen=0;
   logic [511:0] h_rdata;
@@ -54,21 +54,21 @@ module tb_hmux;
   logic [7:0] awlenq[0:7], arlenq[0:7];
   integer aw_wp=0,aw_rp=0,ar_wp=0,ar_rp=0, writes=0,reads=0;
   integer cycle=0, pair_b=0, host_b=0, pair_r=0, host_r=0;
-  integer wbeat=0, rbeat=0;
+  logic [7:0] wbeat=0, rbeat=0;
   logic r_active=0;
   logic [3:0] r_active_id;
   logic [7:0] r_active_len;
   function automatic logic [511:0] write_pattern(input bit host, input integer beat);
     logic [63:0] word;
     begin
-      word = (host ? 64'hfeed000000000001 : 64'hcafe000000000002) ^ beat;
+      word = (host ? 64'hfeed000000000001 : 64'hcafe000000000002) ^ {{32{1'b0}}, beat[31:0]};
       write_pattern = {8{word}};
     end
   endfunction
   function automatic logic [511:0] read_pattern(input integer beat);
     logic [63:0] word;
     begin
-      word = 64'h0123456789abcdef ^ beat;
+      word = 64'h0123456789abcdef ^ {{32{1'b0}}, beat[31:0]};
       read_pattern = {8{word}};
     end
   endfunction
