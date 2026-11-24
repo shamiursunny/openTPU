@@ -208,3 +208,27 @@ At the start of each continuation:
 ## 13. Consolidated V1 logical design candidate
 
 The consolidated logical architecture and interface contract is now recorded in `docs/sunnyone/SUNNYONE_AI-X_V1_FINAL_LOGICAL_DESIGN_CANDIDATE_A1.12.11.16.54.md`. It selects WG8 / one slice / AW35 / 32-GiB logical memory / four 512-bit DIMM-local AXI ports / four per-DIMM host-pair muxes / AXI4-Lite control, while explicitly retaining PCIe endpoint/PHY, DMA/IOMMU, DDR controller/PHY, production PDK, package, DFT, physical signoff, board and silicon validation as open blockers. This is a logical V1 candidate, not a tapeout or production-ready specification. Use the new document together with this baseline and the WG8/DDR integration documents; do not infer physical completion from the consolidated design.
+
+
+## 11. CI history audit and current continuation checkpoint (2026-11-25)
+
+The repository's historical GitHub Actions run history for the active feature branch was audited across 705 returned run records; 314 had a SUCCESS conclusion. These are workflow-run records, including retries and repeated commits, not 314 unique tests. The actual job logs were reconciled for the principal pass evidence. The clearest broad result is Run [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703), exact SHA `ec0fe8329df06e5204a1c082df133b62b434846b`: 14 successful subsystem/memory jobs totalling **377 passed, 1 intentional 64-GiB geometry skip, 0 failed**. Per-job counts and the broader workflow inventory are in [PROJECT_TRACKER.md, section 126](PROJECT_TRACKER.md).
+
+Additional verified results include:
+- RTL-tail Run [45454717008](https://github.com/shamiursunny/openTPU/actions/runs/45454717008), SHA `4a2dd86b6b7f61b96d8cb0f2e5d5e573c85349e9`: 33 passed, 1 documented skip, 183 deselected.
+- Isolated one-copy 128K TMEM Run [45465292891](https://github.com/shamiursunny/openTPU/actions/runs/45465292891), SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9`: 2 passed, 215 deselected.
+- Reset audit Run [45455745271](https://github.com/shamiursunny/openTPU/actions/runs/45455745271), SHA `dc34e3a51c27c01af6296015cd206ab8336d6bda`: 4 passed.
+- Four-instance HMUX directed simulation Run [45454389445](https://github.com/shamiursunny/openTPU/actions/runs/45454389445), SHA `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`: 3-beat host/pair write/read bursts with backpressure passed (2 write bursts, 6 read beats, 25 cycles).
+- Global address-map SAT Run [45457143624](https://github.com/shamiursunny/openTPU/actions/runs/45457143624), SHA `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb`: 14 assertions, 813 variables, 2,152 clauses, SAT SUCCESS.
+- Full-chip lint Run [45455745243](https://github.com/shamiursunny/openTPU/actions/runs/45455745243) and AXI-Lite control Run [45248945992](https://github.com/shamiursunny/openTPU/actions/runs/45248945992) completed successfully on their respective SHAs.
+
+**Critical interpretation:** no single final immutable release SHA has yet passed the entire regression suite. The queried history had no successful workflow run for remaining RTL/board, software-core or WG8 research PPA. A prior HMUX directed simulation pass does not close the separate four-DIMM host-path stall. A selected address-map SAT proof is not whole-chip formal signoff. The 128K TMEM test does not establish foundry SRAM macro feasibility.
+
+At the last poll, current queued/running runs included ASIC/config `45465384680`, remaining RTL/board `45465292882`, subsystem/memory `45465292903`, software-core `45465292772`, ASIC/config `45465292665`, RTL-tail `45465292944`, and PPA `45455745851`. Always query current GitHub Actions state before acting; none of these states should be presumed unchanged.
+
+The three continuation documents were synchronised after this audit:
+1. `SUNNYONE_AI-X_PROJECT_RESUME.md` — fresh-session quick start and live work order.
+2. `SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md` — task acceptance and manufacturer/release boundaries.
+3. `PROJECT_TRACKER.md` — detailed historical evidence, workflow counts and chronology (section 126).
+
+Continue feature-branch-only work. Verify live feature branch and `main` before further changes. Keep zero-spend approval, exact-SHA evidence, explicit skips and failures, and the distinction between RTL simulation, physical implementation, silicon validation and commercial readiness. No production PPA, production DDR/PCIe PHY, DFT, package, board electrical or silicon qualification is claimed.
