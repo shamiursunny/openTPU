@@ -334,3 +334,26 @@ On the preceding diagnostic SHA \`769660...\`, RTL-tail Run \`45481815780\` pass
 6. Update this resume, master register and chronological tracker together after each meaningful result.
 
 **Readiness boundary:** the project is not simulation-ready for manufacturer feasibility review, fabrication-ready, tapeout-ready, production-board-ready or silicon-qualified. A01 is only a scoped single-beat pass. A02/A03, PPA, broader regressions, lint/formal closure and the immutable release regression remain open. Manufacturer/physical dependencies remain explicit. Zero-spend and feature-branch-only rules remain in force.
+
+
+
+## 12. Actions run IDs confirmed for corrected W-response testbench SHA — 2026-11-25
+
+Exact code SHA: \`68baca1a080e952b20327c90d63a6f66c6a1ee70\`. Six push-triggered workflows are confirmed:
+
+| Workflow | Run ID | Current state |
+|---|---:|---|
+| ASIC/config | [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079) | QUEUED |
+| Board + uncovered RTL | [45487118979](https://github.com/shamiursunny/openTPU/actions/runs/45487118979) | board IN_PROGRESS; uncovered QUEUED |
+| Software-core | [45487119094](https://github.com/shamiursunny/openTPU/actions/runs/45487119094) | QUEUED |
+| Isolated 128K TMEM | [45487119017](https://github.com/shamiursunny/openTPU/actions/runs/45487119017) | QUEUED |
+| RTL subsystems/WG8 | [45487118947](https://github.com/shamiursunny/openTPU/actions/runs/45487118947) | all 14 jobs QUEUED |
+| RTL tail | [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/45487118908) | QUEUED |
+
+Critical next action: poll ASIC/config job \`138775349960\`. It must compile and pass four-DIMM 1/2/4/8-beat host write/read traffic, W-before-AW, backpressure and both negative AW/AR aperture tests. Only then check the integrated global address map and four-instance HMUX contention/ID-routing assertions. A02 and A03 are not closed.
+
+The board-functional job \`138775349751\` has completed environment setup and is running the host-driver/board-model regression. Its log endpoint returned NOT_FOUND at the last poll; inspect job steps/state again rather than inferring a result. Other same-SHA workflows are queued as listed.
+
+PPA remains unresolved. Run \`45455745851\` failed; artifact \`14962660456\` is 1.56 GB and should not be bulk-downloaded without a targeted extraction plan. No power, area, timing or PPA figures are accepted.
+
+Feature-branch code checkpoint remains \`68baca...\`; documentation-only commits follow. Protected main remains \`d84db55712aba0d40811d7762cb052f05d55b7e5\`. Continue feature-branch-only, zero-spend and evidence-first.
