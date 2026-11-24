@@ -398,3 +398,11 @@ Confirmed PASS markers:
 4. Poll remaining exact-SHA board, uncovered RTL, software-core, RTL-tail and 14 subsystem jobs. PPA remains unresolved.
 
 Overall release gate remains OPEN despite the A02/A03 integration simulation PASS.
+
+
+
+## 15. Refined warning diagnosis — 2026-11-25
+
+- Width warning source trace: `otpu_mig_pair` outputs 33-bit local addresses (`CL=32`, `NC=2`), while the intermediate mux-facing nets and `otpu_mig_hmux` are 34 bits. The top's DIMM-local contract reserves bit 33 as zero; the 33-to-34 connection is consistent with zero-extension. The bridge's 34-bit channel address is reduced to the 32-bit channel offset by `dimm()`; V1 channel size is 4 GiB and bridge PC=0. This is not a demonstrated address truncation defect, but explicit width wiring or warning-cleanup and boundary checks would make the contract clearer. Do not change RTL until needed and validated.
+- UNOPTFLAT at `otpu_slice.sv:906`: `aok` is computed as a forward combinational priority chain where each group reads only lower-index grants. Source review does not show a direct cycle; this may be a packed-vector dependency warning. Keep it open for structural validation; no speculative refactor.
+- No production RTL changed during this review. The integrated four-DIMM, global map, HMUX and expected-negative aperture simulations remain PASS on SHA `68baca...`.
