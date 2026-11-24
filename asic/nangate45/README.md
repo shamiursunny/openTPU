@@ -89,8 +89,11 @@ the same with otpu_fpipe's LM 3 and LA 6 (see `docs/asic.md`: without retiming t
 
 ## Settings that matter (and why)
 
-- `SYNTH_MEMORY_MAX_BITS 16384`: the remaining flip-flop memories (the quantizer's block buffer,
-  the dispatch window, the MXU's drain rows) are above ORFS's 4096-bit default; they stay flops.
+- `SYNTH_MEMORY_MAX_BITS 65536`: the MXU's three 64 x 672 result-FIFO copies (43,008 bits each)
+  use asynchronous read / write-first semantics in `otpu_ram_1r1w_ra`, so they remain flip-flops;
+  the generated synchronous fakeram45 macros are not substituted for them. This is an explicit
+  high-area research mapping. A real implementation needs a foundry macro with matching behaviour
+  or a separately verified RTL/microarchitecture change; these Nangate45 estimates are not final ASIC PPA.
 - `RTLMP_MIN_CHANNEL_SIZE 60 60`: the channels between macros must be wider than the M4 power
   straps' pitch (56 um), or PDN fails (PDN-0179, "Unable to repair all channels").
 - `MACRO_PLACE_HALO 10 10`, `PLACE_DENSITY_LB_ADDON 0.10`, `TNS_END_PERCENT 100`.
