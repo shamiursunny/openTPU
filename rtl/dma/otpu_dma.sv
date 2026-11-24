@@ -850,7 +850,6 @@ module otpu_dma
     return 24'(op | (dst << 4) | (a << 7) | (b << 11));
   endfunction
   localparam int SC_SUB = 1, SC_MUL = 2, O_A = 8, O_X = 9, O_K0 = 10, O_K1 = 11;
-  logic [AW-1:0] su_src, su_dst;         // DRAM byte addresses
   logic [31:0] su_vec, su_x, su_k, su_ks, su_out;
   logic [15:0] su_nseg;                  // segments SE takes (pad64: 16 per row)
   logic        su_ok;
