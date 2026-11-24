@@ -36,7 +36,7 @@ The user is final decision-maker. Do not invent test results, performance, power
 - Before each continuation, independently verify feature branch HEAD and `main`.
 - Read this resume, the master register and tracker before implementation.
 - Inspect existing workflows/runs before launching duplicate CI.
-- Prioritise the highest-priority unresolved task in the master register; currently A01 and A04.
+- Prioritise the highest-priority unresolved task in the master register; A01's single-beat host-path scope is passed, while A02 multi-beat integration is pending a corrected exact-SHA rerun and A04/A05 PPA remain open.
 - Inspect source and logs before edits. Make the smallest evidence-led correction.
 - Never weaken, delete, skip or relax a failing test to obtain a green result. Never suppress warnings without justified analysis and documented waiver.
 - Distinguish testbench faults from DUT RTL faults; do not modify RTL based only on a timeout.
@@ -175,7 +175,7 @@ The simulation-ready manufacturer feasibility-review release requires all object
 
 It does **not** mean the chip is fabricated, physically signed off, packaged, board-tested or silicon-qualified. The manufacturer/foundry must complete the process-specific and hardware tasks. Never label the project finally completed until the user's intended project milestones and external handoff outcomes are actually evidenced.
 
-**Last known decision:** continue A01 and A04 verification first. Both corrective commits exist, but their verification runs were queued at the last confirmed poll. No paid resources have been authorised.
+**Last known decision:** continue A02 verification after the testbench B-response-model correction, while separately diagnosing A04/A05 PPA. Do not change production HMUX RTL without new evidence. No paid resources have been authorised.
 
 ## 10. Document commit references at this checkpoint
 
@@ -304,3 +304,33 @@ Older queued run [45480699954](https://github.com/shamiursunny/openTPU/actions/r
 ### Corrected-SHA live job states — 2026-11-25
 
 On testbench commit `76966009274be54ce26d87e333744b5cc17f72b4`, the latest poll shows: ASIC/config Run 45481815682 queued; board-functional job in Run 45481815901 queued; uncovered-RTL job in that run in progress (building Verilator 5.044); software-core Run 45481815819 queued; RTL-tail Run 45481815780 in progress (installing dependencies); all 14 subsystem jobs in Run 45481815735 queued; isolated TMEM Run 45481815691 in progress. No corrected-SHA four-DIMM result exists yet. The next gate is ASIC/config compilation and the diagnostic simulation. See PROJECT_TRACKER.md Section 131.
+
+
+## 11. Latest continuation update — 2026-11-25
+
+**Current feature-branch HEAD at this update:** \`68baca1a080e952b20327c90d63a6f66c6a1ee70\`. The active branch is \`sunnyone/commercial-profitability-architecture-2026-11-23\`. Main remains unchanged at \`d84db55712aba0d40811d7762cb052f05d55b7e5\`. Recheck both refs at the beginning of the next session.
+
+### A02 — four-DIMM multi-beat W-channel diagnostic
+
+Corrected diagnostic ASIC/config Run [45481815682](https://github.com/shamiursunny/openTPU/actions/runs/45481815682), job \`138756664096\`, exact SHA \`76966009274be54ce26d87e333744b5cc17f72b4\`, passed 66 target/config tests and all three integrated lint stages, then failed at 135 ns on DIMM2 WDATA/WSTRB comparison.
+
+Observed output was beat 2 (\`feed000200000002\`, full strobe) while the scoreboard expected beat 0 (\`feed000200000000\`, alternating strobe); WLAST matched. The HMUX owner FIFO was already empty at the output handshake. Source inspection identified the cause in the **testbench controller response model**, not production RTL: BVALID was generated after any W handshake, and the accepted early B response reset the W beat counter before the burst finished.
+
+Correction commit \`68baca1a080e952b20327c90d63a6f66c6a1ee70\` changes the response condition to require either an already-completed W burst or a same-cycle accepted WLAST beat. Only \`sim/verilator/tb_asic_wg8_ddr4.sv\` changed. No synthesizable RTL, payload expectations or acceptance checks changed.
+
+**A02 is IN PROGRESS pending exact-SHA verification.** Immediately after commit, the combined status was empty and no associated workflow run was returned. Re-query Actions; do not assume a workflow has started or passed. The corrected multi-beat test, both negative-aperture tests and the complete ASIC/config job log must pass on the exact SHA before closing A02.
+
+A03's four-instance host/accelerator contention and HMUX assertion stage was skipped in the preceding integrated run after A02 failed. It remains IN PROGRESS and must be checked after A02 passes. The standalone address-map SAT proof passed 14 assertions on its own historical SHA, but integrated address-map simulation remains unverified.
+
+On the preceding diagnostic SHA \`769660...\`, RTL-tail Run \`45481815780\` passed 33 tests, 1 documented parameter-inapplicable skip and 183 deselected; isolated TMEM Run \`45481815691\` passed 2 tests, 215 deselected. These are not results for \`68baca...\`. Board-functional/uncovered RTL, software-core and subsystem jobs from the same diagnostic SHA were still running or queued at the last poll; reconcile them by exact job and SHA.
+
+### Current next actions
+
+1. Verify branch HEAD and main independently.
+2. Find the new ASIC/config workflow triggered by \`68baca...\`; inspect its job steps and complete log.
+3. If A02 passes, verify the two expected-fatal aperture cases, the integrated address-map simulation and four-instance HMUX contention/assertion stage.
+4. Re-poll and reconcile board-functional, uncovered RTL, software-core and subsystem jobs from prior exact SHAs; retry cancelled coverage only on an appropriate new exact SHA.
+5. Inspect the ORFS artifact/run.log for the failed PPA run separately. No area, timing, power or PPA result is currently accepted.
+6. Update this resume, master register and chronological tracker together after each meaningful result.
+
+**Readiness boundary:** the project is not simulation-ready for manufacturer feasibility review, fabrication-ready, tapeout-ready, production-board-ready or silicon-qualified. A01 is only a scoped single-beat pass. A02/A03, PPA, broader regressions, lint/formal closure and the immutable release regression remain open. Manufacturer/physical dependencies remain explicit. Zero-spend and feature-branch-only rules remain in force.
