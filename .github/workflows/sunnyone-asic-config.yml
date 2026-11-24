@@ -11,6 +11,7 @@ on:
       - 'opentpu/target.py'
       - 'targets/**'
       - 'rtl/**'
+      - 'sim/verilator/tb_asic_wg8_ddr4.sv'
       - '.github/workflows/sunnyone-asic-config.yml'
   workflow_dispatch:
 permissions:
@@ -34,8 +35,7 @@ jobs:
       - name: Verify ASIC points, target contracts and simulator build cache
         run: |
           set -o pipefail
-          pytest -q tests/test_asic_flow.py tests/test_target.py tests/test_rtlsim_build.py
-          | tee /tmp/sunnyone-asic-config.log
+          pytest -q tests/test_asic_flow.py tests/test_target.py tests/test_rtlsim_build.py 2>&1 | tee /tmp/sunnyone-asic-config.log
       - name: Lint integrated ASIC control and compute top
         run: |
           set -o pipefail
@@ -124,4 +124,5 @@ jobs:
             /tmp/sunnyone-asic-chip-lint.log
             /tmp/sunnyone-asic-mem-lint.log
             /tmp/sunnyone-asic-wg8-ddr4-lint.log
+            /tmp/sunnyone-asic-wg8-ddr4-sim-build.log
           if-no-files-found: ignore
