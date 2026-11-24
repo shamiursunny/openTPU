@@ -280,3 +280,22 @@ The diagnostic-only testbench commit is `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21
 
 
 Latest job-state correction (2026-11-25): uncovered-RTL job `138698481369` in Run `45465292882` is **CANCELLED**, not running; board-functional job `138698482005` remains IN_PROGRESS. Software-core job `138698481416` remains IN_PROGRESS; all subsystem Run `45465292903` jobs remain QUEUED; PPA job `138664562707` remains IN_PROGRESS. A09 needs a fresh exact-SHA rerun. See PROJECT_TRACKER.md Section 129.
+
+
+## 7. Latest continuation checkpoint — 2026-11-25
+
+The first expanded W-channel diagnostic run exposed a testbench instrumentation error, not a new DUT failure. Run [45479454587](https://github.com/shamiursunny/openTPU/actions/runs/45479454587), SHA `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`, failed before simulation because Verilator rejected a variable-index dotted hierarchy reference (`dut.g_host_mux[d].u_hmux`). No conclusion about the DIMM2 W-channel datapath can be drawn from that run.
+
+Corrected testbench-only instrumentation is committed as `76966009274be54ce26d87e333744b5cc17f72b4`. It uses static generate-indexed probes for owner FIFO and W-channel state. No synthesizable RTL or test expectations were changed.
+
+Six workflows were confirmed on the corrected SHA and were QUEUED at last poll:
+- ASIC/config [45481815682](https://github.com/shamiursunny/openTPU/actions/runs/45481815682).
+- Board-functional/uncovered RTL [45481815901](https://github.com/shamiursunny/openTPU/actions/runs/45481815901).
+- Software-core [45481815819](https://github.com/shamiursunny/openTPU/actions/runs/45481815819).
+- RTL tail [45481815780](https://github.com/shamiursunny/openTPU/actions/runs/45481815780).
+- RTL subsystems/WG8 [45481815735](https://github.com/shamiursunny/openTPU/actions/runs/45481815735).
+- Isolated 128K TMEM [45481815691](https://github.com/shamiursunny/openTPU/actions/runs/45481815691).
+
+Older queued run [45480699954](https://github.com/shamiursunny/openTPU/actions/runs/45480699954) uses the earlier invalid diagnostic version and is not acceptable evidence for the corrected testbench. Tracker Section 130 and handoff register Section 12 carry the full details.
+
+**Next:** poll the six corrected-SHA workflows, inspect the ASIC/config build log, then classify the exact DIMM2 W mismatch before changing RTL. Main remains untouched; do not claim four-DIMM pass or production readiness.
