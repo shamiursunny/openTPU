@@ -285,7 +285,7 @@ The subsystem matrix's 377 passing tests are the clearest single-run demonstrati
 
 ### GitHub Actions history audit
 
-The active feature-branch history query returned 705 workflow-run records, of which 314 had a SUCCESS conclusion at audit time. Those 314 are workflow-run records, not unique tests. Retries and workflow-only changes are included. Failed, cancelled, queued and in-progress runs must remain separately classified. In particular, the historical audit found no successful run in the queried branch history for the remaining RTL/board workflow, software-core workflow or WG8 ASIC research PPA workflow at that point. Therefore these areas remain release blockers even though other suites have passed.
+The active feature-branch history query returned 705 workflow-run records, of which 316 had a SUCCESS conclusion at audit time. Those 314 are workflow-run records, not unique tests. Retries and workflow-only changes are included. Failed, cancelled, queued and in-progress runs must remain separately classified. In particular, the historical audit found no successful run in the queried branch history for the remaining RTL/board workflow, software-core workflow or WG8 ASIC research PPA workflow at that point. Therefore these areas remain release blockers even though other suites have passed.
 
 ### Current gate status — do not overstate
 
