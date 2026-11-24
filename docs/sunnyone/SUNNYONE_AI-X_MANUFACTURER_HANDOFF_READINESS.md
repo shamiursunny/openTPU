@@ -195,7 +195,7 @@ After each meaningful project task, update all three in the same work session, t
 | M11 | One-DIMM host/accelerator mux bench | PARTIAL | Prior run 45324154486 passed concurrent pair/host AW-W-B and AR-R routing for 2 writes/2 reads in 18 cycles; earlier warnings and later cleanup require current-SHA rerun. |
 | M12 | Manufacturer handoff requirements document | DONE — document | This file defines boundaries, gaps, verification gates, manufacturer return deliverables and release discipline. |
 | M13 | PPA log/report evidence collection workflow correction | DONE — workflow change only | Artifact collection was added in commit 21e1d56c5c6bcafc8d45a49f5aa8920516bad068; the first run exposed a literal-backslash-n Docker image-ID bug. Fixed in e212fe714eac17e339a2cc9090bee293a8ba6c09. Verification run 45428370570 is queued; no PPA result is claimed. |
-| M14 | Project tracker chronology | DONE — maintained | docs/sunnyone/PROJECT_TRACKER.md; latest recorded tracker update commit 2456ad12a30a04aabdae49d80342e5be2cb0cbd7. |
+| M14 | Project tracker chronology | DONE — maintained | docs/sunnyone/PROJECT_TRACKER.md; latest tracker update commit a8e91b44dd148d77f1f5ffc56d930fefc9e4dd3b. Resume guide: docs/sunnyone/SUNNYONE_AI-X_PROJECT_RESUME.md. |
 
 ### 9.2 Failed or incomplete — active priorities
 
