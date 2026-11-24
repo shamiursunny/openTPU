@@ -68,7 +68,7 @@ module tb_asic_wg8_ddr4;
 
   function automatic logic [511:0] host_write_pattern(input integer d);
     logic [63:0] word;
-    begin word=64'hfeed000000000001 ^ d; host_write_pattern={8{word}}; end
+    begin word=64'hfeed000000000001 ^ {32'd0,d[31:0]}; host_write_pattern={8{word}}; end
   endfunction
   function automatic logic [511:0] controller_read_pattern(input integer d);
     logic [63:0] word;
@@ -97,9 +97,9 @@ module tb_asic_wg8_ddr4;
     end else begin
       for (int d=0; d<4; d++) begin
         if (m_awvalid[d] && m_awready[d]) begin
-          if (m_awid[d]!=4'h4 || m_awlen[d]!=0 ||
-              m_awaddr[d] !== h_awaddr[d] || m_awaddr[d][33] ||
-              m_awsize[d]!=3'd6 || m_awburst[d]!=2'b01)
+          if (m_awid[d]!==4'h4 || m_awlen[d]!==8'd0 ||
+              m_awaddr[d] !== h_awaddr[d] || m_awaddr[d][33] !== 1'b0 ||
+              m_awsize[d]!==3'd6 || m_awburst[d]!==2'b01)
             $fatal(1,"DIMM%0d host AW routing/attributes mismatch id=%h addr=%h len=%0d",d,m_awid[d],m_awaddr[d],m_awlen[d]);
           aw_accepted[d]<=1'b1;
           awid_hold[d]<=m_awid[d];
@@ -121,9 +121,9 @@ module tb_asic_wg8_ddr4;
           w_complete[d]<=1'b0;
         end
         if (m_arvalid[d] && m_arready[d]) begin
-          if (m_arid[d]!=4'h4 || m_arlen[d]!=0 ||
-              m_araddr[d] !== h_araddr[d] || m_araddr[d][33] ||
-              m_arsize[d]!=3'd6 || m_arburst[d]!=2'b01)
+          if (m_arid[d]!==4'h4 || m_arlen[d]!==8'd0 ||
+              m_araddr[d] !== h_araddr[d] || m_araddr[d][33] !== 1'b0 ||
+              m_arsize[d]!==3'd6 || m_arburst[d]!==2'b01)
             $fatal(1,"DIMM%0d host AR routing/attributes mismatch id=%h addr=%h len=%0d",d,m_arid[d],m_araddr[d],m_arlen[d]);
           arid_hold[d]<=m_arid[d];
           r_active[d]<=1'b1;
@@ -139,12 +139,12 @@ module tb_asic_wg8_ddr4;
           m_rlast[d]<=1'b1;
         end
         if (h_bvalid[d] && h_bready[d]) begin
-          if (h_bresp[d]!=2'b00) $fatal(1,"DIMM%0d host BRESP mismatch",d);
+          if (h_bresp[d]!==2'b00) $fatal(1,"DIMM%0d host BRESP mismatch",d);
           b_seen[d]<=1'b1;
         end
         if (h_rvalid[d] && h_rready[d]) begin
           if (h_rdata[d] !== controller_read_pattern(d) ||
-              h_rresp[d]!=2'b00 || h_rlast[d]!==1'b1)
+              h_rresp[d]!==2'b00 || h_rlast[d]!==1'b1)
             $fatal(1,"DIMM%0d host R payload/response mismatch",d);
           r_seen[d]<=1'b1;
         end
@@ -155,7 +155,7 @@ module tb_asic_wg8_ddr4;
   task automatic drive_port(input integer d);
     begin
       @(negedge aclk);
-      h_awaddr[d]=34'h1000+d*64; h_awlen[d]=0; h_awvalid[d]=1;
+      h_awaddr[d]=34'h1000+(34'(d)*34'd64); h_awlen[d]=0; h_awvalid[d]=1;
       do @(posedge aclk); while(!h_awready[d]);
       @(negedge aclk); h_awvalid[d]=0;
 
@@ -163,7 +163,7 @@ module tb_asic_wg8_ddr4;
       do @(posedge aclk); while(!h_wready[d]);
       @(negedge aclk); h_wvalid[d]=0;
 
-      h_araddr[d]=34'h3000+d*64; h_arlen[d]=0; h_arvalid[d]=1;
+      h_araddr[d]=34'h3000+(34'(d)*34'd64); h_arlen[d]=0; h_arvalid[d]=1;
       do @(posedge aclk); while(!h_arready[d]);
       @(negedge aclk); h_arvalid[d]=0;
     end
@@ -180,7 +180,7 @@ module tb_asic_wg8_ddr4;
     join
     wait(b_seen==4'hf && r_seen==4'hf);
     repeat(5) @(posedge aclk);
-    if (bridge_error!='0) $fatal(1,"unexpected bridge error: %h",bridge_error);
+    if (bridge_error!==8'h00) $fatal(1,"unexpected bridge error: %h",bridge_error);
     $display("PASS: four independent WG8 DIMM ports; host AW/W/B and AR/R routed on all four ports with independent backpressure");
     $finish;
   end
