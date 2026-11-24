@@ -277,3 +277,6 @@ The former 30 W total-system ceiling remains retired. No replacement wattage cei
 
 ### CI trigger status — 2026-11-25
 The diagnostic-only testbench commit is `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`. A comment-only push-trigger commit to the existing ASIC/config workflow is `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`. The immediate workflow lookup returned no associated run for either commit. Do not assume CI started; recheck Actions and record a run only when GitHub returns an exact run/job record. Tracker Section 128 records this attempt.
+
+
+Latest job-state correction (2026-11-25): uncovered-RTL job `138698481369` in Run `45465292882` is **CANCELLED**, not running; board-functional job `138698482005` remains IN_PROGRESS. Software-core job `138698481416` remains IN_PROGRESS; all subsystem Run `45465292903` jobs remain QUEUED; PPA job `138664562707` remains IN_PROGRESS. A09 needs a fresh exact-SHA rerun. See PROJECT_TRACKER.md Section 129.
