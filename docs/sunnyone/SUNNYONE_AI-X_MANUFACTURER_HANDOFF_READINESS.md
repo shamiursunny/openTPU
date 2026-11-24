@@ -229,7 +229,7 @@ After each meaningful project task, update all three in the same work session, t
 | H09 | Physical implementation and signoff | BLOCKED — external | Floorplan, CTS, route, extraction, MCMM STA, DRC/LVS, antenna, IR/EM, SI/PI, equivalence and power reports. |
 | H10 | Package and custom board design | BLOCKED — external | Package/ball map, IO and power plan, board schematics/layout, stack-up, PCIe/DDR SI/PI and thermal design. |
 | H11 | Silicon/board bring-up and qualification | BLOCKED — hardware | Fabricated samples and measured power, clocks, memory training, PCIe, thermals, workload throughput and reliability. |
-| H12 | Commercial feasibility and cost model | NOT STARTED | Manufacturer quotations, NRE/mask/IP/package/board/test costs, schedule, yield, MOQ and operating economics. No spending authorised. |
+| H12 | Commercial feasibility and cost model | IN PROGRESS — evidence model defined; numeric model blocked on measured/quoted inputs | Added `docs/sunnyone/SUNNYONE_AI-X_COMMERCIAL_PROFITABILITY_MEASUREMENT_MODEL.md`: useful-throughput/quality gates, full-system TCO, energy and thermal measurements, contribution margin, payback, NPV, power-envelope decision rule and sensitivity analysis. No numeric ROI or power recommendation is made. Manufacturer quotations, physical PPA, board measurements, yield/MOQ, operating costs and demand/pricing evidence remain missing. No spending authorised. |
 
 ### 9.4 Release gate — objective acceptance conditions
 
