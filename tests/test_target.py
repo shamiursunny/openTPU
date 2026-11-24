@@ -17,7 +17,8 @@ from opentpu.isasim import Config, board_config
 
 # the targets at WG 8 (weight groups, the channel bridges' adapter knobs): the BCU1525 at one
 # slice (targets/bcu1525-wg.toml), at two (bcu1525-s2.toml) and two cards of those (bcu1525-x2)
-WG_TARGETS = {"bcu1525-wg", "bcu1525-s2", "bcu1525-x2", "nangate45-wg8"}
+WG_TARGETS = {"bcu1525-wg", "bcu1525-s2", "bcu1525-x2"}
+WG_ARCH_TARGETS = WG_TARGETS | {"nangate45-wg8"}
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -255,7 +256,7 @@ def test_wg_target():
                                                                              True, True, 8, 8)
     # every MM in groups (GALL: the MXU at WG > 1), in the hash; column reuse at WG 1 only
     # (otpu_board's CAPS bit5), and at WG 1 neither
-    assert c.GALL and not any(T.config(n).GALL for n in T.names() if n not in WG_TARGETS)
+    assert c.GALL and not any(T.config(n).GALL for n in T.names() if n not in WG_ARCH_TARGETS)
     assert T.arch_hash(dataclasses.replace(c, GALL=False)) != p["ARCH_HASH"]
     w1 = T.build_config(t, WG=1)
     assert not w1.GALL and w1.PAIR and not T.config(t, WG=1).GALL
@@ -267,7 +268,7 @@ def test_wg_target():
     # a build without the hash (otpu_board CHASH 0: make_wg.py --set CHASH=0) reports its hash
     assert T.build_config(t, CHASH=0) == dataclasses.replace(c, CHASH=False)
     assert T.build_config(t, CHASH=1) == c and not T.build_config(t, CHASH=1, WG=1).CHASH
-    assert not any(T.config(n).CHASH for n in T.names() if n not in WG_TARGETS)
+    assert not any(T.config(n).CHASH for n in T.names() if n not in WG_ARCH_TARGETS)
     # no VOP OUTER (its DeltaNet runs DSTEP): otpu_board OUTER 0 and the field in the hash; every
     # other target's VPU has it (no OUTER parameter, the hash without the field)
     assert not c.OUTER and p["OUTER"] == 0
