@@ -1277,7 +1277,7 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 
 ### Audit method and interpretation
 
-- Queried the GitHub Actions run history for the active feature branch across eight API pages: **705 workflow-run records** were returned. **314 records have conclusion SUCCESS**. These are workflow-run successes, not 314 unique tests: many are retries, repeated runs, workflow-only retriggers, or different commits. Failed, cancelled, queued and in-progress runs are not counted as passes.
+- Queried the GitHub Actions run history for the active feature branch across eight API pages: **705 workflow-run records** were returned. **316 records have conclusion SUCCESS**. These are workflow-run successes, not 314 unique tests: many are retries, repeated runs, workflow-only retriggers, or different commits. Failed, cancelled, queued and in-progress runs are not counted as passes.
 - Reconciled representative successful jobs against their actual job logs and pytest summaries. Test counts below are reported only where the job log exposes the count or an explicit PASS marker. Results from different SHAs remain separate; do not add them as a deduplicated lifetime test-case total.
 - The audit found that the repository already contains substantially more than 100 successful test executions. The strongest directly reconciled aggregate is the 14-job subsystem/memory matrix below: **377 passed, 1 explicitly justified skip, 0 failed** on one exact SHA. This is not a claim that 377 unique test definitions have been proven across all history.
 
