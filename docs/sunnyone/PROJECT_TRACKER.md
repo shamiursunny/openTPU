@@ -694,3 +694,23 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - After run [45332150862](https://github.com/shamiursunny/openTPU/actions/runs/45332150862) timed out its six-file group at 45 minutes, workflow file `.github/workflows/sunnyone-rtl-subsystems.yml` was changed in commit `19b2bb6efa3561571cf56a2ce6f14105ddf4e3b0` to give each of the six original files its own matrix job. All six files, the other three original groups, the 45-minute per-job timeout, `max-parallel: 2`, `fail-fast: false`, `pipefail`, and per-job log artifacts are retained. No test selection was removed or weakened.
 - The change triggered workflow run [45340740422](https://github.com/shamiursunny/openTPU/actions/runs/45340740422), run number 67, on exact SHA `19b2bb6efa3561571cf56a2ce6f14105ddf4e3b0`. At latest inspection, Stream RTL and Quantisation RTL jobs were in progress; the other seven jobs were queued. No results are yet claimed for this run.
 - Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+
+## 77. Per-file subsystem matrix completed with 308 passes; quantisation job timed out (2026-11-24)
+
+- Workflow run [45340740422](https://github.com/shamiursunny/openTPU/actions/runs/45340740422), run number 67, completed with overall conclusion `cancelled` on exact tested source SHA `19b2bb6efa3561571cf56a2ce6f14105ddf4e3b0`. All nine matrix jobs reached a terminal state. The overall run is not green because the Quantisation RTL job was cancelled at the 45-minute job timeout; do not report this as a successful full matrix.
+- Actual pytest summaries retrieved from completed job logs:
+  - Floating-point RTL: **8 passed** in 169.38s.
+  - Instruction-cache RTL: **23 passed** in 964.65s.
+  - Wait-state RTL: **11 passed** in 288.26s.
+  - Stream RTL: **14 passed** in 616.67s.
+  - Address-window RTL: **20 passed, 1 skipped** in 961.44s. The skipped case is labelled `64 GiB: every address is DRAM`; this is not a 64 GiB validation result.
+  - Collective hub, DMA and scoreboard: **128 passed** in 303.51s.
+  - Native DRAM and technology RAM: **104 passed** in 2098.81s (34m 58s); job conclusion success.
+  - Reset audit: **4 skipped** in 0.04s. All four remain environment-blocked by the existing Yosys+Slang skip gate described in section 76; no reset-audit assertions ran.
+- Verified aggregate from the seven groups with pytest summaries: **308 passed, 5 skipped**. Quantisation RTL has no final pytest summary: its command began at 06:29:09Z and GitHub cancelled it at 07:14:00Z, terminating pytest, Verilator and compiler processes. This is incomplete evidence, not a pass and not a pytest-reported failure. The workflow's other eight jobs completed with job conclusion success, but the four reset skips and one address-window skip remain skips.
+- The per-file matrix achieved independent visibility and avoided the former combined six-file job obscuring all results. However, Quantisation RTL alone exceeded the 45-minute bound. Next step: inspect the quantisation test selection and its slowest cases, then split it into smaller evidence-preserving jobs or otherwise reduce only avoidable setup/compilation overhead. Do not deselect, skip, weaken or suppress tests. Preserve the 45-minute limit unless evidence justifies a different bounded design.
+- Run logs also retain GitHub Actions Node.js 20 deprecation notices (actions forced onto Node.js 24), Node `punycode`/`url.parse()` deprecation notices, and Python editable-install BuildBackendWarning notices. These are tooling/environment warnings, not pytest failures. No warning-free claim is made.
+- No RTL or test source change was made by this tracker entry. Feature branch head before this tracker-only update: `f165ed4514d29a466c1998612e6f10e41efa3115`; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+- This is bounded RTL regression evidence only. It does not establish complete-suite success, formal proof, full AXI/multi-beat mux qualification, full-chip validation, PCIe/DDR electrical validation, physical PPA, thermal/package signoff, or silicon readiness.
