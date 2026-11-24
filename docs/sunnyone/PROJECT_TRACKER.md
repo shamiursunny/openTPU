@@ -1,6 +1,6 @@
 # SUNNYONE AI-X Project Tracker
 
-Last updated: 2026-11-24 (Asia/Dhaka)
+Last updated: 2026-11-25 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
@@ -1252,3 +1252,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - New ASIC/config Run [45465384680](https://github.com/shamiursunny/openTPU/actions/runs/45465384680), job `138698816300`, is QUEUED on exact SHA `65f28fc09ede79581ba97845165733d1caef45b1`. It must compile/run the corrected four-DIMM integration bench and the four-instance HMUX contention bench. Other runs triggered by the diagnostic/testbench commits also remain pending. Do not count any as passed until exact logs are inspected.
 - Current feature-branch HEAD at this update: `65f28fc09ede79581ba97845165733d1caef45b1`. `main` remains protected and untouched. No paid resources or hardware purchases were used.
 - Next: poll Run 45465384680 first. If it fails, inspect the first failing workflow step and exact HMUX timeout probes. Make the smallest evidence-led correction; do not modify HMUX RTL merely because WREADY is low until the probes distinguish missing AW-owner enqueue from W-slice backpressure. Then rerun the full four-DIMM simulation and the four-instance contention test on a new exact SHA. Continue with the pending PPA, broad RTL, board, memory, TMEM and software jobs, retaining their independent scope and statuses.
+
+
+## 124. Verify diagnostic commits, corrected testbench directive and live branch state (2026-11-25)
+
+- The four-DIMM timeout diagnostic-only probe commit is `51f3b9bc5d45eeca927a36a1873df3cfd2625d38`; the corrected four-DIMM HMUX contention testbench directive is `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`; the ASIC/config workflow retrigger commit is `65f28fc09ede79581ba97845165733d1caef45b1`; and this tracker update is based on the subsequent tracker commit sequence. No synthesizable RTL was changed in these commits.
+- Exact-SHA ASIC/config Run [45465384680](https://github.com/shamiursunny/openTPU/actions/runs/45465384680), SHA `65f28fc09ede79581ba97845165733d1caef45b1`, job `138698816300`, remains QUEUED at the latest poll. The diagnostic/testbench-triggered runs [45465123093](https://github.com/shamiursunny/openTPU/actions/runs/45465123093), [45465123016](https://github.com/shamiursunny/openTPU/actions/runs/45465123016), [45465123007](https://github.com/shamiursunny/openTPU/actions/runs/45465123007), [45465123084](https://github.com/shamiursunny/openTPU/actions/runs/45465123084), and [45465123025](https://github.com/shamiursunny/openTPU/actions/runs/45465123025) are also QUEUED. Job logs are not yet available.
+- Earlier PPA Run [45455745851](https://github.com/shamiursunny/openTPU/actions/runs/45455745851) (job `138664562707`) and software Run [45455823111](https://github.com/shamiursunny/openTPU/actions/runs/45455823111) (job `138664840765`) remain IN_PROGRESS; their log downloads were not yet available at the last retrieval attempt. Do not infer their outcomes.
+- Live refs independently rechecked: feature branch HEAD before this tracker update was `65f28fc09ede79581ba97845165733d1caef45b1`; `main` remains exactly `d84db55712aba0d40811d7762cb052f05d55b7e5`. The tracker update advances only the feature branch. No main-branch changes, paid resources or hardware purchases.
+- Continue by polling the exact queued ASIC/config run first, then inspect its complete logs for the four-DIMM normal/negative tests and four-instance HMUX contention assertions. The write-path defect remains undiagnosed until timeout-only HMUX state is produced or the simulation passes. The production blockers in section 7 of the V1 candidate remain external and cannot be closed by RTL-only simulation.
