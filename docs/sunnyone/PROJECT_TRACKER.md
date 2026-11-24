@@ -1440,3 +1440,13 @@ The complete log for Run [45487119079](https://github.com/shamiursunny/openTPU/a
 - Log artifact [sunnyone-asic-config-log](https://github.com/shamiursunny/openTPU/actions/runs/45487119079/artifacts/14964499992), 49,873 bytes, contains the main log and separate lint/build logs.
 
 No RTL edit is made from warnings alone. Inspect address-width intent and warning context, then add directed boundary tests or fix only if a real contract defect is demonstrated. The manufacturer gate remains open.
+
+
+
+## 136. Source trace of address-width and UNOPTFLAT warnings — 2026-11-25
+
+Source review refined the warning assessment for exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`:
+
+- The WG8 top sets `CL = CAW + clog2(CB) = 25 + 7 = 32`; `otpu_mig_pair` with `NC=2` declares its DIMM-local AXI AW/AR output width as `CL + clog2(NC) = 33` bits. The actual `p_awaddr/p_araddr` intermediate nets are 34 bits because the downstream `otpu_mig_hmux` uses AW=34. Thus the reported pair-output connection is a 33-to-34-bit width mismatch, consistent with zero-extension of the 33-bit local address into the mux's 34-bit interface; the source map and top guard reserve bit 33 as zero. It is not evidence that a meaningful 34th local address bit is being discarded. The bridge's 34-bit channel input is also intentionally reduced to its 32-bit channel offset by `otpu_mig_pair.dimm()`, whose valid channel range is 4 GiB (CL=32); the bridge uses PC=0 and channel geometry CAW25/CB128. This source-derived contract should still be made explicit or warning-cleaned in a future controlled RTL cleanup, but no functional defect is currently demonstrated.
+- The `aok` UNOPTFLAT warning at `rtl/top/otpu_slice.sv:906` comes from a combinational priority calculation: each group `g` depends only on previously computed lower-index `aok[h]` entries (`h < g`) and conflict masks. The source shows a forward triangular dependency, not an obvious cycle through the same element or a register loop. Verilator reports the packed vector as a circular combinational path; this is a warning to structurally validate, not proof of a functional combinational loop. Do not refactor without a targeted equivalence/regression plan.
+- No RTL was changed. A02/A03 PASS evidence remains intact. The exact-SHA board, uncovered RTL, software-core, RTL-tail and subsystem jobs are still being polled.
