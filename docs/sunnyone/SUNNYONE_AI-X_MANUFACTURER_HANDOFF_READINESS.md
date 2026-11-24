@@ -500,3 +500,11 @@ RTL-tail Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/
 5. Perform a final full regression on one immutable candidate SHA only after the above gates are closed.
 
 **Release decision remains NOT READY for fabrication, tapeout, physical signoff, production-board build or silicon qualification.** A02/A03 are meaningful digital simulation passes, not evidence of physical implementation, timing closure, power, thermal behaviour, DDR/PCIe PHY readiness, DFT, package integrity or commercial performance. Zero-spend and feature-branch-only constraints remain active.
+
+
+## 21. Live continuation poll — 2026-11-25 (PPA evidence access limitation)
+
+- Subsystem workflow `45487118947` has 12/14 successful jobs; Native DRAM/technology RAM (`138775352847`) and Reset audit (`138775353032`) remain in progress at latest poll. Finalize only after completion and log review.
+- Historical PPA run `45455745851` failed at ORFS with exit 2 on SHA `dc34e3a...`. Prep successfully enumerated 288 SRAM macros / 14 sizes / 3,538 KiB, but no PPA metric is valid. The artifact is 1.56 GB and exceeds the connector's 512-MiB download ceiling; detailed ORFS logs therefore remain inaccessible via this artifact route. Root cause is OPEN, not diagnosed.
+- Action: make the next PPA artifact failure-focused and compact (retain the ORFS run tail, failed-stage logs/reports, config, constraints, image digest and summary; exclude large `work/results` databases), then rerun. No blanket claims about timing, power, area or congestion.
+- Manufacturer readiness remains NOT READY for fabrication, tapeout, physical signoff, production board or silicon qualification.
