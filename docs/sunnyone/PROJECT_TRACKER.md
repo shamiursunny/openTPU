@@ -939,3 +939,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The consolidated document is linked from the authoritative continuation baseline. Source architecture and integration documents remain authoritative for detailed module-level contracts.
 - Design document created in commit `666f0cec210d05653adc95c984f94970513c02bd`; baseline reference update commit `719df95326a8ed319a0532f1a9449b0d669398d2`.
 - No RTL or target parameters changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+## 96. Queue checkpoint after logical design consolidation (2026-11-24)
+
+- Latest one-DIMM burst-bench width-cleanup testbench SHA remains `4437e1d93bf14f41377c12e0e3ea32b426d90c1a`; exact mux CI Run [45401880965](https://github.com/shamiursunny/openTPU/actions/runs/45401880965) is queued. The prior SHA's successful log still contains four WIDTHTRUNC warnings; no warning-clean claim is made for the latest SHA.
+- Latest four-DIMM full-wrapper bench SHA is `716fb74676e9e6cdbb8842d927d62ff2c47580b7`; exact ASIC/config Run [45402976553](https://github.com/shamiursunny/openTPU/actions/runs/45402976553) is queued. The run is required to validate the AW35 config correction, integrated lint and new four-DIMM simulation.
+- Latest WG8 PPA workflow correction is commit `db871f66916134769909a2c42296307b0fec7479`; exact PPA Run [45402124448](https://github.com/shamiursunny/openTPU/actions/runs/45402124448) is queued. No WG8 synthesis/PPA output is available.
+- Latest broad regression set on the four-DIMM bench SHA includes Runs 45402976579 (remaining RTL/board), 45402976898 (subsystem/memory), 45402976724 (RTL tail), 45402976616 (isolated TMEM) and 45402976582 (software core). At the time of this checkpoint, the first four remain queued and software-core Run 45402976582 is in progress; its actual logs/results have not yet been retrieved.
+- GitHub runner queue is preventing the new verification gates from starting. Do not infer success from queued status or older SHA results. Continue by polling exact run/job IDs, then retrieve and inspect logs before updating the design status.
+- Consolidated logical design document and authoritative baseline references are committed. Current feature branch head before this tracker entry is `3cf1c6693d2a7f22f7ed88fca6b36c84475ff01c`; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
