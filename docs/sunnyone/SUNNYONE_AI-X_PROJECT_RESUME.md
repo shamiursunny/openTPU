@@ -406,3 +406,13 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 - Width warning source trace: `otpu_mig_pair` outputs 33-bit local addresses (`CL=32`, `NC=2`), while the intermediate mux-facing nets and `otpu_mig_hmux` are 34 bits. The top's DIMM-local contract reserves bit 33 as zero; the 33-to-34 connection is consistent with zero-extension. The bridge's 34-bit channel address is reduced to the 32-bit channel offset by `dimm()`; V1 channel size is 4 GiB and bridge PC=0. This is not a demonstrated address truncation defect, but explicit width wiring or warning-cleanup and boundary checks would make the contract clearer. Do not change RTL until needed and validated.
 - UNOPTFLAT at `otpu_slice.sv:906`: `aok` is computed as a forward combinational priority chain where each group reads only lower-index grants. Source review does not show a direct cycle; this may be a packed-vector dependency warning. Keep it open for structural validation; no speculative refactor.
 - No production RTL changed during this review. The integrated four-DIMM, global map, HMUX and expected-negative aperture simulations remain PASS on SHA `68baca...`.
+
+
+
+## 16. RTL-tail exact-SHA regression completed — 2026-11-25
+
+- Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/45487118908), job `138775349245`, SUCCESS on code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+- Test summary: **33 passed, 1 skipped, 183 deselected**; duration 711.82 s. Skip reason: `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. The deselected tests were not executed in this job.
+- No standalone log artifact was produced because `/tmp/sunnyone-rtl-tail.log` did not exist; job log is the available evidence.
+- Still pending at latest poll: board-functional, uncovered RTL, software-core, Stream RTL, MX multiply/replay; 12 further subsystem/WG8 jobs queued.
+- Continue polling exact-SHA runs. No PPA or manufacturer release conclusion changes.
