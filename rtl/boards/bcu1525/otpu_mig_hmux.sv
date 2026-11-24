@@ -200,4 +200,35 @@ module otpu_mig_hmux #(
         $error("otpu_mig_hmux: B with ID %h (the host's is %h)", m_bid, HID);
     end
 `endif
+
+`ifdef HMUX_FORMAL
+  // Protocol invariants shared by simulation and formal front-ends. These are
+  // deliberately local to the mux and do not constrain legal AXI channel ordering.
+  assert property (@(posedge clk) disable iff (rst)
+    m_awvalid && !m_awready |=> m_awvalid && $stable({m_awid,m_awaddr,m_awlen}));
+  assert property (@(posedge clk) disable iff (rst)
+    m_wvalid && !m_wready |=> m_wvalid && $stable({m_wdata,m_wstrb,m_wlast}));
+  assert property (@(posedge clk) disable iff (rst)
+    m_arvalid && !m_arready |=> m_arvalid && $stable({m_arid,m_araddr,m_arlen}));
+  assert property (@(posedge clk) disable iff (rst)
+    h_bvalid && !h_bready |=> h_bvalid && $stable(h_bresp));
+  assert property (@(posedge clk) disable iff (rst)
+    p_bvalid && !p_bready |=> p_bvalid && $stable({p_bid,p_bresp}));
+  assert property (@(posedge clk) disable iff (rst)
+    h_rvalid && !h_rready |=> h_rvalid && $stable({h_rdata,h_rresp,h_rlast}));
+  assert property (@(posedge clk) disable iff (rst)
+    p_rvalid && !p_rready |=> p_rvalid && $stable({p_rid,p_rdata,p_rresp,p_rlast}));
+  assert property (@(posedge clk) disable iff (rst) !(h_awready && p_awready));
+  assert property (@(posedge clk) disable iff (rst) !(h_arready && p_arready));
+  assert property (@(posedge clk) disable iff (rst) !(h_wready && p_wready));
+  assert property (@(posedge clk) disable iff (rst) !wo_rv |-> (!h_wready && !p_wready));
+  assert property (@(posedge clk) disable iff (rst)
+    m_bvalid && m_bid[HB] |-> h_bvalid && !p_bvalid);
+  assert property (@(posedge clk) disable iff (rst)
+    m_bvalid && !m_bid[HB] |-> p_bvalid && !h_bvalid);
+  assert property (@(posedge clk) disable iff (rst)
+    r_v && r_id[HB] |-> h_rvalid && !p_rvalid);
+  assert property (@(posedge clk) disable iff (rst)
+    r_v && !r_id[HB] |-> p_rvalid && !h_rvalid);
+`endif
 endmodule
