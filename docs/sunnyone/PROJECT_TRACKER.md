@@ -1,6 +1,6 @@
 # SUNNYONE AI-X Project Tracker
 
-Last updated: 2026-11-23 (Asia/Dhaka)
+Last updated: 2026-11-24 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
@@ -620,3 +620,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Earlier focused run `45266097205` (SHA `e53ad53287c56444e9f4306e78dfe83e110a0486`) and prior runs remain queued. No pass is claimed. The tracker-only commit does not match the focused workflow's path filter and does not create another mux simulation run.
 - Static review confirms the workflow compiles the required three RTL source files and the dedicated testbench, then executes `obj_dir/Vtb_hmux`; executable correctness remains unverified until the job runs.
 - Feature branch only; main unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`; zero paid resources used.
+
+
+## 70. Dedicated host/pair mux simulation passed (2026-11-24)
+
+- Focused workflow run [45266612413](https://github.com/shamiursunny/openTPU/actions/runs/45266612413), job `hmux-sim` (`138015075353`), completed successfully against exact testbench SHA `1ec347a8f093052582746d07df0269b8f03b6809`. GitHub Actions checked out that exact SHA, installed Verilator 5.032, compiled the three required RTL files plus `sim/verilator/tb_hmux.sv`, and executed the generated simulation binary.
+- Exact runtime PASS marker: `PASS: concurrent pair/host AW-W-B and AR-R routing; writes=2 reads=2 cycles=18`. Simulation finished at 190 ns. This verifies the current focused test's two concurrent single-beat write paths and two read paths, response routing, and modeled backpressure under the stated testbench scenario.
+- Build completed successfully, but non-fatal warnings were emitted because the workflow uses `-Wno-fatal`: PINCONNECTEMPTY in `rtl/shell/otpu_mem_ch.sv`; DECLFILENAME and TIMESCALEMOD in reused RTL; UNUSEDSIGNAL for currently unused response/last signals in the testbench; BLKSEQ for the clock generator; and INITIALDLY for nonblocking assignments in initial-block stimulus (Verilator executes these as blocking assignments). These warnings remain visible and should be triaged; they were not suppressed or represented as warning-free.
+- Earlier mux runs [45266097205](https://github.com/shamiursunny/openTPU/actions/runs/45266097205), [45265993286](https://github.com/shamiursunny/openTPU/actions/runs/45265993286), [45264350657](https://github.com/shamiursunny/openTPU/actions/runs/45264350657), [45263309565](https://github.com/shamiursunny/openTPU/actions/runs/45263309565) and [45256841999](https://github.com/shamiursunny/openTPU/actions/runs/45256841999) also completed successfully on their respective earlier testbench SHAs. The corrected latest SHA is validated by run 45266612413.
+- The broader runs [45266097228](https://github.com/shamiursunny/openTPU/actions/runs/45266097228), [45266097338](https://github.com/shamiursunny/openTPU/actions/runs/45266097338) and [45266097275](https://github.com/shamiursunny/openTPU/actions/runs/45266097275) ended `cancelled`; they provide no subsystem, uncovered RTL/board or software regression result. Do not treat them as passes.
+- This is a focused single-beat mux simulation only. Multi-beat burst sequencing, sustained contention/fairness, byte-strobe memory effects, 4-KiB boundary and malformed-transaction tests, reset with outstanding traffic, overlapping-address visibility/order, and all-four-DIMM wrapper concurrency remain open. It is not formal proof, full-chip qualification, DDR/PCIe electrical validation, physical PPA, or silicon evidence.
+- Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; zero paid resources used.
