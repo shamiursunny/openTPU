@@ -714,3 +714,19 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Run logs also retain GitHub Actions Node.js 20 deprecation notices (actions forced onto Node.js 24), Node `punycode`/`url.parse()` deprecation notices, and Python editable-install BuildBackendWarning notices. These are tooling/environment warnings, not pytest failures. No warning-free claim is made.
 - No RTL or test source change was made by this tracker entry. Feature branch head before this tracker-only update: `f165ed4514d29a466c1998612e6f10e41efa3115`; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
 - This is bounded RTL regression evidence only. It does not establish complete-suite success, formal proof, full AXI/multi-beat mux qualification, full-chip validation, PCIe/DDR electrical validation, physical PPA, thermal/package signoff, or silicon readiness.
+
+
+
+## 78. Quantisation regression split into six complete test-family jobs (2026-11-24)
+
+- Following Run 67's Quantisation RTL job exceeding the 45-minute timeout without a final pytest summary (section 77), inspected `tests/test_quant_rtl.py` at feature branch head. The file contains 15 test functions and 65 parameterized/direct test instances. The original single-file invocation did not finish within the configured bound.
+- Updated only `.github/workflows/sunnyone-rtl-subsystems.yml` in commit `6d0462a9b7b4e69a5b3f97e4a807a8d1f2d10331`. The former one-file quantisation matrix entry is replaced by six independent pytest-node selections:
+  1. MX multiply and replay RTL: `test_mm_mx_rtl` and `test_mm_mx_replay_rtl` (17 instances).
+  2. Quantizer modes RTL: `test_quantizer_modes_rtl` (15).
+  3. Quantizer corners and tie rounding RTL: `test_rscale_once_a_row_rtl`, `test_wide_pass1_rtl`, `test_quantizer_ties_qst_rtl`, and `test_quantizer_ties_qact_rtl` (8).
+  4. SPLITQ RTL: `test_splitq_rtl` (5).
+  5. QHL RTL: `test_qhl_rtl`, `test_qhl_power_up_rtl`, and `test_qhl_cycles_rtl` (7).
+  6. QST and QSTB RTL: `test_qst_sww_rtl`, `test_qstb_rtl`, `test_qstb_power_up_rtl`, and `test_qstb_cycles_rtl` (13).
+- The six selections sum to all 65 parameterized/direct instances across all 15 test functions. They use explicit pytest node IDs, not `-k`, so each job collects only its assigned tests; no test functions or parameter cases were removed, skipped, weakened or deselected from the combined regression coverage. Existing non-quantisation groups are retained unchanged. The workflow continues to use a 45-minute per-job timeout, `max-parallel: 2`, `fail-fast: false`, `pipefail` and per-job log artifacts. Added `--durations=20` to expose slowest cases in each completed job's log.
+- The updated workflow was fetched back and verified. It triggered run [45357051033](https://github.com/shamiursunny/openTPU/actions/runs/45357051033), run number 68, on exact SHA `6d0462a9b7b4e69a5b3f97e4a807a8d1f2d10331`. At first inspection, Stream RTL and MX multiply/replay RTL were in progress; the other 12 matrix jobs were queued. No Run 68 test outcome is yet claimed.
+- This is CI orchestration only; no RTL, Python implementation, test function or test parameter source was changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
