@@ -38,8 +38,18 @@ jobs:
         include:
           - group: Stream RTL
             tests: tests/test_stream_rtl.py
-          - group: Quantisation RTL
-            tests: tests/test_quant_rtl.py
+          - group: MX multiply and replay RTL
+            tests: tests/test_quant_rtl.py::test_mm_mx_rtl tests/test_quant_rtl.py::test_mm_mx_replay_rtl
+          - group: Quantizer modes RTL
+            tests: tests/test_quant_rtl.py::test_quantizer_modes_rtl
+          - group: Quantizer corners and tie rounding RTL
+            tests: tests/test_quant_rtl.py::test_rscale_once_a_row_rtl tests/test_quant_rtl.py::test_wide_pass1_rtl tests/test_quant_rtl.py::test_quantizer_ties_qst_rtl tests/test_quant_rtl.py::test_quantizer_ties_qact_rtl
+          - group: SPLITQ RTL
+            tests: tests/test_quant_rtl.py::test_splitq_rtl
+          - group: QHL RTL
+            tests: tests/test_quant_rtl.py::test_qhl_rtl tests/test_quant_rtl.py::test_qhl_power_up_rtl tests/test_quant_rtl.py::test_qhl_cycles_rtl
+          - group: QST and QSTB RTL
+            tests: tests/test_quant_rtl.py::test_qst_sww_rtl tests/test_quant_rtl.py::test_qstb_rtl tests/test_quant_rtl.py::test_qstb_power_up_rtl tests/test_quant_rtl.py::test_qstb_cycles_rtl
           - group: Floating-point RTL
             tests: tests/test_fp_rtl.py
           - group: Instruction-cache RTL
@@ -66,10 +76,10 @@ jobs:
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
       - name: Run selected regression group
         env:
-          TEST_FILES: ${{ matrix.tests }}
+          TEST_TARGETS: ${{ matrix.tests }}
         run: |
           set -o pipefail
-          pytest -q ${TEST_FILES} 2>&1 | tee /tmp/sunnyone-subsystems-${{ strategy.job-index }}.log
+          pytest -q ${TEST_TARGETS} --durations=20 2>&1 | tee /tmp/sunnyone-subsystems-${{ strategy.job-index }}.log
       - name: Archive regression log
         if: always()
         uses: actions/upload-artifact@v4
