@@ -1,7 +1,7 @@
 // Four DIMM-local host/accelerator arbitration instances, exercising the exact hmux
 // configuration used by otpu_asic_wg8_ddr4_top. This is a focused port-level test of
 // simultaneous requests, round-robin AW/AR selection, ordered W bursts, and BID/RID routing.
-\`timescale 1ns/1ps
+`timescale 1ns/1ps
 module tb_asic_wg8_hmux_contention;
   logic clk=0, rst=1;
   always #5 clk=~clk;
