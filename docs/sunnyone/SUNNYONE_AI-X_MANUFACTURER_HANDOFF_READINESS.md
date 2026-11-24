@@ -300,3 +300,52 @@ The active feature-branch history query returned 705 workflow-run records, of wh
 The 64-GiB address-window skip is intentional: at that geometry all representable addresses are within DRAM, so the specific test expecting an address beyond DRAM is inapplicable. Keep it visible as a skip, not a pass.
 
 **Release decision remains NOT READY for fabrication or final production-board build.** The manufacturer may review the logical architecture and feasibility gaps, but the evidence must be labelled as simulation/source-level evidence and scoped by exact commit SHA. Use one immutable SHA only after all applicable final regression and release checks pass.
+
+
+## 11. Live continuation addendum — 2026-11-25
+
+This addendum supersedes any earlier “current next action” text in Sections 9–10 where the listed run IDs or statuses are older. Historical results above remain preserved.
+
+### Live branch and evidence checkpoint
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Diagnostic-only testbench commit: `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a` (four-DIMM W-channel assertion now prints actual/expected data, strobes, WLAST, owner FIFO and handshake state).
+- The previous code checkpoint before the diagnostic commit was `65f28fc09ede79581ba97845165733d1caef45b1`; main remains the protected `d84db55712aba0d40811d7762cb052f05d55b7e5`. No synthesizable RTL changed in the diagnostic commit.
+- The first workflow lookup for the diagnostic commit returned no associated run. Do not assume CI triggered; verify the live run list or create an explicitly reviewed workflow retrigger if required.
+
+### Updated task statuses
+| ID | Current status | Latest evidence / next closure action |
+|---|---|---|
+| A01 | DONE — scoped single-beat only | Historical single-beat four-DIMM host path pass remains valid; it does not cover burst protocol. |
+| A02 | FAILED — action required | Runs 45465292665 (SHA 86f922c...) and 45465384680 (SHA 65f28fc...) both failed at DIMM2 W beat 0. Three integrated lint stages passed on both SHAs. Inspect the new diagnostic commit's exact WDATA/WSTRB/WLAST and mux-state output before changing RTL. |
+| A03 | IN PROGRESS — not reached in latest integrated run | Four-instance HMUX directed test passed historically on SHA fc3bdcc..., but latest ASIC/config run skipped this stage after A02 failed. Re-run after A02 is diagnosed. |
+| A04 | FAILED — ORFS run diagnosis required | Run 45454389335 / job 138659794535 failed with ORFS exit 2 on SHA fc3bdcc...; artifact 14960636530 contains full evidence. Inspect run.log and identify exact failing stage. |
+| A05 | IN PROGRESS | No valid WG8 PPA metrics. Older Run 45455745851 / job 138664562707 remained in progress at last poll. |
+| A06 | IN PROGRESS | Latest subsystem Run 45465292903 had 14 queued jobs at last poll. Retrieve exact final job logs and reconcile skip reasons. |
+| A07 | IN PROGRESS | Software-core Run 45465292772 / job 138698481416 was in progress at last poll. |
+| A08 | IN PROGRESS | Board-functional Run 45465292882 / job 138698482005 was in progress at last poll. |
+| A09 | IN PROGRESS | Uncovered-RTL Run 45465292882 / job 138698481369 was in progress at last poll. |
+| A10 | NOT STARTED | Final immutable SHA regression cannot begin until A02–A09 and A11–A12 are resolved or explicitly accepted. |
+| A11 | PARTIAL | All three integrated ASIC lint stages passed on SHA 65f28fc...; this does not close full-chip lint or all width/unused warnings. |
+| A12 | PARTIAL | Historical HMUX assertion-enabled directed simulation exists, but latest integrated run skipped the HMUX stage. Formal proof remains open. |
+| H06 | PARTIAL | Standalone combinational address-map SAT proof passed historically; latest integrated address-map simulation skipped because A02 failed first. DMA integration and end-to-end routing remain absent. |
+| H12 | IN PROGRESS — external evidence gaps | TCO model is a specification, not populated economics. No customer demand, supplier quotations, measured full-system power or validated payback. |
+
+### Latest run reconciliation
+- Run 45465384680 / SHA 65f28fc...: FAILED at `DIMM2 host W payload/last mismatch beat=0`; three integrated lint stages passed; address-map and HMUX steps skipped.
+- Run 45465292665 / SHA 86f922c...: same failure after three integrated lint stages passed.
+- Run 45465292944: SUCCESS, 33 passed, 1 parameter-inapplicable skip, 183 deselected; selected RTL-tail only.
+- Run 45465292882: board-functional and uncovered-RTL jobs IN_PROGRESS at last poll.
+- Run 45465292772: software-core IN_PROGRESS at last poll.
+- Run 45465292903: all 14 subsystem/memory jobs QUEUED at last poll.
+- Run 45454389335 / SHA fc3bdcc...: WG8 ORFS PPA failed with exit 2; full artifact 14960636530 uploaded. No area/timing/power result accepted.
+- Run 45455745851: older WG8 PPA attempt still IN_PROGRESS at last poll.
+
+### Immediate ordered work
+1. Verify whether commit `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a` triggered ASIC/config CI. If not, retrigger the workflow on this exact SHA without changing synthesizable RTL.
+2. Retrieve the diagnostic mismatch fields. Determine whether the issue is WDATA, WSTRB, WLAST, owner FIFO, source selection, register-slice backpressure, or testbench sampling.
+3. Make only the smallest evidence-supported correction; rerun four-DIMM multi-beat and negative-aperture tests.
+4. Re-run the global address-map and four-instance HMUX contention/assertion stages after A02 passes.
+5. Retrieve final software, board, subsystem and PPA job logs; inspect artifact 14960636530's ORFS run.log.
+6. Update this register, the project resume and chronological tracker with exact SHA/run/job evidence. Never promote queued/running jobs to PASS.
+
+The former 30 W total-system ceiling remains retired. No replacement wattage limit is approved. Hardware power, memory size and compute configuration remain evidence-led decisions based on representative workloads, full-system TCO, measured wall power and incremental contribution margin.
