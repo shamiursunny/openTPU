@@ -1425,3 +1425,18 @@ Latest re-poll of the six workflows on corrected testbench SHA `76966009274be54c
 - PPA remains unresolved. Previous WG8 PPA Run `45455745851` failed; no area, timing, power or PPA values are accepted.
 - Code under test remains `68baca...`; the documentation commits are separate. Main remains protected and unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5` (re-verify live before future writes).
 - Next: inspect full ASIC/config logs and archived outputs, then poll and reconcile the four in-progress jobs and 14 queued subsystem jobs. Keep manufacturer release gate open; no production/tapeout claim.
+
+
+
+## 135. Detailed ASIC/config simulation markers and lint-warning triage — 2026-11-25
+
+The complete log for Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), job `138775349960`, was retrieved and inspected on exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`:
+
+- Four-DIMM host AXI simulation printed PASS for 1/2/4/8-beat writes and reads, W-before-AW, partial and zero strobes, all BRESP/RRESP codes, 4-KiB boundary-aligned bursts and independent backpressure.
+- Negative aperture cases printed PASS for both `bad_aw` and `bad_ar`; each produced the expected fatal for an address outside the 8-GiB DIMM aperture. These are expected-failure tests, not workflow failures.
+- Global map simulation printed PASS for the 32-GiB global map, four DIMMs, two 4-GiB channels per DIMM, 4-KiB interleave, inverse bijection and out-of-aperture rejection.
+- Four-instance HMUX simulation printed PASS for simultaneous host/accelerator AW/AR contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure.
+- Lint is green but warnings remain. Notably, the WG8 wrapper has WIDTHTRUNC warnings where 34-bit selected addresses connect to 33-bit `m_awaddr`/`m_araddr` pins (lines 240/245), plus an UNOPTFLAT circular combinational warning at `otpu_slice.sv:906` (`aok`). Numerous width expand/truncation, unused signal/parameter and timescale warnings also appear. These require triage; passing lint does not make them safe by assumption. Prioritise confirming the address-width contract and whether any high address bit can be lost before treating the wrapper as robust.
+- Log artifact [sunnyone-asic-config-log](https://github.com/shamiursunny/openTPU/actions/runs/45487119079/artifacts/14964499992), 49,873 bytes, contains the main log and separate lint/build logs.
+
+No RTL edit is made from warnings alone. Inspect address-width intent and warning context, then add directed boundary tests or fix only if a real contract defect is demonstrated. The manufacturer gate remains open.
