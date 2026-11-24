@@ -4,7 +4,7 @@ Last updated: 2026-11-24 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest fully verified broad RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1` (99 RTL/ISA + 1 AXI-Lite passed); subsequent targeted 128K TMEM (2 passed), full-chip lint (success, 0 PINMISSING), and reset audit (4 passed) are recorded below. Current active branch head at this tracker update: `263719d0304b8571e73a1ef2a19c5149849617bc`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+Latest fully verified broad RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1` (99 RTL/ISA + 1 AXI-Lite passed); subsequent targeted 128K TMEM (2 passed), full-chip lint (success, 0 PINMISSING), and reset audit (4 passed) are recorded below. Current active branch head before this tracker update: `0557b24ca79cef64715e5b6c02b0654642c1d138`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 
 ## 1. Product objective and decision rule
 
@@ -652,3 +652,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Workflows [45324154651](https://github.com/shamiursunny/openTPU/actions/runs/45324154651) (remaining RTL/board, two jobs) and [45324154732](https://github.com/shamiursunny/openTPU/actions/runs/45324154732) (core software/ISA) were cancelled while their main test steps were running. They provide no pass/fail evidence for those selections; cancellation is not a pass.
 - Focused mux simulation remains successful in [45324154486](https://github.com/shamiursunny/openTPU/actions/runs/45324154486), exact tested SHA `38b98903d16c36980fd0270273d7de14082e753d`; see section 71 for runtime PASS marker and warning inventory.
 - No RTL or software changes were made for this tracker update. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; zero paid resources used.
+
+
+## 73. Subsystem regression cancelled; no result claimed (2026-11-24)
+
+- Subsystem/WG8 memory workflow [45324154569](https://github.com/shamiursunny/openTPU/actions/runs/45324154569), tested source SHA `38b98903d16c36980fd0270273d7de14082e753d`, has now completed with conclusion `cancelled`. Job `138209569738` completed its setup, checkout, Python, Verilator and dependency-install steps successfully; its main pytest step for `tests/test_stream_rtl.py`, `test_quant_rtl.py`, `test_fp_rtl.py`, `test_icache_rtl.py`, `test_waitw_rtl.py`, `test_aw_rtl.py`, `test_coll_hub.py`, `test_dma_lda.py`, `test_dma_ldq.py`, `test_native_dram.py`, `test_reset_audit.py`, `test_tech_ram.py` and `test_scoreboard.py` was cancelled.
+- The retained job log confirms the exact pytest command began and then reports `The operation was canceled`; runner cleanup terminated pytest, Verilator and compiler processes. No pytest summary is present. Therefore this selection has **no pass/fail test result** and must not be counted as passed or failed.
+- This cancellation joins the already-recorded cancelled remaining RTL/board run [45324154651](https://github.com/shamiursunny/openTPU/actions/runs/45324154651) and core software/ISA run [45324154732](https://github.com/shamiursunny/openTPU/actions/runs/45324154732). The confirmed successes remain the focused mux run [45324154486](https://github.com/shamiursunny/openTPU/actions/runs/45324154486), RTL-tail run [45324154545](https://github.com/shamiursunny/openTPU/actions/runs/45324154545), and isolated 128K TMEM run [45324154498](https://github.com/shamiursunny/openTPU/actions/runs/45324154498), as detailed in sections 71–72.
+- No RTL or software source changes are made by this entry. Next step is to split the cancelled suite into bounded, independently observable test groups and run them sequentially or with controlled concurrency; inspect workflow timeouts and test durations before rerunning. Do not simply repeat the full long-running batch or weaken/remove tests.
+- Feature branch only. `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used. No hardware, physical PPA, formal-proof or silicon qualification claim.
