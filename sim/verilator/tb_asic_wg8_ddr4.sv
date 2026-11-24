@@ -62,6 +62,7 @@ module tb_asic_wg8_ddr4;
   logic [7:0] bridge_error;
 
   integer cycle=0;
+  logic [3:0] dbg_wo_h, dbg_wo_rv, dbg_w_v, dbg_w_r;
   logic [3:0] aw_accepted='0, w_complete='0, r_active='0;
   logic [3:0][3:0] awid_hold='0, arid_hold='0;
   logic [3:0] b_seen='0, r_seen='0;
@@ -104,6 +105,15 @@ module tb_asic_wg8_ddr4;
 
   otpu_asic_wg8_ddr4_top dut(.*);
 
+  // Static generate indices are required for Verilator hierarchical references.
+  // These probes are testbench-only and do not alter synthesizable RTL.
+  for (genvar gd = 0; gd < 4; gd++) begin : g_hmux_debug
+    assign dbg_wo_h[gd]  = dut.g_host_mux[gd].u_hmux.wo_h;
+    assign dbg_wo_rv[gd] = dut.g_host_mux[gd].u_hmux.wo_rv;
+    assign dbg_w_v[gd]   = dut.g_host_mux[gd].u_hmux.w_v;
+    assign dbg_w_r[gd]   = dut.g_host_mux[gd].u_hmux.w_r;
+  end
+
   always_ff @(posedge aclk) begin
     cycle <= cycle+1;
     if (rst) begin
@@ -126,7 +136,7 @@ module tb_asic_wg8_ddr4;
           if (m_wdata[d] !== host_write_pattern(d,int'(w_beat[d])) ||
               m_wstrb[d] !== host_write_strobe(d,int'(w_beat[d])) ||
               m_wlast[d] !== (w_beat[d] == 8'(burst_beats(d)-1)))
-            $fatal(1,"DIMM%0d host W mismatch beat=%0d data=%h expected=%h strb=%h expected_strb=%h last=%b expected_last=%b owner=%b wo_rv=%b w_v=%b w_r=%b h_wvalid=%b h_wready=%b h_wdata=%h h_wstrb=%h h_wlast=%b m_awid=%h", d, w_beat[d], m_wdata[d], host_write_pattern(d,int'(w_beat[d])), m_wstrb[d], host_write_strobe(d,int'(w_beat[d])), m_wlast[d], (w_beat[d] == 8'(burst_beats(d)-1)), dut.g_host_mux[d].u_hmux.wo_h, dut.g_host_mux[d].u_hmux.wo_rv, dut.g_host_mux[d].u_hmux.w_v, dut.g_host_mux[d].u_hmux.w_r, h_wvalid[d], h_wready[d], h_wdata[d], h_wstrb[d], h_wlast[d], m_awid[d]);
+            $fatal(1,"DIMM%0d host W mismatch beat=%0d data=%h expected=%h strb=%h expected_strb=%h last=%b expected_last=%b owner=%b wo_rv=%b w_v=%b w_r=%b h_wvalid=%b h_wready=%b h_wdata=%h h_wstrb=%h h_wlast=%b m_awid=%h", d, w_beat[d], m_wdata[d], host_write_pattern(d,int'(w_beat[d])), m_wstrb[d], host_write_strobe(d,int'(w_beat[d])), m_wlast[d], (w_beat[d] == 8'(burst_beats(d)-1)), dbg_wo_h[d], dbg_wo_rv[d], dbg_w_v[d], dbg_w_r[d], h_wvalid[d], h_wready[d], h_wdata[d], h_wstrb[d], h_wlast[d], m_awid[d]);
           if (m_wlast[d]) w_complete[d]<=1'b1;
           else w_beat[d]<=w_beat[d]+1'b1;
         end
