@@ -299,3 +299,8 @@ Six workflows were confirmed on the corrected SHA and were QUEUED at last poll:
 Older queued run [45480699954](https://github.com/shamiursunny/openTPU/actions/runs/45480699954) uses the earlier invalid diagnostic version and is not acceptable evidence for the corrected testbench. Tracker Section 130 and handoff register Section 12 carry the full details.
 
 **Next:** poll the six corrected-SHA workflows, inspect the ASIC/config build log, then classify the exact DIMM2 W mismatch before changing RTL. Main remains untouched; do not claim four-DIMM pass or production readiness.
+
+
+### Corrected-SHA live job states — 2026-11-25
+
+On testbench commit `76966009274be54ce26d87e333744b5cc17f72b4`, the latest poll shows: ASIC/config Run 45481815682 queued; board-functional job in Run 45481815901 queued; uncovered-RTL job in that run in progress (building Verilator 5.044); software-core Run 45481815819 queued; RTL-tail Run 45481815780 in progress (installing dependencies); all 14 subsystem jobs in Run 45481815735 queued; isolated TMEM Run 45481815691 in progress. No corrected-SHA four-DIMM result exists yet. The next gate is ASIC/config compilation and the diagnostic simulation. See PROJECT_TRACKER.md Section 131.
