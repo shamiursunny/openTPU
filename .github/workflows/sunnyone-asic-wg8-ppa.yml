@@ -36,9 +36,12 @@ jobs:
             apt-get update
             apt-get install -y python3-numpy
             export ORFS_HOME=/OpenROAD-flow-scripts
+            test -f "$ORFS_HOME/env.sh"
+            source "$ORFS_HOME/env.sh"
             export YOSYS="$ORFS_HOME/tools/install/yosys/bin/yosys"
             test -x "$YOSYS"
-            test -f "$ORFS_HOME/env.sh"
+            "$YOSYS" -V
+            "$YOSYS" -m slang -p "help read_slang" >/tmp/wg8-read-slang-help.txt 2>&1
             python3 tools/asic/flow.py prep nangate45-wg8
             python3 tools/asic/flow.py config nangate45-wg8
             python3 tools/asic/flow.py run nangate45-wg8
