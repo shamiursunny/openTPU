@@ -25,7 +25,7 @@ jobs:
           docker pull openroad/orfs:latest
           image_id="$(docker image inspect openroad/orfs:latest --format '{{.Id}}')"
           test -n "${image_id}"
-          printf '%s\\n' "${image_id}" | tee /tmp/orfs-image-id.txt
+          printf '%s\n' "${image_id}" | tee /tmp/orfs-image-id.txt
           echo "ORFS_IMAGE=${image_id}" >> "${GITHUB_ENV}"
       - name: Run pinned-container SRAM probe and WG8 ORFS flow
         run: |
