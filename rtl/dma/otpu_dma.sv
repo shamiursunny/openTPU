@@ -598,6 +598,10 @@ module otpu_dma
   // the updated segments collect into one chunk register per row (two banks: ysel's fills, the
   // other drains into the gather a chunk a cycle: sr_gw, sr_gt, sr_gq)
   logic [WA-1:0] sr_icn, sr_wan;
+  // Stream setup state is declared before the SRX generate branch that consumes it.
+  ss_cfg_t su_cfg;
+  logic [AW-1:0] su_src, su_dst;
+  logic [5:0] su_ns;
   if (SRX) begin : g_sr
     localparam int RB = SRW + 1;                      // a count of rows, 0 .. SR
     logic [3:0]    cpr_r, cpr_w;                      // chunks a row (read, written)
@@ -846,11 +850,9 @@ module otpu_dma
     return 24'(op | (dst << 4) | (a << 7) | (b << 11));
   endfunction
   localparam int SC_SUB = 1, SC_MUL = 2, O_A = 8, O_X = 9, O_K0 = 10, O_K1 = 11;
-  ss_cfg_t     su_cfg;
   logic [AW-1:0] su_src, su_dst;         // DRAM byte addresses
   logic [31:0] su_vec, su_x, su_k, su_ks, su_out;
   logic [15:0] su_nseg;                  // segments SE takes (pad64: 16 per row)
-  logic [5:0]  su_ns;                    // the stream's own segments per row (the fill's)
   logic        su_ok;
   always_comb begin
     logic [23:0] d0, d1, d2, d3, d4, o5, o6, o7;
