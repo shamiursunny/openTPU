@@ -277,3 +277,8 @@ This remains engineering-in-progress. The design is not tapeout-ready, physicall
 - Comment-only push-trigger commit: `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`.
 - The immediate commit-workflow lookups returned no associated runs. There is no diagnostic result yet. Recheck Actions before claiming execution; if no run appears, leave the task blocked on workflow execution rather than guessing.
 - The latest chronological record is PROJECT_TRACKER.md Section 128. The main branch remains untouched.
+
+
+## 16. Latest regression status correction — 2026-11-25
+
+The latest poll supersedes the prior status snapshot: uncovered-RTL job `138698481369` in Run `45465292882` is CANCELLED; board-functional job `138698482005` remains IN_PROGRESS; software-core job `138698481416` remains IN_PROGRESS; subsystem Run `45465292903` has 14 QUEUED jobs; PPA job `138664562707` in Run `45455745851` remains IN_PROGRESS. The cancelled uncovered-RTL suite requires a new exact-SHA run. See PROJECT_TRACKER.md Section 129.
