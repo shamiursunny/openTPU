@@ -1459,3 +1459,45 @@ Source review refined the warning assessment for exact code SHA `68baca1a080e952
 - Exact pytest result: **33 passed, 1 skipped, 183 deselected** in 711.82 seconds. The single skip is parameter-inapplicable: `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. The skip is not a failure; the 183 deselected tests were outside this targeted job's selection and are not covered by this result.
 - The workflow attempted to upload `/tmp/sunnyone-rtl-tail.log`, but that file did not exist, so no separate artifact was produced. The GitHub job log itself contains the pytest summary.
 - At latest poll, board-functional, uncovered RTL and software-core remain IN_PROGRESS; Stream RTL and MX multiply/replay are IN_PROGRESS; the other 12 subsystem/WG8 jobs remain QUEUED. No outcomes inferred for these jobs.
+
+
+
+## 138. Live continuation poll and exact-SHA reconciliation — 2026-11-25
+
+The repository was re-queried before this update. Active feature branch `sunnyone/commercial-profitability-architecture-2026-11-23` pointed to `06766e101f5451830638705eb616291df8b4ef7b`; `main` remained `d84db55712aba0d40811d7762cb052f05d55b7e5`. Compare from code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70` to feature HEAD showed 22 commits, with changes confined to the three project documentation files. No RTL or testbench source change followed the tested code SHA.
+
+### Exact-SHA workflow poll: code SHA 68baca...
+
+- ASIC/config Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), job `138775349960`: SUCCESS. The full job log was inspected. PASS markers confirm four-DIMM 1/2/4/8-beat host reads/writes, W-before-AW, partial and zero strobes, all BRESP/RRESP codes, 4-KiB boundary-aligned bursts and independent backpressure; expected-fatal `bad_aw` and `bad_ar` aperture tests; global 32-GiB address mapping; and four-instance HMUX contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure. Artifact: [sunnyone-asic-config-log](https://github.com/shamiursunny/openTPU/actions/runs/45487119079/artifacts/14964499992).
+- RTL-tail Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/45487118908), job `138775349245`: SUCCESS, exact pytest summary **33 passed, 1 skipped, 183 deselected**. Skip is parameter-inapplicable (`PAIR needs 2M <= MCOLS; M <= ACT_ROWS`). Deselected tests were not run.
+- Isolated 128K one-copy TMEM Run [45487119017](https://github.com/shamiursunny/openTPU/actions/runs/45487119017), job `138775350575`: SUCCESS. No exact count is asserted here because no verified test summary was extracted in this poll.
+- RTL subsystem/WG8 Run [45487118947](https://github.com/shamiursunny/openTPU/actions/runs/45487118947): 11 jobs completed SUCCESS; Address-window job `138775350051` and Native DRAM/technology RAM job `138775352847` remained IN_PROGRESS; Reset audit job `138775353032` remained QUEUED. Therefore the 14-job workflow is not complete.
+- Board/uncovered RTL Run [45487118979](https://github.com/shamiursunny/openTPU/actions/runs/45487118979): board-functional job `138775349751` and uncovered RTL job `138775349549` ended CANCELLED. Logs show partial pytest progress before cancellation; no pass is inferred.
+- Software-core Run [45487119094](https://github.com/shamiursunny/openTPU/actions/runs/45487119094), job `138775350415`: CANCELLED during a long pytest suite after partial progress; no pass is inferred.
+- Prior WG8 PPA Run [45455745851](https://github.com/shamiursunny/openTPU/actions/runs/45455745851), job `138664562707`, remains FAILED on older SHA `dc34e3a...`. No area, timing, power or PPA value is accepted.
+
+### Evidence accounting correction
+
+A prior short continuation response described 249 passing subsystem tests. This number is not carried forward as an authoritative count because this poll verified successful job conclusions but did not extract and reconcile every pytest summary. Record the exact 11 successful jobs, not a guessed or inferred case total. The older 377-pass matrix remains a separate historical result on its exact recorded SHA; never add overlapping runs to claim unique lifetime test cases.
+
+### Task status changes
+
+- A02 four-DIMM AXI multi-beat and negative aperture gate: PASS on exact code SHA `68baca...`.
+- A03 four-instance HMUX contention/ID-routing gate: PASS on exact code SHA `68baca...`.
+- RTL-tail: PASS, scoped (33 passed, 1 skipped, 183 deselected).
+- Isolated one-copy 128K TMEM: workflow/job SUCCESS; count not restated.
+- Subsystem/WG8 matrix: PARTIAL (11 SUCCESS, 2 IN_PROGRESS, 1 QUEUED).
+- Board-functional/uncovered RTL: CANCELLED; rerun required.
+- Software-core: CANCELLED; rerun required.
+- PPA: FAILED/OPEN; no metrics accepted.
+- WIDTHTRUNC/UNOPTFLAT lint warnings: OPEN for explicit contract and structural review; source review has not established a functional defect.
+
+### Next actions
+
+1. Poll and inspect the two in-progress subsystem jobs and queued reset audit; capture exact test summaries and skip reasons.
+2. Rerun board-functional, uncovered RTL and software-core suites in appropriately sized jobs with adequate runtime. Cancellation is neither pass nor test failure.
+3. Diagnose PPA from targeted ORFS/Yosys logs and artifact metadata; avoid bulk transfer of the 1.56-GB historical artifact. No PPA claims until a reproducible run succeeds.
+4. Resolve or document the WIDTHTRUNC and UNOPTFLAT warnings with source-level address-width proof, boundary checks and structural analysis; no blanket waiver.
+5. Run final regression on one immutable candidate SHA after all applicable gates close.
+
+Release/manufacturer decision remains NOT READY for fabrication, tapeout, physical signoff, production-board build or silicon qualification. A02/A03 simulation success does not establish timing, power, thermal, PHY, DFT, package, board or silicon readiness.
