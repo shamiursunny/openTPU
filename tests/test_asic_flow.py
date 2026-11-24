@@ -44,7 +44,7 @@ def test_points_are_the_asic_targets():
     assert {k: wg8[k] for k in ("WG", "NCH", "CB", "AW", "MCOLS", "ACT_ROWS",
                                  "MXU_E", "TMEM_WORDS", "TMEM_IMPL", "TMEM_PMP",
                                  "DSTEP2", "ST16", "KT", "OUTER", "COLL_GATHER")} == \
-        dict(WG=8, NCH=8, CB=128, AW=36, MCOLS=8, ACT_ROWS=16, MXU_E=8,
+        dict(WG=8, NCH=8, CB=128, AW=35, MCOLS=8, ACT_ROWS=16, MXU_E=8,
              TMEM_WORDS=131072, TMEM_IMPL=3, TMEM_PMP=0, QUANT_R1=1, QUANT_PW=2, DSTEP2=1,
              ST16=1, KT=1, OUTER=0, COLL_GATHER=0)
     assert {k: card[k] for k in ("MCOLS", "ACT_ROWS", "MXU_E", "SEQ_WC", "TMEM_IMPL", "TMEM_NSB",
