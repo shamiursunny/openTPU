@@ -1351,3 +1351,20 @@ For each new continuation, query the live Actions history and inspect successful
 - All 14 jobs in subsystem/memory Run `45465292903` remain **QUEUED**.
 - WG8 PPA job `138664562707` in Run `45455745851` remains **IN_PROGRESS**.
 - This correction supersedes only the corresponding earlier status snapshot. No queued or in-progress result is a pass; the cancelled uncovered-RTL job requires a fresh exact-SHA execution.
+
+
+## 130. Diagnose diagnostic-instrumentation compile failure and correct static hierarchy probes (2026-11-25)
+
+- Recovered the push-triggered ASIC/config run directly from the repository Actions run collection: [45479454587](https://github.com/shamiursunny/openTPU/actions/runs/45479454587), exact SHA `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`, job `138748357284`. This run **FAILED before simulation**, at testbench compilation. Verilator reported variable `d` cannot be used in a dotted hierarchical selection at `tb_asic_wg8_ddr4.sv:129`, and could not resolve `u_hmux` through the variable-indexed generate scope. Therefore this run gives no new evidence about the actual DUT W-channel behavior.
+- Root cause: the first diagnostic patch used `dut.g_host_mux[d].u_hmux.*` inside a procedural loop. Verilator requires elaboration-time constant indices for these hierarchical references.
+- Corrected testbench-only instrumentation in commit `76966009274be54ce26d87e333744b5cc17f72b4`: declared four debug vectors and connected them through a static testbench generate loop (`genvar gd`) to `dut.g_host_mux[gd].u_hmux.{wo_h,wo_rv,w_v,w_r}`. The procedural fatal now reads `dbg_*[d]`. No synthesizable RTL, original mismatch predicates, or expected test values changed.
+- Exact-SHA Actions lookup for corrected commit `76966009274be54ce26d87e333744b5cc17f72b4` confirms six push-triggered workflows were created. At the latest poll all were **QUEUED**:
+  - ASIC/config [45481815682](https://github.com/shamiursunny/openTPU/actions/runs/45481815682), job `138756664096`.
+  - Board-functional + uncovered RTL [45481815901](https://github.com/shamiursunny/openTPU/actions/runs/45481815901), jobs `138756665399` and `138756666235`.
+  - Software-core [45481815819](https://github.com/shamiursunny/openTPU/actions/runs/45481815819), job `138756667852`.
+  - RTL tail [45481815780](https://github.com/shamiursunny/openTPU/actions/runs/45481815780), job `138756664573`.
+  - RTL subsystems/WG8 memory [45481815735](https://github.com/shamiursunny/openTPU/actions/runs/45481815735), 14 jobs `138756668374`, `138756668648`, `138756668674`, `138756668707`, `138756668810`, `138756668862`, `138756668912`, `138756668917`, `138756668920`, `138756668924`, `138756668953`, `138756668969`, `138756672042`, `138756672122`.
+  - Isolated 128K TMEM [45481815691](https://github.com/shamiursunny/openTPU/actions/runs/45481815691), job `138756665688`.
+- Earlier run [45480699954](https://github.com/shamiursunny/openTPU/actions/runs/45480699954), SHA `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`, remained QUEUED at last poll. It contains the earlier non-corrected diagnostic source and must not be used to qualify the corrected instrumentation.
+- Concurrent older workflows on SHA `e1f46ee...` remained open at last poll: software-core [45479454796] IN_PROGRESS; board-functional and uncovered RTL [45479454775] IN_PROGRESS; subsystem matrix [45479454701] QUEUED; RTL tail [45479454581] IN_PROGRESS. The isolated 128K TMEM run [45479454629] completed SUCCESS. The older ASIC/config run [45479454587] is a diagnostic compile failure, not a DUT simulation result.
+- Next: poll all six corrected-SHA workflows; retrieve the corrected ASIC/config job log. If compilation passes, capture the exact DIMM2 W mismatch fields and classify owner/handshake state before any RTL change. Keep main untouched and preserve the four-DIMM test expectations.
