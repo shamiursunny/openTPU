@@ -4,7 +4,7 @@
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Feature-branch documentation checkpoint before this resume update:** `135f10057e10369aff11cbafe25c3b509fe5f031` (documentation-only commits follow; verify live branch HEAD before every continuation)  
+**Feature-branch documentation checkpoint before this resume update:** `ea95f887e310a97ed87143fc745e7d5e742f1b3e` (documentation-only commits follow; verify live branch HEAD before every continuation)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
