@@ -1271,3 +1271,52 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Software-core jobs [45465292772](https://github.com/shamiursunny/openTPU/actions/runs/45465292772) and [45465123084](https://github.com/shamiursunny/openTPU/actions/runs/45465123084) remain IN_PROGRESS; no pass inferred. Board-functional and RTL-tail jobs from the earlier exact-SHA batch also remain IN_PROGRESS. The remaining RTL subsystem/tail jobs in the newer batch are queued; no pass inferred.
 - Latest run [45465384680](https://github.com/shamiursunny/openTPU/actions/runs/45465384680), SHA `65f28fc09ede79581ba97845165733d1caef45b1`, remains QUEUED. The four-DIMM host-path timeout diagnosis is therefore still open. Log downloads for active jobs currently return BlobNotFound, so no unobserved diagnostic signal values are claimed.
 - Preserve the distinction between isolated TMEM success, integrated ASIC lint success, and full four-DIMM functional qualification. Do not infer the latter from the former. No synthesizable RTL changes, hardware purchases, paid services, or main-branch modifications were made in this stage.
+
+
+## 126. Repository-wide historical CI/test-pass audit and continuation-document synchronisation (2026-11-25)
+
+### Audit method and interpretation
+
+- Queried the GitHub Actions run history for the active feature branch across eight API pages: **705 workflow-run records** were returned. **314 records have conclusion SUCCESS**. These are workflow-run successes, not 314 unique tests: many are retries, repeated runs, workflow-only retriggers, or different commits. Failed, cancelled, queued and in-progress runs are not counted as passes.
+- Reconciled representative successful jobs against their actual job logs and pytest summaries. Test counts below are reported only where the job log exposes the count or an explicit PASS marker. Results from different SHAs remain separate; do not add them as a deduplicated lifetime test-case total.
+- The audit found that the repository already contains substantially more than 100 successful test executions. The strongest directly reconciled aggregate is the 14-job subsystem/memory matrix below: **377 passed, 1 explicitly justified skip, 0 failed** on one exact SHA. This is not a claim that 377 unique test definitions have been proven across all history.
+
+### Reconciled broad and focused passes
+
+| Area | Run / job | Exact source SHA | Observed result | Scope boundary |
+|---|---|---|---|---|
+| RTL subsystems + WG8 memory matrix | [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703), 14 jobs | `ec0fe8329df06e5204a1c082df133b62b434846b` | **377 passed, 1 skipped, 0 failed** across the 14 successful jobs | One intentional address-window skip; not a final immutable release regression |
+| RTL-tail selected suite | [45454717008](https://github.com/shamiursunny/openTPU/actions/runs/45454717008), job `138660957221` | `4a2dd86b6b7f61b96d8cb0f2e5d5e573c85349e9` | **33 passed, 1 skipped, 183 deselected** | Selected remaining non-experimental RTL/ISA tests only |
+| Isolated one-copy 128K TMEM | [45465292891](https://github.com/shamiursunny/openTPU/actions/runs/45465292891), job `138698480849` | `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f` | **2 passed, 215 deselected**, 78.62 s | Isolated experimental TMEM test only |
+| Same isolated TMEM selection | [45465123016](https://github.com/shamiursunny/openTPU/actions/runs/45465123016) | `51f3b9bc5d45eeca927a36a1873df3cfd2625d38` | Workflow SUCCESS; later corrected-timescale run is preferred evidence | Repeated execution, not two new test definitions |
+| Yosys+Slang reset audit | [45455745271](https://github.com/shamiursunny/openTPU/actions/runs/45455745271), job `138664561215` | `dc34e3a51c27c01af6296015cd206ab8336d6bda` | **4 passed**, 335.10 s | Selected reset-audit tests, not CDC/RDC signoff |
+| Full-chip Verilator lint | [45455745243](https://github.com/shamiursunny/openTPU/actions/runs/45455745243) | `dc34e3a51c27c01af6296015cd206ab8336d6bda` | Workflow/job SUCCESS | Lint only; review warnings and exact log before treating warning closure as complete |
+| Four-instance shared-DIMM HMUX simulation | [45454389445](https://github.com/shamiursunny/openTPU/actions/runs/45454389445), job `138659794715` | `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc` | PASS marker: concurrent host/pair 3-beat AW-W-B and AR-R bursts with response backpressure; 2 write bursts, 6 read beats, 25 cycles | Directed simulation of tested arbitration scenarios; not exhaustive AXI formal proof |
+| Virtual DRAM / TMEM behavioural benches | [45453893286](https://github.com/shamiursunny/openTPU/actions/runs/45453893286), job `138658009670` | `487fe6b93a83e4b86e5565b80de9b7f33c407436` | Explicit DRAMTEST, TMEMTEST and TMEM_MULTI PASS markers | Behavioural models and stated scenarios only |
+| ASIC AXI-Lite control | [45248945992](https://github.com/shamiursunny/openTPU/actions/runs/45248945992), job `137953086235` | `ae997da8a993e962dd18de0fb1240f3d5656b3a2` | PASS marker for independent AW/W, gating, load pulse, reset and register map | Scoped control-interface bench |
+| ASIC global-to-DIMM address-map formal | [45457143624](https://github.com/shamiursunny/openTPU/actions/runs/45457143624), job `138669549822` | `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb` | Yosys 0.71+77; 14 assertions; 813 variables; 2,152 clauses; terminal SAT SUCCESS | Selected combinational address-map properties only |
+| Earlier selected RTL/ISA + AXI-Lite isolation | [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099), jobs `137843314367` and `137843313719` | `66c708e573671136197c371a848cc9274ae394f2` | **99 passed** in selected RTL/ISA job; **1 passed** in separate AXI-Lite isolation job | Tracker section 9 records that the separate LDC pass duplicated one case within the 99; count as 100 distinct selected cases, not 101 |
+| RTL functional smoke | [45074722442](https://github.com/shamiursunny/openTPU/actions/runs/45074722442) | `e97608f5376726b4fcddd005168f959bc9b98aa9` | Workflow SUCCESS | Smoke scope only |
+| PCIe Gen2 XDMA bridge simulation | [45239360365](https://github.com/shamiursunny/openTPU/actions/runs/45239360365), job `137919506712` | `161cddbb76cc293bdacdab3af2c7037a984f1c67` | Workflow/job SUCCESS | Simulation of the implemented bridge scope; not a production PCIe endpoint/PHY or compliance claim |
+| Isolated workload harness | [45069537101](https://github.com/shamiursunny/openTPU/actions/runs/45069537101) and [45069549439](https://github.com/shamiursunny/openTPU/actions/runs/45069549439) | `749677442edc7e1d560e56b2a3695bd102f5b008`; `87fdc8df265af6dea61dbe0e14671fa91f869c42` | Both workflow runs SUCCESS | Unit/fixture checks only; no real-hardware workload benchmark or measured throughput |
+
+The 14 subsystem matrix job-level pytest summaries were individually inspected and total 377 passed: MX multiply/replay 17; quantizer modes 15; QHL 7; collective hub/DMA/scoreboard 128; floating point 8; wait-state 11; stream 14; quantizer corners/ties 8; instruction cache 23; address-window 20 plus 1 intentional skip; SPLITQ 5; QST/QSTB 13; reset audit 4; native DRAM/technology RAM 104. The totals sum to 377 passed and 1 skipped.
+
+The one address-window skip is the previously documented geometry case `test_beyond_the_dram_stops_the_board_model`: at a 64-GiB aperture every representable address is DRAM, so a test expecting an address beyond DRAM is inapplicable. It is not a concealed failure and must remain explicitly labelled as a skip.
+
+### Workflow-history inventory (run records, not test counts)
+
+Across the 705 returned branch run records, success totals by workflow were: subsystem/memory 16; isolated TMEM 34; RTL-tail 77; global-map formal 1; reset audit 58; full-chip lint 57; shared-DIMM HMUX 13; virtual DRAM 10; ASIC AXI-Lite control 19; PCIe Gen2 bridge 1; RTL functional expansion 20; RTL smoke 1; workload harness 3; workload fixture correction 1; ASIC/config 5. The following workflows had no successful run in the returned history at audit time: remaining RTL/board regressions, software-core, and WG8 ASIC research PPA. Other workflow names include 32 cancelled “additional RTL subsystem regressions”. These workflow-level counts include retries and older SHAs; they are not independent test counts or a green overall pipeline.
+
+### Current verification state after historical audit
+
+- The 128K TMEM isolated test is now green on SHA `86f922cc...`; do not equate it with SRAM macro qualification or full memory integration.
+- The global address-map formal proof is green on SHA `0d6128d...`; it proves only the selected combinational decoder properties.
+- The four-instance HMUX directed simulation passed on SHA `fc3bdcc...`; the separate four-DIMM host integration/write-path issue remains open until the current diagnostic bench passes or produces actionable probe values.
+- The integrated ASIC/config workflow on SHA `51f3b9bc...` completed its three lint stages successfully, but the four-DIMM host simulation was still running at the last confirmed observation. A newer run on SHA `86f922cc...` was still in progress; do not transfer partial lint results across SHAs.
+- Current runs requiring fresh polling include ASIC/config `45465384680`, board/RTL `45465292882`, subsystem `45465292903`, software `45465292772`, ASIC/config `45465292665`, RTL-tail `45465292944`, PPA `45455745851`, and other queued/in-progress retries listed in the GitHub Actions history. No queued or in-progress run is a pass.
+- The latest known feature-branch code checkpoint before this documentation update was `65f28fc09ede79581ba97845165733d1caef45b1`; the tracker commit sequence then advanced the branch. Verify the live feature branch and `main` refs before further work. Never modify `main`.
+
+### Required future audit/update rule
+
+For each new continuation, query the live Actions history and inspect successful job logs before updating this evidence ledger. Record exact run ID, job ID, source SHA, command/test selection, counts and skip reason. Keep repeated executions separate from unique test definitions. Do not sum test counts across runs as a lifetime unique total unless test identities have been deduplicated. The feature branch remains engineering-in-progress; there is no final all-tests-on-one-release-SHA result, no completed WG8 PPA, no production DDR4/PCIe PHY, no physical signoff, and no silicon or commercial qualification claim.
