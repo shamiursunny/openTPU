@@ -49,6 +49,8 @@ jobs:
           sources += ["sim/verilator/asic_sram_lint_stubs.sv"]
           sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv",
                       "rtl/mem/otpu_native_dram.sv", "rtl/asic/otpu_asic_mem_top.sv"]
+          from pathlib import Path
+          sources = list(dict.fromkeys(str(Path(p).resolve()) for p in sources))
           cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal", "-DSYNTHESIS",
                  "--top-module", "otpu_asic_chip_top", *sources]
           with open("/tmp/sunnyone-asic-chip-lint.log", "w") as log:
@@ -86,6 +88,8 @@ jobs:
           sources += ["rtl/asic/otpu_asic_top.sv", "rtl/asic/otpu_asic_ctrl.sv",
                       "rtl/asic/otpu_asic_chip_top.sv", "rtl/mem/otpu_native_dram.sv",
                       "rtl/asic/otpu_asic_mem_top.sv", "rtl/asic/otpu_asic_wg8_ddr4_top.sv"]
+          from pathlib import Path
+          sources = list(dict.fromkeys(str(Path(p).resolve()) for p in sources))
           cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal", "-DSYNTHESIS",
                  "-Wno-WIDTHEXPAND", "-Wno-WIDTHTRUNC", "--top-module",
                  "otpu_asic_wg8_ddr4_top", *sources]
@@ -106,6 +110,8 @@ jobs:
                       "rtl/asic/otpu_asic_chip_top.sv", "rtl/mem/otpu_native_dram.sv",
                       "rtl/asic/otpu_asic_mem_top.sv", "rtl/asic/otpu_asic_wg8_ddr4_top.sv",
                       "sim/verilator/tb_asic_wg8_ddr4.sv"]
+          from pathlib import Path
+          sources = list(dict.fromkeys(str(Path(p).resolve()) for p in sources))
           cmd = ["verilator", "--binary", "--timing", "--assert", "-Wall", "-Wno-fatal",
                  "--top-module", "tb_asic_wg8_ddr4", *sources]
           with open("/tmp/sunnyone-asic-wg8-ddr4-sim-build.log", "w") as log:
@@ -127,6 +133,8 @@ jobs:
           import opentpu.target as target
           sources = ["rtl/" + p for p in target.sources("bcu1525-wg", family="generic")]
           sources += ["sim/verilator/tb_asic_wg8_hmux_contention.sv"]
+          from pathlib import Path
+          sources = list(dict.fromkeys(str(Path(p).resolve()) for p in sources))
           cmd = ["verilator", "--binary", "--timing", "--assert", "-Wall", "-Wno-fatal",
                  "--top-module", "tb_asic_wg8_hmux_contention", *sources]
           with open("/tmp/sunnyone-asic-hmux-contention-build.log", "w") as log:
