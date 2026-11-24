@@ -36,8 +36,18 @@ jobs:
       max-parallel: 2
       matrix:
         include:
-          - group: Stream, quantisation, FP, instruction-cache, wait and address-window
-            tests: tests/test_stream_rtl.py tests/test_quant_rtl.py tests/test_fp_rtl.py tests/test_icache_rtl.py tests/test_waitw_rtl.py tests/test_aw_rtl.py
+          - group: Stream RTL
+            tests: tests/test_stream_rtl.py
+          - group: Quantisation RTL
+            tests: tests/test_quant_rtl.py
+          - group: Floating-point RTL
+            tests: tests/test_fp_rtl.py
+          - group: Instruction-cache RTL
+            tests: tests/test_icache_rtl.py
+          - group: Wait-state RTL
+            tests: tests/test_waitw_rtl.py
+          - group: Address-window RTL
+            tests: tests/test_aw_rtl.py
           - group: Collective hub, DMA and scoreboard
             tests: tests/test_coll_hub.py tests/test_dma_lda.py tests/test_dma_ldq.py tests/test_scoreboard.py
           - group: Native DRAM and technology RAM
