@@ -4,7 +4,7 @@
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Latest verified branch HEAD at this update:** to be confirmed on every resume  
+**Branch HEAD immediately before this final resume-file refresh:** `34c4e3bf85e4826590266a1f613bfa4abc815181` (the resume refresh itself creates a newer HEAD; always verify live)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
@@ -162,3 +162,10 @@ The simulation-ready manufacturer feasibility-review release requires all object
 It does **not** mean the chip is fabricated, physically signed off, packaged, board-tested or silicon-qualified. The manufacturer/foundry must complete the process-specific and hardware tasks. Never label the project finally completed until the user's intended project milestones and external handoff outcomes are actually evidenced.
 
 **Last known decision:** continue A01 and A04 verification first. Both corrective commits exist, but their verification runs were queued at the last confirmed poll. No paid resources have been authorised.
+
+## 10. Document commit references at this checkpoint
+
+- Resume guide initial creation: `3a39b5eada362f65e9882896a5ee34bea5d9760c`; this final refresh is a later commit on the same feature branch.
+- Master register update adding this guide and the three-file protocol: `2b168ed918b2434347b212d7b79d700558dcc48e`; latest tracker-pointer refresh: `34c4e3bf85e4826590266a1f613bfa4abc815181`.
+- Chronological tracker entry documenting the resume guide and three-file protocol: `a8e91b44dd148d77f1f5ffc56d930fefc9e4dd3b`.
+- These are document-update commits, not a final project release SHA. Always query the live branch head and `main` before continuing.
