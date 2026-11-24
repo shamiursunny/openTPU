@@ -155,6 +155,17 @@ The deliverables and acceptance criteria must be agreed in writing before paid w
 The immediate engineering priority remains: diagnose and pass the four-DIMM integration simulation, complete the remaining regressions, obtain reproducible synthesis/physical-proxy evidence, and build the full manufacturer package without concealing any open dependency.
 
 
+## 0. Fresh-session resume guide
+
+**Start every new ChatGPT continuation by reading** [SUNNYONE_AI-X_PROJECT_RESUME.md](SUNNYONE_AI-X_PROJECT_RESUME.md). It contains the repository/branch recovery procedure, workflow and handoff boundaries, current A01/A04 blockers, exact CI runs, task order and three-document update protocol. Then read this master register and the chronological [PROJECT_TRACKER.md](PROJECT_TRACKER.md).
+
+The project is governed by three maintained documents:
+1. `SUNNYONE_AI-X_PROJECT_RESUME.md` — quick-start context recovery and continuation workflow.
+2. `SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md` — authoritative task register, acceptance criteria and manufacturer handoff boundary.
+3. `PROJECT_TRACKER.md` — dated chronological evidence and decisions.
+
+After each meaningful project task, update all three in the same work session, then re-fetch and verify all three on the feature branch. Never assume a prior-session SHA or CI status remains current.
+
 ## 9. Master task register — single source of truth (updated 2026-11-24)
 
 **Control rule:** This section is the authoritative live task register for simulation readiness and manufacturer handoff. The separate project tracker remains the chronological engineering log. Every future engineering task must be recorded here before work begins and updated here after work, with exact commit SHA and test-run evidence. A task is not complete merely because a workflow was created or code was committed.
