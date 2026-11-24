@@ -25,7 +25,7 @@ jobs:
           docker pull openroad/orfs:latest
           image_id="$(docker image inspect openroad/orfs:latest --format '{{.Id}}')"
           test -n "${image_id}"
-          printf '%s\n' "${image_id}" | tee /tmp/orfs-image-id.txt
+          printf '%s\\n' "${image_id}" | tee /tmp/orfs-image-id.txt
           echo "ORFS_IMAGE=${image_id}" >> "${GITHUB_ENV}"
       - name: Run pinned-container SRAM probe and WG8 ORFS flow
         run: |
@@ -49,7 +49,10 @@ jobs:
       - name: Collect WG8 PPA file inventory
         if: always()
         run: |
-          find build/asic/nangate45-wg8 -maxdepth 5 -type f | sort | tail -200 > /tmp/wg8-files.txt || true
+          find build/asic/nangate45-wg8 -maxdepth 7 -type f | sort > /tmp/wg8-files.txt || true
+          if [ -f build/asic/nangate45-wg8/run.log ]; then
+            tail -c 200000 build/asic/nangate45-wg8/run.log > /tmp/wg8-run-tail.txt
+          fi
       - name: Upload WG8 PPA evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -58,9 +61,13 @@ jobs:
           path: |
             /tmp/orfs-image-id.txt
             /tmp/wg8-files.txt
+            /tmp/wg8-run-tail.txt
+            build/asic/nangate45-wg8/run.log
             build/asic/nangate45-wg8/report.json
             build/asic/nangate45-wg8/src/tiles.json
             build/asic/nangate45-wg8/config.mk
             build/asic/nangate45-wg8/constraint.sdc
+            build/asic/nangate45-wg8/work/logs/**
             build/asic/nangate45-wg8/work/reports/**
+            build/asic/nangate45-wg8/work/results/**
           if-no-files-found: ignore
