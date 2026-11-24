@@ -106,7 +106,7 @@ jobs:
           TEST_TARGETS: ${{ matrix.tests }}
         run: |
           set -o pipefail
-          pytest -q ${TEST_TARGETS} --durations=20 2>&1 | tee /tmp/sunnyone-subsystems-${{ strategy.job-index }}.log
+          pytest -q -rs ${TEST_TARGETS} --durations=20 2>&1 | tee /tmp/sunnyone-subsystems-${{ strategy.job-index }}.log
       - name: Archive regression log
         if: always()
         uses: actions/upload-artifact@v4
