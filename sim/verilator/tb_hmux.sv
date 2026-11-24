@@ -101,6 +101,7 @@ module tb_hmux;
       if(m_bvalid && m_bready) m_bvalid<=0;
       if(p_bvalid && p_bready) begin
         if(p_bid!=4'h1) $fatal(1,"pair BID mismatch: %h",p_bid);
+        if(p_bresp!=2'b00) $fatal(1,"pair BRESP mismatch: %b",p_bresp);
         pair_b<=pair_b+1;
       end
       if(h_bvalid && h_bready) begin
@@ -120,13 +121,14 @@ module tb_hmux;
         m_rresp<=0; m_rlast<=1; m_rvalid<=1; ar_rp<=ar_rp+1; reads<=reads+1;
       end else if(m_rvalid && m_rready) m_rvalid<=0;
       if(p_rvalid && p_rready) begin
-        if(p_rid!=4'h2 || p_rdata !== ({8{64'h0123456789abcdef}} ^ 512'd1))
-          $fatal(1,"pair R ID/data mismatch: %h",p_rid);
+        if(p_rid!=4'h2 || p_rdata !== ({8{64'h0123456789abcdef}} ^ 512'd1) ||
+           p_rresp!=2'b00 || !p_rlast)
+          $fatal(1,"pair R ID/data/response/last mismatch: %h",p_rid);
         pair_r<=pair_r+1;
       end
       if(h_rvalid && h_rready) begin
-        if(h_rdata !== {8{64'h0123456789abcdef}})
-          $fatal(1,"host R data mismatch");
+        if(h_rdata !== {8{64'h0123456789abcdef}} || h_rresp!=2'b00 || !h_rlast)
+          $fatal(1,"host R data/response/last mismatch");
         host_r<=host_r+1;
       end
     end
@@ -134,27 +136,27 @@ module tb_hmux;
   task automatic write_master(input bit host, input logic [3:0] id);
     begin
       @(negedge clk);
-      if(host) begin h_awaddr<=34'h1000+id*64; h_awlen<=0; h_awvalid<=1; end
-      else begin p_awaddr<=34'h2000+id*64; p_awid<=id; p_awlen<=0; p_awvalid<=1; end
+      if(host) begin h_awaddr=34'h1000+id*64; h_awlen=0; h_awvalid=1; end
+      else begin p_awaddr=34'h2000+id*64; p_awid=id; p_awlen=0; p_awvalid=1; end
       do @(posedge clk); while(host ? !h_awready : !p_awready);
-      @(negedge clk); if(host) h_awvalid<=0; else p_awvalid<=0;
-      if(host) begin h_wdata<={8{64'hfeed000000000001}}; h_wstrb<=64'h00ff00ff00ff00ff; h_wlast<=1; h_wvalid<=1; end
-      else begin p_wdata<={8{64'hcafe000000000002}}; p_wstrb<=64'hff00ff00ff00ff00; p_wlast<=1; p_wvalid<=1; end
+      @(negedge clk); if(host) h_awvalid=0; else p_awvalid=0;
+      if(host) begin h_wdata={8{64'hfeed000000000001}}; h_wstrb=64'h00ff00ff00ff00ff; h_wlast=1; h_wvalid=1; end
+      else begin p_wdata={8{64'hcafe000000000002}}; p_wstrb=64'hff00ff00ff00ff00; p_wlast=1; p_wvalid=1; end
       do @(posedge clk); while(host ? !h_wready : !p_wready);
-      @(negedge clk); if(host) h_wvalid<=0; else p_wvalid<=0;
+      @(negedge clk); if(host) h_wvalid=0; else p_wvalid=0;
     end
   endtask
   task automatic read_master(input bit host, input logic [3:0] id);
     begin
       @(negedge clk);
-      if(host) begin h_araddr<=34'h3000+id*64; h_arlen<=0; h_arvalid<=1; end
-      else begin p_araddr<=34'h4000+id*64; p_arid<=id; p_arlen<=0; p_arvalid<=1; end
+      if(host) begin h_araddr=34'h3000+id*64; h_arlen=0; h_arvalid=1; end
+      else begin p_araddr=34'h4000+id*64; p_arid=id; p_arlen=0; p_arvalid=1; end
       do @(posedge clk); while(host ? !h_arready : !p_arready);
-      @(negedge clk); if(host) h_arvalid<=0; else p_arvalid<=0;
+      @(negedge clk); if(host) h_arvalid=0; else p_arvalid=0;
     end
   endtask
   initial begin
-    repeat(5) @(posedge clk); rst<=0;
+    repeat(5) @(posedge clk); @(negedge clk); rst=0;
     fork
       write_master(0,4'h1);
       write_master(1,4'h0);
