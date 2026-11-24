@@ -4,7 +4,7 @@
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Feature-branch checkpoint before this documentation refresh:** `bce7d311eb7c4d3ed0768ea27317c5ecf424cb00` (verify live HEAD before every continuation)  
+**Feature-branch checkpoint before this documentation refresh:** `66c676cf515e2063c6f322cd1912c94f07ec085c` (verify live HEAD before every continuation)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
@@ -91,9 +91,9 @@ Flow correction commit: `0b67e65deb7fcc457b10bb825304db752689b3e7`, `tools/asic/
 
 ### A02/A03 — expanded AXI protocol and four-DIMM host/accelerator contention (IN PROGRESS; exact-SHA CI pending)
 
-**A02 host-burst coverage:** testbench commit `76f3a5ecffdef73db2eb298bf775552c5f801c12` extends `sim/verilator/tb_asic_wg8_ddr4.sv` to exercise 1-, 2-, 4- and 8-beat host writes/reads across the four DIMMs, AWLEN/ARLEN, WLAST/RLAST and beat data, varied full/partial/zero WSTRB, independent backpressure, a W-before-AW case on DIMM0, and legal 8-beat bursts ending exactly at a 4-KiB boundary. A later testbench correction commit `141dd7857cdd76d405698e1d3dc3a61a8cdb64e0` avoids resetting the W beat counter on controller AW acceptance because AXI W may be accepted before AW. **Latest assertion-enabled ASIC/config Run [45454398831](https://github.com/shamiursunny/openTPU/actions/runs/45454398831)** is queued on exact SHA `bce7d311eb7c4d3ed0768ea27317c5ecf424cb00`; no pass is claimed yet. Outstanding ID/error/negative-address and reset-in-flight cases remain to be covered.
+**A02 host-burst coverage:** testbench commits `76f3a5ecffdef73db2eb298bf775552c5f801c12` and `141dd7857cdd76d405698e1d3dc3a61a8cdb64e0` extend `sim/verilator/tb_asic_wg8_ddr4.sv` to exercise 1-, 2-, 4- and 8-beat host writes/reads across four DIMMs, AWLEN/ARLEN, WLAST/RLAST and beat data, full/partial/zero WSTRB, independent backpressure, W-before-AW on DIMM0 and legal 8-beat bursts ending exactly at a 4-KiB boundary. Commit `4a2dd86b6b7f61b96d8cb0f2e5d5e573c85349e9` adds all four BRESP/RRESP encodings and expected-fatal host AW/AR tests for address bit 33. Workflow commit `66c676cf515e2063c6f322cd1912c94f07ec085c` runs both negative cases and checks the exact 8-GiB aperture fatal. **Latest ASIC/config Run [45454747313](https://github.com/shamiursunny/openTPU/actions/runs/45454747313)** is queued on exact SHA `66c676cf515e2063c6f322cd1912c94f07ec085c`; no pass is claimed yet. Outstanding ID ordering, reset-in-flight and further negative protocol cases remain.
 
-**A03 contention coverage:** added `sim/verilator/tb_asic_wg8_hmux_contention.sv` in commit `62c319e5eed8f902e10ceb01c7c84b2eaad9d564`, with four instances of the production `otpu_mig_hmux` configuration (IDW=4, AW=34, HB=2). It drives simultaneous host/pair AW and AR requests, checks alternating grants over two requests per source, verifies ordered two-beat W bursts, routes B/R by IDs, and varies controller/requester backpressure. The CI compile/run step and path trigger were added in workflow commit `e0fa44d99a4ba598881f6960a2196f6752550fea`. The same latest queued Run [45454398831](https://github.com/shamiursunny/openTPU/actions/runs/45454398831) includes this new testbench step on the current exact SHA and compiles the HMUX_FORMAL assertions; inspect both simulations and their full logs before closing A02/A03.
+**A03 contention coverage:** added `sim/verilator/tb_asic_wg8_hmux_contention.sv` in commit `62c319e5eed8f902e10ceb01c7c84b2eaad9d564`, with four instances of the production `otpu_mig_hmux` configuration (IDW=4, AW=34, HB=2). It drives simultaneous host/pair AW and AR requests, checks alternating grants over two requests per source, verifies ordered two-beat W bursts, routes B/R by IDs, and varies controller/requester backpressure. The CI compile/run step and path trigger were added in workflow commit `e0fa44d99a4ba598881f6960a2196f6752550fea`. HMUX_FORMAL properties were added in commit `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`; the workflow compiles with `-DHMUX_FORMAL` and Verilator `--assert`. The same queued Run [45454747313](https://github.com/shamiursunny/openTPU/actions/runs/45454747313) includes both testbenches and assertion checks. Inspect the full logs before closing A02/A03.
 
 ### A11 — lint warning triage and structural loop cleanup (IN PROGRESS; exact-SHA verification pending)
 
@@ -103,11 +103,11 @@ The two `otpu_slice.sv` warnings were false combinational-cone reports caused by
 
 Lint observability was improved: the full-chip lint workflow no longer suppresses WIDTHEXPAND/WIDTHTRUNC or unused warnings (workflow commit `1103498f9d1222ee897a510dfcf912a59fe39301`); the ASIC/config workflow no longer suppresses width warnings (commit `86bc7b57202bf4d91ea9ed7f8657db0bebb2b413`); the subsystem workflow uses pytest `-rs` to expose skip reasons (commit `ec151e9180c902c2157d84fb626121a4b81c8c1e`).
 
-**Verification queued:** full-chip lint Run [45454389561](https://github.com/shamiursunny/openTPU/actions/runs/45454389561) on SHA `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`; ASIC/config Run [45454398831](https://github.com/shamiursunny/openTPU/actions/runs/45454398831) on SHA `bce7d311eb7c4d3ed0768ea27317c5ecf424cb00`. The latest lint outputs must confirm whether MODDUP/UNOPTFLAT disappeared and capture the now-visible width warnings. Remaining WIDTHEXPAND/WIDTHTRUNC in VPU, quantizer, MXU, DMA, sequencer and native DRAM need semantic review; do not silence them or make broad casts without checking bounds and signedness.
+**Verification queued:** full-chip lint Run [45454389561](https://github.com/shamiursunny/openTPU/actions/runs/45454389561) on SHA `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`; ASIC/config Run [45454747313](https://github.com/shamiursunny/openTPU/actions/runs/45454747313) on SHA `66c676cf515e2063c6f322cd1912c94f07ec085c`. The latest lint outputs must confirm whether MODDUP/UNOPTFLAT disappeared and capture the now-visible width warnings. Remaining WIDTHEXPAND/WIDTHTRUNC in VPU, quantizer, MXU, DMA, sequencer and native DRAM need semantic review; do not silence them or make broad casts without checking bounds and signedness.
 
 ### A12 — HMUX AXI protocol assertions (PARTIAL; assertion-enabled simulation pending)
 
-Added `HMUX_FORMAL` SVA properties to `rtl/boards/bcu1525/otpu_mig_hmux.sv` in commit `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`. They check AW/W/AR payload stability while the controller backpressures, B/R response stability while the selected requester backpressures, mutual exclusion of host/pair AW/AR/W ready, no W ready before an AW is queued, and B/R routing according to the host-ID bit. The A03 contention workflow compiles with `-DHMUX_FORMAL` and Verilator `--assert`; latest Run [45454398831](https://github.com/shamiursunny/openTPU/actions/runs/45454398831) is queued on exact SHA `bce7d311eb7c4d3ed0768ea27317c5ecf424cb00`.
+Added `HMUX_FORMAL` SVA properties to `rtl/boards/bcu1525/otpu_mig_hmux.sv` in commit `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`. They check AW/W/AR payload stability while the controller backpressures, B/R response stability while the selected requester backpressures, mutual exclusion of host/pair AW/AR/W ready, no W ready before an AW is queued, and B/R routing according to the host-ID bit. The A03 contention workflow compiles with `-DHMUX_FORMAL` and Verilator `--assert`; latest Run [45454747313](https://github.com/shamiursunny/openTPU/actions/runs/45454747313) is queued on exact SHA `66c676cf515e2063c6f322cd1912c94f07ec085c`.
 
 This is assertion-enabled simulation, not a completed formal proof. A SymbiYosys/SMT proof harness, reset properties, full AXI ordering/address translation and top-level arbitration properties remain open.
 
@@ -125,14 +125,14 @@ Older diagnostic-SHA runs [45425750624](https://github.com/shamiursunny/openTPU/
 
 The authoritative M01–M14, A01–A12 and H01–H12 task table is in Section 9 of the master handoff register. In brief:
 - M01–M14 are completed or partially evidenced scoped tasks.
-- A01's single-beat four-DIMM host-path simulation passes on exact SHA `ec0fe832...`. A02/A03 testbenches and HMUX_FORMAL assertions are committed; latest ASIC/config Run `45454398831` on `bce7d3...` is queued.
+- A01's single-beat four-DIMM host-path simulation passes on exact SHA `ec0fe832...`. A02/A03 testbenches now include multi-beat bursts, all BRESP/RRESP codes, negative aperture cases and HMUX_FORMAL assertions; latest ASIC/config Run `45454747313` on `66c676...` is queued.
 - A04 corrected-flow Run `45452183549` remains active on SHA `0b67e65...`; latest-code PPA Run `45454389335` is queued on `fc3bdc...`. No PPA metrics exist yet. A05 remains in progress.
 - A06 latest matrix Run `45454026458` uses pytest `-rs` to reveal skip reasons. Latest A07/A08/A09 runs are queued on `487fe6b...`; earlier retries on `ec0fe832...` remain active/cancelled and must be reconciled. A11 structural warning fixes and A12 assertion set are committed but unverified.
 - A11 lint warning closure and A12 full formal protocol properties remain partial. A10 final complete regression on one immutable release SHA is not started.
 - H01–H12 describe external manufacturer/physical/commercial work; see master register for exact status and evidence.
 
 Recommended order:
-1. Inspect ASIC/config Run `45454398831` on exact SHA `bce7d3...` for A02/A03 and HMUX_FORMAL assertion results.
+1. Inspect ASIC/config Run `45454747313` on exact SHA `66c676...` for A02 multi-beat/response/negative-address tests, A03 contention and HMUX_FORMAL assertion results.
 2. Inspect full-chip lint Run `45454389561` on exact SHA `fc3bdc...` for MODDUP/UNOPTFLAT cleanup and exposed width warnings.
 3. Inspect subsystem Run `45454026458` on exact SHA `ec151e...` for pytest skip reasons and exact counts.
 4. Retrieve corrected-flow PPA Run `45454389335`, latest software-core Run `45453893300`, board/uncovered Run `45453893567` and RTL-tail Run `45453893412`; reconcile older active attempts by exact SHA.
