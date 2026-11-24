@@ -273,3 +273,7 @@ This project has a substantial, auditable body of passing simulation and RTL tes
 
 ### Strategy guardrails
 The former 30 W total-system ceiling remains retired. No replacement wattage ceiling is selected. Optimise risk-adjusted long-term net profit and realistic payback through measured useful inference, full-system TCO, wall power/cooling, reliability and incremental contribution margin. Do not maximise watts, RAM or peak TOPS alone. Keep the zero-spend rule and do not claim production/tapeout readiness.
+
+
+### CI trigger status — 2026-11-25
+The diagnostic-only testbench commit is `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`. A comment-only push-trigger commit to the existing ASIC/config workflow is `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`. The immediate workflow lookup returned no associated run for either commit. Do not assume CI started; recheck Actions and record a run only when GitHub returns an exact run/job record. Tracker Section 128 records this attempt.
