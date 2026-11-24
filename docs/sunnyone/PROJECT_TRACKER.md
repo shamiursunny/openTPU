@@ -4,7 +4,7 @@ Last updated: 2026-11-24 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
-Latest fully verified broad RTL baseline: `24b6780d20766595f54d68f6eb19d2aa3187e6e1` (99 RTL/ISA + 1 AXI-Lite passed); subsequent targeted 128K TMEM (2 passed), full-chip lint (success, 0 PINMISSING), and reset audit (4 passed) are recorded below. Current active branch head before this tracker update: `0557b24ca79cef64715e5b6c02b0654642c1d138`. `main` verified unchanged at pinned upstream `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+Latest completed broad RTL regression with Yosys+Slang reset audit: Run [45382805606](https://github.com/shamiursunny/openTPU/actions/runs/45382805606), exact SHA `d281621836d86e608ad34c4fd44d6edf339e98fe`, 377 passed, 1 intentional 64-GiB address-window skip, zero reported failures. Latest focused shared-DIMM mux burst simulation: Run [45401880965](https://github.com/shamiursunny/openTPU/actions/runs/45401880965), exact SHA `4437e1d93bf14f41377c12e0e3ea32b426d90c1a`, successful directed 3-beat host/pair AW-W-B and AR-R test with response backpressure. Current active branch head before this tracker update: `5cf5b4c40c46d2f07a6f4c30abd122032f914938`. `main` independently verified unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 
 ## 1. Product objective and decision rule
 
@@ -14,15 +14,15 @@ Zero-spend by default. No paid service, hardware purchase, or other expenditure 
 
 ## 2. Current stage
 
-**Stage:** A1.12.11.16.45 — remaining RTL/board qualification and reference-chip specification.
+**Stage:** A1.12.11.16.54 — consolidated V1 logical design candidate completed; remaining work is verification closure, host/memory integration, PHY/IP feasibility, physical implementation, hardware validation and commercial qualification.
 
-**Latest verified baseline:** run [45209168224](https://github.com/shamiursunny/openTPU/actions/runs/45209168224): 99 RTL/ISA tests + 1 AXI-Lite test passed. Run [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099) completed successfully but repeated those tests; its LDC test is a duplicate within the 99-test selection. Focused uncovered-test run [45222828630](https://github.com/shamiursunny/openTPU/actions/runs/45222828630), commit `7f29437bf26c73dac49693ca96e2b2aa60da4ae7`, is currently running; no result is assumed.
+**Selected logical V1 candidate:** one WG8 slice, D/MCOLS/WG 128/8/8, 32 GiB logical DRAM, AW35, eight native 4-GiB channels grouped into four 8-GiB DIMM ports, four 512-bit AXI host interfaces, 128K TMEM / 32K IMEM. Full parameter and boundary definition is in docs/sunnyone/SUNNYONE_AI-X_V1_FINAL_LOGICAL_DESIGN_CANDIDATE_A1.12.11.16.54.md. This is a logical architecture candidate only, not a complete host-connected ASIC or tapeout-ready design.
 
-**Observed result: PASS.** Job completed with success. Both workflow steps completed successfully:
-- Expanded RTL-versus-ISA tests.
-- AXI-Lite isolation reset regression (`pytest -q tests/test_axil_iso.py`).
+**Latest completed broad regression:** Run [45382805606](https://github.com/shamiursunny/openTPU/actions/runs/45382805606), exact SHA `d281621836d86e608ad34c4fd44d6edf339e98fe`: 377 passed, 1 intentional 64-GiB address-window skip, zero reported failures; Yosys+Slang reset audit executed and passed. This is bounded regression evidence, not full formal signoff.
 
-Exact log results: `tests/test_rtl.py` selection — **99 passed, 118 deselected** in 2037.95 s (0:33:57); `tests/test_axil_iso.py` — **1 passed** in 8.90 s. Total observed: 100 passed, 118 deselected across the two commands. Environment: Python 3.12.16, Verilator 5.032, Ubuntu 26.04 runner. Setup, checkout, Python, Verilator, and dependency installation succeeded. Warnings: Python packaging metadata deprecates the `project.license` TOML table (stated deadline 2027-02-18); GitHub warns checkout@v4/setup-python@v5 are targeting deprecated Node.js 20 and being forced to Node.js 24. No test failure or RTL warning appears in the captured job log. These are maintenance warnings, not evidence of functional failure. The prior run `45199414779` failed during collection because a module-level optional PyTorch skip prevented the dedicated AXI-Lite test from running; the test was isolated in `tests/test_axil_iso.py` to remove that dependency coupling.
+**Latest focused mux result:** Run [45401880965](https://github.com/shamiursunny/openTPU/actions/runs/45401880965), exact SHA `4437e1d93bf14f41377c12e0e3ea32b426d90c1a`: directed concurrent pair/host three-beat AW-W-B and AR-R burst simulation passed with response backpressure (2 write bursts, 6 read beats, 25 cycles). Non-fatal lint warnings remain; scope limitations are documented in section 97.
+
+**Pending exact-SHA verification:** PPA Run 45402124448, four-DIMM ASIC/config Run 45402976553, board/remaining RTL Run 45402976579, subsystem/memory Run 45402976898, RTL-tail Run 45402976724, isolated TMEM Run 45402976616 remain queued; software-core Run 45402976582 remains in progress at the last poll. No pass is assumed for these runs.
 
 ## 3. Recent implementation / evidence
 
@@ -34,32 +34,29 @@ Exact log results: `tests/test_rtl.py` selection — **99 passed, 118 deselected
 
 ## 4. Immediate next actions
 
-1. CI log audit completed: 99 RTL/ISA tests passed; 118 deselected; isolated AXI-Lite test passed (1). Warnings recorded above.
-2. Expand RTL/ISA and fault/backpressure/reset regression coverage, prioritising reproducible tests and mutation checks.
-3. Follow-up run `45217729099`, commit `66c708e573671136197c371a848cc9274ae394f2`: LDC host-write concurrency passed (`1 passed, 216 deselected`, 224.66 s). This test was already included in the earlier 99-test selection, so this was a duplicate execution, not a new distinct test. The run also unnecessarily repeated the 99 RTL tests and AXI-Lite test because the workflow changed without source changes; compare `24b6780...` to `66c708e...` showed only workflow/tracker files changed. The main job was still active at checkpoint.
-4. Found a test-isolation defect: `tests/test_board.py` called `pytest.importorskip("torch")` and `pytest.importorskip("transformers")` at module scope (lines 671–672), causing all earlier host/board tests to be skipped when optional model dependencies were absent. Moved those imports into only the model tests/helpers.
-5. Replace the broad repeat workflow with two focused jobs: unrun core RTL/ISA tests and board/host tests; omit the previously passed 99-test selection, AXI-Lite isolation test, and duplicate standalone LDC job. Experimental one-copy TMEM IMPL=3 tests remain excluded pending separate diagnosis.
-6. Resolve or track the packaging license-metadata and GitHub action Node-runtime deprecation warnings; do not mix maintenance changes into functional RTL fixes.
-7. Run formal checks and full lint; classify warnings and unresolved findings rather than treating lint success as functional proof.
-5. Establish a reproducible Nangate45 research PPA flow and archive exact tool versions, constraints, scripts, and outputs. Treat it only as a research proxy, not commercial silicon validation.
-6. Build workload/trace and benchmark harnesses. Measure useful throughput, latency, memory bandwidth/utilisation, reliability, energy and full-system power on actual target hardware when available.
-7. Compare candidate FPGA/device/board options only after benchmark and interface evidence. No device selected and no FPGA purchase authorised.
-8. Complete security, reliability, board, memory, thermal, and production-signoff plans with explicit evidence gates.
-9. Validate customer demand, pricing, deployment economics, unit costs, TCO, contribution margin, cash flow, and payback. Do not claim commercial validation before evidence.
+1. Poll the exact queued/in-progress runs listed in section 97; inspect actual logs and artifacts, not only run summaries.
+2. Close the four-DIMM WG8 integration gate: verify AW35 target contract, integrated lint, successful Verilator build, four-port simulation PASS marker, and all warnings on exact SHA `716fb74676e9e6cdbb8842d927d62ff2c47580b7`.
+3. Close the reproducible Nangate45 research PPA run using its exact captured container image ID; archive tool versions, constraints, scripts and reports. Treat outputs as a research proxy only.
+4. Extend mux tests to cover fairness/starvation bounds, sustained contention, byte-strobe effects, reset with outstanding traffic, malformed/unaligned/4-KiB-crossing requests, reserved-ID collision rejection, and simultaneous pair/host traffic on all four DIMMs.
+5. Continue formal properties, protocol assertions, CDC/RDC and full lint; classify all warnings and unresolved findings. Do not convert lint success into a formal or silicon claim.
+6. Resolve production PCIe endpoint/SerDes, DMA/IOMMU, DDR controller/PHY, ECC, PDK, package and DFT feasibility. The open-source candidates audited in section 94 do not provide a drop-in production PCIe Gen3 x16 plus eight-channel DDR4 ASIC subsystem.
+7. Build real-workload benchmark and measurement plans. No physical throughput, latency, energy, power, thermal, reliability or cost result exists until measured on representative hardware.
+8. Validate demand, pricing, manufacturing/package cost, deployment TCO, contribution margin, cash flow and payback using evidence. No commercial validation is claimed.
+9. Preserve zero-spend approval, feature-branch-only changes, exact-SHA evidence, and main-branch protection.
 
 ## 5. Stage gates and maturity
 
 | Gate | Scope | Current status |
 |---|---|---|
-| G0 | Selected RTL regression | Partial; current RTL/ISA and AXI-Lite CI run passed |
-| G1 | Core correctness | Incomplete; broaden coverage |
-| G2 | Formal verification and lint | Incomplete; lint previously passed with warnings, formal incomplete |
-| G3 | Nangate45 research PPA | Research proxy only; reproducibility/expansion pending |
-| G4 | Target device and package | Not selected |
-| G5 | Board and memory integration | Not started |
-| G6 | Real workload qualification | Not run |
-| G7 | Commercial validation and unit economics | Not validated |
-| G8 | Production signoff | Not defined / not started |
+| G0 | Selected RTL regression | Partial: broad regression Run 72 and focused mux burst test passed; newer broad runs remain pending |
+| G1 | Core correctness | Partial: selected RTL/ISA and directed integration tests pass; exhaustive protocol/fault coverage incomplete |
+| G2 | Formal verification and lint | Partial: reset audit and selected lint checks pass; full formal, CDC/RDC and warning closure incomplete |
+| G3 | Nangate45 research PPA | Pending: corrected reproducible workflow queued; no new WG8 PPA result |
+| G4 | Target device and package | Not selected; production PDK/IP/package feasibility unresolved |
+| G5 | Board and memory integration | Partial: logical host/DIMM wrapper and four-DIMM host bench added; exact-SHA integration run pending; no PHY/electrical validation |
+| G6 | Real workload qualification | Not run on representative hardware |
+| G7 | Commercial validation and unit economics | Not validated; no measured TCO, customer demand, revenue or payback |
+| G8 | Production signoff | Not ready; PCIe/DDR PHY, DMA/IOMMU, DFT, physical signoff, package and silicon evidence absent |
 
 A passing selected regression is not full-chip qualification, formal proof, physical validation, production readiness, or commercial validation.
 
@@ -960,3 +957,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Re-polled the other exact workflow jobs. PPA Run [45402124448](https://github.com/shamiursunny/openTPU/actions/runs/45402124448), four-DIMM ASIC/config Run [45402976553](https://github.com/shamiursunny/openTPU/actions/runs/45402976553), board/remaining RTL Run [45402976579](https://github.com/shamiursunny/openTPU/actions/runs/45402976579), subsystem/memory Run [45402976898](https://github.com/shamiursunny/openTPU/actions/runs/45402976898), RTL-tail Run [45402976724](https://github.com/shamiursunny/openTPU/actions/runs/45402976724), and isolated TMEM Run [45402976616](https://github.com/shamiursunny/openTPU/actions/runs/45402976616) remain queued. Software-core Run [45402976582](https://github.com/shamiursunny/openTPU/actions/runs/45402976582) remains in progress; no test summary is available yet.
 - Current active branch head before this tracker update: `ec4d45fcd58be0b191e2140e64b4d63d149d69db`. `main` was independently rechecked at `d84db55712aba0d40811d7762cb052f05d55b7e5` and remains unchanged. No paid resources used.
 - Next: wait for and inspect exact-SHA logs for the queued ASIC/config, PPA, broad RTL, board, memory, TMEM and software gates. Do not infer pass from queue status or substitute results from earlier SHAs. Then extend mux qualification with the outstanding directed and protocol/property cases before promoting the host-memory path maturity.
+
+
+## 98. Correct tracker executive status to match completed logical candidate and verified gates (2026-11-24)
+
+- Reconciled the tracker executive summary and stage/gate status with the later evidence recorded in sections 89–97. The previous top-level stage still said A1.12.11.16.45 and referenced older runs as current, despite section 95 documenting the consolidated A1.12.11.16.54 logical candidate and section 97 recording the successful latest mux run.
+- Updated the top-level baseline to Run 45382805606 (377 passed, one intentional 64-GiB address-window skip, zero reported failures; reset audit passed) and Run 45401880965 (latest exact-SHA mux burst simulation passed). Kept the remaining queued/in-progress runs explicitly pending.
+- Updated immediate actions and G0–G8 maturity to distinguish completed logical architecture, partial RTL/mux evidence, pending PPA and four-DIMM host-path verification, and the still-open production PHY/PDK/physical/hardware/commercial gates.
+- This is documentation reconciliation only. No RTL, target, testbench, workflow, interface, or architecture parameters changed.
+- Feature branch head before this tracker update: `5cf5b4c40c46d2f07a6f4c30abd122032f914938`. `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
