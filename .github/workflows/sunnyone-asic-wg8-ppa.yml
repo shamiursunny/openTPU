@@ -19,13 +19,19 @@ jobs:
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
-      - name: Record ORFS image
+      - name: Pin ORFS image for this run
         run: |
+          set -euo pipefail
           docker pull openroad/orfs:latest
-          docker image inspect openroad/orfs:latest --format '{{.Id}}' | tee /tmp/orfs-image-id.txt
+          image_id="$(docker image inspect openroad/orfs:latest --format '{{.Id}}')"
+          test -n "${image_id}"
+          printf '%s\\n' "${image_id}" | tee /tmp/orfs-image-id.txt
+          echo "ORFS_IMAGE=${image_id}" >> "${GITHUB_ENV}"
       - name: Probe WG8 SRAMs and generate ASIC design
         run: |
-          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace openroad/orfs:latest \
+          set -euo pipefail
+          image_id="$(cat /tmp/orfs-image-id.txt)"
+          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace "${image_id}" \
             bash -lc 'python3 tools/asic/flow.py prep nangate45-wg8'
       - name: Run WG8 OpenROAD flow
         run: |
