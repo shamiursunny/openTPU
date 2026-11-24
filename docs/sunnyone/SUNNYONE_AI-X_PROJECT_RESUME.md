@@ -4,7 +4,7 @@
 **Project:** SUNNYONE AI-X — commercial AI inference ASIC and custom board  
 **Repository:** https://github.com/shamiursunny/openTPU  
 **Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
-**Feature-branch checkpoint before this documentation refresh:** `c09447bafa3460d4acc74b35c4f7e6bdf40b9857` (verify live HEAD before every continuation)  
+**Feature-branch checkpoint before this documentation refresh:** `141dd7857cdd76d405698e1d3dc3a61a8cdb64e0` (verify live HEAD before every continuation)  
 **Main branch last independently verified:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (verify again before work)
 
 ## 1. Purpose and document hierarchy
@@ -87,7 +87,13 @@ The earlier Docker image-ID defect was fixed in workflow commit `e212fe714eac17e
 
 Source review confirms `otpu_ram_1r1w_ra` is intentionally asynchronous-read and write-first; substituting the existing synchronous fakeram45 macros would change semantics. The evidence-led research-flow correction therefore raises the flip-flop mapping threshold to 65,536 bits and documents that these three copies remain flip-flops in the proxy. This is a high-area mapping, not a foundry SRAM solution or a final physical architecture.
 
-Flow correction commit: `0b67e65deb7fcc457b10bb825304db752689b3e7`, `tools/asic/flow.py`. Mapping limitation documentation commit: `c09447bafa3460d4acc74b35c4f7e6bdf40b9857`, `asic/nangate45/README.md`. **A new exact-SHA PPA run for the flow change has not yet been identified/verified.** A04 remains open until that run gets through synthesis and the complete ORFS reports are inspected. Nangate45 remains a research proxy only; no area, timing or power result is yet available.
+Flow correction commit: `0b67e65deb7fcc457b10bb825304db752689b3e7`, `tools/asic/flow.py`. Mapping limitation documentation commit: `c09447bafa3460d4acc74b35c4f7e6bdf40b9857`, `asic/nangate45/README.md`. Corrected-flow Run [45452183549](https://github.com/shamiursunny/openTPU/actions/runs/45452183549) is now IN_PROGRESS on exact SHA `0b67e65deb7fcc457b10bb825304db752689b3e7`; its job has completed image pinning and is running the ORFS flow. A04 remains open until synthesis completes and full ORFS reports are inspected. Nangate45 remains a research proxy only; no area, timing or power result is yet available.
+
+### A02/A03 — expanded AXI protocol and four-DIMM host/accelerator contention (IN PROGRESS; exact-SHA CI pending)
+
+**A02 host-burst coverage:** testbench commit `76f3a5ecffdef73db2eb298bf775552c5f801c12` extends `sim/verilator/tb_asic_wg8_ddr4.sv` to exercise 1-, 2-, 4- and 8-beat host writes/reads across the four DIMMs, AWLEN/ARLEN, WLAST/RLAST and beat data, varied full/partial/zero WSTRB, independent backpressure, a W-before-AW case on DIMM0, and legal 8-beat bursts ending exactly at a 4-KiB boundary. A later testbench correction commit `141dd7857cdd76d405698e1d3dc3a61a8cdb64e0` avoids resetting the W beat counter on controller AW acceptance because AXI W may be accepted before AW. **ASIC/config Run [45453266347](https://github.com/shamiursunny/openTPU/actions/runs/45453266347)** is queued on exact SHA `141dd7857cdd76d405698e1d3dc3a61a8cdb64e0`; no pass is claimed yet. Outstanding ID/error/negative-address and reset-in-flight cases remain to be covered.
+
+**A03 contention coverage:** added `sim/verilator/tb_asic_wg8_hmux_contention.sv` in commit `62c319e5eed8f902e10ceb01c7c84b2eaad9d564`, with four instances of the production `otpu_mig_hmux` configuration (IDW=4, AW=34, HB=2). It drives simultaneous host/pair AW and AR requests, checks alternating grants over two requests per source, verifies ordered two-beat W bursts, routes B/R by IDs, and varies controller/requester backpressure. The CI compile/run step and path trigger were added in workflow commit `e0fa44d99a4ba598881f6960a2196f6752550fea`. The same queued Run [45453266347](https://github.com/shamiursunny/openTPU/actions/runs/45453266347) includes this new testbench step on the latest exact SHA; inspect both simulations and their full logs before closing A02/A03.
 
 ### Other runs requiring reconciliation
 
@@ -103,17 +109,17 @@ Older diagnostic-SHA runs [45425750624](https://github.com/shamiursunny/openTPU/
 
 The authoritative M01–M14, A01–A12 and H01–H12 task table is in Section 9 of the master handoff register. In brief:
 - M01–M14 are completed or partially evidenced scoped tasks.
-- A01's single-beat four-DIMM host-path simulation now passes on exact SHA `ec0fe832...`; A02 expanded AXI protocol tests and A03 host/accelerator contention remain not started.
-- A04 is in progress: ORFS reached Yosys synthesis and exposed three 43,008-bit asynchronous-read result-FIFO memories exceeding the 16,384-bit synthesis threshold; the evidence-led 65,536-bit FF-mapping correction is committed, but its PPA rerun is not yet verified.
-- A05 remains in progress with no PPA metrics. A06 matrix has 374 passes and 1 skip across 14 successful jobs; skip reason still needs classification. A07 software-core and A08 board-functional reruns are in progress; A09 uncovered RTL rerun remains pending.
+- A01's single-beat four-DIMM host-path simulation passes on exact SHA `ec0fe832...`. A02 and A03 testbenches are committed but awaiting exact-SHA CI run `45453266347` on `141dd785...`.
+- A04 is in progress: corrected-flow PPA run `45452183549` is active on SHA `0b67e65...`; no PPA metrics exist yet. A05 remains in progress.
+- A06 matrix has 374 passes and 1 skip across 14 successful jobs; skip reason still needs classification. A07 software-core and A08 board-functional reruns are in progress; A09 uncovered RTL rerun remains pending.
 - A11 lint warning closure and A12 full formal protocol properties remain partial. A10 final complete regression on one immutable release SHA is not started.
 - H01–H12 describe external manufacturer/physical/commercial work; see master register for exact status and evidence.
 
 Recommended order:
-1. Locate and inspect the new PPA workflow run triggered by flow commit `0b67e65...`; verify it uses the corrected 65,536-bit threshold and exact commit SHA.
-2. Retrieve board-functional job `138652132132` and software-core job `138652190796`; rerun uncovered RTL job `138652135885` once its workflow run is no longer active.
-3. Classify the one skipped test in subsystem/memory run 45428347703 and retrieve the exact RTL-tail pytest count (the successful job did not upload its expected log).
-4. Add A02 expanded AXI protocol coverage and A03 four-DIMM host/accelerator contention/fairness tests after the baseline single-beat path is stable.
+1. Inspect corrected-flow PPA Run `45452183549` on exact SHA `0b67e65...`; verify the 65,536-bit mapping and collect full ORFS reports.
+2. Inspect ASIC/config Run `45453266347` on exact SHA `141dd785...`; confirm both the expanded host-burst simulation (A02) and the four-DIMM hmux contention bench (A03) pass, then triage any failures without weakening tests.
+3. Retrieve board-functional job `138652132132` and software-core job `138652190796`; rerun uncovered RTL job `138652135885` after its workflow attempt is no longer active.
+4. Classify the one skipped test in subsystem/memory run 45428347703 and recover the exact RTL-tail test count.
 5. Complete A04/A05 research synthesis and PPA only from reproducible reports; continue A06–A09, A11 and A12 with exact-SHA evidence.
 6. Run A10 complete regression on one immutable release SHA.
 
