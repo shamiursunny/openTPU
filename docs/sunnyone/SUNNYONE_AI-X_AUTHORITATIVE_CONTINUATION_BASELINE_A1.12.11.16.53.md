@@ -269,3 +269,11 @@ This section supersedes the run-status snapshot in Section 11. Preserve all earl
 6. Keep the master handoff register, project resume and chronological tracker synchronised.
 
 This remains engineering-in-progress. The design is not tapeout-ready, physically signed off, silicon-validated or commercially proven.
+
+
+## 15. Workflow retrigger status — 2026-11-25
+
+- Diagnostic testbench commit: `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`.
+- Comment-only push-trigger commit: `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`.
+- The immediate commit-workflow lookups returned no associated runs. There is no diagnostic result yet. Recheck Actions before claiming execution; if no run appears, leave the task blocked on workflow execution rather than guessing.
+- The latest chronological record is PROJECT_TRACKER.md Section 128. The main branch remains untouched.
