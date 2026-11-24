@@ -357,3 +357,22 @@ The board-functional job \`138775349751\` has completed environment setup and is
 PPA remains unresolved. Run \`45455745851\` failed; artifact \`14962660456\` is 1.56 GB and should not be bulk-downloaded without a targeted extraction plan. No power, area, timing or PPA figures are accepted.
 
 Feature-branch code checkpoint remains \`68baca...\`; documentation-only commits follow. Protected main remains \`d84db55712aba0d40811d7762cb052f05d55b7e5\`. Continue feature-branch-only, zero-spend and evidence-first.
+
+
+## 13. Exact-SHA ASIC/configuration gate passed — 2026-11-25
+
+**Code SHA under test:** `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+
+- ASIC/config Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), job `138775349960`: **SUCCESS**.
+- Passed steps: three integrated lint stages (ASIC control/compute, WG8 native-memory, WG8 four-DIMM AXI); four-DIMM WG8 host AXI integration simulation; global-to-DIMM address mapping simulation; four-instance host/accelerator mux contention simulation.
+- Isolated 128K one-copy TMEM Run [45487119017](https://github.com/shamiursunny/openTPU/actions/runs/45487119017), job `138775350575`: **SUCCESS** on the same SHA.
+- Still active at latest poll: board-functional job `138775349751` and uncovered RTL job `138775349549` (Run `45487118979`); software-core job `138775350415` (Run `45487119094`); RTL-tail job `138775349245` (Run `45487118908`). All 14 subsystem/WG8 jobs in Run `45487118947` remain queued.
+- PPA remains failed/unresolved from prior Run `45455745851`; no area, timing, power or PPA claims. No production/tapeout/manufacturer readiness claim.
+
+### Continue from here
+1. Retrieve/review the complete ASIC/config job log and archived test output to capture test counts, expected-fatal aperture checks and any warnings precisely.
+2. Poll board-functional and uncovered RTL; then software-core and RTL-tail; continue polling the 14 subsystem jobs. Record exact job conclusions and test counts only after logs are available.
+3. Diagnose the failed WG8 PPA run separately; do not infer metrics from a failed artifact.
+4. Update these three documents again after the next material result. Re-verify branch head and protected main before writes. Keep zero-spend and feature-branch-only rules.
+
+**Readiness:** A02/A03 integrated simulation gate now passes on this exact SHA, but the overall release gate remains OPEN. Formal/CDC/RDC closure, PPA, broader regressions, production IP/PHY, package/DFT, physical signoff, board/silicon tests and commercial validation remain outstanding.
