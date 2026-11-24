@@ -160,11 +160,13 @@ def probe(point: str) -> list[fakeram.Macro]:
     script = (f"read_slang -D SYNTHESIS --keep-hierarchy --ignore-assertions {files} "
               f"--top otpu_asic_top {gp}; tee -q -o {dump} dump t:otpu_sram_*")
     ys = yosys()
-    r = subprocess.run([ys, "-m", "slang", "-q", "-p", script], capture_output=True, text=True)
+    # Keep Yosys/Slang diagnostics: quiet mode hides the elaboration errors needed to
+    # distinguish unsupported frontend constructs from a real RTL hierarchy problem.
+    r = subprocess.run([ys, "-m", "slang", "-p", script], capture_output=True, text=True)
     if r.returncode != 0 and "Can't load module" in r.stdout + r.stderr:   # slang built in (ORFS's)
-        r = subprocess.run([ys, "-q", "-p", script], capture_output=True, text=True)
+        r = subprocess.run([ys, "-p", script], capture_output=True, text=True)
     if r.returncode != 0:
-        raise RuntimeError(f"yosys probe failed:\n{r.stdout[-3000:]}\n{r.stderr[-3000:]}")
+        raise RuntimeError(f"yosys probe failed:\n{r.stdout[-12000:]}\n{r.stderr[-12000:]}")
     tiles: dict[tuple, int] = {}
     for cell in re.split(r"\n\s*cell ", dump.read_text())[1:]:
         kind = re.match(r"\\otpu_sram_(\w+)", cell).group(1)
