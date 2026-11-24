@@ -1413,3 +1413,15 @@ Latest re-poll of the six workflows on corrected testbench SHA `76966009274be54c
 - A02 remains **IN PROGRESS — exact-SHA CI QUEUED**. Do not make another code change merely to bypass the queue. Re-poll Run 45487119079 first; then inspect the four-DIMM simulation, negative AW/AR aperture tests, global address-map simulation and four-instance contention step in sequence.
 - No new PPA result. Previous WG8 PPA Run [45455745851](https://github.com/shamiursunny/openTPU/actions/runs/45455745851) is **FAILED** (job \`138664562707\`); its artifact \`14962660456\` is 1,562,950,987 bytes. Do not download this 1.56-GB artifact without a specific targeted extraction plan. No area/timing/power values are accepted from it.
 - Feature branch code checkpoint remains \`68baca...\`; documentation commits are tracked separately. Protected main remains \`d84db55712aba0d40811d7762cb052f05d55b7e5\`. Zero-spend and feature-branch-only controls remain in force.
+
+
+## 134. Exact-SHA ASIC/configuration regression PASS and remaining jobs — 2026-11-25
+
+- Critical ASIC/config Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), job `138775349960`, completed **SUCCESS** on exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+- All three integrated lint stages passed: ASIC control/compute top, WG8 native-memory top and WG8 four-DIMM AXI top.
+- All three integrated simulations passed: four-DIMM WG8 host AXI integration, global-to-DIMM address mapping, and four-instance host/accelerator mux contention. This closes the immediate integrated A02/A03 simulation gate for this exact code SHA, subject to detailed log review and scope limits; it is not full formal or silicon signoff.
+- Isolated 128K one-copy TMEM Run [45487119017](https://github.com/shamiursunny/openTPU/actions/runs/45487119017), job `138775350575`, completed **SUCCESS** on the same SHA. The job's test step passed; do not infer an unobserved test count from job summary alone.
+- Remaining exact-SHA jobs at the latest poll: board-functional job `138775349751` in Run [45487118979](https://github.com/shamiursunny/openTPU/actions/runs/45487118979) **IN_PROGRESS**; uncovered RTL job `138775349549` in the same run **IN_PROGRESS**; software-core job `138775350415` in Run [45487119094](https://github.com/shamiursunny/openTPU/actions/runs/45487119094) **IN_PROGRESS**; RTL-tail job `138775349245` in Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/45487118908) **IN_PROGRESS**; all 14 jobs in subsystem/WG8 Run [45487118947](https://github.com/shamiursunny/openTPU/actions/runs/45487118947) **QUEUED**.
+- PPA remains unresolved. Previous WG8 PPA Run `45455745851` failed; no area, timing, power or PPA values are accepted.
+- Code under test remains `68baca...`; the documentation commits are separate. Main remains protected and unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5` (re-verify live before future writes).
+- Next: inspect full ASIC/config logs and archived outputs, then poll and reconcile the four in-progress jobs and 14 queued subsystem jobs. Keep manufacturer release gate open; no production/tapeout claim.
