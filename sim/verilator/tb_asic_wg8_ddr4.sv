@@ -258,6 +258,12 @@ module tb_asic_wg8_ddr4;
     $display("HOST RESP: BVALID=%b BREADY=%b BSEEN=%b RVALID=%b RREADY=%b RSEEN=%b", h_bvalid, h_bready, b_seen, h_rvalid, h_rready, r_seen);
     $display("DIMM CTRL: AWVALID=%b AWREADY=%b WVALID=%b WREADY=%b ARVALID=%b ARREADY=%b", m_awvalid, m_awready, m_wvalid, m_wready, m_arvalid, m_arready);
     $display("DIMM RESP: BVALID=%b BREADY=%b BID=%h RVALID=%b RREADY=%b RID=%h", m_bvalid, m_bready, m_bid, m_rvalid, m_rready, m_rid);
+    // Internal per-DIMM mux state: distinguish AW acceptance, owner-FIFO push/pop,
+    // and W register-slice backpressure. These are diagnostic-only hierarchical probes.
+    $display("HMUX0 AW go/room/host/last/wo_wr/wo_rv/wo_h=%b/%b/%b/%b/%b/%b/%b W v/r=%b/%b", dut.g_host_mux[0].u_hmux.aw_go, dut.g_host_mux[0].u_hmux.aw_room, dut.g_host_mux[0].u_hmux.aw_h, dut.g_host_mux[0].u_hmux.aw_last, dut.g_host_mux[0].u_hmux.wo_wr, dut.g_host_mux[0].u_hmux.wo_rv, dut.g_host_mux[0].u_hmux.wo_h, dut.g_host_mux[0].u_hmux.w_v, dut.g_host_mux[0].u_hmux.w_r);
+    $display("HMUX1 AW go/room/host/last/wo_wr/wo_rv/wo_h=%b/%b/%b/%b/%b/%b/%b W v/r=%b/%b", dut.g_host_mux[1].u_hmux.aw_go, dut.g_host_mux[1].u_hmux.aw_room, dut.g_host_mux[1].u_hmux.aw_h, dut.g_host_mux[1].u_hmux.aw_last, dut.g_host_mux[1].u_hmux.wo_wr, dut.g_host_mux[1].u_hmux.wo_rv, dut.g_host_mux[1].u_hmux.wo_h, dut.g_host_mux[1].u_hmux.w_v, dut.g_host_mux[1].u_hmux.w_r);
+    $display("HMUX2 AW go/room/host/last/wo_wr/wo_rv/wo_h=%b/%b/%b/%b/%b/%b/%b W v/r=%b/%b", dut.g_host_mux[2].u_hmux.aw_go, dut.g_host_mux[2].u_hmux.aw_room, dut.g_host_mux[2].u_hmux.aw_h, dut.g_host_mux[2].u_hmux.aw_last, dut.g_host_mux[2].u_hmux.wo_wr, dut.g_host_mux[2].u_hmux.wo_rv, dut.g_host_mux[2].u_hmux.wo_h, dut.g_host_mux[2].u_hmux.w_v, dut.g_host_mux[2].u_hmux.w_r);
+    $display("HMUX3 AW go/room/host/last/wo_wr/wo_rv/wo_h=%b/%b/%b/%b/%b/%b/%b W v/r=%b/%b", dut.g_host_mux[3].u_hmux.aw_go, dut.g_host_mux[3].u_hmux.aw_room, dut.g_host_mux[3].u_hmux.aw_h, dut.g_host_mux[3].u_hmux.aw_last, dut.g_host_mux[3].u_hmux.wo_wr, dut.g_host_mux[3].u_hmux.wo_rv, dut.g_host_mux[3].u_hmux.wo_h, dut.g_host_mux[3].u_hmux.w_v, dut.g_host_mux[3].u_hmux.w_r);
     for (int d=0; d<4; d++) begin
       $display("DIMM%0d reset_sync=%b host_AW=%b/%b host_W=%b/%b host_AR=%b/%b AW_seen=%b W_seen=%b R_active=%b B_seen=%b R_seen=%b",
                d, dut.dimm_rst_sync[d], h_awvalid[d], h_awready[d], h_wvalid[d], h_wready[d],
