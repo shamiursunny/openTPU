@@ -27,21 +27,27 @@ jobs:
           test -n "${image_id}"
           printf '%s\n' "${image_id}" | tee /tmp/orfs-image-id.txt
           echo "ORFS_IMAGE=${image_id}" >> "${GITHUB_ENV}"
-      - name: Probe WG8 SRAMs and generate ASIC design
+      - name: Run pinned-container SRAM probe and WG8 ORFS flow
         run: |
           set -euo pipefail
           image_id="$(cat /tmp/orfs-image-id.txt)"
-          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace "${image_id}" \
-            bash -lc 'python3 tools/asic/flow.py prep nangate45-wg8'
-      - name: Run WG8 OpenROAD flow
-        run: |
-          python3 tools/asic/flow.py config nangate45-wg8
-          python3 tools/asic/flow.py run nangate45-wg8
-      - name: Generate PPA report
+          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace "${image_id}" bash -lc '
+            set -euo pipefail
+            apt-get update
+            apt-get install -y python3-numpy
+            export ORFS_HOME=/OpenROAD-flow-scripts
+            export YOSYS="$ORFS_HOME/tools/install/yosys/bin/yosys"
+            test -x "$YOSYS"
+            test -f "$ORFS_HOME/env.sh"
+            python3 tools/asic/flow.py prep nangate45-wg8
+            python3 tools/asic/flow.py config nangate45-wg8
+            python3 tools/asic/flow.py run nangate45-wg8
+            python3 tools/asic/flow.py report nangate45-wg8
+          '
+      - name: Collect WG8 PPA file inventory
         if: always()
         run: |
-          python3 tools/asic/flow.py report nangate45-wg8 || true
-          find build/asic/nangate45-wg8 -maxdepth 5 -type f | sort | tail -200 > /tmp/wg8-files.txt
+          find build/asic/nangate45-wg8 -maxdepth 5 -type f | sort | tail -200 > /tmp/wg8-files.txt || true
       - name: Upload WG8 PPA evidence
         if: always()
         uses: actions/upload-artifact@v4
