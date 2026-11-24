@@ -58,7 +58,8 @@ module tb_asic_global_addr_map;
     check_address(64'h00000003ffffffff, 1);
     check_address(64'h0000000400000000, 1); // DIMM2 base
     check_address(64'h00000005ffffffff, 1);
-    check_address(64'h0000000600000000, 1); // DIMM3, channel1 base
+    check_address(64'h0000000600000000, 1); // DIMM3, channel0 base
+    check_address(64'h0000000700000000, 1); // DIMM3, channel1 base
     check_address(64'h00000007ffffffff, 1); // final byte in 32-GiB aperture
     check_address(64'h0000000800000000, 0); // exactly 32 GiB: invalid
     check_address(64'hffffffffffffffff, 0);
