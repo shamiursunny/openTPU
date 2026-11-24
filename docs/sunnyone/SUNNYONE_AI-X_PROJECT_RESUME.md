@@ -448,3 +448,12 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 5. Preserve feature-branch-only, zero-spend, exact-SHA evidence. Update this resume, master handoff and tracker together after each material result.
 
 **Release decision:** simulation evidence has advanced materially, with A02/A03 passing on `68baca...`; full regression and manufacturer release gates remain OPEN. No fabrication, tapeout, physical signoff, board, silicon or commercial-performance readiness is established.
+
+
+## 18. Live continuation update — 2026-11-25 (subsystem poll and PPA artifact audit)
+
+- Subsystem workflow `45487118947`, code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`: 12/14 jobs have completed successfully. The two remaining jobs are Native DRAM and technology RAM (`138775352847`) and Reset audit (`138775353032`), both still in progress at the latest poll. Do not mark this matrix complete until both finish and their logs/test summaries are reviewed.
+- PPA run `45455745851`, SHA `dc34e3a51c27c01af6296015cd206ab8336d6bda`, failed in the ORFS run step with exit code 2. The Yosys/Slang SRAM probe and preparation completed and reported 288 macros across 14 sizes, 3,538 KiB total SRAM. This is preparation evidence only, not a successful synthesis/place/route or PPA result.
+- PPA artifact `14962660456` is 1,562,950,987 bytes. The available artifact-download connector rejects files above 536,870,912 bytes, so the actual `run.log` tail and detailed ORFS stage logs could not be retrieved through this route. The job log establishes only `ORFS exit 2`; exact root cause remains unverified. Do not infer a timing, congestion, mapping, memory, or tool failure without the detailed logs.
+- Next: let the two remaining subsystem jobs complete and inspect their exact logs; then revise the PPA evidence collection to upload a compact failure bundle (run.log tail, failing stage logs/reports, summary and file inventory, excluding bulk result databases) before rerunning the research flow. Keep all metrics unreported until a successful reproducible run.
+- Tested RTL SHA remains `68baca...`; current branch-head documentation commits are not RTL changes. Main remains protected and untouched. Release readiness remains NOT READY for fabrication/tapeout/physical signoff.
