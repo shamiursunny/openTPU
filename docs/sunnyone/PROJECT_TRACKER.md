@@ -1038,3 +1038,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Corrected `.github/workflows/sunnyone-asic-wg8-ppa.yml` to preserve the full `run.log`, its trailing diagnostic excerpt, ORFS work logs/reports/results, image ID, macro inventory and generated constraints/configuration. Workflow update commit: `21e1d56c5c6bcafc8d45a49f5aa8920516bad068`. This is an evidence-collection correction only; it does not alter RTL or claim a PPA result. A new PPA run is expected from the workflow change and must be inspected before any area/timing/power claim.
 - The current deliverable objective is simulation-complete, manufacturer-reviewable RTL and documentation. Manufacturer-only tasks (technology-specific PHYs, foundry PDK mapping, SRAM compiler qualification, DFT implementation, physical signoff, package and board validation) remain explicit handoff dependencies rather than being represented as completed.
 - Feature branch only; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 105. Create manufacturer handoff readiness specification (2026-11-24)
+
+- Added `docs/sunnyone/SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md`, commit `d6d5d4816e4afa6fc5dd07d71628981dd3c4aea2`.
+- The document defines the intended ASIC + custom-board product boundary, current four-DIMM WG8 logical candidate, exact known interface boundary, missing PCIe/DMA/global-address-translation/DDR4 PHY and controller/DFT/physical/package/board requirements, verification gates, manufacturer return deliverables, immutable release discipline and zero-spend rule.
+- It explicitly labels the design NOT READY for fabrication or final production-board build. It permits a later feasibility review only after the digital simulation/documentation package is sufficiently closed and the manufacturer is given an immutable SHA with all open dependencies disclosed.
+- The document does not claim new RTL functionality or verification results. It is a requirements and handoff-control artifact.
+- The PPA evidence-collection workflow correction is recorded in section 104; its next run must include `build/asic/nangate45-wg8/run.log`, ORFS logs/reports/results and the exact image ID. No new PPA result is yet claimed.
+- The diagnostic four-DIMM simulation remains a blocker. Do not promote the design to manufacturer implementation handoff until its timeout is understood and the expanded AXI integration tests pass.
+- Feature branch only; `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
