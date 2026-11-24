@@ -288,9 +288,11 @@ export PRE_CTS_TCL = {ROOT / 'asic' / 'nangate45' / 'cts_latency.tcl'}
 export POST_CTS_TCL = {ROOT / 'asic' / 'nangate45' / 'io_latency.tcl'}
 export TNS_END_PERCENT = 100
 export LEC_CHECK = 0
-# the small RAMs left to flip-flops (the dispatch window, the MXU's drain rows, LUT RAMs: the
-# largest 8 Kbit at the card's point); the large ones are macros
-export SYNTH_MEMORY_MAX_BITS = 16384
+# Keep the MXU's three 64 x 672 result-FIFO copies (43,008 bits each) in flip-flops: their
+# read-ahead wrapper has asynchronous read / write-first semantics, unlike the synchronous
+# fakeram45 macros. This is an explicit high-area research mapping, not a claim that a foundry
+# SRAM macro with matching semantics exists. The remaining small RAMs also stay in flip-flops.
+export SYNTH_MEMORY_MAX_BITS = 65536
 """
 
 
