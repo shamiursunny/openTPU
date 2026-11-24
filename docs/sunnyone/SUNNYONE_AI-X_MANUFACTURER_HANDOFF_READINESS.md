@@ -360,3 +360,19 @@ The former 30 W total-system ceiling remains retired. No replacement wattage lim
 
 ### Latest job-state correction — 2026-11-25
 The latest re-poll supersedes the earlier snapshot in this addendum: uncovered-RTL job `138698481369` in Run `45465292882` is **CANCELLED** (not IN_PROGRESS); board-functional job `138698482005` remains IN_PROGRESS. Software-core job `138698481416` remains IN_PROGRESS; all 14 jobs in subsystem Run `45465292903` remain QUEUED; PPA job `138664562707` in Run `45455745851` remains IN_PROGRESS. A09 therefore requires a fresh exact-SHA execution. See tracker Section 129.
+
+
+### 12. Diagnostic instrumentation compile failure and corrected rerun — 2026-11-25
+
+- ASIC/config Run [45479454587](https://github.com/shamiursunny/openTPU/actions/runs/45479454587), SHA `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`, job `138748357284`, failed at testbench compilation. Verilator rejected the procedural variable-index hierarchical path `dut.g_host_mux[d].u_hmux`. The four-DIMM simulation did not execute, so this run does not qualify or further diagnose the DUT.
+- Corrected testbench instrumentation commit: `76966009274be54ce26d87e333744b5cc17f72b4`. Uses static `genvar gd` probes for `wo_h`, `wo_rv`, `w_v`, `w_r`, then reads those vectors in the procedural assertion. No synthesizable RTL or assertion criteria changed.
+- Six workflows are now confirmed for the corrected SHA; all were QUEUED at last poll:
+  - ASIC/config Run [45481815682](https://github.com/shamiursunny/openTPU/actions/runs/45481815682), job `138756664096`.
+  - Board/uncovered RTL [45481815901](https://github.com/shamiursunny/openTPU/actions/runs/45481815901).
+  - Software-core [45481815819](https://github.com/shamiursunny/openTPU/actions/runs/45481815819).
+  - RTL tail [45481815780](https://github.com/shamiursunny/openTPU/actions/runs/45481815780).
+  - Subsystems/WG8 [45481815735](https://github.com/shamiursunny/openTPU/actions/runs/45481815735).
+  - Isolated TMEM [45481815691](https://github.com/shamiursunny/openTPU/actions/runs/45481815691).
+- Older ASIC retrigger Run `45480699954` on SHA `597f1b9...` remained queued; it contains the earlier invalid diagnostic expression and must not be treated as corrected-SHA evidence.
+- Immediate gate: wait for and inspect the corrected-SHA ASIC/config job. If it compiles, record the DIMM2 WDATA/WSTRB/WLAST and mux-owner/handshake values. Do not alter DUT RTL until that evidence establishes the defect.
+- The exact live job list and chronological detail are in PROJECT_TRACKER.md Section 130.
