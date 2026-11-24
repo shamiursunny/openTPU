@@ -930,3 +930,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
   - The current Nangate45 WG8 flow is a research proxy, not a manufacturable foundry process. No production PDK, PCIe SerDes, DDR4 PHY, package or controller IP is selected.
 - Decision: retain the existing WG8 compute architecture and explicit external PHY/controller boundaries. Do not integrate an FPGA-only PHY or describe any soft protocol core as a complete ASIC endpoint. A production V1 requires either (a) a legally usable, foundry-qualified PCIe/DDR PHY/controller IP path with explicit cost and licence approval, or (b) a new PHY project plus its analog/RF/IO design, verification and silicon characterization. Neither can be completed or validated by RTL-only work in the present zero-spend environment.
 - This audit does not change RTL, architecture parameters or external interface contracts. It prevents unsupported IP substitution. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 95. Consolidate V1 logical design candidate and explicit signoff boundaries (2026-11-24)
+
+- Created `docs/sunnyone/SUNNYONE_AI-X_V1_FINAL_LOGICAL_DESIGN_CANDIDATE_A1.12.11.16.54.md` as the single consolidated logical V1 architecture/interface document. It captures the selected WG8/one-slice/AW35/32-GiB/four-DIMM candidate, memory/address calculations, host/control interfaces, clock/reset/error boundaries, parameter set, ECC obligations, commercial decision policy and verification evidence.
+- The document deliberately labels itself a logical design candidate, not a completed or tapeout-ready chip. It explicitly lists the unimplemented PCIe Gen3 endpoint/PHY, DMA descriptor engine, global translation/IOMMU, DDR controller/PHY, production PDK, package, DFT, full formal/CDC/RDC, physical signoff, board and silicon gates.
+- The consolidated document is linked from the authoritative continuation baseline. Source architecture and integration documents remain authoritative for detailed module-level contracts.
+- Design document created in commit `666f0cec210d05653adc95c984f94970513c02bd`; baseline reference update commit `719df95326a8ed319a0532f1a9449b0d669398d2`.
+- No RTL or target parameters changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
