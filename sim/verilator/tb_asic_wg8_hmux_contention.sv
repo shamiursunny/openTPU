@@ -297,6 +297,6 @@ module tb_asic_wg8_hmux_contention;
 
   initial begin
     #500000;
-    $fatal(1,"four-DIMM host/accelerator contention timeout AW=%p AR=%p W=%p",aw_count,ar_count,w_count);
+    $fatal(1,"four-DIMM host/accelerator contention timeout");
   end
 endmodule
