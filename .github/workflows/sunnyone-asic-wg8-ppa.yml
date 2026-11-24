@@ -41,7 +41,6 @@ jobs:
             export YOSYS="$ORFS_HOME/tools/install/yosys/bin/yosys"
             test -x "$YOSYS"
             "$YOSYS" -V
-            "$YOSYS" -m slang -p "help read_slang" >/tmp/wg8-read-slang-help.txt 2>&1
             python3 tools/asic/flow.py prep nangate45-wg8
             python3 tools/asic/flow.py config nangate45-wg8
             python3 tools/asic/flow.py run nangate45-wg8
