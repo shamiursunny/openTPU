@@ -185,5 +185,18 @@ module tb_asic_wg8_ddr4;
     $finish;
   end
 
-  initial begin #200000; $fatal(1,"four-DIMM host-path timeout"); end
+  initial begin
+    #200000;
+    $display("TIMEOUT: cycle=%0d rst=%b mem_reset=%b mem_calib=%b bridge_error=%h", cycle, rst, mem_reset, mem_calib, bridge_error);
+    $display("HOST: AWVALID=%b AWREADY=%b WVALID=%b WREADY=%b ARVALID=%b ARREADY=%b", h_awvalid, h_awready, h_wvalid, h_wready, h_arvalid, h_arready);
+    $display("HOST RESP: BVALID=%b BREADY=%b BSEEN=%b RVALID=%b RREADY=%b RSEEN=%b", h_bvalid, h_bready, b_seen, h_rvalid, h_rready, r_seen);
+    $display("DIMM CTRL: AWVALID=%b AWREADY=%b WVALID=%b WREADY=%b ARVALID=%b ARREADY=%b", m_awvalid, m_awready, m_wvalid, m_wready, m_arvalid, m_arready);
+    $display("DIMM RESP: BVALID=%b BREADY=%b BID=%h RVALID=%b RREADY=%b RID=%h", m_bvalid, m_bready, m_bid, m_rvalid, m_rready, m_rid);
+    for (int d=0; d<4; d++) begin
+      $display("DIMM%0d reset_sync=%b host_AW=%b/%b host_W=%b/%b host_AR=%b/%b AW_seen=%b W_seen=%b R_active=%b B_seen=%b R_seen=%b",
+               d, dut.dimm_rst_sync[d], h_awvalid[d], h_awready[d], h_wvalid[d], h_wready[d],
+               h_arvalid[d], h_arready[d], aw_accepted[d], w_complete[d], r_active[d], b_seen[d], r_seen[d]);
+    end
+    $fatal(1,"four-DIMM host-path timeout");
+  end
 endmodule
