@@ -1342,3 +1342,12 @@ For each new continuation, query the live Actions history and inspect successful
 - The immediate post-commit workflow lookup still returned an empty run list. This is **not** evidence that the workflow passed, failed or even started. Check GitHub Actions again after the event is visible; if no run appears, record the trigger as unavailable and do not manufacture a run result.
 - Branch head at this check: `597f1b9af961f4e8fcde1ae9fffa013ce6bc7f54`. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, 0 commits behind and untouched.
 - Next: obtain the diagnostic log for the exact testbench commit, then classify the DIMM2 W mismatch. No synthesizable RTL correction is authorised by the evidence so far.
+
+
+## 129. Correct latest board/RTL job states after re-poll (2026-11-25)
+
+- A final re-poll of Run `45465292882` shows uncovered-RTL job `138698481369` is now **CANCELLED**, not IN_PROGRESS as recorded in Section 127 at the earlier poll. Board-functional job `138698482005` remains **IN_PROGRESS**.
+- Software-core job `138698481416` in Run `45465292772` remains **IN_PROGRESS**.
+- All 14 jobs in subsystem/memory Run `45465292903` remain **QUEUED**.
+- WG8 PPA job `138664562707` in Run `45455745851` remains **IN_PROGRESS**.
+- This correction supersedes only the corresponding earlier status snapshot. No queued or in-progress result is a pass; the cancelled uncovered-RTL job requires a fresh exact-SHA execution.
