@@ -12,6 +12,7 @@ on:
       - 'targets/**'
       - 'rtl/**'
       - 'sim/verilator/tb_asic_wg8_ddr4.sv'
+      - 'sim/verilator/asic_sram_lint_stubs.sv'
       - '.github/workflows/sunnyone-asic-config.yml'
   workflow_dispatch:
 permissions:
