@@ -1231,3 +1231,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Confirmed the same explicit skip condition exists at SHA `ec0fe8329df06e5204a1c082df133b62b434846b`. The later Run 45428347703 on that SHA had 374 passed, 1 skipped, 0 failed. The latest matrix Run [45454026458](https://github.com/shamiursunny/openTPU/actions/runs/45454026458) on SHA `ec151e...` adds pytest `-rs` and remains queued to capture the current skip summary.
 - Master A06 row updated in commit `e8cb2c4cf3a713a3ff6d01ab961748bd5cdb9bf4`; resume updated in commit `fb2ee10523bf05238a8fcb0912c2a2468c441926`. A06 remains PARTIAL pending the newer exact-SHA matrix and complete regression.
 - Next: retrieve Run 45454026458; compare its test counts and skip reason with this baseline. Any changed skip must be inspected against the exact test source and geometry; do not assume it is the same.
+
+
+## 122. Reconcile older board/software/RTL regression attempts (2026-11-24)
+
+- Queried exact job states for older diagnostic and retry runs. On SHA `ec0fe8329df06e5204a1c082df133b62b434846b`, A07 software-core job `138652190796` (Run 45428347706) remains IN_PROGRESS; A08 board-functional job `138652132132` (Run 45428347806) remains IN_PROGRESS; A09 uncovered RTL job `138652135885` in the same run was CANCELLED.
+- Older run 45425750779 on SHA `b41669fe1d67a3f7dcb84d86a960cdb4b9167ad8` was CANCELLED (software-core job `138557139611`). Older board/uncovered run 45425750624 on the same SHA was CANCELLED (jobs `138557141647` and `138557142665`). These cancellations are not passes.
+- Latest code attempts on SHA `487fe6b93a83e4b86e5565b80de9b7f33c407436`: A07 Run 45453893300 / job `138658009331` is IN_PROGRESS; A08/A09 Run 45453893567 / jobs `138658011213` and `138658011921` are QUEUED. RTL-tail Run 45453893412 / job `138658011365` remains QUEUED.
+- A prior RTL-tail run 45425750818 on SHA `b41669fe...` completed successfully, but it does not replace the latest exact-SHA RTL-tail run. A prior subsystem run 45425750683 completed 14/14 jobs and is documented in entry 121.
+- Resume updated with exact old/latest states in commit `bad2efd093d4a2b43bed9f6a9a062c34729f0d9e`. Master A07–A09 statuses remain IN PROGRESS; no release gate is closed from a queued, cancelled or stale-SHA result.
+- Next: retrieve final logs for the in-progress jobs, then the latest queued A07–A09/RTL-tail jobs when they start. Keep results separated by exact commit SHA.
