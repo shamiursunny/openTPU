@@ -98,7 +98,7 @@ jobs:
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" >> "${GITHUB_ENV}"
           IFS=: read -r -a suite_path_entries <<< "${PATH}"
           for path_entry in "${suite_path_entries[@]}"; do
-            if [ -n "${path_entry}" ]; then printf '%s\\n' "${path_entry}" >> "${GITHUB_PATH}"; fi
+            if [ -n "${path_entry}" ]; then printf '%s\n' "${path_entry}" >> "${GITHUB_PATH}"; fi
           done
           "${yosys}" -V
       - name: Run selected regression group
