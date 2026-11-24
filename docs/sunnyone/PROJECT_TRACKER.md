@@ -787,3 +787,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - At CAW 25, the model is 32 GiB = (2^{35}) bytes while AW remains 36; the corresponding test injects a store at (2^{35}) and expects the board model to stop with `beyond its 2^32 bytes` (the model's diagnostic wording). That is the meaningful boundary-guard instance and remains executed.
 - Therefore, do not force this 64-GiB case to run, relabel it as a pass, or treat it as evidence of 64-GiB physical hardware support. Its skip is a valid not-applicable parameter instance; the remaining four reset-audit skips are a separate toolchain issue being addressed in Sections 80–81.
 - Current feature branch contains this analysis. No test or RTL changed. Runs 69 and 70 remain in progress/queued at inspection; Reset audit has not yet started, so no new reset-audit execution result is claimed.
+
+
+## 83. Harden OSS CAD PATH persistence and queue a corrected CI attempt (2026-11-24)
+
+- Review of the first two installer revisions found a shell-path persistence concern in the GITHUB_PATH loop: the tr escape was unnecessarily fragile. Replaced it in workflow commit `40b9b8efa655f203ff1ef8f1e5ce310d623bb312` with Bash's colon-delimited array split and one `printf '%s\\n'` per path entry. The suite environment is still sourced, `YOSYS` and `LD_LIBRARY_PATH` are still persisted, and the checksum/frontend gates are unchanged.
+- This is a CI environment-hardening change only; no RTL or audit tests changed.
+- The corrected workflow triggered Run 71, [45382421749](https://github.com/shamiursunny/openTPU/actions/runs/45382421749), exact SHA `40b9b8efa655f203ff1ef8f1e5ce310d623bb312`. At inspection the run was queued. Runs 69 and 70 also remained queued in the Actions API despite some job summaries previously showing in-progress states; no installer or reset-audit completion is evidenced by those stale/inconsistent summaries.
+- Await the latest run's actual job steps and logs before treating the toolchain install or audit as verified. The pinned OSS CAD archive remains a ~754 MB download and could cause a runner queue/time cost. No claim of four reset-audit passes is made.
+- Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
