@@ -376,3 +376,15 @@ The latest re-poll supersedes the earlier snapshot in this addendum: uncovered-R
 - Older ASIC retrigger Run `45480699954` on SHA `597f1b9...` remained queued; it contains the earlier invalid diagnostic expression and must not be treated as corrected-SHA evidence.
 - Immediate gate: wait for and inspect the corrected-SHA ASIC/config job. If it compiles, record the DIMM2 WDATA/WSTRB/WLAST and mux-owner/handshake values. Do not alter DUT RTL until that evidence establishes the defect.
 - The exact live job list and chronological detail are in PROJECT_TRACKER.md Section 130.
+
+
+### 13. Corrected-SHA workflow queue transition — 2026-11-25
+
+Latest re-poll supersedes the initial all-QUEUED snapshot in Section 12. On corrected testbench SHA `76966009274be54ce26d87e333744b5cc17f72b4`:
+- ASIC/config Run 45481815682 / job 138756664096: QUEUED.
+- Board/uncovered Run 45481815901: board-functional 138756665399 QUEUED; uncovered RTL 138756666235 IN_PROGRESS (building pinned Verilator 5.044).
+- Software-core Run 45481815819 / job 138756667852: QUEUED.
+- RTL-tail Run 45481815780 / job 138756664573: IN_PROGRESS (dependency installation).
+- Subsystems/WG8 Run 45481815735: all 14 jobs QUEUED.
+- Isolated TMEM Run 45481815691 / job 138756665688: IN_PROGRESS.
+No corrected-SHA ASIC/config result exists yet. The static diagnostic instrumentation fix remains unvalidated until the ASIC/config job builds and the four-DIMM simulation runs. See tracker Section 131.
