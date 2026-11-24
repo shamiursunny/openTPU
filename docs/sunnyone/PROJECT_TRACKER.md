@@ -1003,3 +1003,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Broad board/remaining RTL run [45417561817](https://github.com/shamiursunny/openTPU/actions/runs/45417561817) is in progress: board-functional job `138527855556` is running, and RTL-uncovered job `138527856301` is preparing pinned Verilator 5.044. Subsystem/memory run [45417561535](https://github.com/shamiursunny/openTPU/actions/runs/45417561535) and isolated TMEM run [45417561463](https://github.com/shamiursunny/openTPU/actions/runs/45417561463) remain queued. Software-core run [45417202615](https://github.com/shamiursunny/openTPU/actions/runs/45417202615), exact SHA `8ef09ad88da709ac8b10ec15f76950f116b440f2`, is still running; it is not the latest branch SHA.
 - The latest feature-branch head before this tracker entry is `8df2190f2ae5c69e2c64e6b3bd1dc4cfae7a857a`. Independently rechecked `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`, unchanged. No paid resources used.
 - Next: retrieve completed logs for Runs 45417564203, 45417561286, 45417561817, 45416114934 and 45417202615; inspect actual simulation, pytest summaries, warnings, synthesis and physical-flow reports; then update this tracker with exact outcomes. Do not substitute results from older SHAs.
+
+
+## 102. Complete isolated 128K one-copy TMEM investigation on current RTL SHA (2026-11-24)
+
+- Isolated one-copy 128K TMEM workflow Run [45417561463](https://github.com/shamiursunny/openTPU/actions/runs/45417561463), exact source SHA `8df2190f2ae5c69e2c64e6b3bd1dc4cfae7a857a`, job `138527854199`, completed successfully.
+- Retrieved and inspected its complete job log: **2 passed, 215 deselected in 97.01 seconds**. The selection is deliberately the isolated one-copy 128K investigation; it is not the full 217-test TMEM/memory suite.
+- No RTL, memory architecture, or capacity changed in this test run. It supplies bounded evidence for the selected one-copy 128K TMEM configuration, not full-chip memory verification, timing closure, SRAM macro signoff or physical implementation.
+- At this update, ASIC/config Run [45417564203] is still running its four-DIMM simulation; RTL-tail Run [45417561286], board/remaining RTL Run [45417561817], PPA Run [45416114934], and software-core Run [45417202615] remain in progress. Subsystem/memory Run [45417561535] remains queued. No results are inferred from those statuses.
+- Tracker update commit before this entry: `b799fd132ab5597a4fde4350e24a3924fc3dbd31`; main remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
