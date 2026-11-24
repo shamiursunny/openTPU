@@ -796,3 +796,12 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - The corrected workflow triggered Run 71, [45382421749](https://github.com/shamiursunny/openTPU/actions/runs/45382421749), exact SHA `40b9b8efa655f203ff1ef8f1e5ce310d623bb312`. At inspection the run was queued. Runs 69 and 70 also remained queued in the Actions API despite some job summaries previously showing in-progress states; no installer or reset-audit completion is evidenced by those stale/inconsistent summaries.
 - Await the latest run's actual job steps and logs before treating the toolchain install or audit as verified. The pinned OSS CAD archive remains a ~754 MB download and could cause a runner queue/time cost. No claim of four reset-audit passes is made.
 - Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+## 84. Correct PATH-entry newline escaping in OSS CAD CI installer (2026-11-24)
+
+- A second-line inspection of the committed workflow source at Run 71's SHA found that Section 83's description overstated the PATH persistence correction. The actual shell source contained two backslashes in the single-quoted printf format (printf '%s\\\\n'), which makes Bash printf emit a literal backslash-n rather than a newline. That would place multiple PATH entries into one malformed GITHUB_PATH line. The earlier statement that this was safely persisted was therefore not yet justified.
+- Corrected the format string to a single backslash (printf '%s\\n') in workflow commit d281621836d86e608ad34c4fd44d6edf339e98fe. The intended result is one actual newline-terminated path entry per GITHUB_PATH line. No RTL or test source changed.
+- Run 71, https://github.com/shamiursunny/openTPU/actions/runs/45382421749, was still reported queued at inspection, although two matrix jobs appeared in progress in its job listing. The Reset audit job remained queued. The corrected source commit will trigger a new workflow attempt; neither PATH persistence nor Yosys/Slang execution is yet validated by runner logs.
+- This entry explicitly supersedes the inaccurate PATH-persistence claim in Section 83. Continue to inspect the exact workflow job logs, not just job-list summaries, before claiming installer success. The archive checksum, suite activation, frontend probe, environment propagation, and all four reset-audit cases remain unverified.
+- Feature branch only; main remains d84db55712aba0d40811d7762cb052f05d55b7e5. Zero paid resources used.
