@@ -282,3 +282,12 @@ This remains engineering-in-progress. The design is not tapeout-ready, physicall
 ## 16. Latest regression status correction — 2026-11-25
 
 The latest poll supersedes the prior status snapshot: uncovered-RTL job `138698481369` in Run `45465292882` is CANCELLED; board-functional job `138698482005` remains IN_PROGRESS; software-core job `138698481416` remains IN_PROGRESS; subsystem Run `45465292903` has 14 QUEUED jobs; PPA job `138664562707` in Run `45455745851` remains IN_PROGRESS. The cancelled uncovered-RTL suite requires a new exact-SHA run. See PROJECT_TRACKER.md Section 129.
+
+
+## 17. Corrected HMUX diagnostic instrumentation — 2026-11-25
+
+- Run [45479454587](https://github.com/shamiursunny/openTPU/actions/runs/45479454587), SHA `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`, failed before simulation because Verilator rejected variable-index hierarchical references in the testbench diagnostic expression. This is an instrumentation compile defect, not a new DUT W-channel failure.
+- Commit `76966009274be54ce26d87e333744b5cc17f72b4` fixes the testbench using static generate-indexed HMUX debug probes (`wo_h`, `wo_rv`, `w_v`, `w_r`). No synthesizable RTL or expected data/handshake criteria changed.
+- Corrected-SHA workflows all confirmed QUEUED at last poll: ASIC/config Run 45481815682; board/uncovered RTL 45481815901; software-core 45481815819; RTL tail 45481815780; subsystem/WG8 45481815735; isolated TMEM 45481815691. Older Run 45480699954 is queued against the earlier invalid diagnostic source and must not be used as qualification evidence.
+- The next evidence gate is the corrected ASIC/config run. If compile succeeds, inspect the actual DIMM2 W mismatch values and mux owner/handshake state. No RTL fix is justified before that diagnosis.
+- Full workflow/run/job IDs and previous statuses are maintained in PROJECT_TRACKER.md Section 130 and handoff register Section 12.
