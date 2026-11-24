@@ -232,3 +232,40 @@ The three continuation documents were synchronised after this audit:
 3. `PROJECT_TRACKER.md` — detailed historical evidence, workflow counts and chronology (section 126).
 
 Continue feature-branch-only work. Verify live feature branch and `main` before further changes. Keep zero-spend approval, exact-SHA evidence, explicit skips and failures, and the distinction between RTL simulation, physical implementation, silicon validation and commercial readiness. No production PPA, production DDR/PCIe PHY, DFT, package, board electrical or silicon qualification is claimed.
+
+
+## 14. Live continuation addendum — 2026-11-25
+
+This section supersedes the run-status snapshot in Section 11. Preserve all earlier historical results and their exact-SHA scope.
+
+### Live refs
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Latest diagnostic-only testbench commit: `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a`.
+- Latest documentation sync commit at this update: `f135674341694fd5d0a57ce6615e0ee3081ff8fb`.
+- Main was independently fetched as `d84db55712aba0d40811d7762cb052f05d55b7e5` and remains unchanged. Feature branch is 515 commits ahead, 0 behind; do not merge or modify main without explicit direction.
+- Former 30 W total-system ceiling remains retired; no replacement power ceiling is selected.
+
+### Four-DIMM A02 failure and diagnostic action
+- ASIC/config Run [45465384680](https://github.com/shamiursunny/openTPU/actions/runs/45465384680), SHA `65f28fc09ede79581ba97845165733d1caef45b1`, failed at 135 ns on `DIMM2 host W payload/last mismatch beat=0`. All three integrated ASIC lint stages passed first. The global address-map and HMUX contention steps were skipped because the workflow stopped at the four-DIMM bench.
+- Prior ASIC/config Run [45465292665](https://github.com/shamiursunny/openTPU/actions/runs/45465292665), SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f`, failed on the same assertion.
+- Commit `e1f46ee26a47569aa04dfe0cf1b6b204dcc9e21a` modifies only the testbench failure diagnostic to print actual/expected WDATA, WSTRB, WLAST, owner-FIFO and handshake state. No synthesizable RTL changed. The first commit-workflow lookup returned no associated run; verify whether the push-triggered workflow appears before any further code correction.
+- Do not assume the DUT is at fault until the diagnostic identifies which field and handshake condition diverges. Do not alter test expectations to suppress the failure.
+
+### Other live CI
+- RTL-tail Run [45465292944](https://github.com/shamiursunny/openTPU/actions/runs/45465292944): SUCCESS, 33 passed, 1 parameter-inapplicable skip, 183 deselected.
+- Board-functional and uncovered-RTL jobs in Run `45465292882`: IN_PROGRESS at the last poll.
+- Software-core Run `45465292772`: IN_PROGRESS at the last poll.
+- Subsystem/memory Run `45465292903`: 14 jobs QUEUED at the last poll.
+- WG8 PPA Run [45454389335](https://github.com/shamiursunny/openTPU/actions/runs/45454389335), SHA `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc`: FAILURE inside ORFS, exit code 2. Artifact `14960636530` contains the 432-MB detailed evidence. Inspect `run.log` to identify the precise failed ORFS stage; no PPA metrics are accepted.
+- Older WG8 PPA Run `45455745851` remained IN_PROGRESS at the last poll.
+- Historical subsystem 377-pass/1-skip matrix, address-map SAT proof and directed HMUX pass remain valid only for their own SHAs.
+
+### Ordered continuation
+1. Verify whether CI was triggered for `e1f46ee...`; if absent, retrigger the existing ASIC/config workflow on the active branch without modifying synthesizable RTL.
+2. Inspect the DIMM2 mismatch details; classify WDATA vs WSTRB vs WLAST vs owner FIFO vs register-slice handshake.
+3. Make the smallest evidence-supported testbench or RTL correction and rerun the full four-DIMM multi-beat and negative-aperture tests.
+4. After A02 passes, execute address-map simulation and four-instance HMUX contention/assertions.
+5. Collect final board, uncovered RTL, software-core and subsystem logs; inspect the ORFS artifact and older in-progress PPA run.
+6. Keep the master handoff register, project resume and chronological tracker synchronised.
+
+This remains engineering-in-progress. The design is not tapeout-ready, physically signed off, silicon-validated or commercially proven.
