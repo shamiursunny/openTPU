@@ -2,7 +2,7 @@
 
 **Purpose:** define the evidence and engineering package required before SUNNYONE AI-X V1 is sent to a chip-design house, foundry-facing ASIC integrator, FPGA/board design house, or custom-board manufacturer.
 
-**Current status:** engineering preparation in progress. This is a manufacturer-feasibility and gap-control document, not a declaration of tapeout readiness, production readiness, or successful hardware validation.
+**Last reconciled:** 2026-11-25 (Asia/Dhaka). **Current status:** engineering preparation in progress; historical CI evidence has been audited, but release gates remain open. This is a manufacturer-feasibility and gap-control document, not a declaration of tapeout readiness, production readiness, or successful hardware validation.
 
 **Source repository:** `shamiursunny/openTPU`  
 **Active engineering branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`  
@@ -260,3 +260,43 @@ For every future continuation:
 9. Never claim “100% ready”. Report simulation readiness and manufacturer/physical readiness as separate gates.
 
 **Current next action:** inspect latest ASIC/config Run 45454747313 on SHA 66c676... for A02 multi-beat/response/negative-address tests, A03 contention and HMUX_FORMAL assertions. Inspect full-chip lint Run 45454389561 on SHA fc3bdc... for MODDUP/UNOPTFLAT cleanup and exposed width warnings. Inspect subsystem Run 45454026458 on SHA ec151e... for pytest skip reasons. Retrieve corrected-flow PPA Run 45454389335, latest software-core Run 45453893300, board/uncovered Run 45453893567 and RTL-tail Run 45453893412; reconcile older active attempts by exact SHA. A01's scoped single-beat host path is passed; A02/A03 testbenches and A12 assertions are committed but unverified; A04/A05, A06 skip classification, A07–A09, A11/A12 and A10 remain open. Do not advance the release gate until all applicable criteria are evidenced.
+
+
+## 10. Historical CI evidence inventory and current release-gate interpretation (2026-11-25)
+
+The detailed chronological evidence is maintained in [PROJECT_TRACKER.md, section 126](PROJECT_TRACKER.md). The quick-start instructions are in [SUNNYONE_AI-X_PROJECT_RESUME.md](SUNNYONE_AI-X_PROJECT_RESUME.md). The key audited facts for manufacturer review are:
+
+### Verified test evidence
+
+| Verification area | Exact run / SHA | Observed result | What it does not establish |
+|---|---|---|---|
+| RTL subsystem and WG8 memory matrix | Run [45428347703](https://github.com/shamiursunny/openTPU/actions/runs/45428347703), SHA `ec0fe8329df06e5204a1c082df133b62b434846b` | 14 successful jobs; **377 passed, 1 intentional geometry skip, 0 failed** | Not final-release-SHA regression or full ASIC signoff |
+| RTL-tail selected suite | Run [45454717008](https://github.com/shamiursunny/openTPU/actions/runs/45454717008), SHA `4a2dd86b6b7f61b96d8cb0f2e5d5e573c85349e9` | **33 passed, 1 documented skip, 183 deselected** | Selected tail coverage only |
+| Isolated 128K one-copy TMEM | Run [45465292891](https://github.com/shamiursunny/openTPU/actions/runs/45465292891), SHA `86f922ccdbb8c0a14a3bd7961e48d1618fd17a9f` | **2 passed, 215 deselected** | No foundry SRAM macro, PPA or complete memory-system qualification |
+| Reset audit | Run [45455745271](https://github.com/shamiursunny/openTPU/actions/runs/45455745271), SHA `dc34e3a51c27c01af6296015cd206ab8336d6bda` | **4 passed** with Yosys+Slang | Not full CDC/RDC or reset signoff |
+| Shared-DIMM HMUX directed simulation | Run [45454389445](https://github.com/shamiursunny/openTPU/actions/runs/45454389445), SHA `fc3bdcc4e36c12014e8f0f83e5f11966013fb2dc` | 3-beat concurrent host/pair AW-W-B and AR-R; response backpressure; 2 write bursts, 6 read beats, 25 cycles | Not exhaustive fairness, ordering or formal AXI proof |
+| Global-to-DIMM address-map SAT proof | Run [45457143624](https://github.com/shamiursunny/openTPU/actions/runs/45457143624), SHA `0d6128d21c086d52e0c6ca3a10bfe4f2666dcccb` | 14 assertions; 813 variables; 2,152 clauses; SAT SUCCESS | Selected combinational decoder properties only |
+| Full-chip Verilator lint | Run [45455745243](https://github.com/shamiursunny/openTPU/actions/runs/45455745243), SHA `dc34e3a51c27c01af6296015cd206ab8336d6bda` | Workflow/job SUCCESS | Warning review and exact-SHA integration remain separate |
+| ASIC AXI-Lite control | Run [45248945992](https://github.com/shamiursunny/openTPU/actions/runs/45248945992), SHA `ae997da8a993e962dd18de0fb1240f3d5656b3a2` | PASS marker for independent AW/W, gating, load pulse, reset and register map | Scoped control interface only |
+| Earlier selected RTL/ISA suite | Run [45217729099](https://github.com/shamiursunny/openTPU/actions/runs/45217729099), SHA `66c708e573671136197c371a848cc9274ae394f2` | 99 passed plus separate AXI-Lite isolation test 1 passed | The LDC case duplicated one of the 99; 100 distinct selected cases, not 101 |
+| Virtual DRAM/TMEM behavioural tests | Run [45453893286](https://github.com/shamiursunny/openTPU/actions/runs/45453893286), SHA `487fe6b93a83e4b86e5565b80de9b7f33c407436` | DRAMTEST, TMEMTEST and TMEM_MULTI PASS markers | Behavioural model only |
+
+The subsystem matrix's 377 passing tests are the clearest single-run demonstration that the project has already passed well over 100 tests. The 377 is the sum of the 14 job summaries from that run. Do not add this to other run counts to claim a deduplicated lifetime total; runs overlap in test selection and source revisions.
+
+### GitHub Actions history audit
+
+The active feature-branch history query returned 705 workflow-run records, of which 314 had a SUCCESS conclusion at audit time. Those 314 are workflow-run records, not unique tests. Retries and workflow-only changes are included. Failed, cancelled, queued and in-progress runs must remain separately classified. In particular, the historical audit found no successful run in the queried branch history for the remaining RTL/board workflow, software-core workflow or WG8 ASIC research PPA workflow at that point. Therefore these areas remain release blockers even though other suites have passed.
+
+### Current gate status — do not overstate
+
+- **Selected digital tests:** substantial partial evidence; 377-pass subsystem matrix and focused suites recorded on their respective SHAs.
+- **Four-DIMM host AXI integration:** not closed. A prior single-beat bench passed after a testbench reset-handshake correction, but expanded multi-beat/negative cases and the latest write-path diagnostic still require exact-SHA closure.
+- **Host/accelerator contention:** one directed four-instance HMUX scenario passed; expanded current testbench and assertions must still be reconciled with the latest run.
+- **Software/ISA:** no successful software-core workflow was found in the queried history; do not infer coverage from RTL or subsystem results.
+- **PPA:** no successful WG8 ASIC research PPA workflow was found; there is no verified area, timing or power result.
+- **Physical/manufacturing:** DDR controller/PHY, PCIe endpoint/PHY, SRAM hard macros, PDK, DFT, package, board SI/PI, physical signoff and silicon remain external/unimplemented/unvalidated.
+- **Commercial qualification:** no measured representative-hardware throughput, energy, full-system TCO, customer demand, revenue or payback is established.
+
+The 64-GiB address-window skip is intentional: at that geometry all representable addresses are within DRAM, so the specific test expecting an address beyond DRAM is inapplicable. Keep it visible as a skip, not a pass.
+
+**Release decision remains NOT READY for fabrication or final production-board build.** The manufacturer may review the logical architecture and feasibility gaps, but the evidence must be labelled as simulation/source-level evidence and scoped by exact commit SHA. Use one immutable SHA only after all applicable final regression and release checks pass.
