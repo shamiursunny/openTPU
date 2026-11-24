@@ -112,7 +112,7 @@ The channel-interleave bit is inserted at DIMM-local bit 12. With `BHW=0` in the
 - IOMMU/protection negative tests;
 - formal properties for address decode, no cross-window burst and no lost/duplicated completion.
 
-The existing A02 testbench validates the ASIC's four DIMM-local host ports and the bit-33 aperture guard. It does **not** instantiate the missing global DMA/remap block and therefore does not prove the Section 3 global mapping end-to-end.
+The existing A02 testbench validates the ASIC's four DIMM-local host ports and the bit-33 aperture guard. The standalone decoder has its own Verilator boundary/bijection bench and a combinational Yosys SAT harness at `formal/otpu_asic_global_addr_map_formal.sv`; formal Run `45456060346` is queued and no proof pass is claimed yet. These tests do **not** instantiate a global DMA/remap block or prove end-to-end AXI routing, burst splitting or PCIe integration.
 
 ## 8. Manufacturer decisions and open dependencies
 
