@@ -388,3 +388,20 @@ Latest re-poll supersedes the initial all-QUEUED snapshot in Section 12. On corr
 - Subsystems/WG8 Run 45481815735: all 14 jobs QUEUED.
 - Isolated TMEM Run 45481815691 / job 138756665688: IN_PROGRESS.
 No corrected-SHA ASIC/config result exists yet. The static diagnostic instrumentation fix remains unvalidated until the ASIC/config job builds and the four-DIMM simulation runs. See tracker Section 131.
+
+
+### 14. Four-DIMM W-channel diagnostic conclusion and corrected A02 response model — 2026-11-25
+
+This section supersedes the A02 failure diagnosis and pending-state snapshots in Sections 12–13 and the earlier A02/A03 live-status addendum. It does not promote any verification task to DONE.
+
+- **A02 status: IN PROGRESS — testbench model correction committed; exact-SHA rerun pending.**
+- Corrected diagnostic run [45481815682](https://github.com/shamiursunny/openTPU/actions/runs/45481815682), job \`138756664096\`, exact SHA \`76966009274be54ce26d87e333744b5cc17f72b4\`, passed 66 target/config tests and all three integrated lint stages, then failed during the four-DIMM simulation at 135 ns. Actual DIMM2 WDATA was host beat 2 while the scoreboard expected beat 0; WSTRB was the beat-2 full strobe rather than beat-0's alternating strobe; WLAST matched.
+- **Root cause identified in the testbench response model:** it asserted BVALID after any accepted W beat, rather than after the final WLAST beat. The early B handshake reset the testbench W beat counter during the burst, creating a false payload mismatch. No production RTL fault is established by this result.
+- **Correction:** commit \`68baca1a080e952b20327c90d63a6f66c6a1ee70\` changes the B-response condition to require \`w_complete\` or a same-cycle accepted WLAST beat. The commit changes only \`sim/verilator/tb_asic_wg8_ddr4.sv\`; it does not change synthesizable RTL, test payloads, expected values or acceptance criteria.
+- The feature branch was independently compared and confirmed exactly at \`68baca1a080e952b20327c90d63a6f66c6a1ee70\` immediately after the correction. Main remains unchanged at \`d84db55712aba0d40811d7762cb052f05d55b7e5\`.
+- At the latest immediate post-commit query, no combined status or associated workflow run was returned. A02 therefore remains pending until a new exact-SHA ASIC/config run compiles and passes the multi-beat host test plus both negative-aperture cases.
+- A03 remains IN PROGRESS and was skipped in the previous integrated run because the A02 step failed first. Its four-instance HMUX contention bench and assertions must be inspected on a successful A02 gate; historical directed passes do not close the current integrated task.
+- On SHA \`769660...\`, RTL-tail Run \`45481815780\` passed 33 tests with one documented geometry skip and 183 deselected; isolated TMEM Run \`45481815691\` passed 2 tests with 215 deselected. These are scoped historical results and do not transfer to SHA \`68baca...\`.
+- Board-functional/uncovered RTL, software-core and subsystem runs from the same prior diagnostic SHA were still in progress or queued at last poll. Reconcile each by exact run/job/SHA. The PPA tasks A04/A05 remain open; no area, timing, power or PPA claim is accepted.
+- **Next ordered work:** (1) verify the push-triggered ASIC/config run for SHA \`68baca...\`; (2) inspect its full log and verify multi-beat WDATA/WSTRB/WLAST, B timing, negative AW/AR aperture cases; (3) if successful, inspect address-map simulation and four-instance HMUX contention/assertions; (4) reconcile board, uncovered RTL, software and subsystem workflows; (5) inspect full ORFS logs/reports for PPA separately. Do not modify HMUX RTL unless a new failure demonstrates a DUT defect.
+- The release gate remains OPEN. A01 is only a scoped single-beat host-path pass; A02/A03, A04/A05, A06–A12 and final immutable-SHA regression remain open or partial as previously recorded. Manufacturer/physical dependencies H01–H11 remain unclosed; H12 remains evidence-input blocked. No paid resources or hardware purchases used.
