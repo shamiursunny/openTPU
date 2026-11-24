@@ -893,3 +893,14 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Exact-SHA ASIC configuration workflow Run [45402313680](https://github.com/shamiursunny/openTPU/actions/runs/45402313680) is queued at this update. Its pytest and integrated WG8 lint logs have not yet been inspected. Do not mark the correction validated until the run completes.
 - The discovery does not establish an RTL defect; it establishes a stale test expectation. The chosen logical memory map remains 32 GiB, AW35, eight 4-GiB native channels, four 8-GiB DIMM ports.
 - Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 92. Add four-DIMM WG8 host-path integration simulation (2026-11-24)
+
+- Added `sim/verilator/tb_asic_wg8_ddr4.sv`, instantiating the actual `otpu_asic_wg8_ddr4_top` rather than four standalone muxes. It drives one independent host write and read through each of the four DIMM ports concurrently, with per-DIMM AW/W/AR controller backpressure and independent host B/R response backpressure.
+- The controller-side behavioural model permits W to be accepted before the corresponding AW handshake (AXI channels are independent), records AW ID, waits for both AW and W completion before issuing B, and returns an R beat only after AR acceptance. It checks host ID translation to reserved ID 4, address preservation and local-aperture high bit, AW/AR length, 512-bit data, 64-byte strobes, WLAST, 512-bit read data, OKAY responses, and fixed AXI SIZE=64 bytes / INCR burst attributes.
+- All four ports must independently complete B and R responses; any bridge error is fatal. This is bounded host-only full-wrapper integration evidence, not simultaneous host+accelerator pair traffic across all four DIMMs, not PCIe/DMA end-to-end, and not a complete AXI protocol proof.
+- Extended `.github/workflows/sunnyone-asic-config.yml` to compile and run the new bench using the BCU1525 WG8 generic RTL source set plus the ASIC integration hierarchy. Added the bench to push path filters, archived its build log, and raised the job timeout to 45 minutes. Also corrected an existing shell pipeline formatting issue in the target-contract pytest step so the pytest output is piped to `tee` in one valid shell command.
+- Testbench commit `4d5a30dc12a6bfba0529a3748e551137a8dde4ee`; declaration cleanup commit `812010e049c842beae0d98c5720e9c7839abda97`; workflow commit `22a0fbfdcb531a7982bf42cab86d4eb9c2729f60`.
+- Exact-SHA ASIC/configuration run [45402825174](https://github.com/shamiursunny/openTPU/actions/runs/45402825174) is queued at this update. The testbench has not yet been compiled or run; no four-DIMM pass is claimed.
+- Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
