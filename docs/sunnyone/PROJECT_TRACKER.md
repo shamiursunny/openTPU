@@ -1205,3 +1205,11 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Updated master H06 row in commit `1ab99c9149d6f729e9a4bb865a77d573f789b53e`, resume in commit `7bd2e4b5d77dbde9de0562e2380d86efb3a62689`, and the host DMA/address-map spec in commit `a34265b21ff8ecbffcdcd7abb81e8e1ac5c2b4ff`. The tracker records the chronological diagnosis and correction.
 - The standalone Verilator address-map test Run 45455874266 remains queued; no simulation pass is claimed. H06 remains IN PROGRESS, with global DMA integration and end-to-end address routing still open.
 - Next: poll formal Run 45456545394 and simulation Run 45455874266; if SAT still fails, inspect the exact new Yosys error and adjust the proof script/harness only. Do not reinterpret a frontend or solver failure as a DUT failure or proof. No paid resources used.
+
+
+## 119. Consolidate latest ASIC/config verification of AXI, contention and global map benches (2026-11-24)
+
+- The ASIC/config workflow now includes the four-DIMM multi-beat host test with all BRESP/RRESP codes and expected-fatal address-bit-33 cases, the four-instance HMUX contention test with `HMUX_FORMAL` assertions, and the standalone global-to-DIMM address-map boundary/bijection test.
+- Consolidated run [45455874266](https://github.com/shamiursunny/openTPU/actions/runs/45455874266), job `138665030882`, exact SHA `d3a75fd673e0df07d0a952e06ce737211f535850`, is QUEUED at this checkpoint. It is the latest single run containing all three test groups. No simulation/assertion pass is claimed until the job completes and the complete logs are inspected.
+- Master register A02/A03 rows updated in commit `185d50f364d3196b9f20748ef1c16b0bf95df553`; resume updated in commit `5795b584aa2fd53722da28dde63e472a2563171f`. H06 also tracks this run for its standalone map simulation. The separate formal proof rerun remains Run 45456545394 on SHA `9c550d...`.
+- Next: retrieve the consolidated run's complete step logs and artifacts; verify normal four-DIMM traffic, expected-fatal AW/AR, all response codes, HMUX SVA assertions and the global address map. If any step fails, diagnose the first actual error and make only an evidence-led correction. Keep A02/A03/H06 open until then.
