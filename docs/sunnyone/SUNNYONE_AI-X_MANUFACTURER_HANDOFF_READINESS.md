@@ -428,3 +428,16 @@ This section supersedes the A02 failure diagnosis and pending-state snapshots in
 - Same-SHA board-functional, uncovered RTL, software-core and RTL-tail jobs remain in progress; all 14 subsystem/WG8 jobs remain queued at this poll. These are not passed and must be reconciled individually.
 - PPA is still open; prior WG8 PPA run failed and supplies no accepted area/timing/power result. Manufacturer release gate remains OPEN. Production PCIe/SerDes, DDR controller/PHY, macros, PDK, package, DFT, physical signoff, board electrical and measured workload evidence remain outstanding.
 - Preserve zero-spend, feature-branch-only changes, exact-SHA evidence and no tapeout/manufacturing-readiness overclaim.
+
+
+
+### 17. ASIC integration log review and unresolved warning risks — 2026-11-25
+
+The complete ASIC/config job log and artifact [sunnyone-asic-config-log](https://github.com/shamiursunny/openTPU/actions/runs/45487119079/artifacts/14964499992) were inspected for exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+
+- Four-DIMM AXI simulation PASS: 1/2/4/8-beat reads and writes, W-before-AW, partial/zero strobes, all BRESP/RRESP codes, 4-KiB boundary-aligned bursts and independent backpressure.
+- Both negative aperture tests PASS by observing the expected fatal: out-of-aperture AW and AR each rejected outside the 8-GiB DIMM aperture.
+- Global map PASS: 32-GiB map, four DIMMs, two 4-GiB channels per DIMM, 4-KiB interleave, inverse bijection and out-of-aperture rejection.
+- Four-instance HMUX PASS: simultaneous host/accelerator AW/AR contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure.
+- Important lint warnings remain: 34-bit selected AW/AR addresses connect to 33-bit output pins in `otpu_asic_wg8_ddr4_top.sv:240,245` (WIDTHTRUNC); `otpu_slice.sv:906` reports UNOPTFLAT circular combinational logic on `aok`; additional width expansion/truncation and unused signal/parameter warnings exist. The address-width mismatch is a priority review item because truncation could be consequential if the discarded bit is meaningful. No defect is asserted until the address contract is traced end-to-end.
+- The lint and simulation results are scoped digital verification only. No physical timing, electrical behaviour, DDR PHY, package, PDK, DFT, CDC/RDC or silicon result is established. Release gate remains OPEN.
