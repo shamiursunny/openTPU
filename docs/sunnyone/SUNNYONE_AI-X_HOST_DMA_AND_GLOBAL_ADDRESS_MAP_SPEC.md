@@ -53,7 +53,8 @@ This is the same 4-KiB interleave described by `otpu_mig_pair`: `DIMM byte = {ch
 | `0x001000000` | 0 | 0 | `0x01000000` | `0x001000000` |
 | `0x100000000` | 0 | 1 | `0x00000000` | `0x000001000` |
 | `0x200000000` | 1 | 0 | `0x00000000` | `0x000000000` |
-| `0x600000000` | 3 | 1 | `0x00000000` | `0x000001000` |
+| `0x600000000` | 3 | 0 | `0x00000000` | `0x000000000` |
+| `0x700000000` | 3 | 1 | `0x00000000` | `0x000001000` |
 
 The examples illustrate that the channel-select bit is moved into DIMM-local bit 12. They are address arithmetic examples, not measured transactions.
 
