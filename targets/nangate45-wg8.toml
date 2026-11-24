@@ -3,7 +3,7 @@
 [target]
 name = "nangate45-wg8"
 kind = "asic"
-platform_id = 256
+platform_id = 258
 description = "Nangate45 research ASIC, WG8/35-bit address/32 GiB memory architecture"
 
 [arch]
