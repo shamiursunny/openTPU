@@ -1501,3 +1501,11 @@ A prior short continuation response described 249 passing subsystem tests. This 
 5. Run final regression on one immutable candidate SHA after all applicable gates close.
 
 Release/manufacturer decision remains NOT READY for fabrication, tapeout, physical signoff, production-board build or silicon qualification. A02/A03 simulation success does not establish timing, power, thermal, PHY, DFT, package, board or silicon readiness.
+
+
+## 139. Live continuation poll and PPA artifact audit — 2026-11-25
+
+- `45487118947` subsystem matrix: 12 jobs SUCCESS; Native DRAM/technology RAM `138775352847` and Reset audit `138775353032` still IN_PROGRESS at latest poll. Exact test summaries still required.
+- `45455745851` PPA: FAILED, ORFS exit 2, source SHA `dc34e3a...`. SRAM probe/prep succeeded: 288 macros, 14 sizes, 3,538 KiB. This is not a PPA result.
+- Artifact `14962660456` size 1,562,950,987 bytes exceeds the artifact-download connector's 536,870,912-byte limit. Detailed ORFS failure log is therefore not yet inspected; root cause OPEN. Next rerun must upload compact diagnostic evidence and exclude bulk result databases.
+- Do not report area/timing/power figures. Keep tested RTL SHA `68baca...` distinct from docs-only branch HEAD; keep main untouched. Fabrication/tapeout/physical signoff remains NOT READY.
