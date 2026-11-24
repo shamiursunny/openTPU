@@ -813,3 +813,30 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - This change triggered Run 72, [45382805606](https://github.com/shamiursunny/openTPU/actions/runs/45382805606), run number 72, on exact tested SHA `d281621836d86e608ad34c4fd44d6edf339e98fe`. At inspection, the run remained queued overall; two ordinary regression jobs showed in progress, while the Reset audit job `138405904782` remained queued. No installer step, checksum, Yosys/Slang frontend probe, or reset-audit test result is yet evidenced.
 - Runs 69–72 are overlapping attempts on successive workflow revisions. GitHub's API reports queued overall states with some individual jobs completed/in progress; this is not evidence of overall run completion. Avoid interpreting queued jobs or partial matrix success as a complete regression. Prioritise the latest corrected Run 72 and inspect its Reset audit job log when it starts.
 - The exact workflow source is now corrected and diff-verified, but toolchain installation and all four reset-audit assertions remain unverified. No RTL or test source changed in this correction. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+## 86. Run 72 completes full RTL matrix and executes reset audit (2026-11-24)
+
+- Run 72, [45382805606](https://github.com/shamiursunny/openTPU/actions/runs/45382805606), completed with overall conclusion `success` on exact tested SHA `d281621836d86e608ad34c4fd44d6edf339e98fe`. All 14 matrix jobs have job conclusion `success`; all 14 job logs were retrieved and their pytest summaries inspected.
+- Aggregate actual pytest summaries: **377 passed, 1 skipped, zero reported failures**. This supersedes Run 68's earlier 373 passed / 5 skipped summary for the new exact SHA. The sole remaining skip is the intentional 64-GiB Address-window boundary case documented in Section 82 (`64 GiB: every address is DRAM`); it is not a 64-GiB hardware qualification result.
+- The four reset-audit cases, previously skipped because Yosys+Slang were unavailable, now all ran and passed: **4 passed in 360.27s (6:00)**. The Reset audit job log confirms the official pinned OSS CAD Suite archive downloaded (719.4 MB), SHA-256 verification passed for digest `c01d93f2f9091ba7eeb18540334fa0aaefa843b343cbdd627fd7669391de47ba`, the suite environment was sourced, and Yosys was found at `/home/runner/work/_temp/oss-cad-suite/bin/yosys`. Yosys version reported: `0.71+77 (git sha1 11d972c20)`. The `yosys -m slang -Q -p 'help read_slang'` frontend probe succeeded (installer step completed successfully); the persisted YOSYS path was visible in the subsequent pytest environment. No reset-audit skips remain.
+- Per-job pytest summaries and runtimes:
+  - QHL RTL: 7 passed, 653.44s.
+  - Wait-state RTL: 11 passed, 206.70s.
+  - SPLITQ RTL: 5 passed, 316.54s.
+  - Floating-point RTL: 8 passed, 180.26s.
+  - Quantizer modes RTL: 15 passed, 965.97s.
+  - Stream RTL: 14 passed, 1089.73s.
+  - MX multiply and replay RTL: 17 passed, 566.48s.
+  - Address-window RTL: 20 passed, 1 skipped, 1369.48s.
+  - QST and QSTB RTL: 13 passed, 1428.06s.
+  - Quantizer corners and tie rounding RTL: 8 passed, 652.48s.
+  - Instruction-cache RTL: 23 passed, 936.68s.
+  - Collective hub, DMA and scoreboard: 128 passed, 366.54s.
+  - Native DRAM and technology RAM: 104 passed, 2471.95s (41m11s; completed successfully within the 45-minute per-job timeout).
+  - Reset audit: 4 passed, 360.27s.
+- Quantisation selections collectively remain 65 passing tests across all 15 test functions and parameter instances. No test was removed, weakened, or skipped to obtain success.
+- The reset-audit job's log also shows the actual checksum check returning `OK`, Yosys version output, successful frontend probe (the probe's stdout/stderr is intentionally redirected), and the four-test pytest summary. This validates the pinned installer and environment propagation for this runner/revision; it does not establish long-term availability of the external release asset.
+- Workflow and pytest logs contain a GitHub Actions Node.js 20 deprecation warning for actions/checkout@v4, setup-python@v5 and upload-artifact@v4 (forced to Node.js 24 by the runner). Treat as CI maintenance warning, not an RTL/test failure. No warning-free claim is made.
+- Run 72 is successful bounded RTL regression and reset-audit evidence only. It is not exhaustive AXI protocol proof, complete formal verification, full-chip integration, PCIe/DDR electrical validation, physical PPA, thermal/package signoff, or silicon/tapeout readiness.
+- No RTL, audit-test source or regression-test source changed in this run; the tested change was the corrected workflow PATH persistence/install setup. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
