@@ -113,8 +113,8 @@ All results must identify the exact source commit SHA, tool versions, command, t
 - A selected RTL-tail run on SHA `8df2190f2ae5c69e2c64e6b3bd1dc4cfae7a857a` reported 33 passed, 1 documented geometry skip, 183 deselected. It is not the full regression.
 - A selected isolated one-copy 128K TMEM run on the same SHA reported 2 passed, 215 deselected. It is not full memory signoff.
 - Selected subsystem runs on the same SHA reported MX multiply/replay 17 passed, quantizer modes 15 passed, quantizer corner/tie-rounding 8 passed, and stream RTL 14 passed. Other matrix jobs were incomplete at the recorded checkpoint.
-- The four-DIMM host-path simulation compiled and passed the preceding target/config and three lint stages, but timed out at 200 microseconds. Timeout-only diagnostics have been added; the root cause and passing rerun remain open.
-- The Nangate45 research PPA run failed with ORFS exit code 2. It enumerated 288 SRAM macro instances across 14 sizes (approximately 3,538 KiB) but yielded no verified area, timing or power result. The workflow is being corrected to archive the complete ORFS run log and reports.
+- Four-DIMM diagnostic Run 45425750505 (job 138557141766, SHA b41669fe1d67a3f7dcb84d86a960cdb4b9167ad8) compiled after target/config and lint, then timed out. Its diagnostic vector showed all four host WVALID bits stuck high, all WREADY low, no AWVALID at the host or controller boundary, and no recorded AW acceptance. Source review identified that the bench launches traffic before per-DIMM reset synchroniser release and uses a READY loop that can treat X as completion. The bench was corrected to wait for each DIMM's reset release and require READY === 1; exact-SHA rerun 45428347822 is queued on SHA ec0fe8329df06e5204a1c082df133b62b434846b. Root-cause fix is plausible and evidence-led, but A01 remains open until the rerun passes.
+- PPA Run 45426849673 (job 138561067049, SHA 21e1d56c5c6bcafc8d45a49f5aa8920516bad068) failed before ORFS because the workflow wrote a literal backslash-n into the saved Docker image ID; Docker returned "invalid reference format". No synthesis or PPA stage ran. Workflow correction commit e212fe714eac17e339a2cc9090bee293a8ba6c09 now writes a real newline; verification run 45428370570 is queued. The earlier 288-macro inventory was from a different, pre-correction run and is not a result of this failed attempt.
 - The Nangate45 flow is a research proxy only. It is not a production foundry process or evidence of manufacturable PPA.
 
 ## 6. Manufacturer deliverables expected after feasibility review
@@ -183,17 +183,17 @@ The immediate engineering priority remains: diagnose and pass the four-DIMM inte
 | M10 | Isolated one-copy 128K TMEM test | DONE — scoped | Run 45417561463: 2 passed, 215 deselected. Not complete memory subsystem signoff. |
 | M11 | One-DIMM host/accelerator mux bench | PARTIAL | Prior run 45324154486 passed concurrent pair/host AW-W-B and AR-R routing for 2 writes/2 reads in 18 cycles; earlier warnings and later cleanup require current-SHA rerun. |
 | M12 | Manufacturer handoff requirements document | DONE — document | This file defines boundaries, gaps, verification gates, manufacturer return deliverables and release discipline. |
-| M13 | PPA log/report evidence collection workflow correction | DONE — workflow change only | Commit 21e1d56c5c6bcafc8d45a49f5aa8920516bad068 adds ORFS logs/reports/results and image ID to artifact collection. A new successful PPA run is not yet evidenced. |
+| M13 | PPA log/report evidence collection workflow correction | DONE — workflow change only | Artifact collection was added in commit 21e1d56c5c6bcafc8d45a49f5aa8920516bad068; the first run exposed a literal-backslash-n Docker image-ID bug. Fixed in e212fe714eac17e339a2cc9090bee293a8ba6c09. Verification run 45428370570 is queued; no PPA result is claimed. |
 | M14 | Project tracker chronology | DONE — maintained | docs/sunnyone/PROJECT_TRACKER.md; latest recorded tracker commit 81b6cca004fdac9fd6f39859cfc57fb3d3e2b6c1. |
 
 ### 9.2 Failed or incomplete — active priorities
 
 | ID | Task | Status | Required closure evidence |
 |---|---|---|---|
-| A01 | Four-DIMM host-path simulation | FAILED — action required | Run 45417564203 timed out at 200 µs on SHA 8df2190f2ae5c69e2c64e6b3bd1dc4cfae7a857a. Diagnostic bench commit b41669fe1d67a3f7dcb84d86a960cdb4b9167ad8 was added; its rerun and root-cause evidence must be retrieved. Must pass with per-port handshake/phase evidence. |
+| A01 | Four-DIMM host-path simulation | FAILED — action required | Diagnostic Run 45425750505 / job 138557141766 on SHA b41669fe1d67a3f7dcb84d86a960cdb4b9167ad8 timed out with host WVALID=1111, WREADY=0000, no host AWVALID and no recorded AW acceptance. The bench now waits for each DIMM reset synchroniser to release and requires READY === 1 (commit ec0fe8329df06e5204a1c082df133b62b434846b). Rerun 45428347822 is queued; pass evidence remains required. |
 | A02 | Complete four-DIMM AXI protocol coverage | NOT STARTED | Multi-beat read/write, AW/W ordering, outstanding IDs, all-channel backpressure, response ordering, partial strobes, boundaries, invalid IDs/addresses and reset with outstanding transactions. |
 | A03 | Four-DIMM host/accelerator contention | NOT STARTED | Simultaneous traffic to all four DIMMs, response correctness, bounded fairness/starvation and stress coverage. |
-| A04 | PPA research flow diagnosis | FAILED — action required | Run 45416114934 exited code 2; prior artifact lacked complete ORFS transcript. Re-run after artifact fix; inspect full log and determine exact failing stage. |
+| A04 | PPA research flow diagnosis | FAILED — action required | Run 45426849673 / job 138561067049 on SHA 21e1d56c5c6bcafc8d45a49f5aa8920516bad068 failed before ORFS: Docker rejected the image reference because the saved ID contained literal \\n. Workflow newline fix is commit e212fe714eac17e339a2cc9090bee293a8ba6c09; verification run 45428370570 is queued. No PPA result exists. |
 | A05 | Reproducible research synthesis/area/timing | IN PROGRESS | Obtain complete ORFS reports, exact tool/container versions, synthesis statistics and timing. Nangate45 is proxy only; no power/area/timing claim until report evidence exists. |
 | A06 | Remaining subsystem/memory matrix | IN PROGRESS | Matrix Run 45417561535 had jobs still queued/running at checkpoint. Retrieve every job result; record each pass/fail/skip and rerun failures. |
 | A07 | Software-core/ISA/compiler/kernel regression | IN PROGRESS | Run 45417202615 was still running at checkpoint on SHA 8ef09ad88da709ac8b10ec15f76950f116b440f2; retrieve final job result and ensure final-SHA rerun. |
@@ -248,4 +248,4 @@ For every future continuation:
 8. Re-fetch both updated files and verify the commit. If any status cannot be verified, leave it IN PROGRESS or UNKNOWN rather than marking DONE.
 9. Never claim “100% ready”. Report simulation readiness and manufacturer/physical readiness as separate gates.
 
-**Current next action:** retrieve the diagnostic four-DIMM simulation result and finish A01 before expanding the testbench. In parallel, obtain the next PPA run's complete ORFS transcript for A04. Do not advance the release gate while either remains open.
+**Current next action:** inspect exact-SHA run 45428347822 for the reset/handshake correction and run 45428370570 for the corrected Docker image-ID handling. A01 and A04 remain open until their new runs complete and logs are inspected. Do not advance the release gate while either remains open.
