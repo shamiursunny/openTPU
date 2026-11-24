@@ -767,3 +767,13 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - This is a pinned third-party toolchain dependency, not yet validated by this repository's CI until the Reset audit job reaches and completes the install step. Archive size is substantial (~754 MB), so download time and runner capacity are practical risks to monitor. The release is dated 2026-11-23; future upgrades require a new verified release digest and evidence.
 - Triggered workflow run [45373649765](https://github.com/shamiursunny/openTPU/actions/runs/45373649765), run number 69, exact tested SHA `4a6d240314e569c4fdc4d4d2334b4e51dae7e238`. At tracker update time the run was active; the Reset audit job was still queued. No reset-audit pass or tool-install success is claimed yet.
 - No RTL, Python audit, or test source was changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
+
+
+
+## 81. Activate official OSS CAD Suite environment in reset-audit CI (2026-11-24)
+
+- Follow-up review of YosysHQ's official installation instructions found that Linux users should source the extracted suite's `environment` script, not only prepend its `bin` directory. Updated the Reset audit conditional install step accordingly in workflow commit `cf4155ec1d27c48e50f69cf6314274857a28ba0f`.
+- The step now sources `${RUNNER_TEMP}/oss-cad-suite/environment`, resolves Yosys from the activated PATH, checks the Slang frontend, and persists `YOSYS`, `LD_LIBRARY_PATH` and each PATH entry for the subsequent pytest step. The pinned archive digest check remains before extraction. This aligns CI setup with the suite maintainer's documented Linux installation procedure.
+- Run 69 remains active on the previous workflow revision SHA `4a6d240314e569c4fdc4d4d2334b4e51dae7e238`; its Reset audit job is still queued and has not yet exercised the first installer revision.
+- The environment-activation revision triggered Run 70, [45373821692](https://github.com/shamiursunny/openTPU/actions/runs/45373821692), on exact SHA `cf4155ec1d27c48e50f69cf6314274857a28ba0f`. At inspection, all 14 jobs were queued. No result is claimed for Run 70.
+- The two runs temporarily duplicate the matrix while GitHub Actions processes the queue. No RTL or test source changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Zero paid resources used.
