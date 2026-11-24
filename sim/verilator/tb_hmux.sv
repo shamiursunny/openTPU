@@ -53,7 +53,8 @@ module tb_hmux;
   logic [3:0] awq[0:7], arq[0:7];
   logic [7:0] awlenq[0:7], arlenq[0:7];
   integer aw_wp=0,aw_rp=0,ar_wp=0,ar_rp=0, writes=0,reads=0;
-  integer cycle=0, pair_b=0, host_b=0, pair_r=0, host_r=0;
+  integer cycle=0, pair_b=0, host_b=0;
+  logic [7:0] pair_r=0, host_r=0;
   logic [7:0] wbeat=0, rbeat=0;
   logic r_active=0;
   logic [3:0] r_active_id;
@@ -174,8 +175,8 @@ module tb_hmux;
       @(negedge clk); if(host) h_awvalid=0; else p_awvalid=0;
       for (int beat=0; beat<3; beat++) begin
         @(negedge clk);
-        if(host) begin h_wdata=write_pattern(1'b1,beat); h_wstrb=64'h00ff00ff00ff00ff; h_wlast=(beat==2); h_wvalid=1; end
-        else begin p_wdata=write_pattern(1'b0,beat); p_wstrb=64'hff00ff00ff00ff00; p_wlast=(beat==2); p_wvalid=1; end
+        if(host) begin h_wdata=write_pattern(1'b1,beat[7:0]); h_wstrb=64'h00ff00ff00ff00ff; h_wlast=(beat==2); h_wvalid=1; end
+        else begin p_wdata=write_pattern(1'b0,beat[7:0]); p_wstrb=64'hff00ff00ff00ff00; p_wlast=(beat==2); p_wvalid=1; end
         do @(posedge clk); while(host ? !h_wready : !p_wready);
         @(negedge clk); if(host) h_wvalid=0; else p_wvalid=0;
       end
