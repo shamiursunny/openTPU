@@ -913,3 +913,20 @@ Run [45224697471](https://github.com/shamiursunny/openTPU/actions/runs/452246974
 - Latest four-DIMM bench commit: `716fb74676e9e6cdbb8842d927d62ff2c47580b7`; the ASIC/config workflow is [Run 45402976553](https://github.com/shamiursunny/openTPU/actions/runs/45402976553), exact tested SHA `716fb74676e9e6cdbb8842d927d62ff2c47580b7`. At this update it is queued; no compilation or simulation result yet.
 - The testbench is intended to verify the real four-DIMM wrapper's four host-facing paths, not just four isolated mux copies. It still does not exercise accelerator-pair traffic simultaneously on all DIMMs, real PCIe DMA, IOMMU, DDR controller/PHY or electrical behaviour.
 - No RTL or architecture parameter changed. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
+
+
+## 94. External open PCIe/DDR IP and PDK feasibility audit (2026-11-24)
+
+- Reviewed current public project documentation for candidate zero-cost/open-source host and memory IP. None is a complete drop-in for the current WG8 ASIC's required PCIe Gen3 x16 endpoint/PHY plus eight-channel DDR4 controller/PHY.
+- PCIe:
+  - `openCologne-PCIE` is BSD-3-Clause and exposes a portable soft protocol stack behind PIPE, leaving the SerDes/PHY as a technology-specific hard-macro problem. Its documented target is Gen1 x1; Gen2 is best-effort without automatic speed retraining; DMA is explicitly outside the deliverables (PIO only). It is a useful future Gen1 research/prototype candidate, not the required Gen3 x16 DMA endpoint. Source: https://github.com/chili-chips-ba/openCologne-PCIE
+  - The 2026 OpenPCIe paper describes a synthesizable open endpoint, but the current implementation is Gen1; Gen2 is future work. Its hardware validation is FPGA-oriented and it does not provide a qualified Gen3 x16 ASIC SerDes. Source: https://www.mdpi.com/2076-3417/16/7/3409
+  - LitePCIe is BSD-2-Clause and supplies endpoint/TLP, DMA and MSI-X ecosystem features, but its listed PHY implementations wrap vendor FPGA hard IP. It cannot be treated as a portable ASIC Gen3 PHY. Source: https://github.com/enjoy-digital/litepcie and https://github.com/enjoy-digital/litex/wiki/Create-a-PCIe-SoC
+- DDR:
+  - LiteDRAM is BSD-2-Clause and includes a configurable controller, arbitration, refresh, ECC and BIST. Its documented DDR4 PHY is for Xilinx UltraScale/UltraScale+; its generic PHY is SDR and its DDR4 DFI PHY is for simulation. It may be investigated as a controller/scheduler source, but it is not an ASIC DDR4 PHY or complete eight-channel physical subsystem. Source: https://github.com/enjoy-digital/litedram
+  - UberDDR4 is GPL-3.0 and explicitly an FPGA controller+PHY with two Xilinx PHY implementations. It is not an ASIC PHY drop-in; its GPL-3.0 obligations also require separate legal review before any reuse. Source: https://github.com/AngeloJacobo/UberDDR4
+- PDK:
+  - The IHP official PDK repository classifies SG13G2 as early access and says the open-source PDK is not yet intended for production; SG13CMOS5L is preview-only. Source: https://github.com/IHP-GmbH/IHP-Open-PDK
+  - The current Nangate45 WG8 flow is a research proxy, not a manufacturable foundry process. No production PDK, PCIe SerDes, DDR4 PHY, package or controller IP is selected.
+- Decision: retain the existing WG8 compute architecture and explicit external PHY/controller boundaries. Do not integrate an FPGA-only PHY or describe any soft protocol core as a complete ASIC endpoint. A production V1 requires either (a) a legally usable, foundry-qualified PCIe/DDR PHY/controller IP path with explicit cost and licence approval, or (b) a new PHY project plus its analog/RF/IO design, verification and silicon characterization. Neither can be completed or validated by RTL-only work in the present zero-spend environment.
+- This audit does not change RTL, architecture parameters or external interface contracts. It prevents unsupported IP substitution. Feature branch only; `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No paid resources used.
