@@ -376,3 +376,25 @@ Feature-branch code checkpoint remains \`68baca...\`; documentation-only commits
 4. Update these three documents again after the next material result. Re-verify branch head and protected main before writes. Keep zero-spend and feature-branch-only rules.
 
 **Readiness:** A02/A03 integrated simulation gate now passes on this exact SHA, but the overall release gate remains OPEN. Formal/CDC/RDC closure, PPA, broader regressions, production IP/PHY, package/DFT, physical signoff, board/silicon tests and commercial validation remain outstanding.
+
+
+
+## 14. Detailed exact-SHA ASIC log findings — 2026-11-25
+
+Reviewed full job log for [ASIC/config Run 45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), job `138775349960`, exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`. Downloadable artifact: [sunnyone-asic-config-log](https://github.com/shamiursunny/openTPU/actions/runs/45487119079/artifacts/14964499992).
+
+Confirmed PASS markers:
+- Four-DIMM host AXI: 1/2/4/8-beat writes/reads, W-before-AW, partial/zero strobes, all BRESP/RRESP codes, 4-KiB boundary-aligned bursts, independent backpressure.
+- `bad_aw` and `bad_ar`: each correctly rejected with the expected 8-GiB DIMM-aperture fatal.
+- Global map: 32-GiB map, four DIMMs, two 4-GiB channels per DIMM, 4-KiB interleave, inverse bijection, out-of-aperture rejection.
+- Four-DIMM HMUX contention: simultaneous host/accelerator AW/AR, alternating grants, ordered two-beat W, B/R ID routing and independent backpressure.
+
+**New priority warning review:** Verilator reports WIDTHTRUNC in `rtl/asic/otpu_asic_wg8_ddr4_top.sv:240,245`: 34-bit selected AW/AR addresses connect to 33-bit `m_awaddr`/`m_araddr` pins. It also reports UNOPTFLAT circular combinational logic for `aok` at `rtl/top/otpu_slice.sv:906`, plus other width and unused-signal warnings. Do not suppress or dismiss these. Trace the 34-to-33-bit address contract and global map/aperture boundary; determine whether the dropped bit is provably outside the valid local address range or indicates a real truncation risk. Only edit RTL after evidence establishes the required correction. Also inspect the `aok` path structurally before changing logic.
+
+### Next action order
+1. Read `rtl/asic/otpu_asic_wg8_ddr4_top.sv` around 220–255, the host mux interface declarations, and global-to-DIMM address mapper; establish intended widths and all legal address ranges.
+2. Derive a boundary table for local DIMM address maximum, AXI address width, AW35 global address and 8-GiB aperture. Add/execute tests at highest legal and first illegal addresses if missing.
+3. Inspect `aok` combinational path at `otpu_slice.sv:906` and relevant handshake logic. Avoid speculative RTL edits.
+4. Poll remaining exact-SHA board, uncovered RTL, software-core, RTL-tail and 14 subsystem jobs. PPA remains unresolved.
+
+Overall release gate remains OPEN despite the A02/A03 integration simulation PASS.
