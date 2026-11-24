@@ -122,7 +122,17 @@ jobs:
           result = subprocess.run(["./obj_dir/Vtb_asic_wg8_ddr4"], capture_output=True, text=True)
           print(result.stdout)
           print(result.stderr)
-          raise SystemExit(result.returncode)
+          if result.returncode:
+              raise SystemExit(result.returncode)
+          expected = "WG8 host DMA address exceeds 8-GiB DIMM aperture"
+          for mode in ("bad_aw", "bad_ar"):
+              negative = subprocess.run(["./obj_dir/Vtb_asic_wg8_ddr4", "+" + mode],
+                                         capture_output=True, text=True)
+              output = negative.stdout + negative.stderr
+              print(output)
+              if negative.returncode == 0 or expected not in output:
+                  raise SystemExit(f"{mode}: expected host-address aperture fatal was not observed")
+              print(f"PASS: {mode} correctly rejected an address outside the 8-GiB DIMM aperture")
           PY
       - name: Simulate four-DIMM host/accelerator mux contention
         run: |
