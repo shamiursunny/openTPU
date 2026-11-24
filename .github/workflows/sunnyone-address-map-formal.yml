@@ -35,7 +35,7 @@ jobs:
       - name: Prove 32-GiB global-to-DIMM map and inverse properties
         run: |
           set -euo pipefail
-          yosys -Q -l /tmp/sunnyone-address-map-formal.log -p 'read_verilog -formal -sv rtl/asic/otpu_asic_global_addr_map.sv formal/otpu_asic_global_addr_map_formal.sv; prep -top otpu_asic_global_addr_map_formal -flatten; chformal -assert; sat -prove-asserts -verify -show-ports'
+          yosys -Q -l /tmp/sunnyone-address-map-formal.log -p 'read_verilog -formal -sv rtl/asic/otpu_asic_global_addr_map.sv formal/otpu_asic_global_addr_map_formal.sv; prep -top otpu_asic_global_addr_map_formal -flatten; chformal -lower; sat -prove-asserts -verify -show-ports'
           tail -n 120 /tmp/sunnyone-address-map-formal.log
       - name: Archive formal proof log
         if: always()
