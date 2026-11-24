@@ -126,7 +126,7 @@ module tb_asic_wg8_ddr4;
           if (m_wdata[d] !== host_write_pattern(d,int'(w_beat[d])) ||
               m_wstrb[d] !== host_write_strobe(d,int'(w_beat[d])) ||
               m_wlast[d] !== (w_beat[d] == 8'(burst_beats(d)-1)))
-            $fatal(1,"DIMM%0d host W payload/last mismatch beat=%0d",d,w_beat[d]);
+            $fatal(1,"DIMM%0d host W mismatch beat=%0d data=%h expected=%h strb=%h expected_strb=%h last=%b expected_last=%b owner=%b wo_rv=%b w_v=%b w_r=%b h_wvalid=%b h_wready=%b h_wdata=%h h_wstrb=%h h_wlast=%b m_awid=%h", d, w_beat[d], m_wdata[d], host_write_pattern(d,int'(w_beat[d])), m_wstrb[d], host_write_strobe(d,int'(w_beat[d])), m_wlast[d], (w_beat[d] == 8'(burst_beats(d)-1)), dut.g_host_mux[d].u_hmux.wo_h, dut.g_host_mux[d].u_hmux.wo_rv, dut.g_host_mux[d].u_hmux.w_v, dut.g_host_mux[d].u_hmux.w_r, h_wvalid[d], h_wready[d], h_wdata[d], h_wstrb[d], h_wlast[d], m_awid[d]);
           if (m_wlast[d]) w_complete[d]<=1'b1;
           else w_beat[d]<=w_beat[d]+1'b1;
         end
