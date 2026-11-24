@@ -295,6 +295,7 @@ module otpu_tmem #(
   logic [NRP-1:0][LANES-1:0]         pb_en;
   logic [NRP-1:0][LANES-1:0][IW-1:0] pb_a;
   logic [NRP-1:0][LANES-1:0][31:0]   pq;      // the bank data each port's copy returns
+  logic [LANES-1:0][31:0]           pq_host; // standalone host-port data for shared read guests
   // IMPL 3 without the bypass (PMP 1), a host port (pdir): its side's RAM words, bank b's RAM k at
   // b * NSB + k (pr), and the RAM each bank read (pss); its lanes select a word by {bank, RAM}, one
   // NSB x LANES : 1 select from the RAMs (LUT6s, MUXF7s, a MUXF8 in a slice at NSB 2), not the
@@ -892,7 +893,7 @@ module otpu_tmem #(
     // write still in the registered stage that its word hit (a replay: the RAM's word, see above)
     for (genvar p = 0; p < NRP; p++) begin : g_pq
      if (GST && SH_MASK[p]) begin : g_gu
-      assign pq[p] = pq[SH_HOST];
+      assign pq[p] = pq_host;
       assign pr[p] = '0;
       assign pss[p] = '0;
       assign pdir[p] = 1'b0;
@@ -932,14 +933,29 @@ module otpu_tmem #(
             bh1[b] <= 1'b0;
           end
         end
-      always_comb
+      if (p == SH_HOST) begin : g_host_data
+        // Drive a standalone host-data vector, then alias guest ports to that vector.
+        // Referencing pq[SH_HOST] through the packed pq array creates a false aggregate
+        // self-dependency in Verilator's combinational-loop analysis.
+        always_comb
 `ifdef OTPU_TMEM_ABL_DSEL
-        for (int b = 0; b < LANES; b++)
-          pq[p][b] = bh[b] ? pd[b][0] : s_q[b][p % NSB][SD] ^ s_q[b][(p + NSB / 2) % NSB][SD];
+          for (int b = 0; b < LANES; b++)
+            pq_host[b] = bh[b] ? pd[b][0] : s_q[b][p % NSB][SD] ^ s_q[b][(p + NSB / 2) % NSB][SD];
 `else
-        for (int b = 0; b < LANES; b++)
-          pq[p][b] = bh[b] ? pd[b][0] : bh1[b] ? pd[b][WPB-1] : s_q[b][ss[b]][SD];
+          for (int b = 0; b < LANES; b++)
+            pq_host[b] = bh[b] ? pd[b][0] : bh1[b] ? pd[b][WPB-1] : s_q[b][ss[b]][SD];
 `endif
+        assign pq[p] = pq_host;
+      end else begin : g_own_data
+        always_comb
+`ifdef OTPU_TMEM_ABL_DSEL
+          for (int b = 0; b < LANES; b++)
+            pq[p][b] = bh[b] ? pd[b][0] : s_q[b][p % NSB][SD] ^ s_q[b][(p + NSB / 2) % NSB][SD];
+`else
+          for (int b = 0; b < LANES; b++)
+            pq[p][b] = bh[b] ? pd[b][0] : bh1[b] ? pd[b][WPB-1] : s_q[b][ss[b]][SD];
+`endif
+      end
      end
     end
   end else begin : g_nosb
