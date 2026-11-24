@@ -291,3 +291,15 @@ The latest poll supersedes the prior status snapshot: uncovered-RTL job `1386984
 - Corrected-SHA workflows all confirmed QUEUED at last poll: ASIC/config Run 45481815682; board/uncovered RTL 45481815901; software-core 45481815819; RTL tail 45481815780; subsystem/WG8 45481815735; isolated TMEM 45481815691. Older Run 45480699954 is queued against the earlier invalid diagnostic source and must not be used as qualification evidence.
 - The next evidence gate is the corrected ASIC/config run. If compile succeeds, inspect the actual DIMM2 W mismatch values and mux owner/handshake state. No RTL fix is justified before that diagnosis.
 - Full workflow/run/job IDs and previous statuses are maintained in PROJECT_TRACKER.md Section 130 and handoff register Section 12.
+
+
+## 18. Corrected-SHA live workflow state — 2026-11-25
+
+For corrected diagnostic commit `76966009274be54ce26d87e333744b5cc17f72b4`, latest statuses are:
+- ASIC/config Run 45481815682: QUEUED.
+- Board/uncovered Run 45481815901: board-functional QUEUED; uncovered RTL IN_PROGRESS (Verilator 5.044 build).
+- Software-core Run 45481815819: QUEUED.
+- RTL-tail Run 45481815780: IN_PROGRESS (dependency installation).
+- Subsystems/WG8 Run 45481815735: all 14 jobs QUEUED.
+- Isolated TMEM Run 45481815691: IN_PROGRESS.
+No corrected-SHA ASIC/config simulation result is available. This status supersedes the initial all-QUEUED snapshot in Section 17. See PROJECT_TRACKER.md Section 131.
