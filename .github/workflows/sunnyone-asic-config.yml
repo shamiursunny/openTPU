@@ -44,6 +44,7 @@ jobs:
           sys.path.insert(0, "tools/asic")
           import flow
           sources = [str(p) for p in flow.sources("card")]
+          sources += ["sim/verilator/asic_sram_lint_stubs.sv"]
           sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv",
                       "rtl/mem/otpu_native_dram.sv", "rtl/asic/otpu_asic_mem_top.sv"]
           cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal", "-DSYNTHESIS",
@@ -61,6 +62,7 @@ jobs:
           sys.path.insert(0, "tools/asic")
           import flow
           sources = [str(p) for p in flow.sources("nangate45-wg8")]
+          sources += ["sim/verilator/asic_sram_lint_stubs.sv"]
           sources += ["rtl/asic/otpu_asic_ctrl.sv", "rtl/asic/otpu_asic_chip_top.sv",
                       "rtl/mem/otpu_native_dram.sv", "rtl/asic/otpu_asic_mem_top.sv"]
           cmd = ["verilator", "--lint-only", "--timing", "-Wno-fatal", "-DSYNTHESIS",
