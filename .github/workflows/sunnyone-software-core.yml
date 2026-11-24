@@ -5,6 +5,7 @@ on:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     paths:
       - 'opentpu/**'
+      - 'rtl/**'
       - 'tests/test_isa.py'
       - 'tests/test_compiler.py'
       - 'tests/test_kernels.py'
@@ -39,7 +40,7 @@ jobs:
       - name: Install Verilator
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project and test dependencies
-        run: python -m pip install --upgrade pip pytest && python -m pip install -e .
+        run: python -m pip install --upgrade pip pytest transformers && python -m pip install -e .
       - name: Core ISA, compiler, kernels, numerics and host software
         run: >-
           pytest -q
