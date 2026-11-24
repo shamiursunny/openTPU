@@ -135,7 +135,7 @@ jobs:
           sources += ["sim/verilator/tb_asic_wg8_hmux_contention.sv"]
           from pathlib import Path
           sources = list(dict.fromkeys(str(Path(p).resolve()) for p in sources))
-          cmd = ["verilator", "--binary", "--timing", "--assert", "-Wall", "-Wno-fatal",
+          cmd = ["verilator", "--binary", "--timing", "--assert", "-DHMUX_FORMAL", "-Wall", "-Wno-fatal",
                  "--top-module", "tb_asic_wg8_hmux_contention", *sources]
           with open("/tmp/sunnyone-asic-hmux-contention-build.log", "w") as log:
               result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT)
