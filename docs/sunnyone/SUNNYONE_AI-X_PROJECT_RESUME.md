@@ -868,3 +868,14 @@ WAITC job `139233450429` was cancelled at approximately 44m36s and 84% pytest pr
 3. If RTL passes, inspect board logs/artifact; then plan consolidated regression.
 4. Update all three continuity files only with observed results. Keep consolidated regression/PPA/manufacturer gates pending until evidenced.
 5. Preserve feature branch; protected main remains untouched; no paid services or hardware purchases without approval.
+
+
+## 39. Latest resume checkpoint — RTL/ISA pytest in progress (2026-11-25, Asia/Dhaka)
+
+- Live RTL/board workflow: [run 45649502094](https://github.com/shamiursunny/openTPU/actions/runs/45649502094), exact SHA `ebce653e73a378adce6dde60939cb1e052077862`.
+- RTL job `139329804556`: checkout, Python setup, pinned Verilator 5.044 build and dependency installation are SUCCESS; selected core RTL/ISA pytest step is IN_PROGRESS. No test summary or new counts are verified.
+- Board-functional is serially gated behind RTL and has not started. Do not manually trigger it.
+- Active log retrieval returned GitHub storage `BlobNotFound`; while the job is running this is not evidence of failure. Re-fetch logs after the job reaches a terminal state.
+- Duplicate WAITC run `45649007571` remains in progress and is not authoritative. Keep the completed WAITC run `45641472720` as the sole source of WAITC evidence.
+- Existing aggregate baselines remain software-core 825 passed, 3 skipped and subsystem/memory 377 passed, 1 configuration-inapplicable skip. No counts have been added.
+- Next actions: poll RTL to terminal; inspect full logs and artifacts; on success verify board starts only afterward and inspect its terminal summary; on failure isolate and fix the confirmed cause without reducing tests. Then update all three files again with the actual outcome. Consolidated regression and production gates remain open; manufacturer readiness NOT READY.
