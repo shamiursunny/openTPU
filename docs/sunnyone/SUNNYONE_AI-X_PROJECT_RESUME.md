@@ -994,3 +994,25 @@ Immediate continuation sequence for any new chat/tab:
 6. After each material engineering step, update PROJECT_TRACKER, MANUFACTURER_HANDOFF_READINESS and PROJECT_RESUME on this feature branch with exact SHA, run/job IDs, logs, counts, limitations and next action. Re-check branch HEAD and main before writes.
 
 Guardrails: serial/low-concurrency execution; no duplicate jobs without cause; no invented test counts; no test weakening; zero spend and no hardware purchase without explicit approval; no claims of tapeout/production readiness from simulation-only evidence. Continue the user's requested remaining engineering work autonomously within these constraints.
+
+
+
+
+## Cross-chat resume correction — 2026-11-26 (Asia/Dhaka)
+
+Repository: `shamiursunny/openTPU`. Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`. Active workflow: [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), tested SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`.
+
+Live state at this checkpoint:
+- Group 3.1 job `139486043538`: IN_PROGRESS at bounded pytest. Checkout, Python setup, pinned Verilator 5.044 build and dependency installation all succeeded. No terminal pytest count is credited.
+- Group 3.2 job `139486044115`: QUEUED.
+- Group 4 job `139486044169`: QUEUED.
+- Board-functional: dependency-gated; do not start manually.
+
+Important correction to historical evidence: group 4 job `139449080038` from run `45661335812` has a verified terminal log summary of **5 passed, 212 deselected, 0 failures**. Its tested `tests/test_rtl.py` blob (`84cdfed65c2c9d3604e51080ce88d878fc71a76a`) is identical to the source at the current run SHA. Groups 1 and 2 also have accepted historical passes. Therefore all of groups 1, 2 and 4 have prior passing evidence. The current group-4 matrix job is a redundant rerun introduced by the later cancellation reconciliation; allow the current serial workflow to finish, but do not count duplicate executions as new unique tests.
+
+Continuation sequence:
+1. Poll the same run `45693821197`; do not start another workflow.
+2. Inspect terminal pytest logs and uploaded artifacts for group 3.1, then 3.2 and the duplicate group 4. Credit only exact observed counts.
+3. Confirm board-functional starts only after all RTL matrix jobs succeed; inspect its full terminal log/artifact.
+4. Only after RTL and board gates pass, proceed to consolidated regression. Keep PPA/physical, formal/CDC/RDC, production interface/IP/PHY, DFT, electrical board, hardware power/thermal/performance, silicon and commercial validation open until evidenced.
+5. Keep manufacturer handoff NOT READY, protected `main` unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`, and zero-spend/no-hardware-purchase rules in force.
