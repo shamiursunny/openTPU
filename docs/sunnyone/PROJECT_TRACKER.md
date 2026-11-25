@@ -1600,3 +1600,11 @@ The request marker currently says `NONE`; creating it did not start a PPA run. T
 - Exact pytest result from the job log: **33 passed, 1 skipped, 183 deselected in 742.68s (12m 22s)**. The skip is configuration-specific: `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. This is a scoped selection, not a full RTL-suite total.
 - Artifact step returned success but explicitly logged: `No files were found with the provided path: /tmp/sunnyone-rtl-tail.log. No artifacts will be uploaded.` The workflow's pytest command does not create that file. This is a CI observability defect, not a regression-test failure. Correct the command to tee output to the declared path with `set -o pipefail` after the current run set completes, then verify artifact upload on the next run.
 - At this checkpoint, core software/ISA run `45598047393` and RTL/board run `45598047324` remain IN_PROGRESS. Subsystem matrix `45598047338`: Stream, Quantizer modes, Quantizer corners/tie rounding, SPLITQ, QHL, and MX multiply/replay jobs completed SUCCESS; QST/QSTB and floating-point jobs remain IN_PROGRESS; remaining matrix groups are queued. No outcomes are inferred for active or queued jobs.
+
+
+## 149. RTL-tail artifact logging repair — 2026-11-25
+
+- Fixed `.github/workflows/sunnyone-rtl-tail.yml` in commit `4a1eb21ea31749fff6c2b12b51472123a2540a59`: the pytest command now uses Bash `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log`, matching the upload-artifact path while preserving pytest's exit status.
+- GitHub started validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) on that workflow-only commit. It is IN_PROGRESS at latest poll; artifact creation is not yet verified.
+- The previous run's exact log proved the defect: 33 passed, 1 skipped, 183 deselected; artifact action said no file existed. This correction affects CI logging only, not RTL or test selection.
+- Active source-regression runs on SHA `36104fda` remain in progress: software-core `45598047393`, RTL/board `45598047324`; subsystem matrix `45598047338` has 6 successful groups, 2 running, and 6 queued at latest poll. Continue polling; do not infer results.
