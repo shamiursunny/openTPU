@@ -704,3 +704,14 @@ Run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/456223269
 Ten completed job logs and their pytest summaries were retrieved and inspected. Results and artifacts: ISA 18 (`139233449899`, artifact `15024379354`); compiler 44 (`139233450657`, `15026211469`); kernels 46 (`139233450577`, `15026436432`); quant 81 (`139233450565`, `15027565119`); formats 13 (`139233450333`, `15027510239`); VOPS 101 (`139233450456`, `15030235221`); FP 12 (`139233450380`, `15029541963`); MX 32 (`139233450804`, `15029542120`); stream 46 (`139233450596`, `15032330134`); dataflow 27 (`139233450490`, `15029769939`). All ten summaries report passed-only outcomes.
 
 Subtotal: **420 passed, 0 reported failures, 0 reported skips**. This is partial software-core evidence, not a completed gate. The active waits job and four queued jobs are not counted. Keep the matrix running without source/workflow changes. After all 15 pass, run RTL-uncovered once and then board-functional once, sequentially. Manufacturer handoff remains **NOT READY**.
+
+
+## 36. Software-core live result and WAITC retry — 2026-11-25 (Asia/Dhaka)
+
+The serial software-core workflow [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), workflow/source commit `38377909bf68e3aa6102efac6c56b832675d44d4`, reached terminal state with **14/15 module jobs SUCCESS and one WAITC job CANCELLED**. All 14 successful job logs and pytest summaries were inspected: **557 passed, 1 skipped, 0 reported failures**. The single skip is the host model test whose `models/LFM2.5-230M` weights were not downloaded. Exact per-module job/artifact evidence is recorded in `docs/sunnyone/PROJECT_TRACKER.md` section 158.
+
+WAITC job `139233450429` was cancelled at approximately 44m36s with pytest at 84%; the log shows successful tests through `test_waitc_rtl_boot_programs_of_different_lengths[2]`, but no terminal summary. No WAITC count is credited. This is a timeout/runtime-budget issue, not an observed assertion failure. Partial log artifact: `15034188015`.
+
+A serial, two-part retry workflow was added at commit `37d2f78eef227275347f58b39fcab69916cdd60f`: `.github/workflows/sunnyone-waits-retry.yml`. It executes every test in `tests/test_waits.py` exactly once across two disjoint groups: all tests except `test_waitc_rtl_follow` (45-minute job), followed by all four RTL FOLLOW parameter cases (60-minute job). The second job depends on the first; both upload logs even on failure. The tracker update commit `d7aefdf27d9aaad1e59288df3846b5153221a924` is the configured push trigger. Verify the resulting Actions run and exact-SHA artifacts before closing WAITC.
+
+**Current status:** software-core PARTIAL; WAITC OPEN. Do not proceed to RTL-uncovered or board-functional until the complete WAITC retry passes. Manufacturer readiness remains **NOT READY**. No RTL/test source was changed for this retry; do not infer PPA, physical, PHY/IP, board, silicon or commercial readiness.
