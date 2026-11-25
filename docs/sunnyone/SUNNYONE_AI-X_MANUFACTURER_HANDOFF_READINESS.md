@@ -845,3 +845,14 @@ Immediate continuation sequence for any new chat/tab:
 6. After each material engineering step, update PROJECT_TRACKER, MANUFACTURER_HANDOFF_READINESS and PROJECT_RESUME on this feature branch with exact SHA, run/job IDs, logs, counts, limitations and next action. Re-check branch HEAD and main before writes.
 
 Guardrails: serial/low-concurrency execution; no duplicate jobs without cause; no invented test counts; no test weakening; zero spend and no hardware purchase without explicit approval; no claims of tapeout/production readiness from simulation-only evidence. Continue the user's requested remaining engineering work autonomously within these constraints.
+
+
+
+
+## Verification continuity correction — 2026-11-26 (Asia/Dhaka)
+
+The active RTL run is [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), tested SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`. Group 3.1 job `139486043538` remains IN_PROGRESS at bounded pytest; pinned Verilator 5.044 build and dependencies succeeded. Group 3.2 `139486044115` and group 4 `139486044169` are queued. Board-functional is still gated on the complete RTL matrix.
+
+Historical group 4 was independently verified from job `139449080038` in run `45661335812`: terminal pytest summary **5 passed, 212 deselected, 0 failures**. The test source blob is identical on the active run SHA (`84cdfed65c2c9d3604e51080ce88d878fc71a76a`). This corrects the prior statement that group 4 had no successful evidence; a later cancelled attempt does not erase the earlier successful execution on unchanged source. The current workflow's group-4 rerun is redundant and must not be counted as additional unique coverage. Groups 1 and 2 also retain historical passing evidence. No manufacturer gate is closed by this correction; formal, CDC/RDC, physical/PPA, production IP/PHY, board electrical, hardware, power/thermal, silicon and commercial gates remain open. **Manufacturer handoff remains NOT READY.**
+
+Next action: finish the existing run serially, inspect terminal logs/artifacts for 3.1, 3.2 and the duplicate group-4 run, then inspect board-functional only after all RTL jobs succeed. Preserve feature-branch-only writes, zero-spend approval and protected `main` (`d84db55712aba0d40811d7762cb052f05d55b7e5`).
