@@ -466,3 +466,29 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 - Three previously cancelled jobs have been requested for retry. Current latest attempt: `rtl-uncovered` in progress; `software-core` in progress; `board-functional` remains cancelled because the containing workflow attempt is active and GitHub rejected an immediate rerun. Retry board-functional after the other jobs finish. Cancellation is not a pass or test failure.
 - PPA workflow diagnostics were corrected in commit `c568020d91efd045c6dd5d89dbc30ebdbac2c866`: removed full `run.log` and bulk `work/results/**` from artifact upload; retained 200-KiB run-log tail, file inventory, report copy, config/constraints, and work/logs + work/reports. Added diagnostic file-size inventory. Await the new run before deciding whether artifact size and failure cause are resolved.
 - These results remain scoped to exact SHA `68baca...`; docs/CI workflow changes are not RTL verification. No PPA metric or manufacturing readiness claim.
+
+## 20. Current continuation state — 2026-11-25
+
+### Verified baseline
+- Subsystem matrix: 14/14 jobs SUCCESS; exact summaries reconcile to 377 passed, 1 configuration-inapplicable skip, 0 failures on RTL SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+- A02/A03 integrated four-DIMM AXI, expected-negative aperture, global map and HMUX tests remain PASS on the same exact SHA. RTL-tail remains scoped PASS (33 passed, 1 skipped, 183 deselected). One-copy 128K TMEM job SUCCESS without an asserted count.
+- Feature branch compared to tested RTL SHA is 32 commits ahead and 0 behind; changes are only the PPA workflow and project continuity docs. Protected main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main-branch update was made.
+
+### Retry state
+- Board-functional job `139135578982`: IN_PROGRESS; tool installation step active, test step not yet started.
+- Software-core job `139135639920`: IN_PROGRESS; tool installation step active, test step not yet started.
+- Uncovered RTL latest job `139135582940`: CANCELLED; another rerun request is blocked by the active workflow attempt. Retry after board-functional completes.
+- Earlier retry jobs `139003943623`, `139003968520`, and `139003945395` ended CANCELLED. These are not passes and do not establish test failures.
+
+### PPA and warnings
+- Compact evidence workflow commit: `c568020d91efd045c6dd5d89dbc30ebdbac2c866`. It excludes bulky result databases/full run.log and retains compact diagnostics. A post-repair run/result/artifact was not verified at this checkpoint. Historical run `45455745851` remains FAILED/OPEN; no PPA metrics may be stated.
+- WIDTHTRUNC and UNOPTFLAT remain open for explicit width-contract and structural disposition; source review has not demonstrated a functional defect. No speculative RTL refactor was made.
+
+### Next exact actions
+1. Poll board-functional and software-core until completion; inspect full job logs and extract exact pytest summaries, failures, skips and deselections.
+2. Once the board workflow is no longer active, rerun uncovered RTL and inspect its exact result.
+3. Locate or dispatch the post-repair PPA workflow run; inspect artifact size, image digest, ORFS run tail, stage logs and reports. No PPA metrics until successful reproducible flow.
+4. Update the three continuity documents after every material result; retain exact SHA boundaries and do not sum overlapping test jobs.
+5. Keep final full regression on one immutable candidate SHA as a release gate.
+
+**Release decision remains NOT READY** for fabrication, tapeout, physical signoff, production-board build or silicon qualification.
