@@ -1,6 +1,7 @@
 name: SUNNYONE core software and ISA unit tests
 
-# Cancel superseded runs of this same suite on newer commits; preserve other suites.
+# Keep this suite isolated from other workflows. Run one test module at a time
+# so a single slow Verilator compile cannot consume the whole software-core budget.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -34,8 +35,30 @@ permissions:
   contents: read
 jobs:
   software-core:
+    name: Software core — ${{ matrix.test_file }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      # Deliberately serial: one test module per runner, no overlapping heavy suites.
+      max-parallel: 1
+      matrix:
+        test_file:
+          - tests/test_isa.py
+          - tests/test_compiler.py
+          - tests/test_kernels.py
+          - tests/test_quant.py
+          - tests/test_formats.py
+          - tests/test_vops.py
+          - tests/test_fp.py
+          - tests/test_mx.py
+          - tests/test_stream.py
+          - tests/test_dataflow.py
+          - tests/test_waits.py
+          - tests/test_waitw.py
+          - tests/test_host.py
+          - tests/test_host_lock.py
+          - tests/test_host_runs.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -46,21 +69,15 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest transformers && python -m pip install -e .
-      - name: Core ISA, compiler, kernels, numerics and host software
-        run: >-
-          pytest -q
-          tests/test_isa.py
-          tests/test_compiler.py
-          tests/test_kernels.py
-          tests/test_quant.py
-          tests/test_formats.py
-          tests/test_vops.py
-          tests/test_fp.py
-          tests/test_mx.py
-          tests/test_stream.py
-          tests/test_dataflow.py
-          tests/test_waits.py
-          tests/test_waitw.py
-          tests/test_host.py
-          tests/test_host_lock.py
-          tests/test_host_runs.py
+      - name: Run selected software-core test module
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -vv -ra "${{ matrix.test_file }}" 2>&1 | tee "/tmp/software-core-${{ strategy.job-index }}.log"
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-software-core-${{ strategy.job-index }}-log
+          path: /tmp/software-core-${{ strategy.job-index }}.log
+          if-no-files-found: warn
