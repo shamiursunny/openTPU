@@ -815,3 +815,36 @@ WAITC job `139233450429` was cancelled at approximately 44m36s and 84% pytest pr
 - No tests/assertions are removed or weakened. Preserve exact-SHA evidence.
 - No paid services or hardware purchases without explicit approval.
 - Manufacturer readiness remains **NOT READY**. PCIe/DDR PHY/controller, DMA/IOMMU, CDC/RDC, DFT, production SRAM, PDK/package, physical signoff, board electrical, measured performance/power/thermal, silicon and commercial qualification remain open.
+
+
+## 37. Latest continuation checkpoint — WAITC PASS (2026-11-25, Asia/Dhaka)
+
+### Verified latest test evidence
+- WAITC retry run: [45641472720](https://github.com/shamiursunny/openTPU/actions/runs/45641472720).
+- Tested SHA: `d7aefdf27d9aaad1e59288df3846b5153221a924`.
+- General WAITC job `139300967172`: 264 passed, 2 skipped, 4 deselected; artifact `15035927377`.
+- RTL FOLLOW job `139307879702`: all four cases passed (`[2-sim]`, `[4-board]`, `[4-wg]`, `[4-wg_se1]`); artifact `15038143201`.
+- WAITC total: **268 passed, 2 skipped, 0 failures**. Both skips are PyTorch-dependent imports in other test modules; the complete WAITC selection has no skipped WAITC tests.
+- Software-core aggregate across non-overlapping evidence: **825 passed, 3 skipped, 0 reported failures**. The old run 45622326985 remains historically cancelled; WAITC is closed by the separate retry.
+
+### Latest documentation commits
+- Tracker: `702e1ce3b8bf6490bff21bec091430801027896a`.
+- Manufacturer handoff: `5413456d5e7083ae47e918b68a98b1f1a2143697`.
+- This resume update follows these sequentially on the same feature branch.
+
+### Immediate next steps
+1. Retry the one-line `needs: rtl-uncovered` dependency in `.github/workflows/sunnyone-rtl-functional.yml`. The previous GitHub Contents API update was rejected (HTTP 409: repository rule validation timed out); a subsequent read verified the workflow remained unchanged. Do not assume serialization is fixed.
+2. After the workflow edit is committed, verify the YAML and wait for RTL-uncovered to finish. Inspect the full log, pytest terminal summary, and artifact.
+3. Board-functional must run only after RTL-uncovered passes. Inspect its full log and artifact.
+4. If any suite fails, classify and diagnose without removing/weakening tests. Do not proceed to consolidated regression until both sequential stages pass.
+5. Update tracker, handoff and resume to the exact tested SHA and evidence; then complete the consolidated regression.
+6. Keep PPA deferred until functional and ASIC prerequisites are closed.
+
+### State and guardrails
+- Software-core: PASS for observed module coverage (825 passed, 3 skipped, 0 reported failures).
+- Subsystem/memory: 14/14 successful, 377 passed, 1 configuration-inapplicable skip; no rerun needed absent source/environment change.
+- RTL-uncovered: PENDING.
+- Board-functional: PENDING.
+- Consolidated regression: PENDING.
+- PPA/manufacturer readiness: NOT READY.
+- Feature branch only; preserve protected main. No expenditure or hardware purchase without explicit approval. Never claim silicon/tapeout readiness from simulation-only results.
