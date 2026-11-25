@@ -785,3 +785,33 @@ Open [Actions run 45622326985](https://github.com/shamiursunny/openTPU/actions/r
 Inspected completed pytest logs (all passed-only): ISA 18; compiler 44; kernels 46; quant 81; formats 13; VOPS 101; FP 12; MX 32; stream 46; dataflow 27. Total **420 passed, 0 reported failures, 0 reported skips** across ten completed modules. Artifact IDs in the same order: `15024379354`, `15026211469`, `15026436432`, `15027565119`, `15027510239`, `15030235221`, `15029541963`, `15029542120`, `15032330134`, `15029769939`. The waits module and four queued modules contribute no counts. Do not mark software-core PASS until all 15 jobs succeed and logs are inspected.
 
 Next steps: (1) poll the existing run to terminal; (2) inspect every remaining job log and artifact; (3) run RTL-uncovered once; (4) run board-functional once after RTL-uncovered settles; (5) reconcile exact SHA/run/job/artifact/count evidence in all three documents; (6) freeze candidate and run required consolidated regression. Do not start duplicate broad workflows or touch watched RTL/test/workflow paths during this run. Zero-spend; feature branch only. Manufacturer readiness remains **NOT READY**; PPA floorplan/PDN, production PHY/IP, physical signoff, board, silicon and commercial gates remain open.
+
+
+## 36. Current continuation state — software-core and WAITC retry (2026-11-25, Asia/Dhaka)
+
+### Verified repository state
+- Repository: `shamiursunny/openTPU`.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Protected `main` is not to be modified; recorded SHA remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Tracker evidence is current through commit `d7aefdf27d9aaad1e59288df3846b5153221a924`; the handoff update follows on this feature branch.
+- WAITC retry workflow added at `37d2f78eef227275347f58b39fcab69916cdd60f`: `.github/workflows/sunnyone-waits-retry.yml`.
+
+### Software-core result
+Run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985) completed **14/15 module jobs successfully**. Inspected logs total **557 passed, 1 skipped, 0 reported failures** across the successful modules. The skip is `tests/test_host.py` model coverage because `models/LFM2.5-230M` was not downloaded. Exact job and artifact IDs are in tracker section 158.
+
+WAITC job `139233450429` was cancelled at approximately 44m36s and 84% pytest progress. Its partial artifact is `15034188015`; there is no terminal pytest summary, so it contributes no test count. Do not treat it as a pass or an assertion failure.
+
+### Next action — do not reorder
+1. Verify the new WAITC retry Actions run triggered by tracker commit `d7aefdf27d9aaad1e59288df3846b5153221a924`.
+2. Inspect the general group (`tests/test_waits.py -k 'not test_waitc_rtl_follow'`) and its log/artifact.
+3. Inspect the RTL FOLLOW group (`tests/test_waits.py -k 'test_waitc_rtl_follow'`) and its log/artifact. It must include all four parameter cases.
+4. Only if both groups pass, close software-core and run the remaining RTL-uncovered selection once.
+5. After RTL-uncovered settles, run board-functional once. Inspect complete logs and artifacts.
+6. Reconcile tracker, handoff and resume to the same exact tested SHA and evidence; freeze a candidate and complete consolidated regression.
+
+### Constraints and readiness
+- Do not rerun the successful subsystem matrix (14/14, 377 passed, 1 configuration-inapplicable skip) without a source/environment reason; do not double-count the 104 Native DRAM/RAM tests already included.
+- Do not overlap broad suites or repeat successful modules unnecessarily.
+- No tests/assertions are removed or weakened. Preserve exact-SHA evidence.
+- No paid services or hardware purchases without explicit approval.
+- Manufacturer readiness remains **NOT READY**. PCIe/DDR PHY/controller, DMA/IOMMU, CDC/RDC, DFT, production SRAM, PDK/package, physical signoff, board electrical, measured performance/power/thermal, silicon and commercial qualification remain open.
