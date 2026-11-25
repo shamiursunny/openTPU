@@ -1652,3 +1652,46 @@ Latest re-poll of matrix run [45598047338](https://github.com/shamiursunny/openT
 Runtime review found a scheduling risk worth addressing after this run settles: `tests/test_native_dram.py::_run` permits individual simulations up to 1,800 seconds, while the matrix job timeout is 45 minutes and the Native DRAM group bundles the parameterised `test_native_dram.py` suite with `test_tech_ram.py`. This is not proof that a test is hung or failed; it means the group has insufficiently bounded aggregate runtime for reliable scheduling. Do not modify the active workflow mid-run because its concurrency policy could cancel the current matrix.
 
 After this matrix reaches a terminal state, split Native DRAM into smaller named test groups (functional/contract, random/stage stress, throughput/half-beat, high-address) and run technology RAM independently. Keep the same tests and assertions; this is execution partitioning, not test weakening. Set explicit per-job timeout budgets and preserve per-group log artifacts. Then rerun only the cancelled software-core and RTL/board jobs sequentially, one at a time. No workflow or RTL change was made in this checkpoint.
+
+
+## 152. Verified current state and post-regression next-state plan — 2026-11-25
+
+### Repository baseline
+- Repository: https://github.com/shamiursunny/openTPU.
+- Active feature branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Feature branch HEAD at checkpoint preparation: `db16fea6a7f39d29be62e4606842d3d24482520c`. This documentation update is feature-branch-only.
+- Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify it.
+- Current verification runs below execute source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`. Documentation-only commits do not change the source SHA tested by those already-running jobs.
+
+### Completed and inspected
+- Subsystem/memory matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): **14/14 jobs SUCCESS** on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`.
+- The matrix produced 14 separate per-job log artifacts. The Native DRAM + technology RAM artifact `sunnyone-subsystems-12-log` (artifact ID `15020003974`) was downloaded and inspected. Exact pytest summary: **104 passed in 1,829.20 seconds (30m 29s)**; no skips or failures in that group.
+- The complete matrix's reconciled totals from its job logs are **377 passed, 1 configuration-inapplicable skip, 0 failures**. The skip is the parameter guard `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. Do not add the 104 Native DRAM/RAM tests again to the matrix total; they are already included.
+- RTL-tail run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541), source SHA `e0eea98ba00e65ca42b785bc6133a5679529506b`: **33 passed, 1 skipped, 183 deselected in 635.12 seconds**; artifact was downloaded and inspected. This is a separate run/SHA and is not added to the 377 matrix total.
+- AXI-Lite control run [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519): SUCCESS on its own exact testbench SHA; expected sticky-error status corrected in the testbench only, no RTL change.
+- Previously recorded focused lint, reset audit, address-map formal, virtual DRAM, workload harness, isolated TMEM, PCIe Gen2, HMUX and ASIC-configuration results remain scoped to their individual run SHAs and test scopes. They are not a consolidated release signoff.
+
+### Remaining regression queue — live status at checkpoint
+- Software-core retry [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), attempt 2, job `139201961395`: **IN_PROGRESS** on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`. Setup, checkout, Python, Verilator and dependency installation completed; the test step “Core ISA, compiler, kernels, numerics and host software” is running. No terminal result or test count is available yet.
+- Remaining RTL/board workflow [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324): previous attempt is **CANCELLED**. Its jobs `139149245874` (rtl-uncovered) and `139149246459` (board-functional) have no usable regression result and must not be counted as passes or failures.
+- Execution order is fixed: wait for software-core to reach terminal state and inspect its complete log/artifacts; only then retry remaining RTL/board coverage, sequentially and without overlapping broad suites.
+- No source/test changes are authorised merely to obtain green status. Diagnose any genuine failure from its log and source, preserve assertions, and rerun the smallest affected scope before any broad retry.
+
+### CI runtime/scheduling finding
+- Native DRAM + technology RAM completed successfully in 30m29s of test execution within the 45-minute job budget. The earlier aggregate-runtime concern did not manifest as a timeout on this run. Keep an eye on future runtime variance; do not split the suite solely on the earlier hypothesis without new evidence.
+- Keep subsystem matrix concurrency at `max-parallel: 2`, broad suites sequential, and PPA separate/manual or narrowly gated. Existing workflow concurrency groups are per workflow/ref; avoid commits touching watched RTL/test/workflow paths while a relevant run is active.
+
+### Defined next state — after all currently outstanding regression jobs complete
+The next checkpoint is reached only when:
+1. Software-core retry is terminal, its complete pytest/log output and artifacts are inspected, and exact pass/skip/fail/deselected counts are recorded.
+2. The remaining RTL-uncovered and board-functional jobs have each been rerun after software-core, reached terminal states, and had their logs/artifacts inspected.
+3. Any failure is classified as test, RTL, environment, infrastructure or workflow issue; no cancelled or missing result is relabelled as a pass.
+4. The three continuity documents are reconciled to the same exact source SHA and run/job evidence.
+5. A single immutable candidate SHA is selected for consolidated regression. Any source changes reset the candidate and require the relevant tests to be rerun.
+
+### Engineering phase after regression closure
+- First close functional, lint, reset, formal/protocol and host/board integration gaps on the frozen candidate.
+- Then diagnose and repair the WG8 research PPA failure from run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546), which stopped at ORFS floorplan-PDN placement checking. No final area/timing/power metric is accepted.
+- Only after prerequisite gates are green should a reproducible PPA run be attempted and its full reports inspected.
+- Continue PHY/IP feasibility, DDR controller/PHY/training/ECC, DMA/IOMMU, PCIe endpoint/SerDes, CDC/RDC, DFT, SRAM macro, package, physical signoff, board electrical, thermal/power and silicon qualification planning.
+- Manufacturer readiness remains **NOT READY**. Completion of the current regression queue is a verification milestone, not completion of all chip-design, manufacturing or commercial tasks.
