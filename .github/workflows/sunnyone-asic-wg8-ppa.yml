@@ -53,6 +53,10 @@ jobs:
           if [ -f build/asic/nangate45-wg8/run.log ]; then
             tail -c 200000 build/asic/nangate45-wg8/run.log > /tmp/wg8-run-tail.txt
           fi
+          find build/asic/nangate45-wg8/work/logs build/asic/nangate45-wg8/work/reports -type f -printf '%s %p\n' 2>/dev/null | sort -nr | head -80 > /tmp/wg8-diagnostic-file-sizes.txt || true
+          if [ -f build/asic/nangate45-wg8/report.json ]; then
+            cp build/asic/nangate45-wg8/report.json /tmp/wg8-report.json
+          fi
       - name: Upload WG8 PPA evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -62,12 +66,11 @@ jobs:
             /tmp/orfs-image-id.txt
             /tmp/wg8-files.txt
             /tmp/wg8-run-tail.txt
-            build/asic/nangate45-wg8/run.log
-            build/asic/nangate45-wg8/report.json
+            /tmp/wg8-diagnostic-file-sizes.txt
+            /tmp/wg8-report.json
             build/asic/nangate45-wg8/src/tiles.json
             build/asic/nangate45-wg8/config.mk
             build/asic/nangate45-wg8/constraint.sdc
             build/asic/nangate45-wg8/work/logs/**
             build/asic/nangate45-wg8/work/reports/**
-            build/asic/nangate45-wg8/work/results/**
           if-no-files-found: ignore
