@@ -873,3 +873,17 @@ Both completed jobs checked out candidate SHA `fd2a310b303d94226c1e65efa0e63b767
 The overall workflow remains IN_PROGRESS because Group 4 is still executing. Its log endpoint was unavailable while live (Azure BlobNotFound); this is not a test failure or a pass. Do not rerun it while the current job remains active. Groups 1 and 2 have previously verified passes; the historical Group 4 pass remains historical evidence and must not be double-counted with the current run.
 
 **Current release decision remains NOT READY.** After Group 4 terminates, inspect the dependent board-functional job and continue the consolidated regression, integration, formal, lint, PPA, physical/IP, hardware and commercial gates. No test count is to be treated as a deduplicated lifetime total.
+
+
+
+## Live continuation checkpoint — 2026-11-26 (Asia/Dhaka)
+
+- Repository: `shamiursunny/openTPU`; all updates remain on feature branch `sunnyone/commercial-profitability-architecture-2026-11-23`. Branch tip before this checkpoint: `5cc9b8583786bd5a529b0008363aebdc8a547360`. Protected `main` independently verified unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify or merge into it.
+- RTL workflow [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), tested SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`:
+  - Group 3.1 job `139486043538`: SUCCESS; exact terminal summary **8 passed, 209 deselected, 0 failed**; artifact `15062436327`.
+  - Group 3.2 job `139486044115`: SUCCESS; exact terminal summary **33 passed, 184 deselected, 0 failed**; artifact `15064162074`.
+  - Group 4 job `139486044169`: SUCCESS; downloaded artifact `15062269952` and inspected complete log; exact terminal summary **5 passed, 212 deselected, 0 failed** (336.28 s).
+  - Historical groups 1 and 2 remain accepted from unchanged test source: **12 passed** and **24 passed**, respectively. Do not rerun or double-count them. The newly verified group selections 3.1 + 3.2 + 4 add 46 scoped passes; the four groups 1/2/3.1/3.2/4 together have 82 scoped pass executions. This is not a claim of 82 unique lifetime tests or full RTL acceptance without selector overlap reconciliation.
+- The workflow's dependency-gated board-functional job `139521841026` has started only after all three currently scheduled RTL matrix jobs succeeded. At the latest live poll it remained **IN_PROGRESS** at the host-driver and board-model regression command; setup, checkout, Python, Verilator installation and project dependencies all succeeded. Its workflow timeout is 45 minutes. No board test count is credited until its terminal log/artifact is inspected. Do not start another board job or duplicate workflow.
+- Current action: poll job `139521841026`; when terminal, inspect complete log and artifact, record exact pytest counts and failures/skips. If it passes, proceed to consolidated regression only if its defined prerequisites are satisfied; then continue remaining integration/formal/lint/PPA/physical/IP/PHY/DFT/board-electrical/hardware/commercial gates. If it fails, diagnose the actual failing tests and make minimal fixes without weakening selectors.
+- Manufacturer handoff remains **NOT READY**. Selected RTL simulation success is not full formal proof, CDC/RDC closure, physical signoff, production PHY/IP readiness, board electrical validation, hardware performance/power/thermal evidence, silicon qualification, or commercial validation. Maintain zero-spend/no-hardware-purchase without explicit approval.
