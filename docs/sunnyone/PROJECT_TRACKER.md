@@ -1793,3 +1793,53 @@ All ten terminal-success job logs were retrieved and their pytest summaries insp
 Verified subtotal: **420 passed, 0 reported failures, 0 reported skips** across ten completed module logs. The waits module is still executing and contributes no count. The four queued modules contribute no count. Software-core remains OPEN until all 15 modules reach terminal success and their logs/artifacts are inspected.
 
 No RTL, test, assertion or workflow file was changed. This is a documentation-only checkpoint on the active feature branch; do not interrupt the serial run. Next order remains: finish the 15 modules, then run RTL-uncovered once, then board-functional once, then reconcile and freeze the final candidate SHA. Protected `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Manufacturer readiness remains **NOT READY**; PPA/physical/IP/PHY/board/silicon/commercial gates remain open.
+
+
+## 158. Serial software-core matrix closure and bounded WAITC retry — 2026-11-25 (Asia/Dhaka)
+
+### Repository and protection
+- Repository: `shamiursunny/openTPU`.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Protected `main` remains recorded at `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main-branch writes were made.
+- Added a workflow-only retry partition at commit `37d2f78eef227275347f58b39fcab69916cdd60f`: `.github/workflows/sunnyone-waits-retry.yml`. No RTL, software, test source or assertions were changed.
+
+### Software-core run 45622326985
+- Workflow/source commit: `38377909bf68e3aa6102efac6c56b832675d44d4`.
+- Final live state: **14 of 15 module jobs SUCCESS; 1 CANCELLED; 0 assertion failures**.
+- Inspected all 14 successful module logs and pytest summaries. Reconciled exact total: **557 passed, 1 skipped, 0 reported failures**.
+- Module summaries and log artifact IDs:
+  - ISA: 18 passed; job `139233449899`; artifact `15024379354`.
+  - Compiler: 44 passed; job `139233450657`; artifact `15026211469`.
+  - Kernels: 46 passed; job `139233450577`; artifact `15026436432`.
+  - Quant: 81 passed; job `139233450565`; artifact `15027565119`.
+  - Formats: 13 passed; job `139233450333`; artifact `15027510239`.
+  - VOPS: 101 passed; job `139233450456`; artifact `15030235221`.
+  - FP: 12 passed; job `139233450380`; artifact `15029541963`.
+  - MX: 32 passed; job `139233450804`; artifact `15029542120`.
+  - Stream: 46 passed; job `139233450596`; artifact `15032330134`.
+  - Dataflow: 27 passed; job `139233450490`; artifact `15029769939`.
+  - WAITW: 6 passed; job `139233453692`; artifact `15035495039`.
+  - Host: 108 passed, 1 skipped; job `139233453975`; artifact `15034339815`. The single skip is `models/LFM2.5-230M not downloaded`.
+  - Host-lock: 5 passed; job `139233453876`; artifact `15035721218`.
+  - Host-runs: 18 passed; job `139233453716`; artifact `15033423718`.
+- WAITC module job `139233450429` was cancelled at approximately 44m36s, with pytest progress at 84%. The log shows successful execution through `test_waitc_rtl_boot_programs_of_different_lengths[2]`, but no terminal pytest summary. Therefore assign **no pass/skip/fail count** to this module. This is a job-timeout/runtime-budget issue; no assertion failure was observed. Artifact `15034188015` preserves the partial log.
+
+### Controlled WAITC retry
+- Added `.github/workflows/sunnyone-waits-retry.yml` at commit `37d2f78eef227275347f58b39fcab69916cdd60f`.
+- The workflow runs the full `tests/test_waits.py` selection in two disjoint, serial groups: all tests except `test_waitc_rtl_follow` (45-minute budget), followed by all four `test_waitc_rtl_follow` parameter cases (60-minute budget).
+- The second group depends on the first. Each group uploads a full log even on failure. No test or assertion is removed; this partitions the expensive four-case RTL FOLLOW block that consumed most of the prior job budget.
+- The retry is triggered by this tracker update. Verify its live run ID, both job conclusions, full pytest summaries and artifacts before closing WAITC.
+
+### Updated next-action sequence
+1. Inspect and close the two-part WAITC retry on its exact tested SHA.
+2. Only after WAITC is fully successful, run the remaining RTL-uncovered selection once; inspect full logs and artifacts.
+3. Then run board-functional once; inspect full logs and artifacts.
+4. Diagnose any failures without weakening tests/assertions; classify test, RTL, environment, infrastructure or workflow causes.
+5. Reconcile tracker, manufacturer handoff and project resume to the same tested SHA and exact evidence; then freeze a candidate and run the appropriate consolidated regression.
+6. Keep PPA deferred until functional/ASIC prerequisites are closed. The prior WG8 ORFS floorplan-PDN failure remains unresolved; no accepted PPA metrics exist.
+
+### Stage and readiness
+- Software-core: **PARTIAL / 14 of 15 modules successful**; 557 passed and 1 skipped across successful modules. WAITC is pending controlled retry.
+- Subsystem/memory matrix: **14/14 successful**, 377 passed, 1 configuration-inapplicable skip, 0 failures; the 104 Native DRAM/technology RAM passes are included in the 377.
+- Stage A1.12.11.16.54 remains OPEN. Manufacturer readiness remains **NOT READY**. Production PCIe/DDR PHY and controller IP, DMA/IOMMU, CDC/RDC, DFT, production SRAM macros, PDK/package, physical signoff, board electrical validation, real-hardware power/thermal/performance measurements, silicon qualification and commercial validation remain outstanding.
+- Maintain zero-spend without explicit approval and feature-branch-only changes.
