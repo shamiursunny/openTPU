@@ -1722,3 +1722,12 @@ The next checkpoint is reached only when:
 6. Keep PPA deferred until functional/ASIC prerequisites are green; the prior WG8 ORFS floorplan-PDN failure remains unresolved and no accepted PPA metrics exist.
 
 This re-poll changes no RTL, tests, workflows or architecture. Manufacturer readiness remains **NOT READY**; the regression queue is not chip-design completion or fabrication signoff.
+
+
+## 154. Software-core timeout diagnosis and serial module isolation — 2026-11-25
+
+The software-core retry [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), job `139201961395`, reached terminal **CANCELLED**. Its job log was retrieved after termination and shows pytest began at 12:23:46 UTC and GitHub cancelled the operation at 13:08:28 UTC (approximately 44m42s), during the test step. The progress display had reached 43%; setup, checkout, Verilator installation and dependency installation had succeeded. There is no terminal pytest summary, so assign no pass/fail counts. This is consistent with the configured 45-minute job timeout, not proof of a test assertion failure.
+
+Workflow-only correction committed as `38377909bf68e3aa6102efac6c56b832675d44d4`: `.github/workflows/sunnyone-software-core.yml` now runs the exact same 15 test modules as a GitHub Actions matrix with `max-parallel: 1`, `fail-fast: false`, one module per job, 45-minute per-module timeout, verbose pytest output, and an always-uploaded per-module log artifact. No test files, assertions or RTL were changed. The module list is unchanged and complete: ISA, compiler, kernels, quant, formats, VOPS, FP, MX, stream, dataflow, waits, waitw, host, host-lock and host-runs. This isolates any slow module and prevents concurrent heavy modules. The workflow push trigger should create a new validation run; verify the actual run/job IDs and first module result before treating the correction as validated.
+
+Next: inspect the new workflow run; let the serial matrix proceed; if a module exceeds 45 minutes, use its verbose log to identify and split that specific module's test selection without deleting tests. Only after all 15 modules reach terminal success may software-core be marked PASS. Remaining RTL-uncovered and board-functional runs remain queued behind this sequence.
