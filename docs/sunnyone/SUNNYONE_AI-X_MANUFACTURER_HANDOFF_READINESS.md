@@ -663,3 +663,8 @@ Software-core attempt [45598047393](https://github.com/shamiursunny/openTPU/acti
 A workflow-only isolation fix was committed: `38377909bf68e3aa6102efac6c56b832675d44d4`. The same 15 test modules are now separate matrix jobs with `max-parallel: 1`, 45-minute per-module timeout, fail-fast disabled, verbose pytest logs and per-module artifacts. No RTL or test source was changed and no test/assertion was removed. Await and inspect the automatically triggered validation run; this scheduling change is not yet validated until actual job evidence is available.
 
 Handoff remains **NOT READY**. Complete all 15 module jobs, then rerun RTL-uncovered and board-functional sequentially, followed by consolidated regression. No PPA or manufacturing readiness claim is authorised.
+
+
+## 33. Software-core serial retry first module evidence — 2026-11-25
+
+The corrective serial matrix run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), on workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4`, is active. Re-poll shows one of 15 module jobs SUCCESS, one IN_PROGRESS and 13 QUEUED, confirming no overlapping module jobs. `tests/test_isa.py` job `139233449899`: **18 passed in 0.13s**; uploaded artifact `sunnyone-software-core-0-log` ID `15024379354` and pytest output inspected. `tests/test_compiler.py` job `139233450657` is currently IN_PROGRESS. This is only partial validation; the software-core handoff gate remains OPEN until every module passes. Manufacturer readiness remains NOT READY.
