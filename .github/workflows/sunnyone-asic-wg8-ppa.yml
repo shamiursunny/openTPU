@@ -5,7 +5,34 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 on:
-  # Long physical-design investigation is manually dispatched after qualification.
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    # Only synthesized WG8 sources/configuration or an explicit request marker start PPA.
+    # The workflow file itself is intentionally excluded to prevent self-trigger loops.
+    paths:
+      - 'targets/nangate45.toml'
+      - 'rtl/asic/**'
+      - 'rtl/vpu/otpu_fp.sv'
+      - 'rtl/vpu/otpu_fpipe.sv'
+      - 'rtl/top/otpu_pkg.sv'
+      - 'rtl/mem/otpu_tmem.sv'
+      - 'rtl/mem/otpu_actram.sv'
+      - 'rtl/seq/otpu_seq.sv'
+      - 'rtl/vpu/otpu_vtree.sv'
+      - 'rtl/dma/otpu_dma.sv'
+      - 'rtl/mxu/otpu_mxu.sv'
+      - 'rtl/vpu/otpu_quant.sv'
+      - 'rtl/vpu/otpu_se_comp.sv'
+      - 'rtl/vpu/otpu_se_tail.sv'
+      - 'rtl/vpu/otpu_vpu.sv'
+      - 'rtl/top/otpu_coll.sv'
+      - 'rtl/top/otpu_slice.sv'
+      - 'rtl/tech/generic/otpu_tech_dsp.sv'
+      - 'rtl/tech/asic/otpu_tech_ram.sv'
+      - 'tools/asic/**'
+      - 'opentpu/target.py'
+      - 'docs/sunnyone/PPA_REQUEST.md'
   workflow_dispatch:
 permissions:
   contents: read
