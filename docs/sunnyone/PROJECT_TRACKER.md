@@ -1744,7 +1744,7 @@ Push-triggered validation run [45622326985](https://github.com/shamiursunny/open
 - Repository: `shamiursunny/openTPU`.
 - Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
 - Protected `main` remains pinned at `d84db55712aba0d40811d7762cb052f05d55b7e5`; this update is feature-branch-only.
-- Workflow source commit: `38377909bf68e3aa6102efac6c56b832675d44d4`. The active branch ref is six commits ahead of that workflow commit; the compare reports the intervening changes are the three continuity documents. The software-core workflow path filter excludes these documentation paths, so this checkpoint update does not retrigger or cancel the active software-core matrix.
+- Workflow source commit: `38377909bf68e3aa6102efac6c56b832675d44d4`. Before this checkpoint's three documentation commits, the active branch was six commits ahead of the workflow source commit. This checkpoint added three documentation-only commits; final branch HEAD is `cb35e4d7680286208fdfd420a6de739b4f573a49`, nine commits ahead of the workflow source commit and zero behind. No RTL, test or workflow files changed. The software-core workflow path filter excludes these documentation paths, so the update does not retrigger or cancel the active matrix.
 - No RTL, test source, assertions or workflow definition was changed in this re-poll.
 
 ### Live run 45622326985
