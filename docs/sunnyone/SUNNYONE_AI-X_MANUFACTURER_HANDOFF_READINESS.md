@@ -729,3 +729,12 @@ Software-core evidence reconciles to **825 passed, 3 skipped, 0 reported failure
 **Remaining gates:** RTL-uncovered, board-functional, consolidated regression, PPA/physical design, production interfaces/IP, DFT, CDC/RDC, SRAM macros, PDK/package, board electrical verification, real-hardware power/thermal/performance measurements, silicon qualification and commercial readiness. Manufacturer readiness remains **NOT READY**.
 
 A sequencing correction to `.github/workflows/sunnyone-rtl-functional.yml` was attempted to make board-functional depend on rtl-uncovered. GitHub rejected the update with HTTP 409 (repository rule validation timeout); a fresh read confirmed no change. Thus the workflow still allows those jobs to run in parallel. Retry the workflow-only change when repository rule validation is healthy. Do not start board-functional until RTL-uncovered succeeds.
+
+
+## 38. CI workflow sequencing and verification status (2026-11-25)
+
+- WAITC retry workflow is now manual-dispatch only; tracker documentation changes no longer trigger a full WAITC rerun (commit 639e1ce7f2d590276cb979286eb7adb20eaadcb3).
+- RTL/board workflow now enforces board-functional needs rtl-uncovered (commit ebce653e73a378adce6dde60939cb1e052077862). Current run 45649502094 at that exact SHA is in progress; only RTL-uncovered job 139329804556 had started at last poll. No pass is assumed.
+- Historical RTL-tail run 45604384259 failed before test collection because its command supplied a literal backslash as a pytest argument (exit 4, no tests ran). The current RTL-tail workflow was inspected and has the corrected single-line pytest command; later run 45604527541 succeeded.
+- Accidental duplicate WAITC run 45649007571 remains in progress and is not counted. Previously verified WAITC pass remains run 45641472720 (268 passed, 2 skipped, 0 failures).
+- These are CI orchestration fixes only. They do not close RTL/board integration, physical design, production IP, hardware, or manufacturing signoff gates. Manufacturer readiness remains NOT READY.
