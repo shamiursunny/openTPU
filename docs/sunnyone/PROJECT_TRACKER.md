@@ -1843,3 +1843,35 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Subsystem/memory matrix: **14/14 successful**, 377 passed, 1 configuration-inapplicable skip, 0 failures; the 104 Native DRAM/technology RAM passes are included in the 377.
 - Stage A1.12.11.16.54 remains OPEN. Manufacturer readiness remains **NOT READY**. Production PCIe/DDR PHY and controller IP, DMA/IOMMU, CDC/RDC, DFT, production SRAM macros, PDK/package, physical signoff, board electrical validation, real-hardware power/thermal/performance measurements, silicon qualification and commercial validation remain outstanding.
 - Maintain zero-spend without explicit approval and feature-branch-only changes.
+
+
+## 159. WAITC controlled retry passed; RTL/board sequencing follow-up — 2026-11-25 (Asia/Dhaka)
+
+### WAITC retry run 45641472720
+- Exact tested head SHA: `d7aefdf27d9aaad1e59288df3846b5153221a924`.
+- Workflow: `.github/workflows/sunnyone-waits-retry.yml`.
+- Both jobs completed SUCCESS:
+  - General WAITC job `139300967172`: `tests/test_waits.py -k 'not test_waitc_rtl_follow'`; **264 passed, 2 skipped, 4 deselected**; artifact `15035927377`.
+  - RTL FOLLOW job `139307879702`: `tests/test_waits.py -k 'test_waitc_rtl_follow'`; all four configurations passed: `[2-sim]`, `[4-board]`, `[4-wg]`, `[4-wg_se1]`; **4 passed, 266 deselected**; artifact `15038143201`.
+- Combined complete WAITC selection: **268 passed, 2 skipped, 0 failures**. The skips are PyTorch-dependent imports from `tests/test_bcuwg_board.py` and `tests/test_autodecode.py`; no WAITC test was skipped. The four deselected tests in the general group are exactly the four RTL FOLLOW cases executed by the second job.
+- WAITC is now CLOSED / PASS at this tested SHA.
+
+### Reconciled software-core
+- Prior successful module jobs: 557 passed, 1 skipped.
+- WAITC retry: 268 passed, 2 skipped.
+- Combined observed software-core total: **825 passed, 3 skipped, 0 reported failures**. Counts are summed from non-overlapping test selections; WAITC retry replaces, rather than adds to, the cancelled WAITC attempt.
+- Prior software-core workflow 45622326985 remains globally CANCELLED because its WAITC matrix job was cancelled; do not relabel that historical workflow as success. Its 14 successful module jobs remain valid evidence, while the retry closes the outstanding module separately.
+
+### Serial RTL then board workflow sequencing
+- Existing `.github/workflows/sunnyone-rtl-functional.yml` currently defines `rtl-uncovered` and `board-functional` without a dependency, so GitHub may run them concurrently.
+- Attempted to add `needs: rtl-uncovered` to `board-functional`. GitHub rejected the contents update with HTTP 409 because repository rule validation timed out. A subsequent fetch confirmed the workflow file remained unchanged. **No sequencing fix is claimed as committed.**
+- Next: retry this single workflow edit after the repository rule service recovers; verify the file contents and resulting commit. Preserve the exact test selections. Do not manually start board-functional until RTL-uncovered has completed successfully.
+- After the dependency is committed, the workflow push should run serially. Inspect the RTL job's complete pytest summary and artifact; only then allow board-functional to run and inspect its summary/artifact.
+
+### Current status
+- Software-core: **PASS for observed module coverage** — 825 passed, 3 skipped, 0 reported failures, with all WAITC tests accounted for.
+- Subsystem/memory: 14/14 jobs successful; 377 passed, 1 configuration-inapplicable skip; previously verified and not rerun.
+- RTL-uncovered: PENDING.
+- Board-functional: PENDING; execution must follow RTL-uncovered.
+- Consolidated regression: PENDING.
+- PPA and manufacturer readiness remain open; do not claim tapeout readiness.
