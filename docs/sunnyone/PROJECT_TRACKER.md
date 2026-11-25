@@ -1960,3 +1960,15 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Uploaded artifact `sunnyone-rtl-uncovered-2-log`, ID `15049479359`, digest `sha256:7b48507d66da85cea1eac09b76aa9c52f648cd2e87f467a4d4c2ce53f6f206d6`.
 - Groups 1 and 2 now have 36 verified passes combined (12 + 24), on the same candidate SHA but in distinct jobs. Do not treat this as full-suite completion.
 - At the next poll group 3 (`139371665344`) had started toolchain build; group 4 (`139371666093`) remained queued. Board-functional remains gated behind all four groups. Continue the same run; inspect groups 3–4 and board job when complete.
+
+
+## 167. RTL uncovered group 3 active; current continuation state — 2026-11-26 (Asia/Dhaka)
+
+- Re-polled Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), workflow `SUNNYONE remaining RTL and board regressions`, run #118, candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`.
+- Group 1 job `139371666058`: completed SUCCESS, exact pytest result **12 passed, 205 deselected**, 0 failures/errors/skips; artifact ID `15047592555`.
+- Group 2 job `139371665991`: completed SUCCESS, exact pytest result **24 passed, 193 deselected**, 0 failures/errors/skips; artifact ID `15049479359`.
+- Group 3 job `139371665344`: **IN_PROGRESS** at `Run bounded RTL selection`. Verilator 5.044 build and dependency installation completed successfully. No terminal pytest result or artifact is available yet.
+- Group 4 job `139371666093`: **QUEUED**. Board-functional is not yet listed/running because it depends on all four RTL groups succeeding.
+- Groups 1+2 contribute 36 verified scoped passes on this candidate SHA, in separate jobs. Do not infer group 3/4 or board results, and do not call the entire RTL regression green.
+- Continue polling the same run. After each job reaches a terminal state, inspect its complete log and uploaded artifact; if any job fails/cancels, diagnose and retry only the affected scope without weakening selectors. Do not duplicate or alter the active workflow.
+- Manufacturer readiness remains **NOT READY**; keep main protected and zero-spend constraints in force.
