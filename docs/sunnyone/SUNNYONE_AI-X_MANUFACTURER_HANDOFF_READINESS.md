@@ -814,3 +814,12 @@ Run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/456613358
 - The earlier attempt's groups 1, 2 and 4 had succeeded; partial group-3 output showed 36 passes before cancellation, but no terminal pytest summary. Those partial results are not promoted to a completed group result. The new split run must supply terminal evidence for both 3.1 and 3.2.
 - Next: inspect run 45692968740 jobs; verify the new job names and matrix; wait for groups 1, 2, 3.1, 3.2 and 4 to finish; inspect each artifact/pytest summary; then confirm board-functional runs only after all five succeed. Keep exact pass/skip/fail counts evidence-based.
 - Protected `main` remains untouched. Consolidated regression, physical/PPA, board electrical, production IP/PHY, DFT, CDC/RDC, hardware power/thermal/performance, silicon qualification and manufacturer readiness remain open. Manufacturer handoff remains **NOT READY**.
+
+
+## 2026-11-26 CI efficiency correction
+- Historical verification audit: run #118 (`45661335812`) completed RTL group 1 job `139481341057` and group 2 job `139481272407` with `success`.
+- The `tests/test_rtl.py` blob at run #118 commit `7320c187810cbd7e4f106f0280922871f6430d1b` is byte-identical to the current branch blob (`84cdfed65c2c9d3604e51080ce88d878fc71a76a`). The exact group 1 and group 2 test selections therefore have unchanged test source. These groups are accepted as historical passes and removed from the next matrix run to avoid redundant execution.
+- Group 4 was `cancelled` in run #118 (`139481274581`); do not mark it passed from that run. The older successful RTL-tail suite (#91, job `139171823473`) ran a different eight-test selection and does not establish group 4 coverage. Group 4 remains required.
+- Workflow updated in commit `fd2a310b303d94226c1e65efa0e63b767ac747f4`: matrix now contains only groups 3.1, 3.2 and 4; group 1/2 historical evidence is recorded in workflow comments.
+- New workflow run #120 (`45693821197`) is pending on commit `fd2a310b303d94226c1e65efa0e63b767ac747f4`. Run #119 (`45692968740`) was created from the previous matrix and is superseded; its jobs were interrupted/cancelled after the workflow change. Confirm #120 jobs and conclusions before counting new passes.
+- Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5` at the last verification. Manufacturer handoff remains NOT READY; this CI correction does not close outstanding PPA, formal, CDC/RDC, integration, physical implementation, power/thermal, or commercial validation work.
