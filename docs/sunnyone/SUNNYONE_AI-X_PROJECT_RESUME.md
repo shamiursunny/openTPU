@@ -587,3 +587,10 @@ Do not trigger a new branch commit until these runs complete unless a critical f
 - Last verified RTL-tail regression run [45598047232](https://github.com/shamiursunny/openTPU/actions/runs/45598047232): 33 passed, 1 skipped, 183 deselected in 742.68 seconds; job passed but artifact was missing.
 - At latest poll, software-core `45598047393` and RTL/board `45598047324` remain IN_PROGRESS; subsystem matrix `45598047338` has six SUCCESS groups, two IN_PROGRESS and six QUEUED. These runs target SHA `36104fda` and must be assessed separately from the workflow-only logging fix.
 - No RTL changes. Keep PPA deferred; manufacturer readiness NOT READY.
+
+
+## CI logging repair correction — 2026-11-25
+
+The first logging-repair validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) FAILED before tests started. Exact error: `ERROR: file or directory not found: \\\\\\\\ `; the YAML continuation was over-escaped, causing pytest to interpret a literal backslash as a test path. No tests ran, and no artifact was created. This was a workflow-command quoting defect, not an RTL regression.
+
+Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log` in commit `e0eea98ba00e65ca42b785bc6133a5679529506b`. New validation run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541) is IN_PROGRESS. Verify both pytest outcome and actual artifact upload before closing the issue. Do not treat run 45604384259 as a test result.
