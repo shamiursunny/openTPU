@@ -610,3 +610,11 @@ Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `
 4. Review any failures at source/log level; make only minimal evidence-backed corrections.
 5. Freeze one candidate SHA and run consolidated regression; then revisit PPA only after prerequisite gates pass.
 
+
+
+## 29. Native DRAM runtime control — 2026-11-25
+
+The subsystem matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338) remains open: 13/14 jobs are successful and Native DRAM/technology RAM job `139149249337` is still running at the latest poll. The test step has no terminal result or artifact yet.
+
+Workflow/test review identifies an aggregate-runtime risk, not a confirmed test defect: the Native DRAM helper allows up to 1,800 seconds for an individual simulation, but the combined Native DRAM and technology RAM matrix job has a 45-minute overall timeout. After the current run settles, separate the Native DRAM suite into bounded logical groups and move technology RAM to its own job. Retain all tests, assertions and artifacts. Do not interrupt the active matrix to apply this scheduling-only change.
+
