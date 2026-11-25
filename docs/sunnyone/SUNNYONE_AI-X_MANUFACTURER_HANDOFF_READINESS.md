@@ -508,3 +508,11 @@ RTL-tail Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/
 - Historical PPA run `45455745851` failed at ORFS with exit 2 on SHA `dc34e3a...`. Prep successfully enumerated 288 SRAM macros / 14 sizes / 3,538 KiB, but no PPA metric is valid. The artifact is 1.56 GB and exceeds the connector's 512-MiB download ceiling; detailed ORFS logs therefore remain inaccessible via this artifact route. Root cause is OPEN, not diagnosed.
 - Action: make the next PPA artifact failure-focused and compact (retain the ORFS run tail, failed-stage logs/reports, config, constraints, image digest and summary; exclude large `work/results` databases), then rerun. No blanket claims about timing, power, area or congestion.
 - Manufacturer readiness remains NOT READY for fabrication, tapeout, physical signoff, production board or silicon qualification.
+
+
+## 22. Subsystem matrix closure and retry status — 2026-11-25
+
+- `45487118947` completed with 14/14 SUCCESS on RTL SHA `68baca...`. Extracted job summaries reconcile to **377 passed, 1 skipped, 0 failed**: 14, 17, 128, 20+1 skip, 5, 11, 13, 15, 8, 8, 23, 7, 104, 4 respectively. The one skip is explicitly configuration-inapplicable (64-GiB case: every address is DRAM). No overlap was added to any other workflow's test count.
+- Retry attempts now running for `rtl-uncovered` and `software-core`. `board-functional` is still cancelled; GitHub rejected an immediate rerun while the same workflow attempt is active. Retry it after the current attempt settles.
+- PPA workflow artifact was made compact in commit `c568020...`: excludes bulk results and full run.log, retains run tail, diagnostics inventory, reports, config/constraints, and stage logs. Await a new run; prior failure remains unresolved and no PPA metrics accepted.
+- Fabrication/tapeout/physical signoff remains NOT READY.
