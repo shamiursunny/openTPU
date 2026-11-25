@@ -1924,3 +1924,12 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Logical V1 remains a candidate architecture, not a complete host-connected ASIC or tapeout package.
 - Manufacturer readiness remains **NOT READY**. Digital regression success does not establish production IP/PHY, physical signoff, board or silicon qualification.
 - Keep all writes on the active feature branch; protected `main` is not to be modified. Zero-spend remains mandatory without explicit user approval.
+
+
+## 163. Verify serial RTL selector partition integrity — 2026-11-25 (Asia/Dhaka)
+
+- Fetched `tests/test_rtl.py` from the active feature branch; source blob SHA `84cdfed65c2c9d3604e51080ce88d878fc71a76a`.
+- Independently matched every one of the 18 original pytest `-k` selector terms against the actual test-function names. The four workflow groups match 5, 5, 5 and 3 distinct test functions respectively (18 total); every selector matches at least one function, and no test function is matched by more than one group. The two overlapping-looking TMEM selectors are intentionally in the same group.
+- This validates selector coverage and disjointness at the function-name level only. It does not prove all parametrized instances have executed; the new Actions logs must still provide actual collection and terminal pytest summaries for each group.
+- No test source or RTL changed. The workflow-only partition remains commit `7320c187810cbd7e4f106f0280922871f6430d1b`; exact workflow blob `9fb6fe3b62b6bda01af7fdea91bdfc4e8b1eb9f5`. Its actual push-triggered run ID/result is still not available through the connected run-list/status interface; do not assume execution or success.
+- Next: discover and inspect all four matrix jobs and artifacts, then board-functional after the matrix succeeds. Preserve the 45-minute per-group limit and `max-parallel: 1`; if any single group still times out, split that group by actual slow-test evidence, keeping the complete selection.
