@@ -906,3 +906,7 @@ Commit `7320c187810cbd7e4f106f0280922871f6430d1b` updates `.github/workflows/sun
 6. Continue open production-interface/IP, formal/CDC/RDC, DFT, SRAM, PDK/package, physical, board, thermal/power, silicon and commercial gates.
 
 **Readiness:** logical V1 is not a complete host-connected ASIC or tapeout package. Manufacturer readiness remains **NOT READY**. Zero spend without explicit approval; feature branch only; preserve main.
+
+
+### RTL partition static check — 2026-11-25
+The four serial RTL groups were checked against the current `tests/test_rtl.py` source (blob `84cdfed65c2c9d3604e51080ce88d878fc71a76a`). All 18 original selectors match 18 distinct test functions, split 5/5/5/3 with no missing selectors or duplicated function matches. This does not replace runtime evidence: retrieve each group's terminal pytest log/artifact and let board-functional run only after all four succeed. See PROJECT_TRACKER.md Section 163.
