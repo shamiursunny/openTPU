@@ -8,11 +8,6 @@ concurrency:
   cancel-in-progress: false
 
 on:
-  push:
-    branches:
-      - sunnyone/commercial-profitability-architecture-2026-11-23
-    paths:
-      - 'docs/sunnyone/PROJECT_TRACKER.md'
   workflow_dispatch:
 
 permissions:
