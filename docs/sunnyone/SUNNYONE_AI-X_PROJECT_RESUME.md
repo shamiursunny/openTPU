@@ -914,3 +914,7 @@ The four serial RTL groups were checked against the current `tests/test_rtl.py` 
 
 ### Live RTL run — 2026-11-25
 The push-triggered serial workflow is [run 45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), head SHA `7320c187810cbd7e4f106f0280922871f6430d1b`. Last observed: group 1 in progress at bounded pytest selection; groups 2–4 queued, proving the intended one-at-a-time schedule. Toolchain setup and dependencies passed. No terminal test summary exists yet; board-functional remains gated. Poll this exact run and inspect all logs/artifacts before claiming completion. See PROJECT_TRACKER.md Section 164.
+
+
+### Latest verified run update — 2026-11-25
+Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`: RTL uncovered group 1 job `139371666058` is **SUCCESS**, with retrieved terminal pytest summary **12 passed, 205 deselected, 0 failed** (24m14s). Artifact `sunnyone-rtl-uncovered-1-log`, ID `15047592555`, uploaded. At last poll group 2 (`139371665991`) was running; groups 3 (`139371665344`) and 4 (`139371666093`) queued. Next: poll run 45661335812; inspect group 2–4 logs/artifacts as each completes; inspect board-functional only after all four groups pass. Do not rerun or modify active workflow. This is not full RTL completion. Manufacturer readiness remains NOT READY.
