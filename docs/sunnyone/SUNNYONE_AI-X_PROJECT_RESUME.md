@@ -555,3 +555,8 @@ The post-CI-policy run `45598047228` exposed a testbench status expectation mism
 ## 24. AXI-Lite control rerun verified — PASS — 2026-11-25
 
 Corrected testbench run [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), job `139149936465`, completed SUCCESS. Exact log marker: `PASS: ASIC AXI-Lite control, independent AW/W, gating, load pulse, reset, register map`. Testbench-only expected status correction `0x6c` → `0x6e` reflects the sticky control-error bit after the deliberate rejected LOAD. No RTL source changed.
+
+
+## 25. WG8 PPA trigger correction — 2026-11-25
+
+A GitHub documentation check found that `workflow_dispatch` requires the workflow file to exist on the repository's default branch. The WG8 PPA workflow is feature-branch-only and `main` is deliberately untouched, so a manual UI button cannot be relied upon. The workflow now uses a narrow push path filter for the exact Nangate45 target source set, ASIC top, target/tool configuration and `docs/sunnyone/PPA_REQUEST.md`. Broad `rtl/**` was removed, and the workflow file itself is excluded from the filter to prevent self-trigger loops. `workflow_dispatch` remains for future use when the workflow is on the default branch / repository dispatch supports it. The marker currently says NONE; update it with candidate SHA and reason only after functional/ASIC gates pass. No PPA run was triggered by creating the marker or editing the workflow because neither path was in the preceding filter.
