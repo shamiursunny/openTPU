@@ -740,3 +740,37 @@ After that, move to consolidated candidate regression and formal/protocol/lint c
 - First module `tests/test_isa.py`, job `139233449899`: **18 passed in 0.13s**. Log artifact `sunnyone-software-core-0-log`, ID `15024379354`, uploaded and pytest summary inspected.
 - Current active module at last poll: `tests/test_compiler.py`, job `139233450657`.
 - The new workflow's serial scheduling and per-module artifact capture have passed their first live check. Do not mark software-core complete; 14 modules still need terminal evidence. Continue polling this run and record every module's exact counts and artifact ID.
+
+
+## 34. Current live continuation state — 2026-11-25 (Asia/Dhaka)
+
+### Repository
+- Repository: https://github.com/shamiursunny/openTPU
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5` (do not modify).
+- Software-core workflow source commit: `38377909bf68e3aa6102efac6c56b832675d44d4`.
+- The branch ref is six commits ahead of the workflow source commit; the intervening comparison lists the three continuity documents. No RTL/test/workflow changes were made in this checkpoint.
+
+### Current run
+Open [GitHub Actions run 45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985).
+
+The run has 15 serial module jobs. Latest poll: 5 SUCCESS, 1 IN_PROGRESS, 9 QUEUED. Five completed logs have been read:
+- ISA: 18 passed (job `139233449899`, artifact `15024379354`)
+- Compiler: 44 passed (job `139233450657`, artifact `15026211469`)
+- Kernels: 46 passed (job `139233450577`, artifact `15026436432`)
+- Quant: 81 passed (job `139233450565`, artifact `15027565119`)
+- Formats: 13 passed (job `139233450333`, artifact `15027510239`)
+
+Subtotal: **202 passed; 0 reported failures; 0 reported skips** across these five module logs. Current active job: VOPS `139233450456`. Its live log may return BlobNotFound until the job is terminal; do not interpret this as a failure.
+
+### Resume protocol — follow this order
+1. Poll run `45622326985`; inspect every module's terminal job status, full pytest log and artifact. Do not mark software-core complete until all 15 succeed.
+2. After software-core closes, run RTL-uncovered once and inspect it.
+3. Then run board-functional once and inspect it.
+4. Diagnose any real failure from source and logs; preserve assertions and test selection.
+5. Update all three continuity documents with exact source SHA, run/job/artifact IDs, counts, cancellations, skips and limitations.
+6. Freeze a candidate SHA and complete the appropriate consolidated regression.
+7. Only after functional/ASIC prerequisites close, resume the WG8 PPA diagnosis. The previous ORFS floorplan-PDN placement failure remains unresolved and no accepted PPA metrics exist.
+
+### Current project status
+The logical V1 candidate is defined, but the full design is not tapeout-ready. Manufacturer handoff remains **NOT READY**. PCIe/DDR PHY and controller IP, DMA/IOMMU, CDC/RDC, DFT, PDK/package, physical implementation, board electrical tests, real-hardware performance/power/thermal measurements, silicon qualification and commercial validation remain outstanding. Maintain zero-spend without explicit approval and never change `main`.
