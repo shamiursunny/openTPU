@@ -1509,3 +1509,11 @@ Release/manufacturer decision remains NOT READY for fabrication, tapeout, physic
 - `45455745851` PPA: FAILED, ORFS exit 2, source SHA `dc34e3a...`. SRAM probe/prep succeeded: 288 macros, 14 sizes, 3,538 KiB. This is not a PPA result.
 - Artifact `14962660456` size 1,562,950,987 bytes exceeds the artifact-download connector's 536,870,912-byte limit. Detailed ORFS failure log is therefore not yet inspected; root cause OPEN. Next rerun must upload compact diagnostic evidence and exclude bulk result databases.
 - Do not report area/timing/power figures. Keep tested RTL SHA `68baca...` distinct from docs-only branch HEAD; keep main untouched. Fabrication/tapeout/physical signoff remains NOT READY.
+
+
+## 140. Exact subsystem test reconciliation and PPA workflow repair — 2026-11-25
+
+- Subsystem workflow `45487118947`: 14/14 jobs SUCCESS on code SHA `68baca...`. Parsed all 14 pytest summaries: **377 passed, 1 skipped, 0 failed**. The skip is configuration-inapplicable: 64-GiB address-window case has every address in DRAM. Job counts: 14 + 17 + 128 + 20 + 5 + 11 + 13 + 15 + 8 + 8 + 23 + 7 + 104 + 4 = 377; one separate skip.
+- Cancelled-suite retries: `rtl-uncovered` and `software-core` now running under a new attempt; `board-functional` still cancelled because immediate retry was rejected while the run is active. Retry after completion.
+- PPA evidence workflow updated at `c568020...` to exclude `work/results/**` and full `run.log`, preserving a 200-KiB run tail, diagnostics file-size inventory, compact report, logs/reports, config and constraints. New run still needs to be checked. Historical PPA root cause remains OPEN; no area/timing/power numbers.
+- Manufacturer readiness remains NOT READY for fabrication, tapeout, physical signoff, production board or silicon qualification.
