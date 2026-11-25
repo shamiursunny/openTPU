@@ -1643,3 +1643,12 @@ Per-workflow/per-branch concurrency and PPA trigger refinements are present in t
 4. Keep WG8 PPA separate: latest recorded research PPA run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546) failed in ORFS floorplan-PDN placement checking. No accepted PPA metrics; do not launch until functional/ASIC gates are green and the candidate is frozen.
 5. Reconcile all test outcomes by exact commit; only then choose a final regression candidate. Manufacturer readiness remains NOT READY.
 
+
+
+## 151. Native DRAM matrix runtime risk and sequential retry preparation — 2026-11-25
+
+Latest re-poll of matrix run [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): 13/14 jobs remain completed SUCCESS; Native DRAM/technology RAM job `139149249337` remains IN_PROGRESS at the latest poll. Its active step is the selected regression group; setup, Verilator install and dependency install completed. No terminal pytest result or artifact is yet available, so no result count is assigned.
+
+Runtime review found a scheduling risk worth addressing after this run settles: `tests/test_native_dram.py::_run` permits individual simulations up to 1,800 seconds, while the matrix job timeout is 45 minutes and the Native DRAM group bundles the parameterised `test_native_dram.py` suite with `test_tech_ram.py`. This is not proof that a test is hung or failed; it means the group has insufficiently bounded aggregate runtime for reliable scheduling. Do not modify the active workflow mid-run because its concurrency policy could cancel the current matrix.
+
+After this matrix reaches a terminal state, split Native DRAM into smaller named test groups (functional/contract, random/stage stress, throughput/half-beat, high-address) and run technology RAM independently. Keep the same tests and assertions; this is execution partitioning, not test weakening. Set explicit per-job timeout budgets and preserve per-group log artifacts. Then rerun only the cancelled software-core and RTL/board jobs sequentially, one at a time. No workflow or RTL change was made in this checkpoint.
