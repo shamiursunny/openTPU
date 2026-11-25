@@ -2051,3 +2051,16 @@ Guardrails: serial/low-concurrency execution; no duplicate jobs without cause; n
 - Groups 1 and 2 remain accepted historical passes; their test source is unchanged. Do not rerun them absent source/environment changes.
 - Current exact-SHA source check: old and current `tests/test_rtl.py` blob SHAs both equal `84cdfed65c2c9d3604e51080ce88d878fc71a76a`.
 - Next: poll run `45693821197`; inspect terminal pytest logs and artifacts for 3.1, 3.2 and 4; then inspect board-functional only if all RTL jobs succeed. Reconcile unique coverage and update the three continuity files. Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; manufacturer readiness remains NOT READY.
+
+
+## 130. Uncovered RTL split verification — Groups 3.1 and 3.2 passed; Group 4 still running (2026-11-26, Asia/Dhaka)
+
+- Active feature branch HEAD at checkpoint start: `6339f46aba4fa88041c38fe73cee86eac53fbde5`. Protected `main` independently rechecked at `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Workflow [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), exact tested SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`, is still IN_PROGRESS overall.
+- Group 3.1 job `139486043538`: SUCCESS. Full log confirms **8 passed, 209 deselected, 0 failed** in 1,875.28 s (31m15s). Artifact `15062436327` (`sunnyone-rtl-uncovered-3.1-log`) uploaded successfully.
+- Group 3.2 job `139486044115`: SUCCESS. Full log confirms **33 passed, 184 deselected, 0 failed** in 529.45 s (8m49s). Artifact `15064162074` (`sunnyone-rtl-uncovered-3.2-log`) uploaded successfully.
+- Both jobs used Python 3.12.16, pytest 9.2.0 and pinned Verilator 5.044; checkout confirms exact candidate SHA `fd2a310...`. The selected tests were `test_tmem_random_traffic`, `test_tmem_random_traffic_input_stage`, `test_tmem_dump_is_the_ram`, and `test_mlp_4bit_rtl` for Group 3.2; Group 3.1 selected its bounded uncovered RTL selection as defined by the workflow. Warnings include upstream Verilator build guidance and GitHub Actions Node 20 deprecation notices; no test failures were logged.
+- Group 4 job `139486044169`: still IN_PROGRESS at the latest poll. Checkout, Python setup, Verilator build and dependency installation completed; the bounded RTL selection is running. Its log endpoint returned Azure BlobNotFound while live, so no Group 4 pytest result is inferred. Do not launch a duplicate job.
+- Historical Groups 1 and 2 passes remain valid on their own tested source; historical Group 4 pass from earlier run `45661335812` remains a distinct historical record, but it does not replace the currently running Group 4 attempt. Avoid adding overlapping run counts as unique test cases.
+- No board-functional completion is established by these three uncovered-RTL jobs. Board-functional remains dependency-gated until the complete RTL matrix is successful.
+- Next: poll job `139486044169` to terminal; inspect its full log and artifact. Then verify the run's dependent board-functional job, followed by consolidated regression and remaining integration/formal/lint/PPA gates. Preserve zero spend and protected `main`; manufacturer handoff remains NOT READY.
