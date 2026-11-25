@@ -543,3 +543,13 @@ These are **debug-only early-stage diagnostics**, not final timing closure, phys
 Board-functional job `139135578982` and software-core job `139135639920` remain IN_PROGRESS at their test steps; uncovered RTL job `139135582940` is CANCELLED. No result is inferred from active/cancelled jobs. The connected GitHub action set exposes no workflow-dispatch write action, so no manual dispatch is claimed.
 
 **Manufacturer decision: NOT READY.** No tapeout, fabrication, physical signoff, production-board build, or silicon qualification. The 377-pass subsystem matrix and integrated AXI/HMUX simulations remain scoped digital verification only.
+
+## 24. CI execution policy update — 2026-11-25
+
+The 15 SUNNYONE GitHub Actions workflows now use per-workflow/per-branch concurrency groups with cancellation of superseded runs. This prevents an older run of the same suite consuming runner capacity after a newer commit arrives, without cancelling distinct verification suites. Existing test selections and path filters are retained.
+
+The six-hour WG8 research PPA workflow is now manual-dispatch only. Run it against a frozen candidate SHA after functional and ASIC qualification gates pass. This avoids spending hours on every RTL commit while the floorplan-PDN failure is under investigation. No PPA pass or physical signoff is implied.
+
+The subsystem matrix remains fail-fast disabled and capped at two parallel jobs so every group can report its outcome without excessive runner contention. No tests were removed or weakened. Measure the new policy on subsequent runs before claiming a quantified speed-up.
+
+Manufacturer readiness remains NOT READY; this scheduling change does not close any RTL, PPA, PHY, DFT, package, physical signoff, board, thermal or silicon qualification gate.
