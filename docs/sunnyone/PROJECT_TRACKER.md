@@ -1568,3 +1568,11 @@ The preceding comparison was made at intermediate feature HEAD `264a3d8...`. Aft
 - Reduces wasted runner time from superseded same-suite runs and removes automatic six-hour PPA contention from ordinary RTL commits.
 - Independent suites still run concurrently where path filters match. This is intentional because they test different subsystems; no unsafe global concurrency lock was added.
 - Hosted runner capacity, package installation, long test execution and genuine test failures can still affect duration. Measure the next relevant push before claiming quantified speed-up.
+
+
+## 145. AXI-Lite control CI failure diagnosis and assertion correction — 2026-11-25
+
+- The first post-scheduling-change AXI-Lite control run `45598047228` failed at `sim/asic/tb_asic_ctrl.sv:55`: status register read returned `0x0000006e`, while the test expected `0x0000006c`.
+- RTL status layout maps bit 1 to sticky `core_error | ctrl_error`; bit 2 is `ld_busy | load_inflight`. The sequence intentionally rejects LOAD while `wr_idle=0`, setting sticky `ctrl_error`, then accepts a later LOAD without issuing the explicit CTRL error-clear command. Thus the observed `0x6e` is consistent with the documented sticky-error behaviour; this mismatch was in the testbench expectation, not evidence of a hardware RTL failure.
+- Corrected the testbench expected value to `0x0000006e` and clarified the comment. Test-only change commit: `cf0d4d3c211b481ae3ade391078731d2e476877b`.
+- Verification run `45598244519`, job `139149936465`, is IN_PROGRESS at the Icarus installation step. Do not mark the control test PASS until the completed run log confirms the PASS marker.
