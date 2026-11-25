@@ -749,7 +749,7 @@ After that, move to consolidated candidate regression and formal/protocol/lint c
 - Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 - Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5` (do not modify).
 - Software-core workflow source commit: `38377909bf68e3aa6102efac6c56b832675d44d4`.
-- The branch ref is six commits ahead of the workflow source commit; the intervening comparison lists the three continuity documents. No RTL/test/workflow changes were made in this checkpoint.
+- Before the three documentation commits in this checkpoint, the branch was six commits ahead of the workflow source commit. Final documentation branch HEAD is `cb35e4d7680286208fdfd420a6de739b4f573a49`, nine commits ahead and zero behind that workflow commit. The intervening changes are documentation-only; no RTL, test or workflow changes were made.
 
 ### Current run
 Open [GitHub Actions run 45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985).
