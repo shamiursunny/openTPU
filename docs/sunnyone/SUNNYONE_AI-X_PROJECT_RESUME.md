@@ -560,3 +560,21 @@ Corrected testbench run [45598244519](https://github.com/shamiursunny/openTPU/ac
 ## 25. WG8 PPA trigger correction — 2026-11-25
 
 A GitHub documentation check found that `workflow_dispatch` requires the workflow file to exist on the repository's default branch. The WG8 PPA workflow is feature-branch-only and `main` is deliberately untouched, so a manual UI button cannot be relied upon. The workflow now uses a narrow push path filter for the exact Nangate45 target source set, ASIC top, target/tool configuration and `docs/sunnyone/PPA_REQUEST.md`. Broad `rtl/**` was removed, and the workflow file itself is excluded from the filter to prevent self-trigger loops. `workflow_dispatch` remains for future use when the workflow is on the default branch / repository dispatch supports it. The marker currently says NONE; update it with candidate SHA and reason only after functional/ASIC gates pass. No PPA run was triggered by creating the marker or editing the workflow because neither path was in the preceding filter.
+
+
+## 26. Latest CI continuation checkpoint — 2026-11-25
+
+### Completed
+- RTL tail run [45598047232](https://github.com/shamiursunny/openTPU/actions/runs/45598047232), job `139149245841`, SUCCESS on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`.
+- Exact result: **33 passed, 1 skipped, 183 deselected in 742.68s (12m 22s)**. Skip reason: `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`.
+- In the 14-group subsystem matrix, six groups had completed SUCCESS at the latest poll: Stream RTL, Quantizer modes, Quantizer corners/tie rounding, SPLITQ, QHL, and MX multiply/replay. QST/QSTB and floating-point remained in progress; the other groups remained queued.
+
+### CI defect identified
+The RTL-tail upload-artifact step was green but the log explicitly states no file was found at `/tmp/sunnyone-rtl-tail.log`. The pytest command must write its output there. Correct after the current active runs finish, using `set -o pipefail` and `pytest ... 2>&1 | tee /tmp/sunnyone-rtl-tail.log`, then confirm a real artifact upload. Do not mistake green upload step for artifact existence.
+
+### Still pending at this checkpoint
+- Core software/ISA run `45598047393` — IN_PROGRESS.
+- Remaining RTL and board run `45598047324` — both jobs IN_PROGRESS.
+- Subsystem matrix `45598047338` — two jobs IN_PROGRESS and remaining groups queued.
+
+Do not trigger a new branch commit until these runs complete unless a critical fix is required, because matching workflow path filters may cancel superseded runs. Keep PPA deferred and manufacturer readiness NOT READY.
