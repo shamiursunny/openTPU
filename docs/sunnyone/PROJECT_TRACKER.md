@@ -1972,3 +1972,12 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Groups 1+2 contribute 36 verified scoped passes on this candidate SHA, in separate jobs. Do not infer group 3/4 or board results, and do not call the entire RTL regression green.
 - Continue polling the same run. After each job reaches a terminal state, inspect its complete log and uploaded artifact; if any job fails/cancels, diagnose and retry only the affected scope without weakening selectors. Do not duplicate or alter the active workflow.
 - Manufacturer readiness remains **NOT READY**; keep main protected and zero-spend constraints in force.
+
+
+## Continuation checkpoint — 2026-11-26 (Asia/Dhaka)
+
+The prior Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`, was cancelled during RTL uncovered group 3. This was an orchestration cancellation, not a reported assertion failure. The group-3 log shows multiple tests passed before cancellation but contains no terminal pytest summary; therefore **no group-3 pass count is credited**. Original run attempt 1: group 1 passed 12, group 2 passed 24, group 4 passed 5; board-functional was skipped because the RTL matrix did not complete successfully. The verified completed-group subtotal is 41 tests, not full RTL acceptance.
+
+A targeted rerun of only the cancelled group-3 job was requested using GitHub's per-job rerun action. Run attempt 2 is now `IN_PROGRESS`; active group-3 job ID `139448997925`. The existing successful groups 1, 2 and 4 remain successful in the rerun attempt. Inspect group 3's terminal pytest summary and artifact before crediting it. Then verify whether the dependency-gated board-functional job starts; if it does, inspect its terminal log and artifact. Do not start a duplicate workflow or rerun successful groups unnecessarily.
+
+Current evidence status: RTL uncovered OPEN; board-functional OPEN / not yet evidenced; consolidated regression pending. Keep exact-SHA evidence, feature-branch-only writes, zero-spend rule and protected `main`. Manufacturer handoff remains **NOT READY**; no PPA, physical, production-IP, hardware, silicon or commercial signoff is implied.
