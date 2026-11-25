@@ -1772,3 +1772,24 @@ Push-triggered validation run [45622326985](https://github.com/shamiursunny/open
 
 ### Stage decision
 **A1.12.11.16.54 remains OPEN.** Software-core serial retry is PARTIAL (5/15 modules successful; 202 tests passed in those five modules). Manufacturer readiness remains **NOT READY**. The logical V1 design candidate is not a complete host-connected ASIC, tapeout package, physically validated device or commercially qualified product.
+
+
+## 157. Serial software-core matrix live checkpoint — 2026-11-25 (Asia/Dhaka)
+
+Run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4`, is executing the complete 15-module software-core matrix with `max-parallel: 1`. Latest live poll: **10 SUCCESS, 1 IN_PROGRESS, 4 QUEUED, 0 failed/cancelled**. Active job: `tests/test_waits.py`, job `139233450429`. Queued: `test_waitw.py`, `test_host_runs.py`, `test_host_lock.py`, `test_host.py`.
+
+All ten terminal-success job logs were retrieved and their pytest summaries inspected. Exact results:
+- ISA, job `139233449899`, artifact `15024379354`: 18 passed (0.13 s).
+- Compiler, job `139233450657`, artifact `15026211469`: 44 passed (4.98 s).
+- Kernels, job `139233450577`, artifact `15026436432`: 46 passed (1.82 s).
+- Quant, job `139233450565`, artifact `15027565119`: 81 passed (5.35 s).
+- Formats, job `139233450333`, artifact `15027510239`: 13 passed (0.40 s).
+- VOPS, job `139233450456`, artifact `15030235221`: 101 passed (1,688.83 s).
+- FP, job `139233450380`, artifact `15029541963`: 12 passed (22.44 s).
+- MX, job `139233450804`, artifact `15029542120`: 32 passed (0.24 s).
+- Stream, job `139233450596`, artifact `15032330134`: 46 passed (872.79 s).
+- Dataflow, job `139233450490`, artifact `15029769939`: 27 passed (0.19 s).
+
+Verified subtotal: **420 passed, 0 reported failures, 0 reported skips** across ten completed module logs. The waits module is still executing and contributes no count. The four queued modules contribute no count. Software-core remains OPEN until all 15 modules reach terminal success and their logs/artifacts are inspected.
+
+No RTL, test, assertion or workflow file was changed. This is a documentation-only checkpoint on the active feature branch; do not interrupt the serial run. Next order remains: finish the 15 modules, then run RTL-uncovered once, then board-functional once, then reconcile and freeze the final candidate SHA. Protected `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Manufacturer readiness remains **NOT READY**; PPA/physical/IP/PHY/board/silicon/commercial gates remain open.
