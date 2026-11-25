@@ -553,3 +553,10 @@ The six-hour WG8 research PPA workflow is now manual-dispatch only. Run it again
 The subsystem matrix remains fail-fast disabled and capped at two parallel jobs so every group can report its outcome without excessive runner contention. No tests were removed or weakened. Measure the new policy on subsequent runs before claiming a quantified speed-up.
 
 Manufacturer readiness remains NOT READY; this scheduling change does not close any RTL, PPA, PHY, DFT, package, physical signoff, board, thermal or silicon qualification gate.
+
+
+## 25. WG8 PPA trigger refinement — 2026-11-25
+
+The PPA workflow no longer responds to broad `rtl/**` changes. Its push filter is limited to the Nangate45 WG8 target's synthesized RTL source set, ASIC top, target/ASIC flow configuration and the explicit `docs/sunnyone/PPA_REQUEST.md` request marker. The workflow YAML itself is excluded to prevent a self-trigger. This preserves automatic PPA on relevant candidate-source changes while avoiding repeated multi-hour runs for unrelated RTL edits.
+
+GitHub's documented `workflow_dispatch` requirement is that the workflow file must exist on the repository's default branch. This workflow currently exists only on the feature branch, while protected `main` is intentionally untouched; therefore, do not assume the manual Run workflow button is available yet. The request marker is the reliable feature-branch trigger. No PPA pass or physical signoff is implied.
