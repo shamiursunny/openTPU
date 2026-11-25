@@ -757,3 +757,8 @@ Verified scoped evidence remains: software-core 825 passed / 3 skipped / 0 repor
 ## RTL serial partition audit — 2026-11-25
 
 The four serial RTL selections introduced in workflow commit `7320c187810cbd7e4f106f0280922871f6430d1b` were statically checked against `tests/test_rtl.py` (blob `84cdfed65c2c9d3604e51080ce88d878fc71a76a`). All 18 original selector terms match 18 distinct test functions, distributed 5/5/5/3 across the four groups with no unmatched selectors or duplicate function matches. This is a source-level partition check, not runtime test evidence; actual per-group pytest summaries and artifacts remain required. The RTL-uncovered and board-functional acceptance gates remain OPEN pending those Actions results.
+
+
+## Live RTL workflow state — 2026-11-25
+
+The serial RTL workflow is now executing as [Actions run 45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), head SHA `7320c187810cbd7e4f106f0280922871f6430d1b`. Last observed: group 1 is running its bounded pytest selection; groups 2–4 remain queued, confirming serial scheduling. Verilator 5.044 setup and project dependency installation succeeded. No terminal pytest count is available yet, and board-functional remains gated behind all four groups. See PROJECT_TRACKER.md Section 164. Do not infer a pass. Manufacturer readiness remains NOT READY.
