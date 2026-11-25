@@ -708,3 +708,26 @@ After that, move to consolidated candidate regression and formal/protocol/lint c
 - Maintain zero-spend unless the user explicitly authorises expenditure.
 
 **Manufacturer readiness: NOT READY.** Completing this CI queue is a verification milestone, not completion of SUNNYONE AI-X.
+
+
+## 32. Software-core timeout diagnosis and next execution plan — 2026-11-25
+
+### Latest verified software-core attempt
+- Run [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), job `139201961395`: terminal **CANCELLED**.
+- Retrieved full job log: pytest started 12:23:46 UTC and was cancelled 13:08:28 UTC, approximately 44m42s later, during the main test step. The progress indicator had reached 43%. Setup, checkout, Verilator install and dependency install succeeded. There is no terminal pytest summary; do not infer pass/fail counts.
+- This matches the 45-minute configured job budget and is treated as a runtime/scheduling failure, not an assertion failure.
+
+### Corrective workflow change
+- Commit: `38377909bf68e3aa6102efac6c56b832675d44d4`.
+- File: `.github/workflows/sunnyone-software-core.yml`.
+- The exact same 15 modules are now separate matrix jobs, strictly serial (`max-parallel: 1`), fail-fast disabled, with a 45-minute timeout per module, verbose pytest output and one always-uploaded log artifact per module.
+- Preserved complete module selection: test_isa, test_compiler, test_kernels, test_quant, test_formats, test_vops, test_fp, test_mx, test_stream, test_dataflow, test_waits, test_waitw, test_host, test_host_lock, test_host_runs.
+- No RTL, test file, test assertion or coverage selection was modified. Workflow correction is not yet validated until the newly triggered run is inspected.
+
+### Next execution order
+1. Find the push-triggered workflow run for commit `38377909bf68e3aa6102efac6c56b832675d44d4`; verify matrix jobs are executing one at a time.
+2. Inspect each module's terminal conclusion, pytest summary and uploaded log. Do not mark software-core PASS until all 15 modules succeed.
+3. If any single module times out, inspect its verbose log and split only that module's tests into smaller selections, preserving all tests/assertions.
+4. After all software-core modules pass, run RTL-uncovered once; then board-functional once, sequentially.
+5. Reconcile exact SHA, run/job/artifact IDs and counts in all continuity documents; freeze a candidate for consolidated regression.
+6. Manufacturer readiness remains **NOT READY**; PPA, physical/IP/PHY and qualification gates remain outstanding.
