@@ -524,3 +524,22 @@ The latest retry state was checked directly in GitHub Actions. Board-functional 
 The 14-job subsystem matrix remains fully verified at 14/14 SUCCESS and 377 passed, 1 configuration-inapplicable skip, 0 failed, on RTL SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`. The feature branch has advanced 32 commits beyond this tested code SHA, with changes confined to the PPA workflow and the three project continuity documents. Main remains at `d84db55712aba0d40811d7762cb052f05d55b7e5`; it has not been modified by this continuation.
 
 The compact PPA evidence workflow is present at commit `c568020d91efd045c6dd5d89dbc30ebdbac2c866`, but a post-repair run and artifact were not confirmed in the available query results. The older PPA run remains failed and no area, timing, power or physical-design metric is accepted. Release readiness remains NOT READY for fabrication, tapeout, physical signoff, production board build or silicon qualification.
+
+
+## 23. WG8 PPA compact rerun — failure-stage evidence — 2026-11-25
+
+Actual post-repair run: [GitHub Actions 45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546), job `138974661431`, FAILED (ORFS exit 2). Compact evidence artifact `14997807086` is 221,016 bytes and was inspected. Pinned ORFS image digest: `sha256:9d227293bf57b9d84c63aa8551faa0487d30db456b254b8f244a1e40244f66af`.
+
+**Observed failure point:** Yosys synthesis and floorplan completed; ORFS failed in `2_4_floorplan_pdn` at `check_placement -fixed -verbose` (Make error 247). The preceding timing-repair log found 11 setup-violating endpoints and warned that not all setup violations could be repaired. Preliminary floorplan JSON records setup WNS `-10.4346 ns` and TNS `-91.4594 ns`. It also explicitly reports no estimated parasitics / wire-load-model timing. Numerous PDN-0110 warnings state that no via was inserted between metal6 and metal7 at listed VDD coordinates.
+
+These are **debug-only early-stage diagnostics**, not final timing closure, physical PPA, power, area signoff, or manufacturable layout. The run did not complete global placement, CTS, detailed routing, or final reports. Generated SRAM macro counts (288 macros / 14 sizes / 3,538 KiB) are a flow-preparation result and do not prove foundry SRAM availability or implementation feasibility. Do not publish floorplan estimates as product metrics.
+
+**Required engineering closure before handoff:**
+1. Diagnose why fixed-placement checking fails during PDN stage and whether the metal6/metal7 via warnings are geometry/PDN-grid configuration issues or real connectivity risks.
+2. Inspect all 11 setup endpoints, clock/IO constraints, and the timing-repair sequence; resolve constraints or RTL only with a documented technical basis and regression evidence.
+3. Rerun the complete ORFS flow through final timing, physical checks, and reports; preserve compact logs and machine-readable reports.
+4. Independently review SRAM macro models, dimensions, ports, timing, and replacement with genuine target-process macros before any real implementation claim.
+
+Board-functional job `139135578982` and software-core job `139135639920` remain IN_PROGRESS at their test steps; uncovered RTL job `139135582940` is CANCELLED. No result is inferred from active/cancelled jobs. The connected GitHub action set exposes no workflow-dispatch write action, so no manual dispatch is claimed.
+
+**Manufacturer decision: NOT READY.** No tapeout, fabrication, physical signoff, production-board build, or silicon qualification. The 377-pass subsystem matrix and integrated AXI/HMUX simulations remain scoped digital verification only.
