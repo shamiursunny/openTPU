@@ -634,3 +634,46 @@ The active subsystem matrix [45598047338](https://github.com/shamiursunny/openTP
 Inspection of the workflow and test harness found an aggregate-runtime risk: the Native DRAM test helper allows up to 1,800 seconds per simulator invocation, but the entire Native DRAM plus technology RAM matrix group has a 45-minute job timeout. This does not prove a hang. Wait for the current job's terminal result; do not change the active workflow mid-run.
 
 Once terminal, partition the Native DRAM suite into smaller logical jobs and run technology RAM separately without removing or weakening tests. Then rerun cancelled software-core job `139149247780` and cancelled RTL/board jobs `139149245874` and `139149246459` sequentially, waiting for each terminal result. Keep the branch feature-only and preserve exact-SHA evidence. Manufacturer handoff remains NOT READY.
+
+
+## 30. Live continuation checkpoint and next-state contract — 2026-11-25
+
+### Repository state
+- Correct repository: https://github.com/shamiursunny/openTPU.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Feature HEAD before this docs-only checkpoint: `db16fea6a7f39d29be62e4606842d3d24482520c`.
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`; unchanged. Keep all work on the feature branch.
+- Active software-core and completed subsystem runs use source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`. A docs-only update does not alter the already-running job's source.
+
+### Completed evidence
+- Subsystem/memory matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): **14/14 jobs SUCCESS**, source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`; reconciled total **377 passed, 1 configuration-inapplicable skip, 0 failures**.
+- Native DRAM + technology RAM artifact `sunnyone-subsystems-12-log`, ID `15020003974`, downloaded and inspected: **104 passed in 1,829.20 seconds (30m29s)**.
+- RTL-tail [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541), SHA `e0eea98ba00e65ca42b785bc6133a5679529506b`: **33 passed, 1 skipped, 183 deselected in 635.12s**; artifact inspected.
+- AXI-Lite [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519): SUCCESS on its own exact testbench SHA. No RTL change for the sticky-error status expectation correction.
+- Other focused successes remain bound to their recorded SHA and scope. Do not sum overlapping suites or call them one consolidated full-chip pass.
+
+### Outstanding queue — do not skip order
+1. Software-core retry [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), attempt 2, job `139201961395`: IN_PROGRESS at the core ISA/compiler/kernels/numerics/host software test step. Setup and dependency installation completed. Poll to terminal, inspect full logs/artifacts, and record exact counts.
+2. Remaining RTL/board [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324): prior jobs `139149245874` and `139149246459` are CANCELLED. Retry uncovered RTL first and board-functional second only after software-core settles; wait and inspect each result.
+3. Classify any failure from evidence; preserve all tests/assertions and avoid broad parallel retries.
+4. Update these three continuity files after terminal results, then freeze a single candidate SHA for consolidated regression.
+
+### Next state after this queue is complete
+The next durable checkpoint must contain:
+- terminal outcome and exact test summary for software-core;
+- terminal outcome and exact test summary for uncovered RTL;
+- terminal outcome and exact test summary for board-functional;
+- artifact IDs and inspected-log evidence for each applicable job;
+- a reconciled candidate SHA, branch HEAD and unchanged main SHA;
+- explicit list of remaining failures, warnings, exclusions and unverified requirements.
+
+After that, move to consolidated candidate regression and formal/protocol/lint closure; then investigate the WG8 ORFS floorplan-PDN failure [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546). No final PPA metrics are accepted. Continue PHY/IP, DDR, PCIe, DMA/IOMMU, CDC/RDC, DFT, SRAM macro, physical, package, electrical, thermal, power and silicon qualification. The end of the current CI queue is not the end of the chip-design project.
+
+### Execution guardrails
+- Feature branch only; never update `main`.
+- Wait for each broad suite to finish before launching the next.
+- Do not treat CANCELLED, skipped, queued, or missing artifacts as PASS.
+- Preserve exact source SHA, job IDs, artifact IDs and log-derived counts.
+- Never weaken tests or suppress warnings to manufacture green status.
+- Zero-spend unless the user explicitly authorises expenditure.
+- Manufacturer readiness remains **NOT READY**.
