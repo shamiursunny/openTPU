@@ -1736,3 +1736,39 @@ Next: inspect the new workflow run; let the serial matrix proceed; if a module e
 ## 155. Serial software-core matrix first evidence — 2026-11-25
 
 Push-triggered validation run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985) is confirmed queued/running on workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4`. All 15 matrix jobs are present; `max-parallel: 1` is behaving as intended: one job is terminal SUCCESS, one is IN_PROGRESS and 13 remain QUEUED. First module `tests/test_isa.py`, job `139233449899`, completed **18 passed in 0.13s**; per-module log artifact `sunnyone-software-core-0-log`, ID `15024379354`, was created, and the complete pytest output was inspected. Current active module at last poll: `tests/test_compiler.py`, job `139233450657`. This validates serial scheduling and artifact capture for the first module only; software-core remains OPEN until all 15 modules succeed.
+
+
+## 156. Live serial software-core matrix re-poll — 2026-11-25 (Asia/Dhaka)
+
+### Repository and branch protection
+- Repository: `shamiursunny/openTPU`.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Protected `main` remains pinned at `d84db55712aba0d40811d7762cb052f05d55b7e5`; this update is feature-branch-only.
+- Workflow source commit: `38377909bf68e3aa6102efac6c56b832675d44d4`. The active branch ref is six commits ahead of that workflow commit; the compare reports the intervening changes are the three continuity documents. The software-core workflow path filter excludes these documentation paths, so this checkpoint update does not retrigger or cancel the active software-core matrix.
+- No RTL, test source, assertions or workflow definition was changed in this re-poll.
+
+### Live run 45622326985
+- URL: https://github.com/shamiursunny/openTPU/actions/runs/45622326985
+- The run contains all 15 expected software-core module jobs and is configured with `max-parallel: 1`, `fail-fast: false`, verbose per-module pytest logs, and always-uploaded per-module artifacts.
+- Live job poll: **5 SUCCESS, 1 IN_PROGRESS, 9 QUEUED**. The active job is `tests/test_vops.py`, job ID `139233450456`. Its logs are not yet retrievable while active (BlobNotFound); this is not a failure.
+- Five completed module logs were retrieved and inspected. Exact pytest summaries:
+  - `tests/test_isa.py`, job `139233449899`: **18 passed in 0.13s**; artifact `sunnyone-software-core-0-log`, ID `15024379354`.
+  - `tests/test_compiler.py`, job `139233450657`: **44 passed in 4.98s**; artifact `sunnyone-software-core-1-log`, ID `15026211469`.
+  - `tests/test_kernels.py`, job `139233450577`: **46 passed in 1.82s**; artifact `sunnyone-software-core-2-log`, ID `15026436432`.
+  - `tests/test_quant.py`, job `139233450565`: **81 passed in 5.35s**; artifact `sunnyone-software-core-3-log`, ID `15027565119`.
+  - `tests/test_formats.py`, job `139233450333`: **13 passed in 0.40s**; artifact `sunnyone-software-core-4-log`, ID `15027510239`.
+- Reconciled subtotal: **202 passed, 0 reported failures, 0 reported skips** across these five module jobs. This is a partial result only; do not mark the software-core milestone complete.
+- Remaining modules: VOPS (currently running), FP, MX, stream, dataflow, waits, waitw, host, host-lock and host-runs (queued).
+- Prior aggregate software-core run `45598047393` ended CANCELLED at approximately 44m42s without a terminal pytest summary; it contributes no pass/fail count. The serial matrix is the controlled retry and has not yet completed.
+- The earlier remaining RTL-uncovered and board-functional attempt `45598047324` was cancelled; neither job contributes a test result.
+
+### Updated execution order
+1. Continue polling run `45622326985` until all 15 module jobs are terminal. Retrieve each completed job log and artifact; record exact pass/skip/fail/deselected counts. Do not interrupt the run with source/test/workflow changes.
+2. If all 15 modules pass, run the remaining RTL-uncovered selection once; wait for terminal status and inspect its complete evidence.
+3. Run board-functional once after RTL-uncovered settles; inspect its complete evidence.
+4. Classify any failure from its log as test, RTL, environment, infrastructure or workflow. Preserve all tests and assertions.
+5. Reconcile the three continuity documents again to the exact final tested SHA, job IDs, artifact IDs and totals. Freeze one candidate SHA and run the required consolidated regression.
+6. Keep WG8 PPA deferred until functional, ASIC/configuration, lint/reset/formal/protocol and host/board prerequisites are closed. Prior ORFS floorplan-PDN failure remains unresolved; no accepted PPA metrics exist.
+
+### Stage decision
+**A1.12.11.16.54 remains OPEN.** Software-core serial retry is PARTIAL (5/15 modules successful; 202 tests passed in those five modules). Manufacturer readiness remains **NOT READY**. The logical V1 design candidate is not a complete host-connected ASIC, tapeout package, physically validated device or commercially qualified product.
