@@ -1896,3 +1896,31 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Accidental duplicate WAITC run `45649007571` is still `in_progress`; exclude it from all authoritative totals. WAITC's authoritative completed evidence remains run `45641472720`.
 - Existing verified totals remain unchanged: software-core 825 passed, 3 skipped; subsystem/memory 377 passed, 1 configuration-inapplicable skip. Do not add counts from either active run.
 - Next: wait for RTL job terminal state; retrieve full log and artifact; inspect pytest summary. If successful, verify board job starts and completes afterward. If failed, diagnose the exact failure without weakening tests. Then update all three continuity files with terminal evidence.
+
+
+## 162. RTL timeout diagnosis, serial partition and continuity checkpoint — 2026-11-25 (Asia/Dhaka)
+
+### Live regression reconciliation
+- Software-core aggregate is closed for the observed selections: **825 passed, 3 skipped, 0 reported failures**. This combines 14 successful module jobs from Run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985) with the complete WAITC retry Run [45641472720](https://github.com/shamiursunny/openTPU/actions/runs/45641472720). The original matrix remains globally CANCELLED because WAITC exceeded its 45-minute job budget; WAITC is separately closed by its two successful retry jobs (264 passed, 2 skipped, then 4 passed). The three skips are non-WAITC optional model imports; no WAITC test was skipped.
+- Subsystem/memory matrix Run [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): **14/14 SUCCESS, 377 passed, 1 configuration-inapplicable skip, 0 failures** on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`. Native DRAM/technology RAM contributes 104 of those 377, not an additional 104.
+- RTL-tail Run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541): **33 passed, 1 parameter-inapplicable skip, 183 deselected**; exact log artifact inspected. Keep this separate from the subsystem total.
+- ASIC/config Run [45487119079](https://github.com/shamiursunny/openTPU/actions/runs/45487119079), exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`: four-DIMM host AXI burst/response/aperture tests, global address-map simulation, four-instance HMUX contention/assertion simulation and three integrated lint stages succeeded. Scope is exact-SHA digital simulation/lint, not full formal or silicon signoff.
+- AXI-Lite control Run [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519): corrected testbench expectation passed; no RTL change.
+
+### RTL-uncovered timeout and workflow correction
+- RTL/board Run [45649502094](https://github.com/shamiursunny/openTPU/actions/runs/45649502094), exact workflow/test SHA `ebce653e73a378adce6dde60939cb1e052077862`: RTL job `139329804556` ended **CANCELLED**; board-functional was correctly skipped by its `needs: rtl-uncovered` dependency. The full job log shows Verilator 5.044 and project dependencies installed successfully, then the selected 18-family pytest invocation ran from 16:01:49 UTC until GitHub cancelled it at 16:38:57 UTC. No terminal pytest summary or uploaded log artifact exists; no pass/fail count is credited. This is a runtime-budget cancellation, not an observed assertion failure.
+- Workflow-only remediation committed as `7320c187810cbd7e4f106f0280922871f6430d1b` in `.github/workflows/sunnyone-rtl-functional.yml`: the unchanged 18 selector families are divided into four disjoint pytest `-k` groups, run with `max-parallel: 1`; each has a 45-minute timeout, verbose output, `pipefail`, and its own always-uploaded log artifact. Board-functional still depends on the entire RTL matrix and now also records its own log artifact. No RTL, test source, assertion or test selection was removed or weakened.
+- The corrected workflow file was fetched back from the feature branch and its content/blob SHA verified (`9fb6fe3b62b6bda01af7fdea91bdfc4e8b1eb9f5`). The push-triggered run ID and exact executed SHA were not exposed by the available run-list connector at checkpoint time; therefore validation remains **PENDING** until its actual Actions jobs/logs/artifacts are retrieved. Do not infer that the workflow has passed merely because the file update committed.
+
+### Next controlled sequence
+1. Discover the push-triggered run for workflow commit `7320c187...`; verify four matrix groups exist and execute serially. Inspect each complete pytest summary and artifact. Any failed/cancelled group must be diagnosed and retried without weakening tests.
+2. Allow board-functional to start only after all four RTL groups succeed; inspect its full log/artifact and exact pytest summary.
+3. Reconcile exact tested SHAs and non-overlapping counts. Do not sum overlapping runs or combine results from different source SHAs into a release-wide test total.
+4. Freeze one candidate SHA and run the appropriate consolidated regression after all applicable functional gates pass.
+5. Diagnose the WG8 research PPA floorplan-PDN failure from compact logs; no final area/timing/power metrics are accepted. Keep PPA deliberate and separate from routine regression.
+6. Continue open formal/protocol, warning, PCIe/DDR PHY/controller, DMA/IOMMU, CDC/RDC, DFT, SRAM macro, PDK/package, physical signoff, board electrical, thermal/power, silicon and commercial qualification tasks.
+
+### Readiness and constraints
+- Logical V1 remains a candidate architecture, not a complete host-connected ASIC or tapeout package.
+- Manufacturer readiness remains **NOT READY**. Digital regression success does not establish production IP/PHY, physical signoff, board or silicon qualification.
+- Keep all writes on the active feature branch; protected `main` is not to be modified. Zero-spend remains mandatory without explicit user approval.
