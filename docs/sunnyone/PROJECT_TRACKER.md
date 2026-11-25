@@ -1576,3 +1576,10 @@ The preceding comparison was made at intermediate feature HEAD `264a3d8...`. Aft
 - RTL status layout maps bit 1 to sticky `core_error | ctrl_error`; bit 2 is `ld_busy | load_inflight`. The sequence intentionally rejects LOAD while `wr_idle=0`, setting sticky `ctrl_error`, then accepts a later LOAD without issuing the explicit CTRL error-clear command. Thus the observed `0x6e` is consistent with the documented sticky-error behaviour; this mismatch was in the testbench expectation, not evidence of a hardware RTL failure.
 - Corrected the testbench expected value to `0x0000006e` and clarified the comment. Test-only change commit: `cf0d4d3c211b481ae3ade391078731d2e476877b`.
 - Verification run `45598244519`, job `139149936465`, is IN_PROGRESS at the Icarus installation step. Do not mark the control test PASS until the completed run log confirms the PASS marker.
+
+
+## 146. AXI-Lite control assertion rerun — PASS — 2026-11-25
+
+- Corrected testbench rerun: [GitHub Actions 45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), job `139149936465`, SUCCESS.
+- Exact log marker: `PASS: ASIC AXI-Lite control, independent AW/W, gating, load pulse, reset, register map`.
+- The change was testbench-only: expected status changed from `0x6c` to `0x6e` to account for the sticky control-error bit set by the intentionally rejected LOAD command. No RTL source changed.
