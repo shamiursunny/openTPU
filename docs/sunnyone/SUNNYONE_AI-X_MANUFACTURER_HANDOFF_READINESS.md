@@ -715,3 +715,17 @@ WAITC job `139233450429` was cancelled at approximately 44m36s with pytest at 84
 A serial, two-part retry workflow was added at commit `37d2f78eef227275347f58b39fcab69916cdd60f`: `.github/workflows/sunnyone-waits-retry.yml`. It executes every test in `tests/test_waits.py` exactly once across two disjoint groups: all tests except `test_waitc_rtl_follow` (45-minute job), followed by all four RTL FOLLOW parameter cases (60-minute job). The second job depends on the first; both upload logs even on failure. The tracker update commit `d7aefdf27d9aaad1e59288df3846b5153221a924` is the configured push trigger. Verify the resulting Actions run and exact-SHA artifacts before closing WAITC.
 
 **Current status:** software-core PARTIAL; WAITC OPEN. Do not proceed to RTL-uncovered or board-functional until the complete WAITC retry passes. Manufacturer readiness remains **NOT READY**. No RTL/test source was changed for this retry; do not infer PPA, physical, PHY/IP, board, silicon or commercial readiness.
+
+
+## 37. WAITC retry verified — 2026-11-25 (Asia/Dhaka)
+
+WAITC is now fully verified by [GitHub Actions run 45641472720](https://github.com/shamiursunny/openTPU/actions/runs/45641472720), tested at SHA `d7aefdf27d9aaad1e59288df3846b5153221a924`. Both jobs succeeded:
+- General selection: 264 passed, 2 skipped, 4 deselected (the four RTL FOLLOW cases were run separately); artifact `15035927377`.
+- RTL FOLLOW: all four configurations passed; artifact `15038143201`.
+- Combined WAITC selection: **268 passed, 2 skipped, 0 failures**. The two skips are PyTorch-dependent test imports, not WAITC tests.
+
+Software-core evidence reconciles to **825 passed, 3 skipped, 0 reported failures** across the 14 successful original module jobs and the complete WAITC retry. The original run 45622326985 remains historically cancelled; its 14 successful modules are retained as evidence and WAITC is closed by the separate successful retry.
+
+**Remaining gates:** RTL-uncovered, board-functional, consolidated regression, PPA/physical design, production interfaces/IP, DFT, CDC/RDC, SRAM macros, PDK/package, board electrical verification, real-hardware power/thermal/performance measurements, silicon qualification and commercial readiness. Manufacturer readiness remains **NOT READY**.
+
+A sequencing correction to `.github/workflows/sunnyone-rtl-functional.yml` was attempted to make board-functional depend on rtl-uncovered. GitHub rejected the update with HTTP 409 (repository rule validation timeout); a fresh read confirmed no change. Thus the workflow still allows those jobs to run in parallel. Retry the workflow-only change when repository rule validation is healthy. Do not start board-functional until RTL-uncovered succeeds.
