@@ -972,3 +972,25 @@ Run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/456613358
 - Workflow updated in commit `fd2a310b303d94226c1e65efa0e63b767ac747f4`: matrix now contains only groups 3.1, 3.2 and 4; group 1/2 historical evidence is recorded in workflow comments.
 - New workflow run #120 (`45693821197`) is pending on commit `fd2a310b303d94226c1e65efa0e63b767ac747f4`. Run #119 (`45692968740`) was created from the previous matrix and is superseded; its jobs were interrupted/cancelled after the workflow change. Confirm #120 jobs and conclusions before counting new passes.
 - Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5` at the last verification. Manufacturer handoff remains NOT READY; this CI correction does not close outstanding PPA, formal, CDC/RDC, integration, physical implementation, power/thermal, or commercial validation work.
+
+## Cross-chat continuation checkpoint — 2026-11-26 (Asia/Dhaka)
+
+Authoritative working location: repository shamiursunny/openTPU; branch sunnyone/commercial-profitability-architecture-2026-11-23. Latest branch HEAD verified immediately before this checkpoint: 40dd0643f7e386751103bfa10f0d91b658e88dba. Protected main independently listed at d84db55712aba0d40811d7762cb052f05d55b7e5; do not write to or merge into main.
+
+Active CI: RTL functional workflow run 45693821197 (https://github.com/shamiursunny/openTPU/actions/runs/45693821197), run head fd2a310b303d94226c1e65efa0e63b767ac747f4. Live job snapshot:
+- Group 3.1 job 139486043538: IN_PROGRESS, building pinned Verilator 5.044; checkout and Python setup succeeded; dependency installation and pytest have not started.
+- Group 3.2 job 139486044115: QUEUED.
+- Group 4 job 139486044169: QUEUED.
+- Board-functional depends on the complete RTL matrix; do not start it manually. No new group-3.1/3.2/4 pass count is credited yet.
+
+Verified historical selection evidence: Groups 1 and 2 are accepted from successful run #118 (45661335812) because current tests/test_rtl.py is byte-identical to the tested blob (SHA 84cdfed65c2c9d3604e51080ce88d878fc71a76a). Group 1 and group 2 jobs in #118 were SUCCESS. Group 4 was CANCELLED in #118 and is not a pass; the older RTL-tail run covers a different selection. Current run #120 deliberately runs only groups 3.1, 3.2 and 4. Do not duplicate groups 1/2 unless test source or environment changes.
+
+Immediate continuation sequence for any new chat/tab:
+1. Read this checkpoint plus the latest sections of all three continuity files before making changes.
+2. Re-query branch HEAD and run #120 jobs; never rely on the saved in-progress status without live polling.
+3. Poll group 3.1, then 3.2 and group 4; for each terminal job inspect the full log/artifact and pytest terminal summary. Credit only exact observed pass/skip/fail counts. Diagnose failures from logs and make minimal fixes without weakening/removing tests.
+4. After every RTL matrix job succeeds, verify the gated board-functional job starts; inspect its full log/artifact and terminal summary. If RTL fails, board should remain gated.
+5. Only after RTL and board gates pass, proceed to consolidated regression and then the remaining integration/formal/physical/PPA/IP/board/hardware/commercial gates. Keep manufacturer handoff NOT READY until evidence closes those gates.
+6. After each material engineering step, update PROJECT_TRACKER, MANUFACTURER_HANDOFF_READINESS and PROJECT_RESUME on this feature branch with exact SHA, run/job IDs, logs, counts, limitations and next action. Re-check branch HEAD and main before writes.
+
+Guardrails: serial/low-concurrency execution; no duplicate jobs without cause; no invented test counts; no test weakening; zero spend and no hardware purchase without explicit approval; no claims of tapeout/production readiness from simulation-only evidence. Continue the user's requested remaining engineering work autonomously within these constraints.
