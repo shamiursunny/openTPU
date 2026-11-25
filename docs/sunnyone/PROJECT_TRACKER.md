@@ -1933,3 +1933,12 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - This validates selector coverage and disjointness at the function-name level only. It does not prove all parametrized instances have executed; the new Actions logs must still provide actual collection and terminal pytest summaries for each group.
 - No test source or RTL changed. The workflow-only partition remains commit `7320c187810cbd7e4f106f0280922871f6430d1b`; exact workflow blob `9fb6fe3b62b6bda01af7fdea91bdfc4e8b1eb9f5`. Its actual push-triggered run ID/result is still not available through the connected run-list/status interface; do not assume execution or success.
 - Next: discover and inspect all four matrix jobs and artifacts, then board-functional after the matrix succeeds. Preserve the 45-minute per-group limit and `max-parallel: 1`; if any single group still times out, split that group by actual slow-test evidence, keeping the complete selection.
+
+
+## 164. Serial RTL workflow execution observed — 2026-11-25 (Asia/Dhaka)
+
+- Push-triggered workflow run is now identified: [Run 45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), workflow `SUNNYONE remaining RTL and board regressions`, head SHA `7320c187810cbd7e4f106f0280922871f6430d1b`, event `push`, run number 118.
+- Live job state at last poll: group 1 (`139371666058`) **in_progress** at `Run bounded RTL selection`; groups 2 (`139371665991`), 3 (`139371665344`), and 4 (`139371666093`) **queued**. This confirms the serial matrix is scheduling one group at a time as intended. Build pinned Verilator 5.044 and dependency installation completed successfully for group 1.
+- Group 1 has no terminal pytest summary yet; logs are not downloadable while the job is active. No test-pass count is credited for this run. Groups 2–4 and board-functional have not completed; board remains dependency-gated.
+- Do not launch duplicate runs or change the partition while this run is progressing. Poll run 45661335812, retrieve each job log and artifact after completion, record exact pytest counts, then inspect board-functional only if all four groups succeed. If any group fails/cancels, diagnose its actual log and rerun only the affected scope without weakening selection.
+- Manufacturer readiness remains NOT READY; PPA, consolidated regression and production qualification remain open.
