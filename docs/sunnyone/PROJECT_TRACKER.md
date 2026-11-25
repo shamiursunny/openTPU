@@ -2040,3 +2040,14 @@ Immediate continuation sequence for any new chat/tab:
 6. After each material engineering step, update PROJECT_TRACKER, MANUFACTURER_HANDOFF_READINESS and PROJECT_RESUME on this feature branch with exact SHA, run/job IDs, logs, counts, limitations and next action. Re-check branch HEAD and main before writes.
 
 Guardrails: serial/low-concurrency execution; no duplicate jobs without cause; no invented test counts; no test weakening; zero spend and no hardware purchase without explicit approval; no claims of tapeout/production readiness from simulation-only evidence. Continue the user's requested remaining engineering work autonomously within these constraints.
+
+
+
+
+## Live continuation correction — 2026-11-26 (Asia/Dhaka)
+
+- Active RTL workflow run [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), tested workflow SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`. Group 3.1 job `139486043538` is IN_PROGRESS at the bounded pytest selection; pinned Verilator 5.044 build and dependency installation succeeded. Group 3.2 job `139486044115` and group 4 job `139486044169` are QUEUED. Board-functional remains dependency-gated and must not be started manually.
+- Historical group 4 evidence was rechecked directly: job `139449080038` log from run `45661335812` ends with **5 passed, 212 deselected, 0 failures**. The tested `tests/test_rtl.py` blob `84cdfed65c2c9d3604e51080ce88d878fc71a76a` is byte-identical at run SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`. This is valid historical group-4 evidence despite a later checkpoint describing the run's other attempt as cancelled. The current run's group-4 job is therefore a duplicate verification; let the already-running serial workflow finish, but do not count its passes as additional unique tests.
+- Groups 1 and 2 remain accepted historical passes; their test source is unchanged. Do not rerun them absent source/environment changes.
+- Current exact-SHA source check: old and current `tests/test_rtl.py` blob SHAs both equal `84cdfed65c2c9d3604e51080ce88d878fc71a76a`.
+- Next: poll run `45693821197`; inspect terminal pytest logs and artifacts for 3.1, 3.2 and 4; then inspect board-functional only if all RTL jobs succeed. Reconcile unique coverage and update the three continuity files. Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; manufacturer readiness remains NOT READY.
