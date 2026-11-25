@@ -731,3 +731,12 @@ After that, move to consolidated candidate regression and formal/protocol/lint c
 4. After all software-core modules pass, run RTL-uncovered once; then board-functional once, sequentially.
 5. Reconcile exact SHA, run/job/artifact IDs and counts in all continuity documents; freeze a candidate for consolidated regression.
 6. Manufacturer readiness remains **NOT READY**; PPA, physical/IP/PHY and qualification gates remain outstanding.
+
+
+## 33. Serial software-core retry live result — 2026-11-25
+
+- New validation run: [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4`.
+- 15 matrix module jobs are present. Re-poll: 1 SUCCESS, 1 IN_PROGRESS, 13 QUEUED; only one module executes at a time as configured.
+- First module `tests/test_isa.py`, job `139233449899`: **18 passed in 0.13s**. Log artifact `sunnyone-software-core-0-log`, ID `15024379354`, uploaded and pytest summary inspected.
+- Current active module at last poll: `tests/test_compiler.py`, job `139233450657`.
+- The new workflow's serial scheduling and per-module artifact capture have passed their first live check. Do not mark software-core complete; 14 modules still need terminal evidence. Continue polling this run and record every module's exact counts and artifact ID.
