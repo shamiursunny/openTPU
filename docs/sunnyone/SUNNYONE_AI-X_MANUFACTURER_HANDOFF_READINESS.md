@@ -762,3 +762,8 @@ The four serial RTL selections introduced in workflow commit `7320c187810cbd7e4f
 ## Live RTL workflow state — 2026-11-25
 
 The serial RTL workflow is now executing as [Actions run 45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), head SHA `7320c187810cbd7e4f106f0280922871f6430d1b`. Last observed: group 1 is running its bounded pytest selection; groups 2–4 remain queued, confirming serial scheduling. Verilator 5.044 setup and project dependency installation succeeded. No terminal pytest count is available yet, and board-functional remains gated behind all four groups. See PROJECT_TRACKER.md Section 164. Do not infer a pass. Manufacturer readiness remains NOT READY.
+
+
+## RTL uncovered regression update — 2026-11-25
+
+On candidate workflow SHA `7320c187810cbd7e4f106f0280922871f6430d1b`, Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812) completed RTL uncovered group 1 (job `139371666058`) successfully. Retrieved terminal log reports **12 passed, 205 deselected, 0 failed** in 24m14s; artifact `sunnyone-rtl-uncovered-1-log` (ID `15047592555`) uploaded. Group 2 was in progress at last poll; groups 3–4 queued; board-functional is still dependency-gated. This is one scoped regression result only. RTL-uncovered acceptance remains OPEN until groups 2–4 and board-functional finish successfully and are inspected. No change to readiness decision: **NOT READY**.
