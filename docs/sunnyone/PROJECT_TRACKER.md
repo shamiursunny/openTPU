@@ -1542,3 +1542,29 @@ Release/manufacturer decision remains NOT READY for fabrication, tapeout, physic
 ## 143. Branch-head accounting correction — 2026-11-25
 
 The preceding comparison was made at intermediate feature HEAD `264a3d8...`. After the three continuity-document commits (`a20bf0b...`, `9f1331b...`, `2302bd4...`) and immediately before this accounting-correction commit, feature HEAD was `2302bd40fc5a3ec27447e835e8cfdfa9f46c71f3`. The fresh compare at that point confirmed 38 commits ahead / 0 behind tested RTL SHA `68baca1...`, with exactly four changed paths: the WG8 PPA workflow and the three SUNNYONE continuity documents. Against protected `main` SHA `d84db55712aba0d40811d7762cb052f05d55b7e5`, that intermediate feature HEAD was 573 ahead / 0 behind. Main remains unchanged. No RTL or testbench source changes exist after the tested SHA.
+
+
+## 144. GitHub Actions scheduling and duplicate-run control — 2026-11-25
+
+### Audit finding
+- Fifteen SUNNYONE workflows existed. Several broad push filters overlap on `rtl/**`, `opentpu/**`, and `sim/verilator/**`. A single RTL commit could start several independent suites together, including subsystem matrix, RTL functional/board, RTL tail, software-core, ASIC config, full-chip lint, reset audit and WG8 PPA.
+- These suites are not all duplicate tests: they cover different regressions, but each independently provisions Python, Verilator and dependencies. The subsystem matrix is limited to two parallel workers. Multiple workflows compete for hosted runner capacity, increasing queueing and wall-clock time.
+- WG8 PPA is a long physical-design investigation and previously failed at floorplan PDN placement checking. It should not launch automatically on every broad RTL push.
+
+### Workflow changes applied
+- Added a per-workflow/per-branch concurrency group to all 15 SUNNYONE workflow YAML files: `group: ${{ github.workflow }}-${{ github.ref }}`, `cancel-in-progress: true`. This cancels superseded runs of the same suite when a newer commit arrives, without cancelling other independent suites.
+- Changed `sunnyone-asic-wg8-ppa.yml` to manual `workflow_dispatch` only. This prevents a six-hour PPA run on every RTL commit; dispatch it after functional/ASIC qualification and a deliberate candidate checkpoint.
+- Kept existing regression workflows, path filters, test selections, artifacts and matrix groups. No tests were deleted, skipped or weakened. Kept subsystem matrix `fail-fast: false` and `max-parallel: 2` to preserve complete evidence and avoid excessive runner contention.
+- This is scheduling optimisation, not a fix for existing RTL/PPA failures. A successful workflow run must still verify the new configuration.
+
+### Recommended execution order
+1. Fast static/formal and focused control checks for changed modules.
+2. Relevant subsystem and software/RTL regression suites.
+3. ASIC integration and board-level checks after relevant RTL tests pass.
+4. Full WG8 PPA manually, only on a frozen candidate SHA after functional/ASIC gates pass.
+5. Retry only failed/cancelled jobs after diagnosis; do not rerun already successful suites without a code or environment reason.
+
+### Expected effect and limitations
+- Reduces wasted runner time from superseded same-suite runs and removes automatic six-hour PPA contention from ordinary RTL commits.
+- Independent suites still run concurrently where path filters match. This is intentional because they test different subsystems; no unsafe global concurrency lock was added.
+- Hosted runner capacity, package installation, long test execution and genuine test failures can still affect duration. Measure the next relevant push before claiming quantified speed-up.
