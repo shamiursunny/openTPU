@@ -644,3 +644,13 @@ Workflow/test review identifies an aggregate-runtime risk, not a confirmed test 
 
 ### Manufacturer-readiness decision
 **NOT READY.** Passing digital regressions do not establish production PCIe endpoint/PHY, DMA/IOMMU, DDR controller/PHY/training/ECC, CDC/RDC, DFT, qualified SRAM macros, physical signoff, package, board electrical validation, power/thermal validation or silicon qualification. Do not describe the design as tapeout/fabrication/production ready. Regression-queue completion advances verification only; it does not close these manufacturer gates.
+
+
+
+## 31. Live verification re-poll — 2026-11-25
+
+- Subsystem/memory matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338) was re-polled: **14/14 jobs SUCCESS** on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`. Reconciled matrix result remains **377 passed, 1 configuration-inapplicable skip, 0 failures**; the 104 Native DRAM/technology RAM passes are included in that total, not additional.
+- Software-core retry [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), job `139201961395`, remains **IN_PROGRESS** at the core ISA/compiler/kernels/numerics/host software test step. Setup and dependency installation completed. No terminal test count or artifact is available; active-run log retrieval returns BlobNotFound and is not evidence of failure. Workflow job timeout is 45 minutes.
+- Prior RTL/board retry [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324) is confirmed CANCELLED for both `rtl-uncovered` (`139149245874`) and `board-functional` (`139149246459`). No results may be counted.
+- Execution order remains strict: wait for software-core terminal status and inspect evidence; then run RTL-uncovered once; then board-functional once. Do not overlap broad suites. If software-core times out, partition the same test selection into bounded jobs without removing tests or assertions.
+- No RTL, testbench or workflow change was made during this re-poll. Manufacturer readiness remains **NOT READY**. The outstanding queue is verification work only; PCIe/DDR hard IP, DMA/IOMMU, CDC/RDC, DFT, production SRAM macros, physical signoff, package, board and silicon qualification remain open.
