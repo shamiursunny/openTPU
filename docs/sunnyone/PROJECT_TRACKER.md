@@ -1885,3 +1885,14 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Accidental duplicate WAITC run 45649007571 remains in progress (general job 139327989931). No cancellation action is available in connected GitHub controls. Do not count this run as new evidence; authoritative successful WAITC result remains run 45641472720.
 - New serial RTL/board run 45649502094, exact SHA ebce653e73a378adce6dde60939cb1e052077862, is in progress. At last poll only rtl-uncovered job 139329804556 had started; board job is gated on its success. No new test result is claimed yet.
 - Preserve prior verified aggregates unchanged until new logs are complete. RTL-uncovered and board-functional remain pending; consolidated regression, PPA and manufacturer readiness remain pending/not ready.
+
+
+## 161. RTL regression execution checkpoint — 2026-11-25 (Asia/Dhaka)
+
+- Re-polled RTL/board run [45649502094](https://github.com/shamiursunny/openTPU/actions/runs/45649502094), exact workflow/test SHA `ebce653e73a378adce6dde60939cb1e052077862`.
+- RTL job `139329804556` remains `in_progress`. Verified completed setup steps: checkout, Python 3.12 setup, pinned Verilator 5.044 build, and project/test dependency installation. The selected core RTL/ISA pytest step is actively running; no terminal pytest summary or pass/fail count is available yet.
+- `board-functional` remains correctly gated by `needs: rtl-uncovered`; it has not started. Do not start it separately.
+- Attempted retrieval of the active job log returned GitHub storage `BlobNotFound` while the job is still running. This is an unavailable-live-log condition, not a test failure. No artifact or test count is credited.
+- Accidental duplicate WAITC run `45649007571` is still `in_progress`; exclude it from all authoritative totals. WAITC's authoritative completed evidence remains run `45641472720`.
+- Existing verified totals remain unchanged: software-core 825 passed, 3 skipped; subsystem/memory 377 passed, 1 configuration-inapplicable skip. Do not add counts from either active run.
+- Next: wait for RTL job terminal state; retrieve full log and artifact; inspect pytest summary. If successful, verify board job starts and completes afterward. If failed, diagnose the exact failure without weakening tests. Then update all three continuity files with terminal evidence.
