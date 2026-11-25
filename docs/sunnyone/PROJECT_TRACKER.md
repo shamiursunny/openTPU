@@ -1592,3 +1592,11 @@ Correction to Section 144: GitHub documents that `workflow_dispatch` events requ
 The PPA workflow is therefore configured with a narrow feature-branch push filter covering the exact Nangate45 WG8 synthesis sources, ASIC top, target/tool configuration and an explicit `docs/sunnyone/PPA_REQUEST.md` marker. The broad `rtl/**` trigger is removed. The workflow file itself is excluded from its path filter to prevent self-triggering. `workflow_dispatch` remains configured for future availability once the workflow is present on the default branch / when supported through the repository's workflow controls.
 
 The request marker currently says `NONE`; creating it did not start a PPA run. To request PPA on the feature branch, update the marker's candidate SHA and reason only after functional/ASIC gates are green. This keeps PPA deliberate without relying on a UI control unavailable from a branch-only workflow file.
+
+
+## 148. RTL tail regression completion and artifact defect — 2026-11-25
+
+- Run [45598047232](https://github.com/shamiursunny/openTPU/actions/runs/45598047232), job `139149245841`, completed SUCCESS on tested source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`.
+- Exact pytest result from the job log: **33 passed, 1 skipped, 183 deselected in 742.68s (12m 22s)**. The skip is configuration-specific: `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. This is a scoped selection, not a full RTL-suite total.
+- Artifact step returned success but explicitly logged: `No files were found with the provided path: /tmp/sunnyone-rtl-tail.log. No artifacts will be uploaded.` The workflow's pytest command does not create that file. This is a CI observability defect, not a regression-test failure. Correct the command to tee output to the declared path with `set -o pipefail` after the current run set completes, then verify artifact upload on the next run.
+- At this checkpoint, core software/ISA run `45598047393` and RTL/board run `45598047324` remain IN_PROGRESS. Subsystem matrix `45598047338`: Stream, Quantizer modes, Quantizer corners/tie rounding, SPLITQ, QHL, and MX multiply/replay jobs completed SUCCESS; QST/QSTB and floating-point jobs remain IN_PROGRESS; remaining matrix groups are queued. No outcomes are inferred for active or queued jobs.
