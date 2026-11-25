@@ -1608,3 +1608,10 @@ The request marker currently says `NONE`; creating it did not start a PPA run. T
 - GitHub started validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) on that workflow-only commit. It is IN_PROGRESS at latest poll; artifact creation is not yet verified.
 - The previous run's exact log proved the defect: 33 passed, 1 skipped, 183 deselected; artifact action said no file existed. This correction affects CI logging only, not RTL or test selection.
 - Active source-regression runs on SHA `36104fda` remain in progress: software-core `45598047393`, RTL/board `45598047324`; subsystem matrix `45598047338` has 6 successful groups, 2 running, and 6 queued at latest poll. Continue polling; do not infer results.
+
+
+## CI logging repair correction — 2026-11-25
+
+The first logging-repair validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) FAILED before tests started. Exact error: `ERROR: file or directory not found: \\\\\\\\ `; the YAML continuation was over-escaped, causing pytest to interpret a literal backslash as a test path. No tests ran, and no artifact was created. This was a workflow-command quoting defect, not an RTL regression.
+
+Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log` in commit `e0eea98ba00e65ca42b785bc6133a5679529506b`. New validation run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541) is IN_PROGRESS. Verify both pytest outcome and actual artifact upload before closing the issue. Do not treat run 45604384259 as a test result.
