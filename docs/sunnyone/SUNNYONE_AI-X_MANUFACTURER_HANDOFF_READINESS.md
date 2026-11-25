@@ -685,7 +685,7 @@ Latest live poll:
 - The active VOPS log is not yet retrievable while the job is running; this is not evidence of failure.
 - The previous aggregate software-core job was cancelled at its timeout without a terminal pytest summary and contributes no test count.
 
-No RTL, testbench, assertions or workflow definition changed in this checkpoint. The three continuity-document commits are outside the software-core workflow's watched path filters and do not retrigger or cancel the active matrix. Final documentation branch HEAD: `cb35e4d7680286208fdfd420a6de739b4f573a49`.
+No RTL, testbench, assertions or workflow definition changed in this checkpoint. All intervening changes after the workflow source commit are continuity-document-only and are outside the software-core workflow's watched path filters. Re-check the live branch tip before the next execution.
 
 **Required handoff closure sequence**
 1. All 15 software-core modules must reach terminal SUCCESS with inspected logs and artifact records.
