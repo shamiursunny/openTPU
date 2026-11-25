@@ -879,3 +879,30 @@ WAITC job `139233450429` was cancelled at approximately 44m36s and 84% pytest pr
 - Duplicate WAITC run `45649007571` remains in progress and is not authoritative. Keep the completed WAITC run `45641472720` as the sole source of WAITC evidence.
 - Existing aggregate baselines remain software-core 825 passed, 3 skipped and subsystem/memory 377 passed, 1 configuration-inapplicable skip. No counts have been added.
 - Next actions: poll RTL to terminal; inspect full logs and artifacts; on success verify board starts only afterward and inspect its terminal summary; on failure isolate and fix the confirmed cause without reducing tests. Then update all three files again with the actual outcome. Consolidated regression and production gates remain open; manufacturer readiness NOT READY.
+
+
+## Latest continuation checkpoint — 2026-11-25 (Asia/Dhaka)
+
+Read this section together with the latest Section 162 of `PROJECT_TRACKER.md` and the latest continuation reconciliation in `SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md`.
+
+**Active branch:** `sunnyone/commercial-profitability-architecture-2026-11-23`. **Protected main:** `d84db55712aba0d40811d7762cb052f05d55b7e5` (re-verify before any future write; never modify main).
+
+### Current verified regression state
+- Software-core: **825 passed, 3 skipped, 0 reported failures** across 14 successful module jobs plus the separately successful complete WAITC retry. The original matrix run was globally cancelled because WAITC exceeded its job budget; do not call that historical run green.
+- Subsystem/memory: **14/14 jobs SUCCESS; 377 passed, 1 configuration-inapplicable skip, 0 failures**. Native DRAM/technology RAM's 104 passes are already included.
+- RTL-tail: **33 passed, 1 parameter-inapplicable skip, 183 deselected** on its own exact SHA.
+- ASIC/config: run 45487119079 passed its four-DIMM host AXI, negative aperture, global address-map, four-instance HMUX contention/assertion and integrated lint scopes on exact code SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`.
+- Remaining RTL/board run 45649502094 was cancelled during the long RTL-uncovered selection; board-functional was skipped by its dependency. No pytest count is credited for that run.
+
+### Latest workflow remediation
+Commit `7320c187810cbd7e4f106f0280922871f6430d1b` updates `.github/workflows/sunnyone-rtl-functional.yml`: the same 18 selector families are partitioned into four disjoint, serial matrix groups (`max-parallel: 1`), each with a 45-minute timeout and a dedicated verbose log artifact. Board-functional requires all RTL groups to succeed and uploads its own log. No test, assertion or RTL was removed or weakened. Workflow content was read back and verified; the push-triggered run ID/result still must be discovered and inspected. Do not assume success.
+
+### Immediate next actions
+1. Find the Actions run triggered by commit `7320c187...`; verify four groups and serial execution.
+2. Inspect every group's final pytest summary and artifact; diagnose any failures/timeouts without changing test coverage.
+3. Let board-functional run only after all RTL groups pass; inspect its log and artifact.
+4. Reconcile exact source SHAs and counts, then freeze one candidate and run consolidated regression.
+5. Keep WG8 PPA deferred until functional/ASIC prerequisites pass; the earlier floorplan-PDN failure remains unresolved and no PPA metrics are accepted.
+6. Continue open production-interface/IP, formal/CDC/RDC, DFT, SRAM, PDK/package, physical, board, thermal/power, silicon and commercial gates.
+
+**Readiness:** logical V1 is not a complete host-connected ASIC or tapeout package. Manufacturer readiness remains **NOT READY**. Zero spend without explicit approval; feature branch only; preserve main.
