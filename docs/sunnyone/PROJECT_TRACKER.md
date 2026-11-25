@@ -1615,3 +1615,31 @@ The request marker currently says `NONE`; creating it did not start a PPA run. T
 The first logging-repair validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) FAILED before tests started. Exact error: `ERROR: file or directory not found: \\\\\\\\ `; the YAML continuation was over-escaped, causing pytest to interpret a literal backslash as a test path. No tests ran, and no artifact was created. This was a workflow-command quoting defect, not an RTL regression.
 
 Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log` in commit `e0eea98ba00e65ca42b785bc6133a5679529506b`. New validation run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541) is IN_PROGRESS. Verify both pytest outcome and actual artifact upload before closing the issue. Do not treat run 45604384259 as a test result.
+
+
+
+## 150. Latest Actions reconciliation and CI artifact verification — 2026-11-25
+
+Repository/branch verified directly: `shamiursunny/openTPU`; active feature branch `sunnyone/commercial-profitability-architecture-2026-11-23` at pre-update HEAD `f51dc234aaf5b4e7d9b61a2e45768d315a5dcd81`; protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. No main-branch changes. All results below retain their exact tested SHA; do not combine counts as one release-wide total.
+
+### Newly reconciled runs
+- RTL-tail corrected logging run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541), job `139171823473`, source SHA `e0eea98ba00e65ca42b785bc6133a5679529506b`: SUCCESS. Downloaded and inspected artifact `sunnyone-rtl-tail-log` (artifact ID `15018530071`); pytest output confirms **33 passed, 1 skipped, 183 deselected in 635.12s (10m 35s)**. Skip is the documented configuration guard: `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. This verifies the corrected tee/pipefail log-artifact path. It is a scoped RTL-tail suite, not the complete regression.
+- Earlier logging-repair run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259), SHA `4a1eb21ea31749fff6c2b12b51472123a2540a59`: FAILURE before tests; over-escaped YAML command made pytest treat a backslash as a test path. Zero tests ran. Superseded by the corrected single-line command at `e0eea98...`.
+- AXI-Lite control correction [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), job `139149936465`, SHA `cf0d4d3c211b481ae3ade391078731d2e476877b`: SUCCESS; log PASS marker confirms independent AW/W, gating, load pulse, reset and register map. The preceding run `45598047228` failed because the test expected `0x6c` instead of the DUT-consistent sticky-error status `0x6e`; testbench-only expectation was corrected.
+- Reset/power-up audit [45598047555](https://github.com/shamiursunny/openTPU/actions/runs/45598047555): SUCCESS.
+- Full-chip Verilator lint [45598047313](https://github.com/shamiursunny/openTPU/actions/runs/45598047313): SUCCESS for the workflow's stated lint scope.
+- Global address-map formal [45598047300](https://github.com/shamiursunny/openTPU/actions/runs/45598047300): SUCCESS for its scoped assertions; retain the earlier 14-assertion SAT result only for its exact SHA.
+- Virtual DRAM [45598047296], workload harness [45598047288], RTL tail [45598047232], isolated TMEM [45598047332], PCIe Gen2 [45598047330], HMUX simulation [45598047225], ASIC configuration [45598047221]: SUCCESS on their recorded run SHAs and respective scopes.
+- Software-core [45598047393] and remaining RTL/board [45598047324]: CANCELLED. No pass/fail count can be inferred. They require a deliberate retry on a frozen, current source SHA after the active matrix finishes.
+- Subsystem/memory matrix [45598047338]: 13 of 14 jobs SUCCESS; Native DRAM and technology RAM job `139149249337` was still IN_PROGRESS at the latest poll. The other 13 jobs, including Reset audit, had completed SUCCESS. Do not call the matrix complete until the last job reaches a terminal state and its log is inspected.
+
+### CI scheduling outcome
+Per-workflow/per-branch concurrency and PPA trigger refinements are present in the workflows. The latest RTL-tail run demonstrates the corrected artifact capture works. The subsystem matrix still has a 14-job structure capped at two parallel jobs; this is intentional. Cancelled software/board suites are distinct coverage and should be rerun only once, sequentially after the matrix and any active jobs settle. Do not rerun successful suites without a code/environment reason.
+
+### Next evidence-gated actions
+1. Poll Native DRAM job `139149249337` to completion; inspect its exact pytest summary and artifact/log.
+2. Retry software-core once on the latest frozen RTL SHA; wait for terminal result before starting another broad suite.
+3. Retry remaining RTL/board once after software-core settles; preserve exact SHA and inspect logs.
+4. Keep WG8 PPA separate: latest recorded research PPA run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546) failed in ORFS floorplan-PDN placement checking. No accepted PPA metrics; do not launch until functional/ASIC gates are green and the candidate is frozen.
+5. Reconcile all test outcomes by exact commit; only then choose a final regression candidate. Manufacturer readiness remains NOT READY.
+
