@@ -569,3 +569,8 @@ Run [45598047232](https://github.com/shamiursunny/openTPU/actions/runs/455980472
 The artifact upload step did not actually produce an artifact: its log says `No files were found with the provided path: /tmp/sunnyone-rtl-tail.log`. The test command currently does not tee output to that path. Treat this as a CI logging/traceability defect; regression job itself passed. Fix logging with pipefail and verify an actual uploaded artifact on a later run.
 
 The software-core, uncovered RTL, board-functional and several subsystem matrix jobs remain active/queued at this checkpoint. These are not handoff evidence until completed with inspectable results. Manufacturer readiness remains **NOT READY**. No change to RTL signoff or PPA status.
+
+
+## 27. RTL-tail regression artifact repair — 2026-11-25
+
+The missing RTL-tail log artifact was corrected in workflow-only commit `4a1eb21ea31749fff6c2b12b51472123a2540a59`. Pytest output now streams through `tee` to the declared artifact path with Bash `pipefail`, so test failures remain failures and a real log file should be available. Validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) is IN_PROGRESS; do not consider the artifact fix validated until the log confirms upload. No hardware RTL changed. Manufacturer readiness remains **NOT READY**.
