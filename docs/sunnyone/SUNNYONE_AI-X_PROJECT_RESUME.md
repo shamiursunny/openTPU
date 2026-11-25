@@ -625,3 +625,12 @@ Run focused checks first, then one broad suite at a time. Keep subsystem matrix 
 ### Next action
 Poll job `139149249337` to terminal, inspect the pytest log/artifact, and update all three continuity documents with its exact result. Then execute software-core and remaining RTL/board sequentially. Manufacturer readiness remains NOT READY.
 
+
+
+## 29. Continuation poll — Native DRAM runtime risk — 2026-11-25
+
+The active subsystem matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338) still has 13/14 jobs successful; Native DRAM/technology RAM job `139149249337` remains IN_PROGRESS. Its test step is still active; no final result or artifact is available. The run has not been marked complete.
+
+Inspection of the workflow and test harness found an aggregate-runtime risk: the Native DRAM test helper allows up to 1,800 seconds per simulator invocation, but the entire Native DRAM plus technology RAM matrix group has a 45-minute job timeout. This does not prove a hang. Wait for the current job's terminal result; do not change the active workflow mid-run.
+
+Once terminal, partition the Native DRAM suite into smaller logical jobs and run technology RAM separately without removing or weakening tests. Then rerun cancelled software-core job `139149247780` and cancelled RTL/board jobs `139149245874` and `139149246459` sequentially, waiting for each terminal result. Keep the branch feature-only and preserve exact-SHA evidence. Manufacturer handoff remains NOT READY.
