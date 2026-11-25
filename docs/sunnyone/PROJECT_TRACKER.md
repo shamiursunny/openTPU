@@ -1942,3 +1942,12 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Group 1 has no terminal pytest summary yet; logs are not downloadable while the job is active. No test-pass count is credited for this run. Groups 2–4 and board-functional have not completed; board remains dependency-gated.
 - Do not launch duplicate runs or change the partition while this run is progressing. Poll run 45661335812, retrieve each job log and artifact after completion, record exact pytest counts, then inspect board-functional only if all four groups succeed. If any group fails/cancels, diagnose its actual log and rerun only the affected scope without weakening selection.
 - Manufacturer readiness remains NOT READY; PPA, consolidated regression and production qualification remain open.
+
+
+## 165. RTL uncovered group 1 passed — 2026-11-25 (Asia/Dhaka)
+
+- Run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), head SHA `7320c187810cbd7e4f106f0280922871f6430d1b`, job `139371666058` (RTL uncovered — group 1) completed with job conclusion **success**.
+- Retrieved full job log. Exact pytest terminal summary: **12 passed, 205 deselected in 1454.29s (0:24:14)**. Collection was 217 items, 12 selected. No failed/error/skipped tests were reported in this group.
+- Log artifact uploaded successfully: `sunnyone-rtl-uncovered-1-log`, artifact ID `15047592555`, SHA-256 `a5b5b2bd3c8bb0f523cb858b04ef65763aaf0b0c407f487291542d3b414701e3`.
+- At follow-up poll, group 2 job `139371665991` was in progress; groups 3 (`139371665344`) and 4 (`139371666093`) remained queued. Board-functional remains gated. Group 1 result is a verified scoped pass, not completion of the full RTL suite.
+- Continue polling this exact run, capture each terminal log/artifact, and do not alter the active workflow. Manufacturer readiness remains NOT READY.
