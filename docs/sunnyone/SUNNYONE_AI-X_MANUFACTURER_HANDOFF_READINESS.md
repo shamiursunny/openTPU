@@ -618,3 +618,29 @@ The subsystem matrix [45598047338](https://github.com/shamiursunny/openTPU/actio
 
 Workflow/test review identifies an aggregate-runtime risk, not a confirmed test defect: the Native DRAM helper allows up to 1,800 seconds for an individual simulation, but the combined Native DRAM and technology RAM matrix job has a 45-minute overall timeout. After the current run settles, separate the Native DRAM suite into bounded logical groups and move technology RAM to its own job. Retain all tests, assertions and artifacts. Do not interrupt the active matrix to apply this scheduling-only change.
 
+
+
+## 30. Current verification status and handoff sequence — 2026-11-25
+
+### Verified state
+- Feature branch: `sunnyone/commercial-profitability-architecture-2026-11-23`; branch HEAD before this documentation-only checkpoint: `db16fea6a7f39d29be62e4606842d3d24482520c`.
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`; unchanged.
+- Subsystem/memory matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): 14/14 jobs SUCCESS on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`; reconciled matrix total **377 passed, 1 configuration-inapplicable skip, 0 failures**.
+- Native DRAM + technology RAM log artifact ID `15020003974` inspected: **104 passed in 1,829.20 seconds**.
+- Separate RTL-tail run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541): **33 passed, 1 skipped, 183 deselected** on SHA `e0eea98ba00e65ca42b785bc6133a5679529506b`; artifact inspected.
+- AXI-Lite control [45598244519] successful on its own exact testbench SHA; testbench-only expectation correction, no RTL modification.
+
+### Open regression items
+- Software-core run [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), attempt 2, job `139201961395`: IN_PROGRESS at “Core ISA, compiler, kernels, numerics and host software”; no result count yet.
+- Remaining RTL/board run [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324): previous attempt CANCELLED; jobs `139149245874` and `139149246459` require a fresh sequential retry after software-core settles.
+- The Native DRAM group completed within its 45-minute budget; the earlier runtime concern was not reproduced as a timeout. Do not change/split tests without evidence.
+
+### Handoff gate after current queue
+1. Inspect software-core terminal result, complete log and artifact.
+2. Retry and inspect RTL-uncovered, then board-functional; do not run these broad suites concurrently.
+3. Reconcile exact tested SHA and all pass/skip/fail/deselected counts in tracker, resume and this handoff.
+4. Freeze one candidate SHA and complete the required consolidated regression.
+5. Diagnose WG8 ORFS floorplan-PDN failure [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546) before any accepted PPA claim; no final PPA metrics currently exist.
+
+### Manufacturer-readiness decision
+**NOT READY.** Passing digital regressions do not establish production PCIe endpoint/PHY, DMA/IOMMU, DDR controller/PHY/training/ECC, CDC/RDC, DFT, qualified SRAM macros, physical signoff, package, board electrical validation, power/thermal validation or silicon qualification. Do not describe the design as tapeout/fabrication/production ready. Regression-queue completion advances verification only; it does not close these manufacturer gates.
