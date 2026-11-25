@@ -856,3 +856,20 @@ The active RTL run is [45693821197](https://github.com/shamiursunny/openTPU/acti
 Historical group 4 was independently verified from job `139449080038` in run `45661335812`: terminal pytest summary **5 passed, 212 deselected, 0 failures**. The test source blob is identical on the active run SHA (`84cdfed65c2c9d3604e51080ce88d878fc71a76a`). This corrects the prior statement that group 4 had no successful evidence; a later cancelled attempt does not erase the earlier successful execution on unchanged source. The current workflow's group-4 rerun is redundant and must not be counted as additional unique coverage. Groups 1 and 2 also retain historical passing evidence. No manufacturer gate is closed by this correction; formal, CDC/RDC, physical/PPA, production IP/PHY, board electrical, hardware, power/thermal, silicon and commercial gates remain open. **Manufacturer handoff remains NOT READY.**
 
 Next action: finish the existing run serially, inspect terminal logs/artifacts for 3.1, 3.2 and the duplicate group-4 run, then inspect board-functional only after all RTL jobs succeed. Preserve feature-branch-only writes, zero-spend approval and protected `main` (`d84db55712aba0d40811d7762cb052f05d55b7e5`).
+
+
+### 15. Uncovered RTL split verification update — 2026-11-26
+
+This update supersedes older live-state snapshots for workflow Run [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), while preserving all historical evidence.
+
+| Job | State | Observed test result | Artifact |
+|---|---|---|---|
+| Group 3.1, job 139486043538 | DONE — workflow success | 8 passed, 209 deselected, 0 failed; 1,875.28 s | 15062436327 |
+| Group 3.2, job 139486044115 | DONE — workflow success | 33 passed, 184 deselected, 0 failed; 529.45 s | 15064162074 |
+| Group 4, job 139486044169 | IN PROGRESS at latest poll | Test selection running; no terminal pytest summary yet | Pending |
+
+Both completed jobs checked out candidate SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`, Python 3.12.16, pytest 9.2.0 and pinned Verilator 5.044. Group 3.2's exact selection comprised 33 parameterised cases across TMEM random traffic, input-stage traffic, RAM dump and 4-bit MLP RTL. Group 3.1's log confirms eight selected tests passed. These results close only the stated selected groups on that exact SHA; they do not constitute a complete RTL matrix, board validation, full-chip signoff or production qualification.
+
+The overall workflow remains IN_PROGRESS because Group 4 is still executing. Its log endpoint was unavailable while live (Azure BlobNotFound); this is not a test failure or a pass. Do not rerun it while the current job remains active. Groups 1 and 2 have previously verified passes; the historical Group 4 pass remains historical evidence and must not be double-counted with the current run.
+
+**Current release decision remains NOT READY.** After Group 4 terminates, inspect the dependent board-functional job and continue the consolidated regression, integration, formal, lint, PPA, physical/IP, hardware and commercial gates. No test count is to be treated as a deduplicated lifetime total.
