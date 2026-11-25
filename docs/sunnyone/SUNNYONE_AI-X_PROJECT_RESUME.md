@@ -545,3 +545,8 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 3. Confirm WG8 PPA does not auto-run on ordinary RTL pushes and remains available through Actions → Run workflow.
 4. Measure queue time and duration; adjust only if evidence shows a remaining bottleneck.
 5. Keep functional test outcomes and PPA failure diagnosis separate from CI scheduling status.
+
+
+## 23. AXI-Lite control testbench assertion correction — 2026-11-25
+
+The post-CI-policy run `45598047228` exposed a testbench status expectation mismatch: `sim/asic/tb_asic_ctrl.sv:55` expected `0x6c`, while the DUT returned `0x6e`. Decoding `otpu_asic_ctrl.sv` shows status bit 1 is sticky `ctrl_error` and bit 2 is `ld_busy | load_inflight`. The preceding deliberately rejected LOAD while `wr_idle=0` sets the sticky error; the test later accepts LOAD without clearing that error. The RTL output is therefore consistent with the test sequence. Updated the testbench expectation to `0x6e` and clarified the comment; test-only commit `cf0d4d3c211b481ae3ade391078731d2e476877b`. Rerun `45598244519` / job `139149936465` is currently IN_PROGRESS during Icarus installation. Await the completed log before recording PASS.
