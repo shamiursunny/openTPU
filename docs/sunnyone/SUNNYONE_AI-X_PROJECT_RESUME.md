@@ -550,3 +550,8 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 ## 23. AXI-Lite control testbench assertion correction — 2026-11-25
 
 The post-CI-policy run `45598047228` exposed a testbench status expectation mismatch: `sim/asic/tb_asic_ctrl.sv:55` expected `0x6c`, while the DUT returned `0x6e`. Decoding `otpu_asic_ctrl.sv` shows status bit 1 is sticky `ctrl_error` and bit 2 is `ld_busy | load_inflight`. The preceding deliberately rejected LOAD while `wr_idle=0` sets the sticky error; the test later accepts LOAD without clearing that error. The RTL output is therefore consistent with the test sequence. Updated the testbench expectation to `0x6e` and clarified the comment; test-only commit `cf0d4d3c211b481ae3ade391078731d2e476877b`. Rerun `45598244519` / job `139149936465` is currently IN_PROGRESS during Icarus installation. Await the completed log before recording PASS.
+
+
+## 24. AXI-Lite control rerun verified — PASS — 2026-11-25
+
+Corrected testbench run [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), job `139149936465`, completed SUCCESS. Exact log marker: `PASS: ASIC AXI-Lite control, independent AW/W, gating, load pulse, reset, register map`. Testbench-only expected status correction `0x6c` → `0x6e` reflects the sticky control-error bit after the deliberate rejected LOAD. No RTL source changed.
