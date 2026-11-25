@@ -772,3 +772,8 @@ On candidate workflow SHA `7320c187810cbd7e4f106f0280922871f6430d1b`, Actions ru
 ## RTL uncovered group 2 result — 2026-11-26
 
 Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`: group 2 job `139371665991` completed successfully. Retrieved pytest log: **24 passed, 193 deselected, 0 failed** in 24m38s. Artifact `sunnyone-rtl-uncovered-2-log`, ID `15049479359`, digest `7b48507d66da85cea1eac09b76aa9c52f648cd2e87f467a4d4c2ce53f6f206d6`. Groups 1 and 2 together account for 36 verified tests in two separate jobs; groups 3–4 and board-functional remain pending. Acceptance remains OPEN; manufacturer readiness **NOT READY**.
+
+
+## Current RTL execution checkpoint — 2026-11-26 (Asia/Dhaka)
+
+Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`: RTL uncovered group 1 (job `139371666058`) passed **12 tests** and group 2 (job `139371665991`) passed **24 tests**. Their exact logs and artifacts were inspected; there are no failures, errors or skips in either selected group. Group 3 (job `139371665344`) is still running its bounded RTL selection after successful Verilator 5.044 build and dependency installation. Group 4 (job `139371666093`) remains queued; board-functional is dependency-gated and has not started. Thus 36 scoped passes are verified, but the RTL-uncovered gate and board-functional gate remain OPEN. No consolidated regression or PPA signoff is implied. Manufacturer handoff readiness remains **NOT READY**.
