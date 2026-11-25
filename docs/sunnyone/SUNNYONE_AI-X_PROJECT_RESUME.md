@@ -578,3 +578,12 @@ The RTL-tail upload-artifact step was green but the log explicitly states no fil
 - Subsystem matrix `45598047338` — two jobs IN_PROGRESS and remaining groups queued.
 
 Do not trigger a new branch commit until these runs complete unless a critical fix is required, because matching workflow path filters may cancel superseded runs. Keep PPA deferred and manufacturer readiness NOT READY.
+
+
+## 27. RTL-tail log artifact fix and current Actions checkpoint — 2026-11-25
+
+- Corrected `.github/workflows/sunnyone-rtl-tail.yml` in commit `4a1eb21ea31749fff6c2b12b51472123a2540a59`: pytest now writes its console output to `/tmp/sunnyone-rtl-tail.log` using `tee`; Bash `set -o pipefail` ensures pytest's nonzero exit is not masked by tee.
+- Validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) is IN_PROGRESS. Verify its final log and actual artifact before closing the issue.
+- Last verified RTL-tail regression run [45598047232](https://github.com/shamiursunny/openTPU/actions/runs/45598047232): 33 passed, 1 skipped, 183 deselected in 742.68 seconds; job passed but artifact was missing.
+- At latest poll, software-core `45598047393` and RTL/board `45598047324` remain IN_PROGRESS; subsystem matrix `45598047338` has six SUCCESS groups, two IN_PROGRESS and six QUEUED. These runs target SHA `36104fda` and must be assessed separately from the workflow-only logging fix.
+- No RTL changes. Keep PPA deferred; manufacturer readiness NOT READY.
