@@ -695,3 +695,12 @@ No RTL, testbench, assertions or workflow definition changed in this checkpoint.
 5. Freeze one candidate and complete the appropriate consolidated verification.
 
 **Do not release to a manufacturer as a completed design.** PCIe endpoint/SerDes, DDR controller/PHY/training/ECC, DMA/IOMMU, CDC/RDC, DFT, production SRAM macros, PDK/package, physical signoff, board electrical validation, power/thermal measurements, silicon qualification and commercial validation remain open. The previous WG8 research PPA failure at ORFS floorplan-PDN placement also remains unresolved; no area, timing or power metric is accepted.
+
+
+## 35. Serial software-core matrix live evidence — 2026-11-25 (Asia/Dhaka)
+
+Run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985) on workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4` is the controlled serial retry. Live state: **10/15 SUCCESS, 1 IN_PROGRESS, 4 QUEUED, 0 failed/cancelled**. Active job is `tests/test_waits.py` (`139233450429`). Queued jobs are `test_waitw.py`, `test_host_runs.py`, `test_host_lock.py` and `test_host.py`.
+
+Ten completed job logs and their pytest summaries were retrieved and inspected. Results and artifacts: ISA 18 (`139233449899`, artifact `15024379354`); compiler 44 (`139233450657`, `15026211469`); kernels 46 (`139233450577`, `15026436432`); quant 81 (`139233450565`, `15027565119`); formats 13 (`139233450333`, `15027510239`); VOPS 101 (`139233450456`, `15030235221`); FP 12 (`139233450380`, `15029541963`); MX 32 (`139233450804`, `15029542120`); stream 46 (`139233450596`, `15032330134`); dataflow 27 (`139233450490`, `15029769939`). All ten summaries report passed-only outcomes.
+
+Subtotal: **420 passed, 0 reported failures, 0 reported skips**. This is partial software-core evidence, not a completed gate. The active waits job and four queued jobs are not counted. Keep the matrix running without source/workflow changes. After all 15 pass, run RTL-uncovered once and then board-functional once, sequentially. Manufacturer handoff remains **NOT READY**.
