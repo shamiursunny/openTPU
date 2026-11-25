@@ -918,3 +918,7 @@ The push-triggered serial workflow is [run 45661335812](https://github.com/shami
 
 ### Latest verified run update — 2026-11-25
 Actions run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`: RTL uncovered group 1 job `139371666058` is **SUCCESS**, with retrieved terminal pytest summary **12 passed, 205 deselected, 0 failed** (24m14s). Artifact `sunnyone-rtl-uncovered-1-log`, ID `15047592555`, uploaded. At last poll group 2 (`139371665991`) was running; groups 3 (`139371665344`) and 4 (`139371666093`) queued. Next: poll run 45661335812; inspect group 2–4 logs/artifacts as each completes; inspect board-functional only after all four groups pass. Do not rerun or modify active workflow. This is not full RTL completion. Manufacturer readiness remains NOT READY.
+
+
+### RTL uncovered group 2 verified — 2026-11-26
+In run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`, job `139371665991` completed success. Full log summary: **24 passed, 193 deselected, 0 failed** (24m38s). Artifact `sunnyone-rtl-uncovered-2-log`, ID `15049479359`, SHA-256 `7b48507d66da85cea1eac09b76aa9c52f648cd2e87f467a4d4c2ce53f6f206d6`. Groups 1+2 = 36 verified passes across two jobs. Group 3 job `139371665344` has started toolchain build; group 4 `139371666093` queued. Poll exact run; do not duplicate or modify it. Board-functional waits for all four groups. Manufacturer readiness NOT READY.
