@@ -519,3 +519,29 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 4. Retry uncovered RTL when the workflow is no longer active.
 5. Rerun full PPA after evidence-backed fixes and require complete flow plus final inspectable reports before accepting PPA metrics.
 6. Keep manufacturer release NOT READY until all physical, PHY, DFT, package, board, timing, power, thermal and silicon gates are independently satisfied.
+
+
+## 22. CI workflow scheduling optimisation checkpoint — 2026-11-25
+
+### Why the Actions list appeared to run in parallel and stall
+- Fifteen project-specific workflow files existed. Broad push filters overlap across `rtl/**`, `opentpu/**` and `sim/verilator/**`, so one commit can trigger multiple distinct test suites. Each independently provisions tools and consumes a hosted runner.
+- The subsystem matrix has 14 groups with `max-parallel: 2`, deliberately limiting concurrency. Other workflows can run simultaneously, adding queue pressure. The six-hour WG8 PPA workflow was also push-triggered by broad RTL paths, despite being an expensive physical-design investigation currently failing at floorplan PDN placement.
+- Different pass/fail statuses are expected when suites exercise different components or environments. Parallel execution itself does not establish the cause of a failure.
+
+### Changes made on the feature branch
+- All 15 `.github/workflows/sunnyone-*.yml` workflows now have concurrency groups keyed by workflow name and branch, with `cancel-in-progress: true`. A newer commit cancels only an older run of that same workflow/branch.
+- WG8 PPA is now `workflow_dispatch` only, removing its automatic push trigger. Dispatch manually after the functional and ASIC gates are green and the candidate SHA is frozen.
+- Existing test commands, path filters, matrix groups, failure reporting and artifacts are preserved. No tests were removed, hidden or made continue-on-error.
+- The matrix remains `max-parallel: 2`; increasing it without runner-capacity evidence risks more contention.
+
+### Validation status
+- Workflow source edits are committed together as one commit to avoid triggering one workflow update at a time.
+- The new YAML has not yet been exercised by a subsequent GitHub Actions run. Confirm syntax and behaviour from the next push-triggered runs before considering the scheduling change fully validated.
+- No quantified runtime reduction is claimed yet.
+
+### Next
+1. Verify only suites whose path filters match are triggered.
+2. Confirm a newer commit cancels superseded runs of the same workflow without cancelling other suites.
+3. Confirm WG8 PPA does not auto-run on ordinary RTL pushes and remains available through Actions → Run workflow.
+4. Measure queue time and duration; adjust only if evidence shows a remaining bottleneck.
+5. Keep functional test outcomes and PPA failure diagnosis separate from CI scheduling status.
