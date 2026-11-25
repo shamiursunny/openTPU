@@ -1583,3 +1583,12 @@ The preceding comparison was made at intermediate feature HEAD `264a3d8...`. Aft
 - Corrected testbench rerun: [GitHub Actions 45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), job `139149936465`, SUCCESS.
 - Exact log marker: `PASS: ASIC AXI-Lite control, independent AW/W, gating, load pulse, reset, register map`.
 - The change was testbench-only: expected status changed from `0x6c` to `0x6e` to account for the sticky control-error bit set by the intentionally rejected LOAD command. No RTL source changed.
+
+
+## 147. WG8 PPA trigger refinement — 2026-11-25
+
+Correction to Section 144: GitHub documents that `workflow_dispatch` events require the workflow file to exist on the repository's default branch. The PPA workflow file does not currently exist on protected `main`, so a feature-branch-only manual UI trigger cannot be relied upon. See [GitHub documentation](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
+
+The PPA workflow is therefore configured with a narrow feature-branch push filter covering the exact Nangate45 WG8 synthesis sources, ASIC top, target/tool configuration and an explicit `docs/sunnyone/PPA_REQUEST.md` marker. The broad `rtl/**` trigger is removed. The workflow file itself is excluded from its path filter to prevent self-triggering. `workflow_dispatch` remains configured for future availability once the workflow is present on the default branch / when supported through the repository's workflow controls.
+
+The request marker currently says `NONE`; creating it did not start a PPA run. To request PPA on the feature branch, update the marker's candidate SHA and reason only after functional/ASIC gates are green. This keeps PPA deliberate without relying on a UI control unavailable from a branch-only workflow file.
