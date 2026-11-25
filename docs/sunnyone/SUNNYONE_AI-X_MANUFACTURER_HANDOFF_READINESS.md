@@ -560,3 +560,12 @@ Manufacturer readiness remains NOT READY; this scheduling change does not close 
 The PPA workflow no longer responds to broad `rtl/**` changes. Its push filter is limited to the Nangate45 WG8 target's synthesized RTL source set, ASIC top, target/ASIC flow configuration and the explicit `docs/sunnyone/PPA_REQUEST.md` request marker. The workflow YAML itself is excluded to prevent a self-trigger. This preserves automatic PPA on relevant candidate-source changes while avoiding repeated multi-hour runs for unrelated RTL edits.
 
 GitHub's documented `workflow_dispatch` requirement is that the workflow file must exist on the repository's default branch. This workflow currently exists only on the feature branch, while protected `main` is intentionally untouched; therefore, do not assume the manual Run workflow button is available yet. The request marker is the reliable feature-branch trigger. No PPA pass or physical signoff is implied.
+
+
+## 26. RTL tail regression result and CI evidence gap — 2026-11-25
+
+Run [45598047232](https://github.com/shamiursunny/openTPU/actions/runs/45598047232), job `139149245841`, completed SUCCESS on source SHA `36104fdaacabcba39ba4a7daa74b7fb19ce31536`. Exact pytest output: **33 passed, 1 skipped, 183 deselected in 742.68s**. The one skip is the documented configuration guard `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`.
+
+The artifact upload step did not actually produce an artifact: its log says `No files were found with the provided path: /tmp/sunnyone-rtl-tail.log`. The test command currently does not tee output to that path. Treat this as a CI logging/traceability defect; regression job itself passed. Fix logging with pipefail and verify an actual uploaded artifact on a later run.
+
+The software-core, uncovered RTL, board-functional and several subsystem matrix jobs remain active/queued at this checkpoint. These are not handoff evidence until completed with inspectable results. Manufacturer readiness remains **NOT READY**. No change to RTL signoff or PPA status.
