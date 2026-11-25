@@ -668,3 +668,30 @@ Handoff remains **NOT READY**. Complete all 15 module jobs, then rerun RTL-uncov
 ## 33. Software-core serial retry first module evidence — 2026-11-25
 
 The corrective serial matrix run [45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), on workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4`, is active. Re-poll shows one of 15 module jobs SUCCESS, one IN_PROGRESS and 13 QUEUED, confirming no overlapping module jobs. `tests/test_isa.py` job `139233449899`: **18 passed in 0.13s**; uploaded artifact `sunnyone-software-core-0-log` ID `15024379354` and pytest output inspected. `tests/test_compiler.py` job `139233450657` is currently IN_PROGRESS. This is only partial validation; the software-core handoff gate remains OPEN until every module passes. Manufacturer readiness remains NOT READY.
+
+
+## 34. Live software-core verification checkpoint — 2026-11-25 (Asia/Dhaka)
+
+**Handoff gate: OPEN / NOT READY.**
+
+The serial software-core retry is live at [run 45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), on workflow source commit `38377909bf68e3aa6102efac6c56b832675d44d4`. All 15 module jobs are present and serial scheduling is operating as configured.
+
+Latest live poll:
+- 5 module jobs SUCCESS.
+- 1 module job IN_PROGRESS: VOPS, job `139233450456`.
+- 9 module jobs QUEUED.
+- Inspected module results: ISA 18 passed; compiler 44 passed; kernels 46 passed; quantisation 81 passed; formats 13 passed.
+- Verified subtotal: **202 passed, 0 reported failures, 0 reported skips** across those five completed module logs. Per-module log artifacts are uploaded and the pytest summaries have been inspected.
+- The active VOPS log is not yet retrievable while the job is running; this is not evidence of failure.
+- The previous aggregate software-core job was cancelled at its timeout without a terminal pytest summary and contributes no test count.
+
+No RTL, testbench, assertions or workflow change was made in this checkpoint. The continuity-document-only update does not match the software-core workflow's watched path filters.
+
+**Required handoff closure sequence**
+1. All 15 software-core modules must reach terminal SUCCESS with inspected logs and artifact records.
+2. Run and inspect RTL-uncovered regression.
+3. Run and inspect board-functional regression after RTL-uncovered settles.
+4. Reconcile exact tested source SHA, all job/run/artifact IDs, pass/skip/fail counts and limitations across the tracker, handoff and resume.
+5. Freeze one candidate and complete the appropriate consolidated verification.
+
+**Do not release to a manufacturer as a completed design.** PCIe endpoint/SerDes, DDR controller/PHY/training/ECC, DMA/IOMMU, CDC/RDC, DFT, production SRAM macros, PDK/package, physical signoff, board electrical validation, power/thermal measurements, silicon qualification and commercial validation remain open. The previous WG8 research PPA failure at ORFS floorplan-PDN placement also remains unresolved; no area, timing or power metric is accepted.
