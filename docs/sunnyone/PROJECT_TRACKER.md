@@ -1875,3 +1875,13 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Board-functional: PENDING; execution must follow RTL-uncovered.
 - Consolidated regression: PENDING.
 - PPA and manufacturer readiness remain open; do not claim tapeout readiness.
+
+
+## 160. CI orchestration corrections and active RTL verification (2026-11-25)
+
+- Fixed .github/workflows/sunnyone-waits-retry.yml: removed the push trigger on docs/sunnyone/PROJECT_TRACKER.md; WAITC retry is now manual-dispatch only. Documentation-only commits no longer launch the expensive WAITC suite. Commit: 639e1ce7f2d590276cb979286eb7adb20eaadcb3.
+- Fixed .github/workflows/sunnyone-rtl-functional.yml: board-functional now declares needs: rtl-uncovered, so board tests cannot start before the selected RTL/ISA job succeeds. Commit: ebce653e73a378adce6dde60939cb1e052077862.
+- Verified current .github/workflows/sunnyone-rtl-tail.yml no longer contains the literal-backslash pytest invocation that caused historical run 45604384259 to exit 4 with 'file or directory not found: \\' and 'no tests ran'. Later run 45604527541 succeeded; the active workflow now has a single-line pytest command.
+- Accidental duplicate WAITC run 45649007571 remains in progress (general job 139327989931). No cancellation action is available in connected GitHub controls. Do not count this run as new evidence; authoritative successful WAITC result remains run 45641472720.
+- New serial RTL/board run 45649502094, exact SHA ebce653e73a378adce6dde60939cb1e052077862, is in progress. At last poll only rtl-uncovered job 139329804556 had started; board job is gated on its success. No new test result is claimed yet.
+- Preserve prior verified aggregates unchanged until new logs are complete. RTL-uncovered and board-functional remain pending; consolidated regression, PPA and manufacturer readiness remain pending/not ready.
