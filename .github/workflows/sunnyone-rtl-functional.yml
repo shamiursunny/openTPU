@@ -25,7 +25,7 @@ jobs:
   rtl-uncovered:
     name: RTL uncovered — group ${{ matrix.group }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -35,8 +35,11 @@ jobs:
             selection: "mlp_rtl or attention_decode_rtl or attention_layer_rtl or design_size_block_128_rtl or attention_decode_fsum_rtl"
           - group: 2
             selection: "fuzz_single_slice or fuzz_two_slices or dram_range_ending_at_4gib or count_fields_are_immediates or gather_dst_through_registers"
-          - group: 3
-            selection: "gathers_through_the_hub or tmem_random_traffic or tmem_random_traffic_input_stage or tmem_dump_is_the_ram or mlp_4bit_rtl"
+          # Keep the expensive hub-gather simulations isolated from the shorter TMEM/MLP checks.
+          - group: "3.1"
+            selection: "gathers_through_the_hub"
+          - group: "3.2"
+            selection: "tmem_random_traffic or tmem_random_traffic_input_stage or tmem_dump_is_the_ram or mlp_4bit_rtl"
           - group: 4
             selection: "run_arguments_start_in_r8_to_r15 or simulator_child_dies_with_its_parent or additive_mask_block_rtl"
     steps:
