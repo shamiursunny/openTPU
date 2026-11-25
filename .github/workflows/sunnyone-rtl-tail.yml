@@ -35,9 +35,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          pytest -q tests/test_rtl.py \\
-            -k "random_power_up or mxu_reads_on_the_card_tmem or one_copy_two_writers or one_copy_two_writes_replays_make_progress or collective_reads_held_behind_dma_reads or act_reads_follow_the_mm_rows or lane_count_does_not_change_results or ldc_sequential_is_the_card_bist" \\
-            2>&1 | tee /tmp/sunnyone-rtl-tail.log
+          pytest -q tests/test_rtl.py -k "random_power_up or mxu_reads_on_the_card_tmem or one_copy_two_writers or one_copy_two_writes_replays_make_progress or collective_reads_held_behind_dma_reads or act_reads_follow_the_mm_rows or lane_count_does_not_change_results or ldc_sequential_is_the_card_bist" 2>&1 | tee /tmp/sunnyone-rtl-tail.log
       - name: Archive RTL tail regression log
         if: always()
         uses: actions/upload-artifact@v4
