@@ -112,7 +112,7 @@ module tb_asic_ctrl;
     wr_idle=1;
     write_reg(12'h008,32'h2,1,2'b00);
     if (load_count != 1 || !run_rst) $fatal(1,"LOAD pulse or stopped-state contract count=%0d",load_count);
-    read_reg(12'h00c,32'h0000006c,2'b00); // LOADING remains set until busy is observed and drained
+    read_reg(12'h00c,32'h0000006e,2'b00); // LOADING and sticky CTRL error remain set until cleared; busy must be observed and drained
     write_reg(12'h008,32'h1,0,2'b10); // RUN is blocked while LOAD is outstanding
     if (!run_rst) $fatal(1,"RUN escaped load-inflight gate");
     write_reg(12'h008,32'h4,1,2'b00);
