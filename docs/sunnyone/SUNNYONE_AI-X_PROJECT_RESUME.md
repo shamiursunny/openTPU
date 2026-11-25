@@ -1016,3 +1016,18 @@ Continuation sequence:
 3. Confirm board-functional starts only after all RTL matrix jobs succeed; inspect its full terminal log/artifact.
 4. Only after RTL and board gates pass, proceed to consolidated regression. Keep PPA/physical, formal/CDC/RDC, production interface/IP/PHY, DFT, electrical board, hardware power/thermal/performance, silicon and commercial validation open until evidenced.
 5. Keep manufacturer handoff NOT READY, protected `main` unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`, and zero-spend/no-hardware-purchase rules in force.
+
+
+## 12. Live continuation checkpoint — 2026-11-26
+
+**Latest verified uncovered RTL state** (supersedes earlier live-run snapshots):
+- Repository: `shamiursunny/openTPU`; active branch `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Branch HEAD at checkpoint start: `6339f46aba4fa88041c38fe73cee86eac53fbde5`; protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Current uncovered RTL workflow: [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), tested candidate SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`.
+- Group 3.1 job `139486043538`: SUCCESS, **8 passed, 209 deselected, 0 failed**; artifact `15062436327`.
+- Group 3.2 job `139486044115`: SUCCESS, **33 passed, 184 deselected, 0 failed**; artifact `15064162074`.
+- Group 4 job `139486044169`: IN_PROGRESS at latest poll. Test command running; no final count or artifact yet. Poll this exact job; do not start a duplicate run.
+- Historical Groups 1 and 2 passes remain accepted on their tested source. Historical Group 4 pass is retained as historical evidence, not a substitute for the current job or additional unique coverage.
+- Group 3.1 and 3.2 are not evidence of board-functional completion. Board-functional is dependency-gated pending full RTL matrix success.
+- Immediate action: wait for Group 4 terminal state, inspect its full pytest log/artifact, then check the dependent board-functional job. Proceed to consolidated regression and other open integration/formal/lint/PPA/physical/IP/hardware/commercial tasks only when their prerequisites pass.
+- Keep manufacturer handoff **NOT READY**. No paid resources authorised; never modify `main`; never count overlapping tests as unique.
