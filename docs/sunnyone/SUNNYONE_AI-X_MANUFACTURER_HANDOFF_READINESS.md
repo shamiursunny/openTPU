@@ -654,3 +654,12 @@ Workflow/test review identifies an aggregate-runtime risk, not a confirmed test 
 - Prior RTL/board retry [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324) is confirmed CANCELLED for both `rtl-uncovered` (`139149245874`) and `board-functional` (`139149246459`). No results may be counted.
 - Execution order remains strict: wait for software-core terminal status and inspect evidence; then run RTL-uncovered once; then board-functional once. Do not overlap broad suites. If software-core times out, partition the same test selection into bounded jobs without removing tests or assertions.
 - No RTL, testbench or workflow change was made during this re-poll. Manufacturer readiness remains **NOT READY**. The outstanding queue is verification work only; PCIe/DDR hard IP, DMA/IOMMU, CDC/RDC, DFT, production SRAM macros, physical signoff, package, board and silicon qualification remain open.
+
+
+## 32. Software-core timeout and controlled retry — 2026-11-25
+
+Software-core attempt [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), job `139201961395`, ended **CANCELLED** at approximately 44m42s inside pytest. The complete job log confirms setup and dependency installation succeeded and the test step was terminated by GitHub; pytest had shown 43% progress, but produced no terminal summary. No test count is credited and this is not classified as an assertion failure.
+
+A workflow-only isolation fix was committed: `38377909bf68e3aa6102efac6c56b832675d44d4`. The same 15 test modules are now separate matrix jobs with `max-parallel: 1`, 45-minute per-module timeout, fail-fast disabled, verbose pytest logs and per-module artifacts. No RTL or test source was changed and no test/assertion was removed. Await and inspect the automatically triggered validation run; this scheduling change is not yet validated until actual job evidence is available.
+
+Handoff remains **NOT READY**. Complete all 15 module jobs, then rerun RTL-uncovered and board-functional sequentially, followed by consolidated regression. No PPA or manufacturing readiness claim is authorised.
