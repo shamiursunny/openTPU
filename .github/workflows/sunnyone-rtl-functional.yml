@@ -1,6 +1,6 @@
 name: SUNNYONE remaining RTL and board regressions
 
-# Cancel superseded runs of this same suite on newer commits; preserve other suites.
+# Serialise bounded RTL groups; board tests run only after every RTL group succeeds.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -23,8 +23,22 @@ permissions:
   contents: read
 jobs:
   rtl-uncovered:
+    name: RTL uncovered — group ${{ matrix.group }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - group: 1
+            selection: "mlp_rtl or attention_decode_rtl or attention_layer_rtl or design_size_block_128_rtl or attention_decode_fsum_rtl"
+          - group: 2
+            selection: "fuzz_single_slice or fuzz_two_slices or dram_range_ending_at_4gib or count_fields_are_immediates or gather_dst_through_registers"
+          - group: 3
+            selection: "gathers_through_the_hub or tmem_random_traffic or tmem_random_traffic_input_stage or tmem_dump_is_the_ram or mlp_4bit_rtl"
+          - group: 4
+            selection: "run_arguments_start_in_r8_to_r15 or simulator_child_dies_with_its_parent or additive_mask_block_rtl"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -46,10 +60,18 @@ jobs:
           verilator --version | grep -F 'Verilator 5.044'
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
-      - name: Previously unrun core RTL and ISA regressions
-        run: >-
-          pytest -q tests/test_rtl.py
-          -k "mlp_rtl or attention_decode_rtl or attention_layer_rtl or design_size_block_128_rtl or attention_decode_fsum_rtl or fuzz_single_slice or fuzz_two_slices or dram_range_ending_at_4gib or count_fields_are_immediates or gather_dst_through_registers or gathers_through_the_hub or tmem_random_traffic or tmem_random_traffic_input_stage or tmem_dump_is_the_ram or mlp_4bit_rtl or run_arguments_start_in_r8_to_r15 or simulator_child_dies_with_its_parent or additive_mask_block_rtl"
+      - name: Run bounded RTL selection
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -vv -ra tests/test_rtl.py -k "${{ matrix.selection }}" 2>&1 | tee "/tmp/sunnyone-rtl-uncovered-${{ matrix.group }}.log"
+      - name: Upload RTL group log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-rtl-uncovered-${{ matrix.group }}-log
+          path: /tmp/sunnyone-rtl-uncovered-${{ matrix.group }}.log
+          if-no-files-found: warn
 
   board-functional:
     needs: rtl-uncovered
@@ -66,4 +88,14 @@ jobs:
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
       - name: Host driver and board-model regressions (AXI-Lite isolation already verified separately)
-        run: pytest -q tests/test_board.py -k "not axil_iso_resets_apart"
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -vv -ra tests/test_board.py -k "not axil_iso_resets_apart" 2>&1 | tee /tmp/sunnyone-board-functional.log
+      - name: Upload board-functional log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-board-functional-log
+          path: /tmp/sunnyone-board-functional.log
+          if-no-files-found: warn
