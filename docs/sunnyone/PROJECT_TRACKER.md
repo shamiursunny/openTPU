@@ -1695,3 +1695,30 @@ The next checkpoint is reached only when:
 - Only after prerequisite gates are green should a reproducible PPA run be attempted and its full reports inspected.
 - Continue PHY/IP feasibility, DDR controller/PHY/training/ECC, DMA/IOMMU, PCIe endpoint/SerDes, CDC/RDC, DFT, SRAM macro, package, physical signoff, board electrical, thermal/power and silicon qualification planning.
 - Manufacturer readiness remains **NOT READY**. Completion of the current regression queue is a verification milestone, not completion of all chip-design, manufacturing or commercial tasks.
+
+
+
+## 153. Live continuation re-poll — 2026-11-25
+
+### Repository and evidence baseline
+- Repository: https://github.com/shamiursunny/openTPU.
+- Active feature branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Latest recorded feature-branch checkpoint before this update: `db16fea6a7f39d29be62e4606842d3d24482520c`. All changes remain feature-branch-only.
+- Protected `main` is recorded at `d84db55712aba0d40811d7762cb052f05d55b7e5`; this continuation did not write to main.
+- Current broad regression source SHA: `36104fdaacabcba39ba4a7daa74b7fb19ce31536`.
+
+### Re-polled results
+- Subsystem/memory matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): re-polled all 14 jobs; **14/14 SUCCESS**. This confirms the terminal matrix state. Previously inspected artifact evidence remains: 377 passed, 1 configuration-inapplicable skip, 0 failures overall; Native DRAM + technology RAM 104 passed in 1,829.20 seconds. Do not double-count the 104 within the 377.
+- Software-core retry [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), job `139201961395`: still **IN_PROGRESS** at the core ISA/compiler/kernels/numerics/host software test step. Setup, checkout, Python, Verilator and dependency installation are complete. No terminal result, test count or artifact is available. Job logs currently return BlobNotFound while the run is active; this is not a test failure.
+- Workflow configuration sets a 45-minute job timeout. The active test step must be allowed to reach a terminal state; do not launch another broad suite or push changes to watched source/test paths while it is active.
+- Previous remaining RTL/board run [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324): both jobs are confirmed **CANCELLED** (`rtl-uncovered` job `139149245874`; `board-functional` job `139149246459`). They have no usable test counts and are not passes or failures.
+
+### Next action order
+1. Poll software-core run `45598047393` until terminal. Inspect complete job logs and any artifacts; record exact pass/skip/fail/deselected counts and elapsed time.
+2. If software-core succeeds, run the remaining RTL-uncovered selection once; wait for terminal status and inspect its log/artifact.
+3. Run board-functional once after RTL-uncovered settles; inspect its log/artifact.
+4. If software-core times out or is cancelled, diagnose the actual runtime/test selection first. Partition the same tests into bounded jobs if needed; preserve all assertions and do not weaken coverage.
+5. Reconcile all three continuity documents to exact tested SHAs and job evidence. Then freeze a candidate SHA for consolidated regression.
+6. Keep PPA deferred until functional/ASIC prerequisites are green; the prior WG8 ORFS floorplan-PDN failure remains unresolved and no accepted PPA metrics exist.
+
+This re-poll changes no RTL, tests, workflows or architecture. Manufacturer readiness remains **NOT READY**; the regression queue is not chip-design completion or fabrication signoff.
