@@ -848,3 +848,23 @@ WAITC job `139233450429` was cancelled at approximately 44m36s and 84% pytest pr
 - Consolidated regression: PENDING.
 - PPA/manufacturer readiness: NOT READY.
 - Feature branch only; preserve protected main. No expenditure or hardware purchase without explicit approval. Never claim silicon/tapeout readiness from simulation-only results.
+
+
+## 38. Latest continuation checkpoint — serial CI fixes (2026-11-25)
+
+### Completed workflow fixes
+1. .github/workflows/sunnyone-waits-retry.yml is now manual-dispatch only; tracker edits no longer retrigger WAITC. Commit 639e1ce7f2d590276cb979286eb7adb20eaadcb3.
+2. .github/workflows/sunnyone-rtl-functional.yml now gates board-functional on rtl-uncovered. Commit ebce653e73a378adce6dde60939cb1e052077862.
+3. Current RTL-tail workflow was checked: the old literal-backslash pytest invocation that caused run 45604384259 to exit 4 with no tests collected is corrected. Later retry 45604527541 succeeded.
+
+### Live runs and evidence rules
+- Active RTL/board run: 45649502094, exact SHA ebce653e73a378adce6dde60939cb1e052077862; at last poll only RTL job 139329804556 was running. Board job must wait for RTL success. Inspect terminal pytest summary and full logs before updating status.
+- Accidental duplicate WAITC run: 45649007571, general job 139327989931 still in progress at last poll. Connected controls expose no cancel action. Do not count it; authoritative WAITC evidence remains run 45641472720 (268 passed, 2 skipped, 0 failures).
+- Do not repeat already-passed suites without source/environment cause. Keep serial execution and exact-SHA accounting.
+
+### Next actions
+1. Poll run 45649502094; inspect RTL logs/artifact and wait for its gated board job.
+2. If RTL fails, diagnose from exact log and make a minimal fix without weakening tests; rerun only the affected selection.
+3. If RTL passes, inspect board logs/artifact; then plan consolidated regression.
+4. Update all three continuity files only with observed results. Keep consolidated regression/PPA/manufacturer gates pending until evidenced.
+5. Preserve feature branch; protected main remains untouched; no paid services or hardware purchases without approval.
