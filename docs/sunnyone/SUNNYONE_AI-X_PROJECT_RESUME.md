@@ -910,3 +910,7 @@ Commit `7320c187810cbd7e4f106f0280922871f6430d1b` updates `.github/workflows/sun
 
 ### RTL partition static check — 2026-11-25
 The four serial RTL groups were checked against the current `tests/test_rtl.py` source (blob `84cdfed65c2c9d3604e51080ce88d878fc71a76a`). All 18 original selectors match 18 distinct test functions, split 5/5/5/3 with no missing selectors or duplicated function matches. This does not replace runtime evidence: retrieve each group's terminal pytest log/artifact and let board-functional run only after all four succeed. See PROJECT_TRACKER.md Section 163.
+
+
+### Live RTL run — 2026-11-25
+The push-triggered serial workflow is [run 45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), head SHA `7320c187810cbd7e4f106f0280922871f6430d1b`. Last observed: group 1 in progress at bounded pytest selection; groups 2–4 queued, proving the intended one-at-a-time schedule. Toolchain setup and dependencies passed. No terminal test summary exists yet; board-functional remains gated. Poll this exact run and inspect all logs/artifacts before claiming completion. See PROJECT_TRACKER.md Section 164.
