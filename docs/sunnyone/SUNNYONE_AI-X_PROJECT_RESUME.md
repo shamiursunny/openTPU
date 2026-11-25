@@ -492,3 +492,30 @@ Overall release gate remains OPEN despite the A02/A03 integration simulation PAS
 5. Keep final full regression on one immutable candidate SHA as a release gate.
 
 **Release decision remains NOT READY** for fabrication, tapeout, physical signoff, production-board build or silicon qualification.
+
+
+## 21. Latest continuation checkpoint — WG8 PPA failure diagnosis — 2026-11-25
+
+### PPA execution and exact evidence
+- The compact-evidence workflow **did execute**: [run 45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546), job `138974661431`, FAILED with ORFS exit 2. Do not confuse this with the older PPA run `45455745851`.
+- Artifact `14997807086` downloaded (221,016 bytes; SHA-256 `bb087bae1049d8364d83f766279a1d77a9f289c3d2747bcb5f796a17fa75d118`). ORFS container image digest: `sha256:9d227293bf57b9d84c63aa8551faa0487d30db456b254b8f244a1e40244f66af`.
+- Synthesis and floorplan completed. Failure occurred at ORFS stage `2_4_floorplan_pdn`, `check_placement -fixed -verbose`, Make error 247 / exit 2. The log says 11 setup endpoints violated and timing repair could not repair all. Preliminary floorplan JSON: setup WNS `-10.4346 ns`, setup TNS `-91.4594 ns`. The same report says no estimated parasitics and uses wire-load models. PDN logs contain repeated PDN-0110 no-via-insertion warnings between metal6 and metal7 at VDD coordinates.
+- These numbers are only early floorplan diagnostics; they are **not final PPA or signoff metrics**. No global placement, CTS, detailed route, final timing or physical signoff completed. Do not report floorplan area/power estimates as chip metrics. SRAM prep still counts 288 generated/fake macros in 14 sizes (3,538 KiB), not validated foundry macros.
+
+### Regression retry state
+- Board-functional job `139135578982`: IN_PROGRESS at host driver/board-model regression step; no test result yet.
+- Software-core job `139135639920`: IN_PROGRESS at core ISA/compiler/kernels/numerics/host software step; no test result yet.
+- Uncovered RTL job `139135582940`: CANCELLED. Retry after the board workflow settles and GitHub permits it.
+- Existing verified baseline remains 377 passed, 1 configuration-inapplicable skip, 0 failed across 14 subsystem jobs on tested RTL SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`. Keep that baseline separate from the active jobs.
+
+### Branch / action constraints
+- Feature HEAD `264a3d8de4d06c2be5ca5055dd82c2d4c9635ef9` is 35 commits ahead / 0 behind tested RTL SHA; compare confirms only `.github/workflows/sunnyone-asic-wg8-ppa.yml` and the three continuity documents changed. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5` and untouched.
+- The PPA YAML contains `workflow_dispatch`, but the connected GitHub toolset has no dispatch write operation. Do not claim manual dispatch; the linked run above is the confirmed push-triggered post-repair run.
+
+### Immediate next steps
+1. Diagnose PDN `check_placement` error and the metal6/metal7 VDD via warnings using the captured stage logs/reports.
+2. Review the 11 setup-critical endpoints and constraints; no speculative RTL edits.
+3. Poll board-functional and software-core until terminal; extract exact test summaries and failure/skip/deselection data.
+4. Retry uncovered RTL when the workflow is no longer active.
+5. Rerun full PPA after evidence-backed fixes and require complete flow plus final inspectable reports before accepting PPA metrics.
+6. Keep manufacturer release NOT READY until all physical, PHY, DFT, package, board, timing, power, thermal and silicon gates are independently satisfied.
