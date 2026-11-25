@@ -677,3 +677,34 @@ After that, move to consolidated candidate regression and formal/protocol/lint c
 - Never weaken tests or suppress warnings to manufacture green status.
 - Zero-spend unless the user explicitly authorises expenditure.
 - Manufacturer readiness remains **NOT READY**.
+
+
+
+## 31. Latest continuation checkpoint — 2026-11-25
+
+### Live verified state
+- Repository: https://github.com/shamiursunny/openTPU.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`; feature-branch-only changes. Latest recorded pre-refresh checkpoint was `db16fea6a7f39d29be62e4606842d3d24482520c`. Protected `main` remains recorded at `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main-branch write was made.
+- Current broad regression source SHA: `36104fdaacabcba39ba4a7daa74b7fb19ce31536`.
+- Subsystem/memory matrix [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): re-polled **14/14 jobs SUCCESS**. Reconciled result: **377 passed, 1 configuration-inapplicable skip, 0 failures**. Native DRAM + technology RAM is 104 passed and already included in 377.
+- Software-core [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393), job `139201961395`: still IN_PROGRESS at the main pytest step. No final count or artifact. The job uses a 45-minute timeout. Do not launch another broad suite until it is terminal.
+- Previous RTL/board attempt [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324): both `rtl-uncovered` and `board-functional` jobs are CANCELLED, with no usable test results.
+
+### Required execution order
+1. Poll software-core to terminal and inspect logs/artifacts; capture exact counts and tested SHA.
+2. Retry RTL-uncovered once, sequentially; inspect its final evidence.
+3. Retry board-functional once after RTL-uncovered settles; inspect its final evidence.
+4. Diagnose any timeout/failure from logs and source. If runtime requires partitioning, split the same tests into bounded jobs without deleting or weakening tests/assertions.
+5. Update this resume, the manufacturer handoff register and PROJECT_TRACKER.md with the same exact evidence.
+6. Freeze one immutable candidate SHA, then perform consolidated regression and close remaining formal/protocol/lint/integration gates.
+
+### Do not do
+- Do not rerun the successful 14-job subsystem matrix without a source/environment reason.
+- Do not add 104 Native DRAM tests again to the 377 total.
+- Do not count cancelled, running, skipped or artifact-less jobs as passes.
+- Do not overlap broad software-core, RTL-uncovered and board-functional suites.
+- Do not start PPA until prerequisite functional/ASIC gates are green; the earlier ORFS floorplan-PDN failure remains unresolved.
+- Do not claim manufacturer readiness. PCIe/DDR PHY, DMA/IOMMU, production SRAM, CDC/RDC, DFT, physical design/signoff, package, board electrical, power/thermal and silicon validation remain open.
+- Maintain zero-spend unless the user explicitly authorises expenditure.
+
+**Manufacturer readiness: NOT READY.** Completing this CI queue is a verification milestone, not completion of SUNNYONE AI-X.
