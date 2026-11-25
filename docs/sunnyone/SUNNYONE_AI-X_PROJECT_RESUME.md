@@ -594,3 +594,34 @@ Do not trigger a new branch commit until these runs complete unless a critical f
 The first logging-repair validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) FAILED before tests started. Exact error: `ERROR: file or directory not found: \\\\\\\\ `; the YAML continuation was over-escaped, causing pytest to interpret a literal backslash as a test path. No tests ran, and no artifact was created. This was a workflow-command quoting defect, not an RTL regression.
 
 Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log` in commit `e0eea98ba00e65ca42b785bc6133a5679529506b`. New validation run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541) is IN_PROGRESS. Verify both pytest outcome and actual artifact upload before closing the issue. Do not treat run 45604384259 as a test result.
+
+
+
+## 28. Latest verified continuation checkpoint — 2026-11-25
+
+### Repository and branch (re-fetched)
+- Correct repository: https://github.com/shamiursunny/openTPU (fork of https://github.com/FeSens/openTPU).
+- Active feature branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Pre-documentation-update branch HEAD: `f51dc234aaf5b4e7d9b61a2e45768d315a5dcd81`.
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`; unchanged.
+- This continuation is restricted to the feature branch. Do not modify main.
+
+### New verified results
+- RTL-tail artifact repair run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541), job `139171823473`, SHA `e0eea98ba00e65ca42b785bc6133a5679529506b`: SUCCESS. Downloaded artifact `sunnyone-rtl-tail-log` (ID `15018530071`) and read its log: **33 passed, 1 skipped, 183 deselected in 635.12s**. The single skip is the existing parameter guard `PAIR needs 2M <= MCOLS; M <= ACT_ROWS`. Artifact capture is now verified, not merely inferred from a green upload step.
+- The first attempt [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) failed before tests because the YAML command was over-escaped. It ran zero tests; corrected by single-line pytest/tee/pipefail command in `e0eea98...`.
+- AXI-Lite control run [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), job `139149936465`: SUCCESS after testbench status expectation was corrected to reflect the sticky control-error bit. No RTL changed.
+- Reset/power-up audit, full-chip lint, global address-map formal, virtual DRAM, workload harness, isolated TMEM, PCIe Gen2, HMUX simulation and ASIC configuration have scoped successful runs. See PROJECT_TRACKER.md Section 150 for exact IDs and boundaries.
+
+### Current outstanding Actions
+- Subsystem/memory matrix Run [45598047338](https://github.com/shamiursunny/openTPU/actions/runs/45598047338): 13/14 jobs SUCCESS; Native DRAM/technology RAM job `139149249337` remains IN_PROGRESS at last poll. Poll and inspect this job before closing the matrix.
+- Software-core Run [45598047393](https://github.com/shamiursunny/openTPU/actions/runs/45598047393): CANCELLED.
+- Remaining RTL/board Run [45598047324](https://github.com/shamiursunny/openTPU/actions/runs/45598047324): CANCELLED.
+- Retry software-core once, wait for terminal status, then retry remaining RTL/board once. Do not launch both broad suites together. Reuse successful suite evidence only where exact source SHA and scope match; do not transfer results across commits.
+- WG8 PPA Run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546) failed at ORFS floorplan-PDN placement checking. PPA is deferred; no final area/timing/power result exists.
+
+### Execution policy (keep)
+Run focused checks first, then one broad suite at a time. Keep subsystem matrix max-parallel=2; per-workflow concurrency cancels only superseded runs of the same workflow/ref. PPA is a deliberate separate gate. Never weaken tests or suppress warnings to get green. Record commit SHA, run/job IDs, exact pass/skip/fail/deselected counts and artifacts.
+
+### Next action
+Poll job `139149249337` to terminal, inspect the pytest log/artifact, and update all three continuity documents with its exact result. Then execute software-core and remaining RTL/board sequentially. Manufacturer readiness remains NOT READY.
+
