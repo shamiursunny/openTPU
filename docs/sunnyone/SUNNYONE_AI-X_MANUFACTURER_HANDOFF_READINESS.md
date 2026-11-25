@@ -574,3 +574,10 @@ The software-core, uncovered RTL, board-functional and several subsystem matrix 
 ## 27. RTL-tail regression artifact repair — 2026-11-25
 
 The missing RTL-tail log artifact was corrected in workflow-only commit `4a1eb21ea31749fff6c2b12b51472123a2540a59`. Pytest output now streams through `tee` to the declared artifact path with Bash `pipefail`, so test failures remain failures and a real log file should be available. Validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) is IN_PROGRESS; do not consider the artifact fix validated until the log confirms upload. No hardware RTL changed. Manufacturer readiness remains **NOT READY**.
+
+
+## CI logging repair correction — 2026-11-25
+
+The first logging-repair validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) FAILED before tests started. Exact error: `ERROR: file or directory not found: \\\\\\\\ `; the YAML continuation was over-escaped, causing pytest to interpret a literal backslash as a test path. No tests ran, and no artifact was created. This was a workflow-command quoting defect, not an RTL regression.
+
+Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log` in commit `e0eea98ba00e65ca42b785bc6133a5679529506b`. New validation run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541) is IN_PROGRESS. Verify both pytest outcome and actual artifact upload before closing the issue. Do not treat run 45604384259 as a test result.
