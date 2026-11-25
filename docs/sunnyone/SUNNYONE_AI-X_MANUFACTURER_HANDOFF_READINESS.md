@@ -516,3 +516,11 @@ RTL-tail Run [45487118908](https://github.com/shamiursunny/openTPU/actions/runs/
 - Retry attempts now running for `rtl-uncovered` and `software-core`. `board-functional` is still cancelled; GitHub rejected an immediate rerun while the same workflow attempt is active. Retry it after the current attempt settles.
 - PPA workflow artifact was made compact in commit `c568020...`: excludes bulk results and full run.log, retains run tail, diagnostics inventory, reports, config/constraints, and stage logs. Await a new run; prior failure remains unresolved and no PPA metrics accepted.
 - Fabrication/tapeout/physical signoff remains NOT READY.
+
+### 22. Retry and release-gate checkpoint — 2026-11-25
+
+The latest retry state was checked directly in GitHub Actions. Board-functional job `139135578982` and software-core job `139135639920` are IN_PROGRESS, both still in tool/dependency setup and not yet at their test steps. The latest uncovered-RTL job `139135582940` is CANCELLED; a further retry is blocked until the active board workflow settles. Earlier retries `139003943623`, `139003968520` and `139003945395` were also CANCELLED at their main test steps. No pass or failure count is inferred from cancelled runs.
+
+The 14-job subsystem matrix remains fully verified at 14/14 SUCCESS and 377 passed, 1 configuration-inapplicable skip, 0 failed, on RTL SHA `68baca1a080e952b20327c90d63a6f66c6a1ee70`. The feature branch has advanced 32 commits beyond this tested code SHA, with changes confined to the PPA workflow and the three project continuity documents. Main remains at `d84db55712aba0d40811d7762cb052f05d55b7e5`; it has not been modified by this continuation.
+
+The compact PPA evidence workflow is present at commit `c568020d91efd045c6dd5d89dbc30ebdbac2c866`, but a post-repair run and artifact were not confirmed in the available query results. The older PPA run remains failed and no area, timing, power or physical-design metric is accepted. Release readiness remains NOT READY for fabrication, tapeout, physical signoff, production board build or silicon qualification.
