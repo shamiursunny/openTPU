@@ -1951,3 +1951,12 @@ No RTL, test, assertion or workflow file was changed. This is a documentation-on
 - Log artifact uploaded successfully: `sunnyone-rtl-uncovered-1-log`, artifact ID `15047592555`, SHA-256 `a5b5b2bd3c8bb0f523cb858b04ef65763aaf0b0c407f487291542d3b414701e3`.
 - At follow-up poll, group 2 job `139371665991` was in progress; groups 3 (`139371665344`) and 4 (`139371666093`) remained queued. Board-functional remains gated. Group 1 result is a verified scoped pass, not completion of the full RTL suite.
 - Continue polling this exact run, capture each terminal log/artifact, and do not alter the active workflow. Manufacturer readiness remains NOT READY.
+
+
+## 166. RTL uncovered group 2 passed — 2026-11-26 (Asia/Dhaka)
+
+- Same run [45661335812](https://github.com/shamiursunny/openTPU/actions/runs/45661335812), candidate SHA `7320c187810cbd7e4f106f0280922871f6430d1b`; job `139371665991` completed **success**.
+- Retrieved complete job log; exact pytest summary: **24 passed, 193 deselected in 1478.61s (0:24:38)**. Collection 217, selected 24; no failed/skipped/error tests in this selection.
+- Uploaded artifact `sunnyone-rtl-uncovered-2-log`, ID `15049479359`, digest `sha256:7b48507d66da85cea1eac09b76aa9c52f648cd2e87f467a4d4c2ce53f6f206d6`.
+- Groups 1 and 2 now have 36 verified passes combined (12 + 24), on the same candidate SHA but in distinct jobs. Do not treat this as full-suite completion.
+- At the next poll group 3 (`139371665344`) had started toolchain build; group 4 (`139371666093`) remained queued. Board-functional remains gated behind all four groups. Continue the same run; inspect groups 3–4 and board job when complete.
