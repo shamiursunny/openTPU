@@ -774,3 +774,14 @@ Subtotal: **202 passed; 0 reported failures; 0 reported skips** across these fiv
 
 ### Current project status
 The logical V1 candidate is defined, but the full design is not tapeout-ready. Manufacturer handoff remains **NOT READY**. PCIe/DDR PHY and controller IP, DMA/IOMMU, CDC/RDC, DFT, PDK/package, physical implementation, board electrical tests, real-hardware performance/power/thermal measurements, silicon qualification and commercial validation remain outstanding. Maintain zero-spend without explicit approval and never change `main`.
+
+
+## 35. Current continuation checkpoint — serial software-core retry (2026-11-25, Asia/Dhaka)
+
+Repository: [shamiursunny/openTPU](https://github.com/shamiursunny/openTPU). Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`. Do not modify protected `main` (last verified SHA `d84db55712aba0d40811d7762cb052f05d55b7e5`).
+
+Open [Actions run 45622326985](https://github.com/shamiursunny/openTPU/actions/runs/45622326985), workflow commit `38377909bf68e3aa6102efac6c56b832675d44d4`. The 15-module software-core matrix is strictly serial. Latest poll: **10 SUCCESS, 1 IN_PROGRESS, 4 QUEUED, 0 failed/cancelled**. Active job: waits `139233450429`; queued: waitw, host-runs, host-lock and host.
+
+Inspected completed pytest logs (all passed-only): ISA 18; compiler 44; kernels 46; quant 81; formats 13; VOPS 101; FP 12; MX 32; stream 46; dataflow 27. Total **420 passed, 0 reported failures, 0 reported skips** across ten completed modules. Artifact IDs in the same order: `15024379354`, `15026211469`, `15026436432`, `15027565119`, `15027510239`, `15030235221`, `15029541963`, `15029542120`, `15032330134`, `15029769939`. The waits module and four queued modules contribute no counts. Do not mark software-core PASS until all 15 jobs succeed and logs are inspected.
+
+Next steps: (1) poll the existing run to terminal; (2) inspect every remaining job log and artifact; (3) run RTL-uncovered once; (4) run board-functional once after RTL-uncovered settles; (5) reconcile exact SHA/run/job/artifact/count evidence in all three documents; (6) freeze candidate and run required consolidated regression. Do not start duplicate broad workflows or touch watched RTL/test/workflow paths during this run. Zero-spend; feature branch only. Manufacturer readiness remains **NOT READY**; PPA floorplan/PDN, production PHY/IP, physical signoff, board, silicon and commercial gates remain open.
