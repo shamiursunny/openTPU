@@ -1,4 +1,9 @@
 name: SUNNYONE ASIC and target configuration checks
+
+# Cancel superseded runs of this same suite on newer commits; preserve other suites.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 # Keep all four-DIMM, address-map and HMUX contention benches in this exact-SHA qualification gate.
 # Diagnostic retrigger: capture DIMM2 WDATA/WSTRB/WLAST and owner-FIFO state after A02 failure.
 on:

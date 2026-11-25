@@ -1,5 +1,10 @@
 name: SUNNYONE workload harness tests (metric fixture correction)
 
+# Cancel superseded runs of this same suite on newer commits; preserve other suites.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:

@@ -1,15 +1,11 @@
 name: SUNNYONE WG8 ASIC research PPA
+
+# Cancel superseded runs of this same suite on newer commits; preserve other suites.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
-  push:
-    branches:
-      - sunnyone/commercial-profitability-architecture-2026-11-23
-    paths:
-      - 'targets/nangate45-wg8.toml'
-      - 'rtl/asic/otpu_asic_top.sv'
-      - 'rtl/**'
-      - 'tools/asic/**'
-      - 'opentpu/target.py'
-      - '.github/workflows/sunnyone-asic-wg8-ppa.yml'
+  # Long physical-design investigation is manually dispatched after qualification.
   workflow_dispatch:
 permissions:
   contents: read

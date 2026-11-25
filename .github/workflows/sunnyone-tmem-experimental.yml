@@ -1,4 +1,9 @@
 name: SUNNYONE isolated 128K one-copy TMEM investigation
+
+# Cancel superseded runs of this same suite on newer commits; preserve other suites.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
   push:
     branches:
