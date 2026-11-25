@@ -581,3 +581,32 @@ The missing RTL-tail log artifact was corrected in workflow-only commit `4a1eb21
 The first logging-repair validation run [45604384259](https://github.com/shamiursunny/openTPU/actions/runs/45604384259) FAILED before tests started. Exact error: `ERROR: file or directory not found: \\\\\\\\ `; the YAML continuation was over-escaped, causing pytest to interpret a literal backslash as a test path. No tests ran, and no artifact was created. This was a workflow-command quoting defect, not an RTL regression.
 
 Corrected the step to a single-line pytest pipeline with `set -o pipefail` and `tee /tmp/sunnyone-rtl-tail.log` in commit `e0eea98ba00e65ca42b785bc6133a5679529506b`. New validation run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541) is IN_PROGRESS. Verify both pytest outcome and actual artifact upload before closing the issue. Do not treat run 45604384259 as a test result.
+
+
+
+## 28. Latest Actions reconciliation — 2026-11-25
+
+### Verified repository baseline
+- Repository: https://github.com/shamiursunny/openTPU (fork of FeSens/openTPU).
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`; pre-update HEAD `f51dc234aaf5b4e7d9b61a2e45768d315a5dcd81`.
+- Protected main: `d84db55712aba0d40811d7762cb052f05d55b7e5`, unchanged.
+- Continue feature-branch-only. Preserve zero-spend approval and exact-SHA evidence rules.
+
+### CI outcomes
+- **RTL-tail logging repair: VERIFIED PASS.** Run [45604527541](https://github.com/shamiursunny/openTPU/actions/runs/45604527541), job `139171823473`, SHA `e0eea98ba00e65ca42b785bc6133a5679529506b`: 33 passed, 1 configuration-inapplicable skip, 183 deselected, 635.12 seconds. Artifact `sunnyone-rtl-tail-log` ID `15018530071` was downloaded and inspected; it contains the exact pytest summary. The earlier malformed-command run `45604384259` failed before tests and is not a regression result.
+- **AXI-Lite control: PASS** on run [45598244519](https://github.com/shamiursunny/openTPU/actions/runs/45598244519), exact testbench commit `cf0d4d3...`; sticky error status expectation corrected from `0x6c` to `0x6e`, no RTL modification.
+- **Reset/power-up audit, full-chip lint, address-map formal, virtual DRAM, workload harness, RTL-tail, isolated TMEM, PCIe Gen2, HMUX simulation and ASIC configuration** have successful scoped runs as recorded in PROJECT_TRACKER.md Section 150. Each pass applies only to its own run SHA and test scope.
+- **Subsystem/memory matrix:** 13/14 jobs SUCCESS; Native DRAM/technology RAM job `139149249337` remains IN_PROGRESS at last poll. Matrix is not closed.
+- **Software-core and remaining RTL/board:** latest broad runs `45598047393` and `45598047324` ended CANCELLED. They are not passes and have no usable result counts. Retry each once, sequentially, on a frozen current SHA after active matrix completion.
+- **WG8 research PPA:** latest recorded run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546) failed in ORFS at floorplan-PDN placement checking. Preliminary WNS/TNS are debug diagnostics only; no final PPA, power, timing or area signoff is accepted.
+
+### Release/handoff decision
+**Manufacturer readiness: NOT READY.** RTL/ISA/board-level digital tests do not establish complete PCIe endpoint/PHY, production DMA/IOMMU, DDR controller/PHY/training/ECC, CDC/RDC, DFT, SRAM macro qualification, physical signoff, package, board electrical validation, thermal/power validation or silicon qualification. No tapeout/fabrication-ready claim is authorised.
+
+### Controlled next sequence
+1. Complete and inspect the active Native DRAM job.
+2. Run software-core once and wait for completion.
+3. Run remaining RTL/board once and wait for completion.
+4. Review any failures at source/log level; make only minimal evidence-backed corrections.
+5. Freeze one candidate SHA and run consolidated regression; then revisit PPA only after prerequisite gates pass.
+
