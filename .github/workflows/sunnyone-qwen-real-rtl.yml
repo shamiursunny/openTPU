@@ -1,0 +1,96 @@
+name: SUNNYONE Qwen real-checkpoint RTL verification
+
+# Dedicated, manually dispatched gate. Do not rerun the completed general RTL groups.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qwen-real-rtl:
+    name: Qwen3 and Qwen3.5 real checkpoints on RTL
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out the selected branch revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build pinned Verilator 5.044
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git help2man perl python3 make autoconf g++ flex libfl-dev bison ccache libgoogle-perftools-dev numactl perl-doc
+          git clone --depth 1 --branch v5.044 https://github.com/verilator/verilator.git /tmp/verilator
+          cd /tmp/verilator
+          autoconf
+          ./configure
+          make -j2
+          sudo make install
+          verilator --version | grep -F 'Verilator 5.044'
+
+      - name: Install explicit CPU-only model and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install pytest safetensors==0.8.0 huggingface_hub==2.4.0
+          python -m pip install -e .
+          python - <<'PY'
+          import torch, safetensors, huggingface_hub
+          assert torch.version.cuda is None, 'Expected CPU-only PyTorch'
+          print('torch:', torch.__version__)
+          print('safetensors:', safetensors.__version__)
+          print('huggingface_hub:', huggingface_hub.__version__)
+          PY
+
+      - name: Download pinned official Apache-2.0 Qwen checkpoints
+        env:
+          HF_HUB_DOWNLOAD_TIMEOUT: '120'
+          HF_HUB_ETAG_TIMEOUT: '30'
+        run: |
+          hf download Qwen/Qwen3-0.6B --revision c1899de289a04d12100db370d81485cdf75e47ca --local-dir models/Qwen3-0.6B
+          hf download Qwen/Qwen3.5-0.8B --revision 2b48083dfa97c3cbf0220cf1a5e6cffe0a511157 --local-dir models/Qwen3.5-0.8B
+          hf cache verify Qwen/Qwen3-0.6B --revision c1899de289a04d12100db370d81485cdf75e47ca --local-dir models/Qwen3-0.6B --fail-on-missing-files --fail-on-extra-files
+          hf cache verify Qwen/Qwen3.5-0.8B --revision 2b48083dfa97c3cbf0220cf1a5e6cffe0a511157 --local-dir models/Qwen3.5-0.8B --fail-on-missing-files --fail-on-extra-files
+
+      - name: Enforce checkpoint presence and architecture before pytest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          expected = {
+              'Qwen3-0.6B': 'qwen3',
+              'Qwen3.5-0.8B': 'qwen3_5',
+          }
+          for name, model_type in expected.items():
+              root = Path('models') / name
+              cfg = json.loads((root / 'config.json').read_text())
+              assert cfg.get('model_type') == model_type, (name, cfg.get('model_type'))
+              weights = list(root.glob('*.safetensors'))
+              assert weights, f'{name}: no safetensors checkpoint found'
+              assert sum(p.stat().st_size for p in weights) > 1_000_000_000, name
+              print(name, 'model_type=', model_type,
+                    'safetensors_bytes=', sum(p.stat().st_size for p in weights))
+          PY
+
+      - name: Run only real Qwen RTL cases (Qwen3 and Qwen3.5, MCOLS 2 and 4)
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -vv -ra --runslow tests/test_models_on_board_rtl.py -k "qwen3 or qwen35" 2>&1 | tee /tmp/sunnyone-qwen-real-rtl.log
+
+      - name: Upload Qwen verification log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-qwen-real-rtl-log
+          path: /tmp/sunnyone-qwen-real-rtl.log
+          if-no-files-found: warn
