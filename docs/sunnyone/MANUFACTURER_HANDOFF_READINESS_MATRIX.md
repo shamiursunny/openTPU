@@ -123,3 +123,11 @@ Manufacturer handoff remains **NOT READY**. No RTL or workflow source changes we
 ### G1/G2 FSUM ingress clarification — 2026-11-27
 
 The board loader `Board.load_program` accepts raw uint32 instruction arrays and has no FSUM semantic row-count validation. The software compiler/ISA simulator therefore do not establish a mandatory validated ingress path. The 256-row FSUM buffer bound remains OPEN for FSUM-enabled BCU targets until a synthesizable error/halt guard or a mandatory validated loader contract is implemented and tested. Trace the existing sequencer error path before any RTL change.
+
+
+### Existing error/halt path traced — candidate guard location, not yet implemented
+
+- `otpu_seq` exposes `error` and its existing invalid decoded-operation branch sets both `error <= 1'b1` and `halted <= 1'b1` before dispatch (around lines 1702–1705).
+- `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
+- A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
+- Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
