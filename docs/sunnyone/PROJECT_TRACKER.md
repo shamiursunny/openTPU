@@ -2473,3 +2473,16 @@ At investigation start, live feature branch HEAD was `48a741a54acc66562986bcfe69
 - Recurrence of Error 247 during memory-intensive floorplan/placement at approximately 15.2–15.7 GB strengthens (but does not prove) a host/container resource-ceiling hypothesis. No cgroup OOM counters or kernel OOM evidence are in the retained archives. Root cause therefore remains **unconfirmed**; do not state OOM as fact. No evidence supports a report-stage defect; the floorplan report was generated before the failures.
 - No PPA retry was launched. Next action is to capture cgroup memory limits/current/events and runner telemetry before/during any future OpenROAD run. Keep source, ORFS image and 2-CPU setup fixed unless evidence warrants a controlled change. Zero-spend remains mandatory; no paid runner/hardware without approval. Do not bypass placement checks or PDN.
 - Current floorplan metrics remain preliminary, wire-load-only and pre-route; not routed STA, signoff, timing closure, or proven DMA improvement. Manufacturer handoff remains NOT READY.
+
+
+## 101. Full-chip lint source triage — initial findings (2026-11-26)
+
+Inspected Verilator 5.032 log from lint run 45845758782, artifact 15130078429, tied to source SHA `2835f1a8da6af454023caff9576f41258c66e2a8`. No RTL modifications or warning suppressions were made.
+
+- Seven LATCH diagnostic instances are all block-local temporaries in `rtl/seq/otpu_seq.sv`: `c2/r2` near line 1153 in the WAITC branch, and `u/y/k/kd/cf` near line 1823 in the `hz_wc && c_v` branch. They are assigned before use within their guarded branch, while not assigned on outer paths that do not enter that branch. This points to a possible procedural local-variable/scope false positive, but latch absence is not yet demonstrated. Verify actual elaborated/synthesised latch cells and test any cleanup before closure.
+- UNOPTFLAT `gnt` path crosses `otpu_se_comp.sv:640`, `otpu_fpipe.sv:15` and `otpu_slice.sv:963` back to `otpu_slice.sv:611`: grant/enable feedback through VPU compression and arbitration.
+- UNOPTFLAT `sc_gl` path crosses `otpu_slice.sv:1047`, `cgl_c` at :898 and grant logic at :963 back to `otpu_top.sv:156`: collective global/local grant dependency.
+- UNOPTFLAT `pq` path is reported from `otpu_tmem.sv:297` through the generated bank-data/bypass combinational logic around :1074. Generated bank-copy and guest-port aliases require elaborated driver-graph inspection before classifying as a real cycle or alias-analysis limitation.
+- Width warnings remain 52 WIDTHEXPAND and 27 WIDTHTRUNC; not yet individually triaged. No warnings suppressed or waived.
+
+Next: establish actual latch-cell presence/absence, then trace the three UNOPTFLAT paths in their elaborated configurations. Do not register or split handshake signals without protocol-equivalence evidence. PPA root cause remains unconfirmed; manufacturer handoff NOT READY.
