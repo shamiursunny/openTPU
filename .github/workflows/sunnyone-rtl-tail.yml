@@ -47,7 +47,7 @@ jobs:
 
   powerup-ab:
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[POWERUP-REPRO]') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
       fail-fast: false
