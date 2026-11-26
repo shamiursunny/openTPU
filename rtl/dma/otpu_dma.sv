@@ -607,15 +607,18 @@ module otpu_dma
     logic [3:0]    cpr_r, cpr_w;                      // chunks a row (read, written)
     logic [RB-1:0] np;                                // rows of the last row step
     logic [15:0]   rcw_r, bcw_r, rcw_w, bcw_w;        // a row's and a row step's words (each side)
+    // Keep both divisors constant at elaboration: a runtime-selected divisor here infers
+    // a general divider in the WG8 stream-setup critical path. Select between constant-divisor
+    // results instead; the arithmetic is identical for every positive SPC.
     always_ff @(posedge clk)
       if (busy && is_ds && ds_su) begin
-        cpr_r <= 4'(su_ns / (ds_hr ? 2 * SPC : SPC));
-        cpr_w <= 4'(su_ns / (ds_hw ? 2 * SPC : SPC));
+        cpr_r <= ds_hr ? 4'(su_ns / (2 * SPC)) : 4'(su_ns / SPC);
+        cpr_w <= ds_hw ? 4'(su_ns / (2 * SPC)) : 4'(su_ns / SPC);
         np  <= RB'((32'(su_cfg.rows) - 1) % SR + 1);
-        rcw_r <= 16'(32'(su_ns) / (ds_hr ? 2 * SPC : SPC) * CW);
-        bcw_r <= 16'(32'(su_ns) / (ds_hr ? 2 * SPC : SPC) * CW * SR);
-        rcw_w <= 16'(32'(su_ns) / (ds_hw ? 2 * SPC : SPC) * CW);
-        bcw_w <= 16'(32'(su_ns) / (ds_hw ? 2 * SPC : SPC) * CW * SR);
+        rcw_r <= ds_hr ? 16'(32'(su_ns) / (2 * SPC) * CW) : 16'(32'(su_ns) / SPC * CW);
+        bcw_r <= ds_hr ? 16'(32'(su_ns) / (2 * SPC) * CW * SR) : 16'(32'(su_ns) / SPC * CW * SR);
+        rcw_w <= ds_hw ? 16'(32'(su_ns) / (2 * SPC) * CW) : 16'(32'(su_ns) / SPC * CW);
+        bcw_w <= ds_hw ? 16'(32'(su_ns) / (2 * SPC) * CW * SR) : 16'(32'(su_ns) / SPC * CW * SR);
       end
     function automatic logic [RB-1:0] rows_of(input logic [8:0] i, input logic [8:0] nr,
                                               input logic [RB-1:0] last);
