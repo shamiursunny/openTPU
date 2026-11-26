@@ -1059,3 +1059,13 @@ Continuation sequence:
 - Additional existing CI evidence audited: ASIC target/config run `45598047221` SUCCESS; full-chip Verilator lint `45598047313` SUCCESS; address-map formal proof `45598047300` SUCCESS; PCIe Gen2 bridge simulation `45598047330` SUCCESS; RTL-tail run `45598047232` SUCCESS; WAITC run `45641472720` SUCCESS. These are historical tested-SHA results, not proof that every later RTL change was retested.
 - Immediate next sequence: (1) poll board retry `139677036786` to terminal and inspect full log/artifact; (2) if it passes, define and run a consolidated regression on the then-current immutable candidate SHA; if it fails, diagnose actual failures without weakening tests; (3) investigate PDN/placement failure before requesting another PPA run; (4) continue CDC/RDC, broader formal, integration/IP/PHY/DFT, board electrical, hardware power/thermal/performance, silicon and commercial gates.
 - Manufacturer handoff remains **NOT READY**. No tapeout/production readiness claim. No paid resources or hardware purchase authorised; maintain zero-spend and do not weaken/remove tests.
+
+
+## Live continuation poll — 2026-11-26 03:47 UTC (Asia/Dhaka)
+
+- Latest working-branch HEAD before this note: `171474b5b0783b72c23732b7c9acba3e48ec023b`; protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`. GitHub comparison: 697 commits ahead, 0 behind. Main remains unchanged.
+- Existing workflow run [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), attempt 3, remains `in_progress`, testing SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`.
+- Board-functional job `139677036786` remains `in_progress`. Latest step poll: setup, checkout, Python setup, Verilator installation and dependency installation all succeeded; step 6, “Host driver and board-model regressions (AXI-Lite isolation already verified separately)”, is still running; artifact upload has not started. GitHub job-log download returned 404/BlobNotFound while the job is active, so no fresh test output or terminal summary is available yet.
+- RTL uncovered groups 3.1, 3.2 and 4 remain completed successfully in this run. Do not infer board-functional pass from elapsed time or setup success.
+- No new RTL/verification source changes were made during this continuation. The only pending action is to poll the same job/run to terminal, then inspect its log and uploaded artifact. Do not dispatch duplicate workflows, cancel the job, or bypass skipped dependency-dependent tests.
+- Existing PPA blocker and manufacturer-handoff NOT READY status from the prior 2026-11-26 checkpoint remain unchanged. No physical signoff, measured silicon/board power, hardware qualification, tapeout readiness, paid spend or production readiness is claimed.
