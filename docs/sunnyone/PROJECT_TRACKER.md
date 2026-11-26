@@ -2449,3 +2449,16 @@ The live continuation checkpoint was refreshed after independently rechecking th
 - No new workflow was launched during this continuation. Groups 3.1, 3.2 and 4 were not rerun; cancelled run 45765362426 was not restarted.
 
 **Next:** diagnose the PPA exit 247 before any retry; then complete a successful comparable physical flow and routed STA. Continue warning triage and formal/CDC/RDC and production integration gates. Manufacturer handoff remains NOT READY.
+
+
+## 99. NEWEST CONTINUATION HANDOFF — 2026-11-26
+
+This section supersedes all older status snapshots, including any text above describing the four workflows as in progress. All verification runs described in checkpoint section “Continuation update — 2026-11-26 23:30” are now terminal. For the next chat, start from the newest handoff in `docs/sunnyone/CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md` and verify live GitHub state before action.
+
+- Live state before this documentation save: feature branch `sunnyone/commercial-profitability-architecture-2026-11-23`, HEAD `a70ade8b64f7c39777ba190bf185d525fa95ae9d`; protected main `d84db55712aba0d40811d7762cb052f05d55b7e5`; comparison 824 ahead / 0 behind.
+- All Qwen, subsystem/memory, software/ISA/host, board-functional, RTL-tail and ASIC/target runs listed in section 98 are successful; retain their exact test counts and artifacts. Do not relaunch them.
+- WG8 PPA run 45845758658 failed with OpenROAD exit 247 at `2_1_floorplan`; preliminary timing metrics are not routed/signoff and do not prove DMA improvement. First inspect artifact 15137952036 and diagnose the exit. No blind retry.
+- Lint run passed but warning inventory remains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. Continue source-level triage; do not suppress.
+- Immediate order: diagnose PPA failure; plan narrowly scoped controlled PPA retry only when justified; source-triage latch/combinational-loop/width warnings; continue formal/SVA, CDC/RDC and production integration/physical/commercial qualification.
+- Preserve main; never rerun groups 3.1, 3.2 or 4 merely to reconfirm; never restart cancelled run 45765362426; avoid redundant reruns, speculative RTL changes and spend.
+- Manufacturer handoff remains **NOT READY**.
