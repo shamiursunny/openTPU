@@ -1292,3 +1292,5 @@ The latest checkpoint records new exact-SHA results: RTL tail 33 passed / 1 inte
 
 ### Stream RTL verification update — 2026-11-26
 The exact-SHA Stream RTL selection passed 14 tests in 1184.62 s (workflow 45845758545, job 139998866364; artifact 15132346982). DMA/scoreboard and other subsystem jobs remain pending/in progress, alongside PPA, Qwen, board and software verification. Continue from the current checkpoint and inspect terminal logs.
+### Quantizer mode regression — 2026-11-26
+Selected quantizer RTL mode matrix passed 15 tests in 660.95 s (workflow 45845758545, job 139998866077). Other subsystem and PPA/board/model/software verification remains open.
