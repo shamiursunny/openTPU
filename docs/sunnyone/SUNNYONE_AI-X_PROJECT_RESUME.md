@@ -1270,3 +1270,12 @@ Hard constraints: do not rerun historical RTL groups 3.1, 3.2 or 4; do not rerun
 ## Qwen gate closure — 2026-11-26
 
 Run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), exact SHA `bddf9708657766951e5c0d204ef474d742e53418`, SUCCESS. Actual logs: real-checkpoint Qwen RTL selection 6 passed / 4 deselected; separate eight formerly PyTorch-skipped tiny board-model cases 8 passed / 199 deselected. Pinned official Qwen3-0.6B and Qwen3.5-0.8B checkpoint files checksum-verified; Verilator 5.044 and CPU dependencies succeeded. Artifact 15122919007, SHA-256 `0e33180ae7ab23408ce4bda5266045f07ff7fe7e61bfbc0afd36fa187fe77c78`. This closes those two targeted gates only; hardware/physical/production gates remain open.
+
+## Live continuation — DMA timing optimisation candidate (2026-11-26)
+
+- Qwen gate on earlier SHA `bddf9708657766951e5c0d204ef474d742e53418` is closed: 6 real-checkpoint Qwen RTL tests passed (4 deselected), plus 8 previously skipped tiny board-model tests passed (199 deselected). Run 45808551468; artifact 15122919007.
+- Archived PPA report for run 45545698546 shows WG8 research floorplan WNS -10.43 ns, TNS -91.46 ns, minimum period 12.93 ns / 77.31 MHz versus 400 MHz SDC. Worst path is DMA `sc[254]` to SRX stream setup `cpr_w[0]`. Runtime-selected divisor is a plausible long combinational divider source.
+- Commit `2835f1a8da6af454023caff9576f41258c66e2a8` changes six stream setup divisions to conditional selection between constant-divisor expressions. This is a testable timing hypothesis, not yet proven.
+- Current verification runs on the DMA change: full-chip lint 45845758782 SUCCESS; PPA 45845758658, ASIC config 45845758681, board-only 45845758677, RTL tail 45845758636, subsystem/memory 45845758545, reset audit 45845758496, Qwen 45845758847 and software/ISA 45845758659 were active/queued at last poll. Do not start further CI until these finish; inspect actual logs and PPA reports.
+- To protect completed groups, legacy broad workflow was guarded in commit `4999b964d891d02fb93cb805162d5143dfbc4cea`. Run 45845758638 was cancelled before Verilator build/test execution; group 3.2/4 tests did not execute. Replacement 45845941442 completed with jobs skipped. Never rerun passed groups 3.1/3.2/4 merely for confirmation. Do not restart user-cancelled 45765362426.
+- Latest branch HEAD: `4999b964d891d02fb93cb805162d5143dfbc4cea`. Protected main unchanged: `d84db55712aba0d40811d7762cb052f05d55b7e5`. Continue on feature branch only; zero-spend; no tapeout/production/silicon claim.
