@@ -1019,3 +1019,10 @@ These are scoped selector results; do not add them into a claim of unique lifeti
 - The Qwen real-checkpoint workflow's invalid PyTorch pin was corrected to CPU torch 2.11.0 and huggingface_hub 2.3.0. It remains undispatched; no real-checkpoint RTL qualification is available.
 - Historical RTL groups 3.1, 3.2 and 4 remain accepted from their earlier successful run and were not repeated. Protected main remains unchanged.
 - Manufacturer handoff status: NOT READY. No production PCIe endpoint/PHY, complete DMA/IOMMU, DDR controller/PHY/ECC datapath, full formal/CDC/RDC signoff, foundry PDK, DFT, physical signoff, board electrical validation, silicon, measured power/performance/thermal, or demand-backed commercial qualification is established by this work.
+
+
+## Cross-chat checkpoint status — 2026-11-26
+
+For any new chat/tab, resume from docs/sunnyone/SUNNYONE_AI-X_AUTHORITATIVE_CONTINUATION_BASELINE_A1.12.11.16.53.md and docs/sunnyone/PROJECT_TRACKER.md when the user says “continue and complete the remaining tasks”.
+
+At this checkpoint, board-only run 45784404427 / job 139787424587 has successfully built pinned Verilator 5.044 and installed dependencies; board pytest is still in progress. Do not claim a pass until terminal pytest results and artifacts are inspected. The dedicated Qwen real-checkpoint workflow is corrected but undispatched. Historical RTL groups 3.1, 3.2 and 4 remain passed and must not be rerun merely for confirmation. Protected main remains unchanged. Manufacturer handoff status remains NOT READY.
