@@ -1,0 +1,71 @@
+name: SUNNYONE AXI-Lite isolation reset test only
+
+# Isolated coverage for the one intentionally deselected board test.
+# This workflow does not rerun the board suite or any completed RTL groups.
+concurrency:
+  group: sunnyone-axil-iso-reset-only-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - '.github/workflows/sunnyone-axil-iso-reset-only.yml'
+      - 'tests/test_board.py'
+      - 'tests/conftest.py'
+      - 'opentpu/**'
+      - 'rtl/shell/otpu_ctrl.sv'
+      - 'sim/verilator/tb_axil_iso.sv'
+      - 'pyproject.toml'
+
+permissions:
+  contents: read
+
+jobs:
+  axil-iso-reset:
+    name: AXI-Lite isolation under independent master/slave resets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out selected branch revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Build pinned Verilator 5.044
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git help2man perl python3 make autoconf g++ flex libfl-dev bison ccache libgoogle-perftools-dev numactl perl-doc
+          test -f /usr/include/FlexLexer.h
+          git clone --depth 1 --branch v5.044 https://github.com/verilator/verilator.git /tmp/verilator
+          cd /tmp/verilator
+          autoconf
+          ./configure
+          make -j2
+          sudo make install
+          verilator --version | grep -F 'Verilator 5.044'
+
+      - name: Install project and test dependencies
+        run: |
+          python -m pip install --upgrade pip pytest
+          python -m pip install -e .
+
+      - name: Run only AXI-Lite isolation reset test
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -vv -ra tests/test_board.py -k "axil_iso_resets_apart" 2>&1 | tee /tmp/sunnyone-axil-iso-reset-only.log
+
+      - name: Upload isolated test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-axil-iso-reset-only-log
+          path: /tmp/sunnyone-axil-iso-reset-only.log
+          if-no-files-found: warn
