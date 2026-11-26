@@ -384,7 +384,7 @@ Live branch HEAD before this documentation commit: ebd3e4c95d9adb027fe01b8134249
 The sequencer counter validates pending-take count and HALT state, but does not yet store a FIFO of producer sum destinations and row counts. It therefore does not independently verify that every take matches the oldest producer's exact sum address and row count. ISA simulator does check the exact destination/row-count match. Keep this as OPEN hardware-vs-ISA parity work.
 
 ### PPA safety correction
-The WG8 PPA workflow now requires an explicit commit changing docs/sunnyone/PPA_REQUEST.md to trigger on push; ordinary RTL and flow commits no longer auto-launch PPA. Manual workflow_dispatch remains available for a deliberate, separately approved run. No PPA run was launched. Previous OOM evidence remains authoritative.
+The WG8 PPA workflow now requires a dedicated docs/sunnyone/PPA_EXECUTE_REQUEST.md marker and [RUN-PPA] in the push commit message; ordinary documentation, RTL and flow commits do not launch PPA. Manual workflow_dispatch remains available only as a deliberate, separately approved user action. No PPA run was launched. Previous OOM evidence remains authoritative.
 
 ### Current run set
 On source commit ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a: FSUM guard, full-chip lint, loop-stack and isolated 128K TMEM are terminal SUCCESS. Board-functional, Qwen, reset/power-up, ASIC configuration, RTL tail, subsystem/memory and core software/ISA workflows were still pending or in progress at the time of this checkpoint. Do not claim their outcomes until polled. The explicitly excluded RTL groups 3.1, 3.2 and 4 were not rerun.

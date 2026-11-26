@@ -524,7 +524,7 @@ Focused CI 45911471194 SUCCESS: 11 passed, 219 deselected; legal 256x64 producer
 
 OPEN semantic gap: the sequencer counter does not store per-producer sum destination/row metadata. Exact RSUM take destination and row-count matching against the oldest producer remains enforced by the ISA simulator but is not independently enforced by hardware. Keep this explicit in the signoff matrix.
 
-PPA safety: WG8 push trigger now requires an explicit docs/sunnyone/PPA_REQUEST.md commit. Ordinary RTL/flow commits cannot auto-launch PPA; workflow_dispatch remains for deliberate approval. No PPA dispatched.
+PPA safety: WG8 push trigger now requires docs/sunnyone/PPA_EXECUTE_REQUEST.md plus [RUN-PPA] in the commit message. Ordinary documentation/RTL/flow commits cannot auto-launch PPA; workflow_dispatch remains for deliberate approval. No PPA dispatched.
 
 Report: docs/sunnyone/FSUM_HARDWARE_GUARD_REPORT_2026-11-27.md.
 
