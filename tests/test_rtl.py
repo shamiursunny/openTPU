@@ -75,6 +75,64 @@ def test_attention_decode_fsum_rtl(have_verilator, S, d, T, block):
     assert rel(rr.outputs["out"], want) < 0.03
 
 
+def _raw_fsum_instruction(func=I.V_EXP2SUB, rows=1, cols=64, bmode=I.B_ROW):
+    """Build an FSUM-flagged raw VOP without the semantic checks in exp2sub_sum()."""
+    ins = I.vop(func, 0, 16384, 32768, rows, cols, 64, 64, 64, bmode)
+    ins.flags = I.F_FSUM
+    return ins
+
+
+def _assert_raw_fsum_rejected(cfg, ins):
+    """Invalid raw FSUM words must stop in the sequencer before any instruction dispatch."""
+    _, _, stats = rtlsim.run(cfg, [[ins, I.halt()]], [np.zeros(1 << 20, np.uint8)],
+                             error_ok=True)
+    assert stats["error"] is True
+    assert stats["instructions"] == [0]
+
+
+@pytest.mark.parametrize("rows,cols,bmode", [
+    (257, 64, I.B_ROW),       # exceeds the synthesizable 256-row buffer
+    (1, 63, I.B_ROW),         # below the complete 64-column partial
+    (1, 64, I.B_SCALAR),      # the immediate carries the sums address
+])
+def test_fsum_exp2sub_invalid_shape_halts_before_vpu_dispatch_rtl(have_verilator,
+                                                                   rows, cols, bmode):
+    _assert_raw_fsum_rejected(Config(S=1, FSUM=True),
+                              _raw_fsum_instruction(rows=rows, cols=cols, bmode=bmode))
+
+
+def test_fsum_exp2sub_rejected_when_capability_disabled_rtl(have_verilator):
+    _assert_raw_fsum_rejected(Config(S=1, FSUM=False), _raw_fsum_instruction())
+
+
+def test_fsum_take_rejected_when_capability_disabled_rtl(have_verilator):
+    # RSUM+FSUM is the take operation, not a producer; it still requires the effective FSUM unit.
+    take = I.fsum_take(50000, 16384, rows=1, cols=64, ars=64)
+    _assert_raw_fsum_rejected(Config(S=1, FSUM=False), take)
+
+
+def test_fsum_flag_rejected_on_unrelated_vop_function_rtl(have_verilator):
+    _assert_raw_fsum_rejected(Config(S=1, FSUM=True),
+                              _raw_fsum_instruction(func=I.V_ADD, rows=1, cols=64))
+
+
+def test_fsum_exp2sub_maximum_legal_shape_runs_and_takes_rtl(have_verilator):
+    """The inclusive 256-row / 64-column boundary remains functional on an FSUM build."""
+    cfg = Config(S=1, FSUM=True)
+    prog = [
+        I.exp2sub_sum(dst=0, a=16384, b=32768, sums=50000, rows=256, cols=64,
+                      drs=64, ars=64, brs=64, bmode=I.B_ROW),
+        I.fsum_take(sums=50000, a=16384, rows=256, cols=64, ars=64),
+        I.halt(),
+    ]
+    drams, tmems, stats = rtlsim.run(cfg, [prog], [np.zeros(1 << 20, np.uint8)])
+    assert not stats.get("error", False)
+    one = np.asarray(1.0, np.float32).view(np.uint32).item()
+    sixty_four = np.asarray(64.0, np.float32).view(np.uint32).item()
+    assert np.all(tmems[0][:256 * 64] == one)
+    assert np.all(tmems[0][50000:50000 + 256] == sixty_four)
+
+
 # ------------------------------------------------------------------------------------ fuzzing
 DATA, INT8, SCALES, SCALES4, SCRATCH = 0, 16384, 49152, 57344, 65536
 # MX scale rows (docs/isa.md "Weight formats") at a fixed pitch, so that an MM may start at any
