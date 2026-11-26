@@ -15,3 +15,8 @@ Do not use this marker for ordinary RTL progress commits. The PPA workflow is in
 ## PPA execution safety update — 2026-11-27
 
 The WG8 PPA workflow now runs on push only when `docs/sunnyone/PPA_REQUEST.md` is explicitly changed. Normal RTL, target and flow commits do not trigger a full-chip PPA automatically. The workflow_dispatch entry remains available for a deliberate run after resource eligibility, zero-spend constraints and the exact source SHA are reviewed. This control was added after the documented 16 GB host-memory OOM-kill evidence. No PPA run was dispatched as part of the FSUM guard work.
+
+
+## Trigger semantics correction — 2026-11-27
+
+This file is documentation only and is not a PPA execution trigger. The WG8 workflow now watches the dedicated `docs/sunnyone/PPA_EXECUTE_REQUEST.md` marker and requires `[RUN-PPA]` in the push commit message. Editing this file, ordinary project documentation, RTL or flow files must not run PPA. Manual workflow dispatch remains an explicit user action requiring approval of the exact source SHA. See `docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md` for the accidental trigger and cancellation record.

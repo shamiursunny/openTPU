@@ -152,3 +152,12 @@ G1/G2 FSUM bounds guard: IMPLEMENTED / TARGETED CI PASS (45911471194: 11 passed,
 Residual OPEN item: hardware does not yet retain per-producer sum destination/row metadata, so exact RSUM take matching to the oldest producer is not checked in hardware (the ISA simulator checks it). Do not mark the entire FSUM ISA contract closed.
 
 Full-chip lint 45911470968 SUCCESS: 76 width warnings, 3 UNOPTFLAT and 7 LATCH remain. Manufacturer handoff remains NOT READY. PPA push trigger now requires explicit PPA_REQUEST.md commit; no PPA run was launched.
+
+
+## PPA trigger incident correction — 2026-11-27
+
+Correction to the preceding note: editing PPA_REQUEST.md itself initially triggered WG8 PPA run 45911873124. This was an assistant-authored workflow-control mistake. The run was cancelled at 23:37:04Z after approximately 73 seconds. Its retained artifact (15159964408; ZIP SHA-256 a5a1bea55d30b1b0e5721f2eae33049bd0003a1504c7925f84aa5e676c05ccf3) shows macro prep/config and Yosys 1_1_yosys_canonicalize only; no floorplan, placement, CTS, PDN or PPA report. cgroup peak was 894,529,536 bytes; OOM counters were zero. One minute of GitHub-hosted runner time was consumed; exact billing/quota cannot be established from this interface.
+
+The corrected workflow is in commit 98335138bd73751699afc4a31ce0b206ff2720a1. Push paths are now docs/sunnyone/PPA_EXECUTE_REQUEST.md and the workflow file; a push job also requires [RUN-PPA] in the commit message. The correction run 45911965872 was SKIPPED and caused cancellation of the accidental run. PPA_REQUEST.md is documentation only. Do not create PPA_EXECUTE_REQUEST.md or use workflow_dispatch without explicit user approval of the exact source SHA.
+
+Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
