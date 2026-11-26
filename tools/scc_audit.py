@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Structural combinational SCC and synthesized-latch audit for slice and multi-slice paths.
+"""Structural combinational SCC and synthesized-latch audit for slice and multi-slice paths; behavioural DRAM is an external blackbox boundary.
 
 Uses the same pinned Yosys+Slang frontend as tools/reset_audit.py. The netlists are flattened
 before Yosys' SCC pass; sequential cells break paths. This is a structural check, not timing or
