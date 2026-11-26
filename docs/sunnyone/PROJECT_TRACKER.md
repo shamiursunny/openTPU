@@ -2592,3 +2592,8 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - PPA run 45877786710 remains IN_PROGRESS. Do not modify PPA source/workflow or launch a replacement while it is active; wait for its artifact and terminal result. Correct and test CPU propagation afterwards.
 - Reconciled live statuses: reset 45877786738 SUCCESS; ASIC config 45877786860 SUCCESS; RTL tail 45877807906 SUCCESS; TMEM 45877807985 SUCCESS; loop-stack 45877985241 SUCCESS (2 passed); PPA 45877786710, Qwen 45877786754 and board 45877786742 still IN_PROGRESS; subsystem 45877786699 and software 45877786705 partially queued/in progress.
 - No RTL or workflow source changes and no new CI runs. Main untouched; zero-spend rule retained; manufacturer handoff NOT READY.
+
+
+### FSUM program-ingress confirmation — 2026-11-27
+
+A further review of `opentpu/host/board.py::Board.load_program` found that the host loader accepts raw uint32 word arrays and does not perform FSUM semantic validation before writing instructions to DRAM/IMEM. Compiler and ISA-simulator checks therefore do not prove a mandatory validated ingress boundary. The FSUM row-buffer bounds issue remains OPEN for `bcu1525-wg` and `bcu1525-x2`. `otpu_vpu` has no current error output; `otpu_seq` does expose `error`, so any correction must trace and reuse the established slice error/halt path. No RTL edit is made pending that design review.
