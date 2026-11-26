@@ -442,3 +442,13 @@ Manufacturer handoff: NOT READY. No production readiness claim. Keep the distinc
 - Finalized workflow revision commit `bddf9708657766951e5c0d204ef474d742e53418` pins `transformers==5.24.1` alongside CPU `torch==2.11.0` and `huggingface_hub==2.3.0`; this avoids the v4.x Hub<1.0 dependency conflict and is compatible with the Qwen3 classes used by the eight tiny-model tests. The workflow runs the real pinned Qwen3/Qwen3.5 RTL cases and then separately runs the exact eight previously skipped tiny board-model cases.
 - Current run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), job `139870207686`, source SHA `bddf9708657766951e5c0d204ef474d742e53418`: IN_PROGRESS; checkout and Python setup passed; pinned Verilator 5.044 build is running. No dependency install, model download or pytest result yet.
 - Earlier run 45808346935 and queued run 45808406729 were cancelled by same-workflow supersession before their test stages. The original run 45807130675 remains a recorded failure at the false-positive extra-cache-file verification check; it did successfully download both checkpoint repositories.
+
+## 12. Live continuation checkpoint — 2026-11-26 (Asia/Dhaka)
+
+The current operational checkpoint is recorded in `PROJECT_TRACKER.md` section 11. Live branch state before this documentation checkpoint: `d60833aafa83f38d94c66ed610146cbcddaa3c57` on `sunnyone/commercial-profitability-architecture-2026-11-23`; protected `main` independently verified at `d84db55712aba0d40811d7762cb052f05d55b7e5` and must remain untouched.
+
+User constraint: groups 3.1, 3.2 and 4 have already passed and must not be rerun merely for confirmation. Run 45765362426 was explicitly cancelled and must not be restarted.
+
+Qwen real-checkpoint run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), exact run SHA `bddf9708657766951e5c0d204ef474d742e53418`, was live-checked at 18:35 Asia/Dhaka on 2026-11-26. Job remains in progress: setup, Verilator 5.044 build, CPU-only dependency installation, official Apache-2.0 Qwen checkpoint download/verification, and architecture enforcement passed; real Qwen RTL pytest step is running; eight tiny-model tests and log upload are pending. No terminal test outcome is available. Poll this existing run; do not restart it or weaken its real-checkpoint assertions.
+
+After Qwen closure, continue the outstanding four-DIMM adversarial AXI, formal/assertion, lint, CDC/RDC, WG8 research PPA, PCIe/DMA/IOMMU, DDR4 controller/PHY/ECC, SRAM/DFT, physical/package/board, silicon qualification and commercial validation gates. The logical WG8 candidate is not tapeout- or production-ready. Maintain exact-SHA evidence, zero-spend approval and branch-only writes.
