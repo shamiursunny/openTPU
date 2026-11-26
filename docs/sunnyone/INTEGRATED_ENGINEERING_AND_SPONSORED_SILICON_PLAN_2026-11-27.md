@@ -409,3 +409,20 @@ The source commit automatically started the normal suites. Full-chip lint workfl
 WG8 PPA workflow 45877786710 is IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4 after the RTL change. The workflow now uses the immutable ORFS manifest digest and resource telemetry. Verify its logs, archived telemetry and final status before interpreting the result. No second PPA run should be launched while this one is active.
 
 Other source-triggered workflows on the same source SHA are in progress or queued: reset audit 45877786738, Qwen RTL 45877786754, board functional 45877786742, subsystem/memory 45877786699, software/ISA 45877786705 and ASIC config 45877786860. The tail run 45877787004 was cancelled by the newer commit; the replacement tail run 45877807906 is in progress on the test commit. The separate 128K one-copy TMEM investigation 45877807985 is also in progress. Do not restart the explicitly cancelled historical run 45765362426.
+
+
+## 16. Loop-stack and isolated TMEM verification results — 2026-11-27
+
+**Loop-stack guard workflow 45877985241 — SUCCESS**, source commit 275728cd1484fb3b409ba59b9b409f29160c8f7e:
+- test_loop_stack_maximum_legal_depth_four_rtl passed.
+- test_loop_stack_overflow_reports_error_before_out_of_range_rtl passed.
+- Total: 2 passed, 217 deselected, 47.52 seconds.
+- Artifact 15146995084; uploaded ZIP SHA-256 bc7202d01bf896453a2fdd8e3f752d34e719e85db9ddc582ebcba0196380b7ff.
+This verifies the legal depth-four case and the fifth-level overflow error/halt path under the targeted RTL simulation. It does not prove all sequencer behaviour or full design signoff.
+
+**Isolated 128K one-copy TMEM investigation 45877807985 — SUCCESS**, source commit c22c9b1be497b62253693e817d7d3b5fdca1c79f:
+- test selection: tests/test_rtl.py -k one_copy_tmem_of_128k_words
+- Total: 2 passed, 217 deselected, 75.03 seconds.
+This is separate from the loop-stack guard tests.
+
+Full-chip lint 45877786797 also succeeded on RTL source commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4, with width warnings reduced to 76 (52 expand, 24 truncation). PPA run 45877786710 remains IN_PROGRESS on the same source commit; it is the single diagnostic run using the immutable ORFS manifest digest and memory telemetry. No duplicate PPA run.
