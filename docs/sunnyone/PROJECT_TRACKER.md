@@ -2190,3 +2190,14 @@ These are scoped selector results; do not add them into a claim of unique lifeti
 9. After each meaningful task, update this resume guide, `PROJECT_TRACKER.md`, and `SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md` with exact source SHA, run/job IDs, terminal counts, limitations and next action. Re-fetch all three after writes to verify.
 10. In any new chat/tab, the user can simply say **"continue and complete the remaining tasks"**. Start from this checkpoint and current live GitHub state; do not ask the user to repeat the no-rerun instruction.
 
+
+
+## Board-only regression isolation update — 2026-11-26 (Asia/Dhaka)
+
+- To complete the incomplete board-functional gate without repeating already-passed RTL groups, added `.github/workflows/sunnyone-board-functional-only.yml` in commit `aedda576e489a297f9452c1cd799072014b565b0`.
+- The workflow is deliberately independent of the general RTL matrix. It runs only the existing board-functional selector: `pytest -vv -ra tests/test_board.py -k "not axil_iso_resets_apart"`. No test code, assertions or selector were changed. Timeout is 90 minutes. It uploads the complete log even on failure/cancellation.
+- GitHub Actions automatically started board-only run [45769498674](https://github.com/shamiursunny/openTPU/actions/runs/45769498674), tested commit `aedda576e489a297f9452c1cd799072014b565b0`. Job `139738454299` is **IN_PROGRESS**. At the latest poll checkout and Python setup succeeded; Verilator installation was running; pytest had not started. No board test result is claimed yet.
+- This run does not include groups 3.1, 3.2 or 4 and must not be described as rerunning them. Do not launch another board-only run while this one is active.
+- Dedicated Qwen real-checkpoint workflow remains separate and undispatched. Do not trigger the general RTL matrix.
+- Current branch HEAD at the time of this note: `aedda576e489a297f9452c1cd799072014b565b0`; protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Next action: poll only run 45769498674 / job 139738454299 to terminal; inspect the full pytest summary and uploaded artifact. If it passes, record exact counts; if it fails, diagnose without weakening tests. Then proceed to the Qwen real-checkpoint gate and remaining unclosed engineering gates.
