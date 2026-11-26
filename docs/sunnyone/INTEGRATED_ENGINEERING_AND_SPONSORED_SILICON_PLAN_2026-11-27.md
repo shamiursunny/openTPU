@@ -365,3 +365,24 @@ Detailed evidence is recorded in docs/sunnyone/LINT_AND_COMBINATIONAL_PATH_TRIAG
 - The 79 width warnings and ASIC-specific AW/AR port-width warnings remain open.
 
 The manufacturer handoff matrix G3 remains OPEN. Source-level triage is not equivalent to a clean lint or a synthesized-netlist proof.
+
+
+## 14. Width-warning inventory and preliminary risk triage — 2026-11-27
+
+Created docs/sunnyone/WIDTH_WARNING_INVENTORY_2026-11-27.md. It preserves all 79 exact Verilator diagnostics (52 WIDTHEXPAND, 27 WIDTHTRUNC) from workflow 45845758782, tied to source SHA 2835f1a8da6af454023caff9576f41258c66e2a8.
+
+Nine warning instances are confirmed inside ifndef SYNTHESIS regions and are marked SIM_ONLY in the inventory:
+- otpu_vpu.sv:1454
+- otpu_mxu.sv:2305, 2306, 2607
+- otpu_seq.sv:678, 681, 762, 1838, 1839
+
+The remaining 70 are still OPEN for individual source/configuration and semantic review; do not assume all are hardware defects or harmless extensions. otpu_dram.sv exists() diagnostics are in the simulation DRAM model but need confirmation against the exact ASIC source list before being labelled non-hardware.
+
+Highest-priority bounds checks:
+1. VPU row-sum buffer rb[NRB/LANES] uses rows_done[15:LW] and fl[15:LW] (13-bit indices into a 32-entry array for the common LANES=8 configuration). Prove row-count bounds and final-cycle behaviour. RDOT rdb_i is gated by rows<=NRB; FSUM shape validation currently appears in simulation-only code and must be reconciled with the hardware input contract.
+2. Sequencer LOOP stack writes four-entry arrays using three-bit sp. ISA docs specify maximum loop nesting depth 4, but the push site has no visible sp<4 guard. Prove all input programs are validated; add a hardware-safe overflow/error response if malformed commands can reach the sequencer.
+3. VPU 24-bit one-hot function masks are indexed by wider VOP enum/op values. Prove all function indices are 0–23 before applying a sized index.
+4. MXU drain and key arrays are indexed with wider values. The drain helper includes an explicit bounds conditional; prove the computed index is within MCOLS. Prove mxm/mx_i bounds before narrowing mx_key indices.
+5. Review remaining arithmetic/shift/constant warnings for expression sizing, signedness, carry/borrow and parameter ranges. Use explicit casts only after proof.
+
+No RTL changes were made. The inventory and source-guard classification are evidence organisation, not lint closure. G3 remains OPEN and the manufacturer handoff remains NOT READY.
