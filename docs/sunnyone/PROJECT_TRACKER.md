@@ -2374,3 +2374,23 @@ The command type `cmd_t` in `rtl/top/otpu_pkg.sv` is packed as `op[7:0]`, `flags
 The latest operational state is maintained in [CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md](CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md). Read that file at the start of every continuation, then verify live branch/main/workflow state. It records the latest verified branch SHA, protected main SHA, confirmed Qwen and lint evidence, DMA timing experiment and its limitations, live workflow IDs/statuses, and next actions. The user may resume from any new chat/tab with: **“Continue and complete the remaining tasks.”**
 
 Latest verified branch SHA before this documentation update: `6ca69d24f9c7dbdd960e01531b7d64454c8ccaf3`. Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify it. Do not rerun RTL groups 3.1, 3.2 or 4 merely to reconfirm; do not restart cancelled run `45765362426`. Manufacturer handoff remains **NOT READY**.
+
+
+## 14. Verification continuation update — 2026-11-26 (Asia/Dhaka)
+
+Exact-SHA verification of the DMA stream-setup experiment (RTL source commit `2835f1a8da6af454023caff9576f41258c66e2a8`) has advanced:
+- RTL-tail workflow [45845758636](https://github.com/shamiursunny/openTPU/actions/runs/45845758636), job `139998865468`: SUCCESS; actual log inspected: **33 passed, 1 intentional parameter skip, 183 deselected, 923.55 s**. The skip is the documented invalid PAIR/ACT_ROWS parameter combination.
+- Reset/power-up audit [45845758496](https://github.com/shamiursunny/openTPU/actions/runs/45845758496), job `139998865142`: SUCCESS; actual log inspected: **4 passed in 322.93 s**. Pinned OSS CAD Suite archive SHA-256 was verified and Yosys+Slang frontend loaded.
+- ASIC/target integration [45845758681](https://github.com/shamiursunny/openTPU/actions/runs/45845758681), job `139998864759`: SUCCESS. Actual log inspected: integrated ASIC control, WG8 memory and four-DIMM AXI lint/build completed; four-DIMM host/accelerator contention simulation printed PASS for simultaneous AW/AR contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure. Artifact `15130743611`, SHA-256 `dc0a587493b7b9ca44355fbeb312798b3ef853e2f39e4fecb4ef35c345251863`.
+- Full-chip lint [45845758782](https://github.com/shamiursunny/openTPU/actions/runs/45845758782): SUCCESS, Verilator 5.032. Actual warning inventory: 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. The seven latch warnings are local temporaries `c2/r2` in the conditional WAITC / `hz_ino` branches and `u/y/k/kd/cf` inside the `hz_wc && c_v && sv[i] && !fin[i]` branch. They are potential lint false positives due to conditional use/temporary scope, but are not waived or yet proven harmless. The three UNOPTFLAT paths are `gnt` through VPU compression enable and slice grant logic; `sc_gl` through collective request/grant logic; and TMEM `pq` through a single always block at line 1074. They require structural review; do not assume they are real functional oscillations or harmless without deeper analysis. No warning specifically references `rtl/dma/otpu_dma.sv`.
+- Lint artifact `15130078429`, SHA-256 `6a1f1639094cfe3d8c800d4f9bd923375fa4dc613b0cb6c1e4f5c9244c6b8d75`.
+
+Still active at the latest poll:
+- WG8 PPA [45845758658](https://github.com/shamiursunny/openTPU/actions/runs/45845758658): ORFS pinned-container flow still running; no new PPA result or artifact yet.
+- Qwen exact-SHA rerun [45845758847](https://github.com/shamiursunny/openTPU/actions/runs/45845758847): pinned Verilator build, dependencies and pinned checkpoint downloads/checksums succeeded; real Qwen RTL pytest step still running; tiny-model tests not yet started.
+- Board-only regression [45845758677](https://github.com/shamiursunny/openTPU/actions/runs/45845758677): board-functional pytest step running.
+- Subsystem/memory matrix [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545): MX multiply/replay passed; quantizer modes and Stream RTL running; remaining jobs queued.
+- Software/ISA matrix [45845758659](https://github.com/shamiursunny/openTPU/actions/runs/45845758659): compiler, ISA, kernels, formats and quant tests passed; VOPS running; other software jobs queued.
+- The completed reset-audit job in [45845758496](https://github.com/shamiursunny/openTPU/actions/runs/45845758496) passed as above.
+
+No new CI runs were launched. Do not start additional builds until the existing workflow set reaches terminal states. The PPA result is the key unresolved gate for the DMA timing experiment. Keep main unchanged, do not restart run 45765362426, and do not rerun RTL groups 3.1, 3.2 or 4.
