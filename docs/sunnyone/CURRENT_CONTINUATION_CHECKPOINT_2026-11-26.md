@@ -277,3 +277,16 @@ Live branch HEAD before this documentation update: `48a741a54acc66562986bcfe698e
 - Preserve the baseline and current report metrics as non-comparable preliminary evidence. Require a complete physical flow and routed STA before any timing-closure claim; isolate source changes before attributing a DMA effect.
 
 Manufacturer handoff remains **NOT READY**. Existing digital verification evidence remains unchanged; no completed tests were relaunched.
+
+
+## Initial full-chip lint source triage — 2026-11-26
+
+Lint artifact 15130078429 (run 45845758782; source SHA `2835f1a8da6af454023caff9576f41258c66e2a8`) was downloaded and its exact Verilator 5.032 diagnostics inspected. No RTL was edited.
+
+- **LATCH (7 warning instances):** all point to block-local temporaries in `rtl/seq/otpu_seq.sv`: `c2` and `r2` in the WAITC branch around line 1153; `u`, `y`, `k`, `kd` and nested `cf` in the `hz_wc && c_v` branch around line 1823. Source review shows each temporary is assigned before its use within the branch that declares/uses it, but the branch is not entered on every activation of the enclosing `always_comb`. This suggests a procedural-scope/conditional-initialisation warning rather than demonstrated state storage; it is **not proven harmless or closed**. Next verify elaborated/synthesised latch cells and run narrowly scoped lint after any proposed semantics-preserving cleanup.
+- **UNOPTFLAT `gnt`:** Verilator path: `rtl/top/otpu_slice.sv:611` → `rtl/vpu/otpu_se_comp.sv:640` → `rtl/vpu/otpu_fpipe.sv:15` → `rtl/top/otpu_slice.sv:963` → `gnt`. This is a grant/enable feedback path across VPU compression and arbitration; do not split or register signals without proving handshake-cycle equivalence.
+- **UNOPTFLAT `sc_gl`:** path through `rtl/top/otpu_slice.sv:1047`, `cgl_c` at :898 and grant-selection logic at :963 back to `rtl/top/otpu_top.sv:156`. This is a collective global/local grant dependency; inspect combinational dependency and protocol timing before any refactor.
+- **UNOPTFLAT `pq`:** `rtl/mem/otpu_tmem.sv:297` feeds the generated bank-data/bypass `always_comb` around :1074 and is reported back to `pq`. The code has separate generated bank-copy and guest-port aliases; establish the exact elaborated configuration and driver graph before deciding whether this is a real combinational cycle or an alias-analysis limitation.
+- The remaining 79 width warnings (52 WIDTHEXPAND, 27 WIDTHTRUNC) have not yet been source-triaged. No warnings were suppressed and no warning was declared closed.
+
+Next: prove or disprove latch inference with the actual synthesis/elaboration configuration, then trace the three UNOPTFLAT paths at the elaborated net level. Keep all changes narrow and regression-backed. PPA resource diagnosis remains open as recorded above. Manufacturer handoff remains **NOT READY**.
