@@ -147,3 +147,29 @@ Manufacturer handoff remains **NOT READY**. These results are bounded digital si
 
 ### Documentation reconciliation — 2026-11-26
 The exact-SHA verification outcomes and open workflow states above have also been appended to section 15 of `docs/sunnyone/PROJECT_TRACKER.md` in commit `bdfd076b692b55b7d4d0f8c9646fed1aff4f16d3`. This is a documentation-only change; no RTL, test, workflow or hardware configuration was altered.
+
+
+## New-chat resume instruction — saved 2026-11-26
+
+When the user opens a new chat in the SUNNYONE X AI CHIP DESIGN project and types **"continue and complete the remaining tasks"** (case-insensitive; shorter "continue" may also be used), resume from this checkpoint. Do not restart the project or repeat completed verification. First verify the live repository, active branch, protected main, latest workflow states and current checkpoint contents.
+
+### Last confirmed state at save time
+- Repository: `shamiursunny/openTPU`.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Latest verified branch HEAD: `9d9cb9a5adbe359ad6654a8601b45c8321194497`.
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5` (must remain untouched).
+- Branch comparison at save time: 821 ahead, 0 behind.
+- Exact RTL experiment SHA: `2835f1a8da6af454023caff9576f41258c66e2a8`.
+- Tracker reconciliation commit: `bdfd076b692b55b7d4d0f8c9646fed1aff4f16d3`.
+- Latest checkpoint/tracker documentation commits: `9d9cb9a5adbe359ad6654a8601b45c8321194497` and `bdfd076b692b55b7d4d0f8c9646fed1aff4f16d3`.
+- Four existing workflows still require polling; last known states:
+  - WG8 PPA 45845758658: IN_PROGRESS.
+  - Qwen 45845758847: IN_PROGRESS (real-checkpoint RTL step SUCCESS; eight tiny-model cases still pending).
+  - Subsystem/memory 45845758545: IN_PROGRESS (reset audit and native DRAM/technology RAM pending).
+  - Software/ISA 45845758659: QUEUED / jobs still outstanding (waits, waitw, host and host-related jobs).
+- Do not launch replacement workflows while these existing workflows/jobs are active or queued. Poll and inspect logs/artifacts, then update this checkpoint and tracker with exact terminal evidence.
+- Do not rerun RTL groups 3.1, 3.2 or 4 merely to reconfirm. Do not restart cancelled run 45765362426. Preserve previous successful evidence.
+- Do not change protected `main`; keep zero-spend policy; no speculative RTL edits or warning suppression.
+- Manufacturer handoff remains NOT READY. Continue formal/CDC/RDC, physical timing closure, production IP/PHY, hardware, power/thermal, reliability and commercial qualification only with evidence.
+- Key outstanding engineering review: compare WG8 PPA against baseline run 45545698546 (prior research result 77.31 MHz); do not accept the DMA constant-divisor rewrite as an improvement without measured comparable reports. Review the outstanding lint LATCH/UNOPTFLAT/width warnings at source level rather than suppressing them.
+- Primary files: this checkpoint and `docs/sunnyone/PROJECT_TRACKER.md`.
