@@ -1288,3 +1288,7 @@ See PROJECT_TRACKER.md section 12 live poll for exact statuses. Full-chip lint p
 ## Verification continuation — 2026-11-26
 
 The latest checkpoint records new exact-SHA results: RTL tail 33 passed / 1 intentional skip; reset audit 4 passed; four-DIMM ASIC/target integration simulation PASS for simultaneous host/accelerator contention and response routing; full-chip lint SUCCESS with warning debt (52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT). The PPA, Qwen, board-only, subsystem and software runs remain open. Read `docs/sunnyone/CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md` before continuing and poll the listed workflow IDs. No additional workflows were started during this update.
+
+
+### Stream RTL verification update — 2026-11-26
+The exact-SHA Stream RTL selection passed 14 tests in 1184.62 s (workflow 45845758545, job 139998866364; artifact 15132346982). DMA/scoreboard and other subsystem jobs remain pending/in progress, alongside PPA, Qwen, board and software verification. Continue from the current checkpoint and inspect terminal logs.
