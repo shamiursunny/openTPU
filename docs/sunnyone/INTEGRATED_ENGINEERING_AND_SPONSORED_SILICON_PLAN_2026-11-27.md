@@ -338,3 +338,16 @@ An early feasibility conversation is permissible if clearly labelled as prelimin
 6. IHP Open PDK repository and status: https://github.com/IHP-GmbH/IHP-Open-PDK
 
 This plan is an engineering and funding strategy. It is not a fabrication reservation, sponsor acceptance, PDK signoff, tapeout approval, or guarantee of free samples.
+
+
+## 12. PPA workflow reproducibility correction — 2026-11-27
+
+A review of the failed run 45845758658 logs found that the workflow pulled the mutable tag openroad/orfs:latest and then captured the resolved local image ID. The failed run's registry manifest digest was sha256:f5b2b4ac8cae150c30ad86857328300e20662cf7ff555978711ea8936f8d9539 and its local image ID was sha256:edbd355068b742c5ae2413a49a58578465bd52f57668cebebdd383eb4d97607d.
+
+The workflow was corrected in commit e2d96d5364af47503d67cb70635bf3485cbe9b33:
+- Pull the immutable manifest reference openroad/orfs@sha256:f5b2b4ac8cae150c30ad86857328300e20662cf7ff555978711ea8936f8d9539.
+- Verify the resolved local image ID exactly equals sha256:edbd355068b742c5ae2413a49a58578465bd52f57668cebebdd383eb4d97607d.
+- Archive both the manifest reference and resolved image ID with the PPA artifact.
+- Keep the existing two-CPU Docker limit and cgroup resource telemetry.
+
+This closes the mutable-image-tag reproducibility gap for the next diagnostic. It is a workflow-only change, not PPA evidence. No PPA run has been dispatched by this correction. Review the resulting workflow on the branch before deciding whether to dispatch the one diagnostic attempt. The pinned image is the same image used by the failed reference run; the run's resource cause remains unconfirmed.
