@@ -257,3 +257,23 @@ All listed workflows are terminal; evidence and detailed interpretation are reco
 - Prior checkpoint file SHA: `3aa45841e48818702257c38d2c30a0731b446320`.
 - Prior tracker file SHA: `5b0c616dff47314e90949967a6d752c2c1b43c32`.
 - The next save commit will advance the feature branch; re-fetch and record the resulting branch HEAD after both documentation commits.
+
+
+## PPA failure investigation — 2026-11-26 (artifact comparison)
+
+Live branch HEAD before this documentation update: `48a741a54acc66562986bcfe698e688e72aa49b4`; protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare: 826 ahead / 0 behind. No RTL or workflow was changed and no workflow was launched.
+
+### Archived evidence inspected
+- Current experiment: run [45845758658](https://github.com/shamiursunny/openTPU/actions/runs/45845758658), artifact 15137952036, artifact digest `sha256:66d8e83e4f5da5ee5b11be80e851ecfe04f6b801857ef9ee3d786246af47f560`. Full archive downloaded and inspected, including `2_1_floorplan.log`, `2_floorplan_final.rpt`, `run.log` tail, file inventory and GitHub Actions job log.
+- Current `2_1_floorplan.log` ends after “Report metrics stage 2, floorplan final”; it records peak memory 15,191,368 KB and no explicit OpenROAD error, OOM message, `Killed`, signal diagnostic or stack trace. The ORFS wrapper reports `do-2_1_floorplan` Error 247, then make Error 2. The final floorplan report exists, but the expected `2_1_floorplan.odb` and SDC were not written.
+- Baseline: run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546), artifact 14997807086. Its archived run log reaches the later `2_4_floorplan_pdn` stage and executes `check_placement -fixed -verbose`, then also exits with Error 247; peak memory 15,685,744 KB. The baseline did successfully write the `2_1_floorplan.odb` before failing later. Its ORFS image digest differs from the current experiment, so this is a recurrence of the same exit code under a different image and at a different floorplan substage, not a perfectly controlled tool comparison.
+- The two independent runs therefore show a repeatable abrupt Error 247 in memory-intensive floorplan/placement work at roughly 15.2–15.7 GB peak RSS. This materially strengthens a resource-ceiling hypothesis (for example, host/container memory pressure), but neither archive contains cgroup OOM counters, kernel OOM-killer evidence, an explicit SIGKILL record or an OpenROAD stack trace. **Root cause remains unconfirmed; do not record “OOM confirmed”.** No evidence points to a timing-report defect: both archives contain generated floorplan reports, while the failure occurs at/after floorplan processing.
+- Current report remains preliminary: estimated wire-load model only, no estimated parasitics, no routed STA. It cannot establish timing closure or attribute a gain to the DMA rewrite.
+
+### Decision / next controlled step
+- Do not blindly retry the same flow on the same resource envelope. No retry was started in this continuation.
+- Before another attempt, modify only the diagnostic/runner instrumentation or establish a genuinely different, approved resource envelope; capture `/sys/fs/cgroup/memory.max`, `memory.current`, `memory.events` (and available runner memory telemetry) before and during OpenROAD. Keep the ORFS image, source SHA and 2-CPU configuration fixed unless the captured evidence justifies a controlled change. No paid runner or hardware spend without explicit user approval.
+- If the memory ceiling is confirmed, choose a reproducible zero-spend mitigation based on evidence (memory-footprint reduction or a supported lower-memory implementation strategy) before running the full flow again. Do not disable placement checks, PDN, or physical stages to manufacture a pass.
+- Preserve the baseline and current report metrics as non-comparable preliminary evidence. Require a complete physical flow and routed STA before any timing-closure claim; isolate source changes before attributing a DMA effect.
+
+Manufacturer handoff remains **NOT READY**. Existing digital verification evidence remains unchanged; no completed tests were relaunched.
