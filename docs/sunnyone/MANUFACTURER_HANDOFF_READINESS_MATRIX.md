@@ -99,3 +99,11 @@ All 79 width diagnostics from workflow 45845758782 are preserved in docs/sunnyon
 
 
 The loop-stack guard reduced the full-chip lint width-warning count from 79 to 76 (52 WIDTHEXPAND, 24 WIDTHTRUNC) in run 45877786797, source commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4. Three out-of-range-width diagnostics on the four-entry sequencer stack index were removed by adding an explicit depth check and using sp[1:0]. This is not full lint closure; G3 remains OPEN.
+
+
+## 2026-11-27 targeted verification update
+
+- Sequencer LOOP stack: RTL now rejects a fifth non-zero nested loop before an out-of-range write. Dedicated workflow 45877985241 passed both maximum legal depth four and overflow error/halt tests (2 passed, 217 deselected). This closes that specific tested boundary issue, not all sequencer verification.
+- Isolated 128K one-copy TMEM investigation workflow 45877807985 passed 2 tests (217 deselected).
+- Full-chip lint 45877786797 passed with 76 width warnings (52 WIDTHEXPAND, 24 WIDTHTRUNC), down from 79; three sequencer stack-index warnings were removed.
+- WG8 PPA diagnostic workflow 45877786710 remains in progress; no PPA closure claim. G1/G2/G3 remain partial/open according to their broader gates.
