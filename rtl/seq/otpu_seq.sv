@@ -624,12 +624,14 @@ module otpu_seq
   // FSUM is an EXP2SUB producer plus an RSUM take. The producer's row sums occupy
   // a fixed 256-row VPU buffer; reject malformed raw programs in hardware, not only
   // through compiler / ISA-simulator validation or simulation-only assertions.
+  logic [31:0] fsum_pending;  // dispatched EXP2SUB FSUMs not yet paired with an RSUM take
   wire fsum_bad = op == OP_VOP && flags[VF_FSUM] &&
                   (!FSUM ||
                    !((dcmd.w6[23:16] == V_EXP2SUB) || (dcmd.w6[23:16] == V_RSUM)) ||
                    (dcmd.w6[23:16] == V_EXP2SUB &&
                     (dcmd.w4[15:0] == 16'd0 || dcmd.w4[15:0] > 16'd256 ||
-                     dcmd.w4[31:16] < 16'd64 || dcmd.w6[25:24] == B_SCALAR)));
+                     dcmd.w4[31:16] < 16'd64 || dcmd.w6[25:24] == B_SCALAR)) ||
+                   (dcmd.w6[23:16] == V_RSUM && fsum_pending == 0));
 
   // ---- dispatch pipeline: R (the instruction at pc: registers resolved) -> P (footprint
   // partial products) -> S (products) -> Q (footprint ranges) -> C (dependencies on the window,
@@ -1421,6 +1423,7 @@ module otpu_seq
       rl_wait <= 1'b0; ch_req <= 1'b0;
       p_v <= 1'b0; s_v <= 1'b0; q_v <= 1'b0; c_v <= 1'b0; lp <= 1'b0;
       icount <= '0;
+      fsum_pending <= '0;
       sv <= '0; sstarted <= '0; sready <= '0;
       for (int i = 0; i < 8; i++) R[i] <= '0;
       for (int i = 0; i < 8; i++) R[8 + i] <= AW'(rinit[i]);
@@ -1675,9 +1678,16 @@ module otpu_seq
           OP_NOP: advance();
           OP_HALT: begin
             stopping <= 1'b1;
-            ch_req <= flags[HF_CHAIN];
-            ch_addr <= rv32(ra);
-            ch_n <= rv32(rb);
+            if (fsum_pending != 0) begin
+              // Match the ISA rule: every FSUM producer must have a take before HALT.
+              // Drain already-dispatched work before reporting the program error.
+              error <= 1'b1;
+              ch_req <= 1'b0;
+            end else begin
+              ch_req <= flags[HF_CHAIN];
+              ch_addr <= rv32(ra);
+              ch_n <= rv32(rb);
+            end
           end
           OP_LI: begin
             if (rd != 0) R[rd] <= AW'({iw[2], iw[1]});
@@ -1716,6 +1726,10 @@ module otpu_seq
             end else if (r_take) begin
               p_v <= 1'b1;
               p_cmd <= dcmd; p_unit <= 3'(dunit); p_pc <= pc; p_sync <= ir_sync;
+              if (op == OP_VOP && flags[VF_FSUM]) begin
+                if (dcmd.w6[23:16] == V_EXP2SUB) fsum_pending <= fsum_pending + 32'd1;
+                else if (dcmd.w6[23:16] == V_RSUM) fsum_pending <= fsum_pending - 32'd1;
+              end
               advance();
               if (op == OP_RLD) begin
                 rl_wait <= 1'b1;

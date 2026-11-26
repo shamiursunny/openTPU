@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          pytest -vv -ra tests/test_rtl.py -k "fsum_exp2sub_invalid_shape_halts_before_vpu_dispatch_rtl or fsum_exp2sub_rejected_when_capability_disabled_rtl or fsum_take_rejected_when_capability_disabled_rtl or fsum_flag_rejected_on_unrelated_vop_function_rtl or fsum_exp2sub_maximum_legal_shape_runs_and_takes_rtl" 2>&1 | tee /tmp/sunnyone-fsum-guard.log
+          pytest -vv -ra tests/test_rtl.py -k "fsum_exp2sub_invalid_shape_halts_before_vpu_dispatch_rtl or fsum_exp2sub_rejected_when_capability_disabled_rtl or fsum_take_rejected_when_capability_disabled_rtl or fsum_take_without_pending_producer_halts_before_vpu_dispatch_rtl or fsum_capability_requires_eight_lane_stream_unit_rtl or fsum_pending_at_halt_reports_error_after_drain_rtl or fsum_flag_rejected_on_unrelated_vop_function_rtl or fsum_exp2sub_maximum_legal_shape_runs_and_takes_rtl" 2>&1 | tee /tmp/sunnyone-fsum-guard.log
       - name: Archive FSUM guard test log
         if: always()
         uses: actions/upload-artifact@v4

@@ -77,6 +77,11 @@ def test_attention_decode_fsum_rtl(have_verilator, S, d, T, block):
 
 def _raw_fsum_instruction(func=I.V_EXP2SUB, rows=1, cols=64, bmode=I.B_ROW):
     """Build an FSUM-flagged raw VOP without the semantic checks in exp2sub_sum()."""
+    if rows == 0:
+        # I.vop() correctly rejects zero rows; encode this malformed raw command directly.
+        return I.Instr(I.VOP, flags=I.F_FSUM,
+                       w=[0, 16384, 32768, cols << 16, 64 | (64 << 16),
+                          64 | (func << 16) | (bmode << 24), 0])
     ins = I.vop(func, 0, 16384, 32768, rows, cols, 64, 64, 64, bmode)
     ins.flags = I.F_FSUM
     return ins
@@ -91,6 +96,7 @@ def _assert_raw_fsum_rejected(cfg, ins):
 
 
 @pytest.mark.parametrize("rows,cols,bmode", [
+    (0, 64, I.B_ROW),         # zero rows are not a legal producer
     (257, 64, I.B_ROW),       # exceeds the synthesizable 256-row buffer
     (1, 63, I.B_ROW),         # below the complete 64-column partial
     (1, 64, I.B_SCALAR),      # the immediate carries the sums address
@@ -109,6 +115,27 @@ def test_fsum_take_rejected_when_capability_disabled_rtl(have_verilator):
     # RSUM+FSUM is the take operation, not a producer; it still requires the effective FSUM unit.
     take = I.fsum_take(50000, 16384, rows=1, cols=64, ars=64)
     _assert_raw_fsum_rejected(Config(S=1, FSUM=False), take)
+
+
+def test_fsum_take_without_pending_producer_halts_before_vpu_dispatch_rtl(have_verilator):
+    take = I.fsum_take(50000, 16384, rows=1, cols=64, ars=64)
+    _assert_raw_fsum_rejected(Config(S=1, FSUM=True), take)
+
+
+def test_fsum_capability_requires_eight_lane_stream_unit_rtl(have_verilator):
+    # FSUM's effective capability is VPU_FSUM && HAS_SS; LANES=4 makes HAS_SS false.
+    _assert_raw_fsum_rejected(Config(S=1, FSUM=True, LANES=4, MCOLS=4),
+                              _raw_fsum_instruction())
+
+
+def test_fsum_pending_at_halt_reports_error_after_drain_rtl(have_verilator):
+    cfg = Config(S=1, FSUM=True)
+    producer = I.exp2sub_sum(dst=0, a=16384, b=32768, sums=50000, rows=1, cols=64,
+                            drs=64, ars=64, brs=64, bmode=I.B_ROW)
+    _, _, stats = rtlsim.run(cfg, [[producer, I.halt()]], [np.zeros(1 << 20, np.uint8)],
+                             error_ok=True)
+    assert stats["error"] is True
+    assert stats["instructions"] == [2]
 
 
 def test_fsum_flag_rejected_on_unrelated_vop_function_rtl(have_verilator):
