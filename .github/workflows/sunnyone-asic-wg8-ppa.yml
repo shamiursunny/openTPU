@@ -9,15 +9,18 @@ on:
     branches:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     # A full-chip PPA run is expensive and previously OOM-killed on the 16 GB runner.
-    # Require an explicit, reviewed request-marker commit; ordinary RTL/flow edits never
-    # dispatch PPA automatically. workflow_dispatch remains available for deliberate runs.
+    # Only the dedicated execution marker may request a push run. The workflow-file path
+    # lets safety-control edits supersede/cancel an accidental run; the job-level condition
+    # below skips such control-only commits. Ordinary documentation/RTL/flow edits never run PPA.
     paths:
-      - 'docs/sunnyone/PPA_REQUEST.md'
+      - 'docs/sunnyone/PPA_EXECUTE_REQUEST.md'
+      - '.github/workflows/sunnyone-asic-wg8-ppa.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   wg8-ppa:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[RUN-PPA]')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
