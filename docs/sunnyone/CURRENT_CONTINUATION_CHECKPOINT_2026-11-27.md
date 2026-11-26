@@ -227,3 +227,26 @@ The plan, checkpoint and tracker are present on the feature branch. No RTL/test/
 - Full-chip lint 45877786797 SUCCESS on RTL source 28c36c52204fe2ec2ed36413b02eb6043506ccc4; 76 width warnings remain (52 expand, 24 truncation), down from 79.
 - PPA run 45877786710 remains IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4. It is the single diagnostic run with immutable ORFS manifest pin and telemetry. Do not start a second PPA run.
 - Plan updated with these results in commit d79f7592703a2706a74cd8438e2671f2d4944aab.
+
+
+## Final saved-document inventory and current CI snapshot — 2026-11-27
+
+Latest document blobs fetched from the working branch before this checkpoint update:
+- Integrated plan: 90c656cb735655c38f7ab6e96a7edaa29d273d05
+- Project tracker (sections 104–110): 0f8e552a7946280e37e4a35fd1a3c2edb8d8a751
+- Manufacturer readiness matrix: 8e7470cbaf9d4d96ba9c41e161f2bf417f47810b
+- Width warning inventory: 4fd253d55c329e3faab17f74b1dc15299b38337a
+- Lint/combinational-path triage: c2298f2f5683b03d8cf7e115906d5aa22ba4d055
+- Immutable ORFS PPA workflow: 426cfcc62ac4ca1d90cf52b06a0e9009b83a1c29
+- Dedicated loop-stack workflow: fa13f1a7b8984c21006a8a24c279209985812024
+- Prior checkpoint blob before this inventory append: f2d82f0d13f41404daa4bb97d72f19d3917f1988
+
+Current key CI evidence:
+- Loop-stack guard run 45877985241 SUCCESS: 2 passed, 217 deselected; artifact 15146995084.
+- Isolated 128K one-copy TMEM run 45877807985 SUCCESS: 2 passed, 217 deselected.
+- Full-chip lint run 45877786797 SUCCESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4: 76 width warnings (52 expand, 24 truncation), 7 simulation-only LATCH, 3 UNOPTFLAT.
+- WG8 PPA run 45877786710 remains IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4. It is the only active diagnostic PPA attempt; verify immutable image and telemetry from its final logs/artifact.
+- Reset audit 45877786738, Qwen 45877786754, board 45877786742, subsystem/memory 45877786699, software/ISA 45877786705, ASIC config 45877786860 and RTL-tail 45877807906 remain IN_PROGRESS or queued at last poll. The 128K TMEM and loop-stack focused runs are complete.
+- Main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No main modifications.
+
+No additional RTL changes are planned until active workflows are reconciled and the VPU row-buffer bounds, remaining width warnings and gnt structural path are reviewed. Manufacturer handoff remains NOT READY.
