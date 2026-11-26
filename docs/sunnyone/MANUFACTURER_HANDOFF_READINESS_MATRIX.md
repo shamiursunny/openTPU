@@ -107,3 +107,14 @@ The loop-stack guard reduced the full-chip lint width-warning count from 79 to 7
 - Isolated 128K one-copy TMEM investigation workflow 45877807985 passed 2 tests (217 deselected).
 - Full-chip lint 45877786797 passed with 76 width warnings (52 WIDTHEXPAND, 24 WIDTHTRUNC), down from 79; three sequencer stack-index warnings were removed.
 - WG8 PPA diagnostic workflow 45877786710 remains in progress; no PPA closure claim. G1/G2/G3 remain partial/open according to their broader gates.
+
+
+## 2026-11-27 live continuation addendum
+
+- **G1 — RTL/source integrity remains PARTIAL:** FSUM uses the 256-row VPU row buffer. The RDOT path has a synthesizable `rows <= NRB`/stride guard, but the FSUM row-count check is simulation-only (`ifndef SYNTHESIS`). FSUM is enabled in `bcu1525-wg` and `bcu1525-x2`. Software compiler/ISA-simulator checks exist, but hardware rejection or a proven ingress-enforcement contract is not demonstrated. See `INPUT_BOUNDS_AND_PPA_RESOURCE_CONTROL_REVIEW_2026-11-27.md`.
+- **G2 — Functional verification remains PARTIAL:** add a targeted negative RTL test for a 257-row FSUM command and a positive 256-row boundary test on an FSUM-enabled target after the hardware/ingress contract is decided. No such hardware-negative test is recorded yet.
+- **PPA workflow run 45877786710 remains IN_PROGRESS** on source SHA `28c36c52204fe2ec2ed36413b02eb6043506ccc4`. The pinned-image and host-baseline steps passed; the container flow is still running. Do not cancel or launch a duplicate.
+- **PPA CPU control defect:** `ORFS_CPUS=2` is set by the workflow but ignored by `tools/asic/flow.py`, which uses `os.cpu_count()` to set `NUM_CORES` when ORFS_HOME is present. Docker `--cpus 2` still caps CPU time, but worker oversubscription is possible. Correct after the current run terminates; this is not a proven cause of Error 247.
+- Other scoped successes: reset audit 45877786738, ASIC config 45877786860, RTL tail 45877807906, isolated TMEM 45877807985, LOOP stack 45877985241 (2 passed). Qwen 45877786754 and board 45877786742 remain IN_PROGRESS; subsystem 45877786699 and software 45877786705 have queued/in-progress jobs.
+
+Manufacturer handoff remains **NOT READY**. No RTL or workflow source changes were made; zero-spend and main-branch exclusions remain in force.
