@@ -131,3 +131,16 @@ The board loader `Board.load_program` accepts raw uint32 instruction arrays and 
 - `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
 - A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
 - Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
+
+
+## 2026-11-27 PPA resource evidence and verification reconciliation
+
+WG8 PPA workflow 45877786710 is terminal FAILURE. The full artifact (15152974135; SHA-256 bd93a2e68be7e2c3b782dba2e26824b67977a98867fd17cddceb1348c56a16f5) was downloaded and inspected. Immutable ORFS manifest and local image ID were verified; Docker CPU quota was 2 and OpenROAD reported two threads. Floorplan, macro placement and tap-cell insertion completed; failure occurred in 2_4_floorplan_pdn/check_placement with ORFS Error 247. The cgroup had no memory.max cap, memory.peak reached 16,155,115,520 bytes against host MemTotal 16,366,484 kB, and memory.events recorded oom_kill=1. This confirms an OOM-kill event and strongly supports host-level memory exhaustion; it does not identify the exact kernel victim. Do not rerun the same full-chip PPA on an equivalent 16 GB runner.
+
+The earlier 01:37 claim that ORFS_CPUS was ignored is superseded by the 01:45 source review: the workflow CLI reads ORFS_CPUS and passes 2 to run(); no flow.py correction is required on that basis.
+
+Verification reconciliation: Qwen 45877786754 SUCCESS (6 real-checkpoint RTL + 8 tiny board-model tests); board 45877786742 SUCCESS (198 passed, 8 skipped, 1 deselected); subsystem/memory 45877786699 all 14 jobs SUCCESS (385 passed, 1 skip); software/ISA 45877786705 all 15 jobs SUCCESS (825 passed, 3 skipped); reset 45877786738, ASIC config 45877786860, RTL tail 45877807906, TMEM 45877807985 and loop-stack guard 45877985241 SUCCESS. These results do not close formal, CDC/RDC, routed physical signoff, production memory PHY, PCIe/SerDes, DFT, silicon qualification or manufacturer gates.
+
+G7 remains FAIL/PARTIAL: only early floorplan data exists; no route or signoff. G1/G2 remain OPEN/PARTIAL pending synthesizable FSUM row-bound protection for FSUM-enabled BCU targets. G3 remains OPEN for 76 width warnings and unresolved elaborated UNOPTFLAT paths. All other applicable gates remain as previously recorded. Manufacturer handoff remains NOT READY.
+
+Full resource diagnosis: docs/sunnyone/PPA_RESOURCE_DIAGNOSIS_2026-11-27.md.
