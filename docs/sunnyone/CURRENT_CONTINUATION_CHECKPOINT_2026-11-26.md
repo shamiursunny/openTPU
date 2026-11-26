@@ -290,3 +290,8 @@ Lint artifact 15130078429 (run 45845758782; source SHA `2835f1a8da6af454023caff9
 - The remaining 79 width warnings (52 WIDTHEXPAND, 27 WIDTHTRUNC) have not yet been source-triaged. No warnings were suppressed and no warning was declared closed.
 
 Next: prove or disprove latch inference with the actual synthesis/elaboration configuration, then trace the three UNOPTFLAT paths at the elaborated net level. Keep all changes narrow and regression-backed. PPA resource diagnosis remains open as recorded above. Manufacturer handoff remains **NOT READY**.
+
+
+## Repository protection metadata clarification — 2026-11-26
+
+The live GitHub REST branch response for `main` returned `protected: false` and `protection.enabled: false` while its HEAD remained `d84db55712aba0d40811d7762cb052f05d55b7e5`. The project rule remains to treat `main` as protected and never modify it, but GitHub branch protection is **not technically enabled** according to the API response observed in this continuation. Do not conflate the project safeguard with an enforced GitHub ruleset. Enabling branch protection would be a separate repository-administration change and was not attempted; preserve zero-change to main.
