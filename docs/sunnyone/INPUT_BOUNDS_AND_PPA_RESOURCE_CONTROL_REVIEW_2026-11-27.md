@@ -70,3 +70,11 @@ The in-progress jobs must be allowed to reach terminal states or be reconciled t
 - The loader accepts raw word arrays; therefore compiler/ISA-simulator shape checks are not a complete ingress guarantee. The present repository path does not establish that all loaded FSUM instructions are compiler-generated and semantically validated.
 - This strengthens the FSUM finding from a theoretical boundary question to an unclosed end-to-end bounds-safety issue for the FSUM-enabled BCU targets. The preferred closure is a hardware-side invalid-command rejection, unless a separate validated binary-ingress layer is designed and made mandatory for every load path.
 - VPU has no existing error output in its current module interface; the sequencer does expose an `error` output. Any RTL correction must trace the slice's established error/halt path before deciding where to validate, and must not invent a parallel error protocol.
+
+
+### Existing error/halt path traced — candidate guard location, not yet implemented
+
+- `otpu_seq` exposes `error` and its existing invalid decoded-operation branch sets both `error <= 1'b1` and `halted <= 1'b1` before dispatch (around lines 1702–1705).
+- `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
+- A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
+- Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
