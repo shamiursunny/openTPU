@@ -1266,3 +1266,7 @@ Hard constraints: do not rerun historical RTL groups 3.1, 3.2 or 4; do not rerun
 - Immediate next action: poll that exact run; inspect pytest output/artifact; record exact pass/fail/skip counts; diagnose any failure without weakening checks or using dummy checkpoints.
 - Then continue outstanding four-DIMM adversarial AXI, formal, lint, CDC/RDC, research PPA, PCIe/DMA/IOMMU, DDR4 PHY/controller/ECC, SRAM/DFT, physical/package/board, silicon and commercial validation tasks.
 - All work remains zero-spend unless explicitly approved. Keep evidence tied to exact commit SHAs. Do not describe the logical design as tapeout-ready, production-ready or silicon-validated.
+
+## Qwen gate closure — 2026-11-26
+
+Run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), exact SHA `bddf9708657766951e5c0d204ef474d742e53418`, SUCCESS. Actual logs: real-checkpoint Qwen RTL selection 6 passed / 4 deselected; separate eight formerly PyTorch-skipped tiny board-model cases 8 passed / 199 deselected. Pinned official Qwen3-0.6B and Qwen3.5-0.8B checkpoint files checksum-verified; Verilator 5.044 and CPU dependencies succeeded. Artifact 15122919007, SHA-256 `0e33180ae7ab23408ce4bda5266045f07ff7fe7e61bfbc0afd36fa187fe77c78`. This closes those two targeted gates only; hardware/physical/production gates remain open.
