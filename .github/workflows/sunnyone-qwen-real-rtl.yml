@@ -7,6 +7,16 @@ concurrency:
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - '.github/workflows/sunnyone-qwen-real-rtl.yml'
+      - 'tests/test_models_on_board_rtl.py'
+      - 'opentpu/**'
+      - 'rtl/**'
+      - 'sim/verilator/**'
+      - 'pyproject.toml'
 
 permissions:
   contents: read
