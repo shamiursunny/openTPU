@@ -2517,3 +2517,11 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - IHP open PDK maturity is explicitly limited: SG13G2 Early Access/alpha and SG13CMOS5L preview; do not present either as production-ready.
 - No RTL changes, no new CI run, no paid spend, no warning suppressions, no cancelled workflow restart and no repeated successful groups in this continuation. Manufacturer handoff remains NOT READY.
 - Next: review telemetry workflow; prove latch-cell state and trace UNOPTFLAT paths; triage 79 width warnings plus ASIC-specific warnings; extend formal/SVA and CDC/RDC; inventory existing RTL and select a small demonstrator candidate; verify PDK flow; seek written zero-cost sponsorship; then technology port and manufacturer-specific signoff. See the integrated plan and new checkpoint for the full sequence.
+
+
+## 105. 2026-11-27 WG8 PPA immutable toolchain pin
+
+- Reviewed failed run 45845758658 logs: the old workflow used mutable openroad/orfs:latest, resolving to registry manifest digest sha256:f5b2b4ac8cae150c30ad86857328300e20662cf7ff555978711ea8936f8d9539 and local image ID sha256:edbd355068b742c5ae2413a49a58578465bd52f57668cebebdd383eb4d97607d.
+- Updated .github/workflows/sunnyone-asic-wg8-ppa.yml in commit e2d96d5364af47503d67cb70635bf3485cbe9b33 (blob 426cfcc62ac4ca1d90cf52b06a0e9009b83a1c29) to pull the immutable manifest digest, verify the exact local image ID and archive both identifiers. Existing Docker --cpus 2 and cgroup v1/v2 resource telemetry remain.
+- Updated integrated plan with the exact digest and rationale in commit 57772f70dd335ec519f38e6f3ed75e392122bd61 (blob 7b826a30775e51e5f80ef567713213d8f4ec414c); checkpoint addendum saved in commit d02ce0a012f4408df862ce6a8cf4ab4ef0422a31.
+- No PPA rerun launched. The workflow change improves reproducibility only; it does not resolve the prior Error 247 or prove OOM. Review the resulting YAML/command behaviour and artifact paths before one justified diagnostic run.
