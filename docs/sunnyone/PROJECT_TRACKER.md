@@ -2538,3 +2538,16 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - Updated manufacturer matrix G3 and PPA instrumentation notes in commit 0a3f947610157359f28531f6d0bb6d9ede6b145f. G3 remains OPEN because UNOPTFLAT and width-warning evidence is not closed.
 - Updated integrated plan with lint triage in commit 8ba5ded36e6eb52dde43b7f6f25ee7641a694e10. Checkpoint updated in commit fcaeec4db211a14422b12a7804ab0fa2ed1d3b5e.
 - No RTL changes or new tests. Next: exact gnt path graph, then per-bit sc_gl/pq/aok confirmation and width-warning triage.
+
+
+## 107. 2026-11-27 complete width-warning inventory and preliminary bounds triage
+
+- Created docs/sunnyone/WIDTH_WARNING_INVENTORY_2026-11-27.md in commit c198c07a2896c307b7af4c9f52975442516b86b7. It preserves all 79 exact warnings from Verilator full-chip lint run 45845758782 (52 WIDTHEXPAND, 27 WIDTHTRUNC), grouped by file and line/column.
+- Cross-checked source ifndef SYNTHESIS guards: 9 warning instances are in simulation-only code and marked SIM_ONLY; the other 70 remain OPEN for semantic and exact-synthesis-source review. No warning suppression/waiver.
+- High-priority bounds questions:
+  - VPU row-sum buffer: rows_done[15:LW] and fl[15:LW] index a 32-entry rb array; prove all legal writes/reads and final-cycle behaviour remain within NRB=256. RDOT is gated by rows<=NRB; FSUM validation currently appears simulation-only and needs review against hardware command validity.
+  - Sequencer LOOP stack: four-entry arrays indexed by 3-bit sp; ISA docs specify nesting depth 4, but no visible sp<4 push guard. Prove program validation or implement safe overflow/error handling.
+  - VPU 24-bit one-hot function mask indices: prove VOP enum values stay within 0..23 before narrowing.
+  - MXU drain/key array indices: prove guard/mask invariants before narrowing.
+- Updated MANUFACTURER_HANDOFF_READINESS_MATRIX.md in commit 7bbf853230f591e314ec9307d0f1277be4ac996f and integrated plan in commit 95230c32013be1780a6980eaaac717123a3d562d. Checkpoint updated in commit edaef098e172457939e76f21f7974c6baa665b7c.
+- No RTL changes or new tests. G3 remains OPEN; lint is not closed. Next: prove VPU/loop-stack bounds and inspect exact synthesis source selection before any cast or functional change.
