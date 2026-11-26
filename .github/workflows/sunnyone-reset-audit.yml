@@ -10,6 +10,7 @@ on:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     paths:
       - 'tools/reset_audit.py'
+      - 'tools/scc_audit.py'
       - 'tests/test_reset_audit.py'
       - 'rtl/**'
       - 'targets/**'
@@ -42,3 +43,14 @@ jobs:
         env:
           YOSYS: /opt/oss-cad-suite/bin/yosys
         run: pytest -q tests/test_reset_audit.py
+      - name: Run structural combinational SCC audit
+        env:
+          YOSYS: /opt/oss-cad-suite/bin/yosys
+        run: python tools/scc_audit.py --keep /tmp/sunnyone-scc
+      - name: Archive structural SCC logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-structural-scc-audit
+          path: /tmp/sunnyone-scc/**
+          if-no-files-found: ignore
