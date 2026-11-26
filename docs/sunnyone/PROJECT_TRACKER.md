@@ -2462,3 +2462,14 @@ This section supersedes all older status snapshots, including any text above des
 - Immediate order: diagnose PPA failure; plan narrowly scoped controlled PPA retry only when justified; source-triage latch/combinational-loop/width warnings; continue formal/SVA, CDC/RDC and production integration/physical/commercial qualification.
 - Preserve main; never rerun groups 3.1, 3.2 or 4 merely to reconfirm; never restart cancelled run 45765362426; avoid redundant reruns, speculative RTL changes and spend.
 - Manufacturer handoff remains **NOT READY**.
+
+
+## 100. WG8 PPA artifact diagnosis — 2026-11-26
+
+At investigation start, live feature branch HEAD was `48a741a54acc66562986bcfe698e688e72aa49b4`; protected main was `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare was 826 ahead / 0 behind. No RTL or workflow change was made.
+
+- Downloaded and inspected current PPA artifact 15137952036 (SHA-256 `66d8e83e4f5da5ee5b11be80e851ecfe04f6b801857ef9ee3d786246af47f560`) and its GitHub job log. Current floorplan log ends after floorplan-final metric reporting; peak RSS 15,191,368 KB. No explicit OOM, kill, signal or stack trace appears. ORFS reports Error 247 at `do-2_1_floorplan`; expected floorplan ODB/SDC are absent.
+- Downloaded and inspected baseline artifact 14997807086 and baseline job log. Baseline reached `2_4_floorplan_pdn`, executed `check_placement -fixed -verbose`, then failed with the same Error 247 at peak RSS 15,685,744 KB. Baseline and current ORFS image digests differ, and the failure substages differ.
+- Recurrence of Error 247 during memory-intensive floorplan/placement at approximately 15.2–15.7 GB strengthens (but does not prove) a host/container resource-ceiling hypothesis. No cgroup OOM counters or kernel OOM evidence are in the retained archives. Root cause therefore remains **unconfirmed**; do not state OOM as fact. No evidence supports a report-stage defect; the floorplan report was generated before the failures.
+- No PPA retry was launched. Next action is to capture cgroup memory limits/current/events and runner telemetry before/during any future OpenROAD run. Keep source, ORFS image and 2-CPU setup fixed unless evidence warrants a controlled change. Zero-spend remains mandatory; no paid runner/hardware without approval. Do not bypass placement checks or PDN.
+- Current floorplan metrics remain preliminary, wire-load-only and pre-route; not routed STA, signoff, timing closure, or proven DMA improvement. Manufacturer handoff remains NOT READY.
