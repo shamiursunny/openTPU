@@ -118,3 +118,8 @@ The loop-stack guard reduced the full-chip lint width-warning count from 79 to 7
 - Other scoped successes: reset audit 45877786738, ASIC config 45877786860, RTL tail 45877807906, isolated TMEM 45877807985, LOOP stack 45877985241 (2 passed). Qwen 45877786754 and board 45877786742 remain IN_PROGRESS; subsystem 45877786699 and software 45877786705 have queued/in-progress jobs.
 
 Manufacturer handoff remains **NOT READY**. No RTL or workflow source changes were made; zero-spend and main-branch exclusions remain in force.
+
+
+### G1/G2 FSUM ingress clarification — 2026-11-27
+
+The board loader `Board.load_program` accepts raw uint32 instruction arrays and has no FSUM semantic row-count validation. The software compiler/ISA simulator therefore do not establish a mandatory validated ingress path. The 256-row FSUM buffer bound remains OPEN for FSUM-enabled BCU targets until a synthesizable error/halt guard or a mandatory validated loader contract is implemented and tested. Trace the existing sequencer error path before any RTL change.
