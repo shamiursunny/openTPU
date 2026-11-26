@@ -2401,3 +2401,11 @@ No new CI runs were launched. Do not start additional builds until the existing 
 - Other jobs in that matrix remain in progress or queued; this does not close DMA/scoreboard or full subsystem coverage.
 ### Quantizer mode RTL regression closed — 2026-11-26
 - Subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), Quantizer modes job `139998866077`: SUCCESS. Actual pytest output: **15 passed in 660.95 s**, `tests/test_quant_rtl.py` mode matrix. Artifact `15132302427`, SHA-256 `387665baf7c670e1329c14d4e9ddc09e8027d6c33be559817d23ff91fe7db1ca`.
+
+### Latest live poll — 2026-11-26
+- Subsystem/memory run 45845758545: MX multiply/replay and Stream RTL jobs SUCCESS; Quantizer modes SUCCESS (15 passed); Quantizer corners/tie rounding and SPLITQ running; DMA/scoreboard, QST/QSTB, instruction cache, address-window, FP, QHL, wait-state, reset-audit-in-matrix and native DRAM/technology RAM jobs remain queued.
+- Software/ISA run 45845758659: compiler, ISA, kernels, formats and quant tests SUCCESS; VOPS running; FP, MX, waits, stream, dataflow, waitw and host-related jobs queued.
+- PPA 45845758658 remains in its pinned-container ORFS flow; no new PPA report yet.
+- Qwen 45845758847 remains in the real-checkpoint RTL pytest step; its eight tiny-model tests have not started.
+- Board-only run 45845758677 remains in board-functional pytest.
+- No additional CI runs were launched. Re-poll before any further action.
