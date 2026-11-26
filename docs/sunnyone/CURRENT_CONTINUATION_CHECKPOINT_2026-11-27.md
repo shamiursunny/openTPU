@@ -309,3 +309,7 @@ No RTL was modified and no new workflow was launched during this review. Main re
 - `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
 - A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
 - Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
+
+## Latest live continuation addendum
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-27_0137.md` immediately after this checkpoint. It contains the 01:37 Asia/Dhaka live workflow poll, FSUM hardware-bounds source review, and the exact next-action order. This addendum supersedes older in-progress workflow snapshots where run IDs overlap. Do not edit `otpu_seq.sv` until PPA run 45877786710 is terminal.
