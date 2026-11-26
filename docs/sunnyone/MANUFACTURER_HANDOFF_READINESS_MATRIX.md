@@ -151,7 +151,7 @@ G1/G2 FSUM bounds guard: IMPLEMENTED / TARGETED CI PASS (45911471194: 11 passed,
 
 Residual OPEN item: hardware does not yet retain per-producer sum destination/row metadata, so exact RSUM take matching to the oldest producer is not checked in hardware (the ISA simulator checks it). Do not mark the entire FSUM ISA contract closed.
 
-Full-chip lint 45911470968 SUCCESS: 76 width warnings, 3 UNOPTFLAT and 7 LATCH remain. Manufacturer handoff remains NOT READY. PPA push trigger now requires explicit PPA_REQUEST.md commit; no PPA run was launched.
+Full-chip lint 45911470968 SUCCESS: 76 width warnings, 3 UNOPTFLAT and 7 LATCH remain. Manufacturer handoff remains NOT READY. PPA push trigger now requires docs/sunnyone/PPA_EXECUTE_REQUEST.md plus [RUN-PPA] in the commit message; no approved PPA run is authorised.
 
 
 ## PPA trigger incident correction — 2026-11-27

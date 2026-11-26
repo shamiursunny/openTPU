@@ -2677,7 +2677,7 @@ Implementation source commit: ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a.
 - Full-chip lint 45911470968 SUCCESS: 76 width warnings (52 expand, 24 truncation), 3 UNOPTFLAT and 7 LATCH remain. Loop-stack run 45911470960 SUCCESS; isolated 128K TMEM run 45911470982 SUCCESS.
 - RSUM take without a pending producer is now rejected; HALT with pending sums reports error. Valid RSUM+FSUM take is preserved.
 - OPEN: the sequencer does not yet store per-producer sum address/row metadata, so exact take-to-oldest-producer destination/row matching remains an ISA simulator vs hardware semantic gap. Do not mark complete.
-- PPA workflow push path now requires an explicit docs/sunnyone/PPA_REQUEST.md commit; ordinary RTL/flow edits no longer auto-launch full-chip PPA. Manual dispatch remains; no PPA was run.
+- PPA workflow push path now requires docs/sunnyone/PPA_EXECUTE_REQUEST.md plus [RUN-PPA] in the commit message; ordinary documentation, RTL and flow edits do not auto-launch full-chip PPA. Manual dispatch remains a separate explicit user action.
 - Other branch workflows (board, Qwen, reset, ASIC config, RTL tail, subsystem/memory, software/ISA) were still pending/in progress at checkpoint; poll before claiming.
 - Main unchanged; API reports protection disabled; preserve no-main rule. No spending. Manufacturer handoff NOT READY.
 Full report: docs/sunnyone/FSUM_HARDWARE_GUARD_REPORT_2026-11-27.md.

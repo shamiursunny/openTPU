@@ -55,7 +55,7 @@ The hardware counter enforces that a take has a preceding pending producer and t
 
 ## PPA safety
 
-The WG8 PPA workflow's push trigger was changed to require an explicit commit touching docs/sunnyone/PPA_REQUEST.md. Ordinary RTL, target and flow changes no longer launch full-chip PPA automatically. workflow_dispatch remains available for deliberate, separately approved runs. No PPA was dispatched in this continuation. The previous OOM artifact and diagnosis remain authoritative.
+The WG8 PPA workflow's current push trigger requires docs/sunnyone/PPA_EXECUTE_REQUEST.md plus [RUN-PPA] in the commit message. PPA_REQUEST.md is documentation only. Ordinary documentation, RTL, target and flow changes do not launch PPA. workflow_dispatch remains a separate explicit user action. The accidental partial run and cancellation are documented in docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md; the previous full-chip OOM artifact remains authoritative.
 
 ## Remaining engineering work
 
