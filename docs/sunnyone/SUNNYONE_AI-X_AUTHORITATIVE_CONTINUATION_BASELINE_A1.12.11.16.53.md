@@ -483,3 +483,5 @@ PPA, real-checkpoint Qwen, board-only, subsystem/memory and software/ISA workflo
 
 ### Stream datapath exact-SHA verification — 2026-11-26
 Stream RTL selected regression passed **14 tests in 1184.62 s** on the DMA experiment source revision (workflow 45845758545, job 139998866364; artifact 15132346982). DMA/scoreboard and other subsystem tests remain open; this does not constitute full DMA verification or formal equivalence. See the current continuation checkpoint for the live workflow matrix.
+### Quantizer mode exact-SHA verification — 2026-11-26
+Selected quantizer mode RTL matrix passed **15 tests in 660.95 s** (workflow 45845758545, job 139998866077, artifact 15132302427). Quantizer corner/tie rounding and other subsystem jobs remain in progress or queued; this is not complete subsystem qualification.
