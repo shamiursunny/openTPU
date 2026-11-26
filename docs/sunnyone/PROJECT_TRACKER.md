@@ -2582,3 +2582,13 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - Matrix now records loop-stack boundary tests 2/2 passed, isolated 128K one-copy TMEM investigation 2/2 passed, and full-chip lint warning delta 79 to 76.
 - These results close only the tested loop-stack boundary and isolated TMEM cases. The broader functional, formal, CDC/RDC, lint, PPA, technology-port, physical, DFT, package and manufacturer gates remain open.
 - PPA run 45877786710 remains IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4; do not dispatch a duplicate. The dedicated loop-stack workflow 45877985241 and TMEM investigation 45877807985 are SUCCESS.
+
+
+## 111. 2026-11-27 FSUM bounds and PPA CPU propagation review
+
+- Created `docs/sunnyone/INPUT_BOUNDS_AND_PPA_RESOURCE_CONTROL_REVIEW_2026-11-27.md` after reviewing the live feature branch and exact PPA source SHA.
+- Confirmed the VPU row-sum buffer is 256 rows. RDOT buffer selection has a synthesizable guard (`rows <= NRB` and `drs == 1`), but FSUM's `rows <= NRB` check is inside `ifndef SYNTHESIS`. FSUM is enabled in `targets/bcu1525-wg.toml` and `targets/bcu1525-x2.toml`; software-side checks exist in `isa.py`, `isasim.py` and `compiler.py`. A malformed/raw FSUM command could exceed the hardware buffer unless the ingress contract prevents it. Status OPEN; no RTL change made.
+- Found PPA CPU propagation mismatch at source SHA `28c36c52204fe2ec2ed36413b02eb6043506ccc4`: workflow sets `ORFS_CPUS=2`, but `tools/asic/flow.py` derives `NUM_CORES` from `os.cpu_count()` and ignores that environment variable. Docker `--cpus 2` still caps actual CPU use; ORFS worker oversubscription remains possible. This is not a proven cause of Error 247.
+- PPA run 45877786710 remains IN_PROGRESS. Do not modify PPA source/workflow or launch a replacement while it is active; wait for its artifact and terminal result. Correct and test CPU propagation afterwards.
+- Reconciled live statuses: reset 45877786738 SUCCESS; ASIC config 45877786860 SUCCESS; RTL tail 45877807906 SUCCESS; TMEM 45877807985 SUCCESS; loop-stack 45877985241 SUCCESS (2 passed); PPA 45877786710, Qwen 45877786754 and board 45877786742 still IN_PROGRESS; subsystem 45877786699 and software 45877786705 partially queued/in progress.
+- No RTL or workflow source changes and no new CI runs. Main untouched; zero-spend rule retained; manufacturer handoff NOT READY.
