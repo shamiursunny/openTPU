@@ -2643,3 +2643,23 @@ The 01:37 addendum's claim that the actual workflow ignored ORFS_CPUS was correc
 4. Expand formal/SVA, CDC/RDC and synthesized-netlist latch-cell checks.
 5. Keep Track A full product separate from Track B demonstrator. Verify IHP PDK compatibility and written sponsorship/eligibility/sample/shipping terms before any demonstrator integration.
 6. Manufacturer handoff remains NOT READY. Zero-spend, no-main, no-cancelled-run, and no-repeat-successful-test controls remain active.
+
+
+### FSUM guard source review refinement — 2026-11-27
+
+Current source review confirms the guard can be placed at the R-stage dispatch decision, before the existing `p_v <= 1'b1; p_cmd <= dcmd` handoff. The resolved `dcmd` fields are available combinationally before dispatch:
+- `dcmd.op` is the opcode; FSUM applies only to `OP_VOP`.
+- `dcmd.flags[2]` is `VF_FSUM`.
+- `dcmd.w4[15:0]` is rows and `dcmd.w4[31:16]` is cols.
+- `dcmd.w6[23:16]` is VOP func and `dcmd.w6[25:24]` is B mode.
+- Package constants are `V_EXP2SUB=14`, `V_RSUM=16`, and `B_SCALAR=3`.
+- The VPU's effective feature enable is exactly `VPU_FSUM != 0 && HAS_SS`; pass this same effective value into a new sequencer parameter, not the raw config bit.
+
+Proposed R-stage rejection before dispatch:
+1. For an OP_VOP with VF_FSUM set, accept only func EXP2SUB or RSUM; flag bit 2 is not defined for other VOP functions.
+2. Reject both EXP2SUB+FSUM and RSUM+FSUM if the effective FSUM capability is disabled.
+3. For EXP2SUB+FSUM, reject rows==0, rows>256, cols<64, or B mode==3. ISA has no upper cols bound beyond the 16-bit field; do not invent one.
+4. Route every rejection through the existing `error <= 1'b1; halted <= 1'b1` branch and ensure it does not assert `p_v` or dispatch to the VPU.
+5. Keep RSUM take ordering/pending-sum semantics as a separate review; do not add unsupported shape restrictions to the take.
+
+Existing `tests/test_rtl.py::test_attention_decode_fsum_rtl` provides valid functional FSUM coverage, but not the malformed raw-command negative/boundary tests required here. Add focused RTL tests for legal 256x64/non-scalar, 257 rows, 63 cols, scalar B, FSUM-disabled EXP2SUB, FSUM-disabled RSUM, and flag-on-other-function; prove invalid commands halt with error before VPU dispatch. No source/test changes or tests were run by this review.
