@@ -952,3 +952,50 @@ The overall workflow remains IN_PROGRESS because Group 4 is still executing. Its
 - The general RTL workflow run #121 (run ID `45765362426`) was still active at the latest check: group 3.1 in progress, groups 3.2 and 4 queued. The connected GitHub action set did not expose a cancel-run operation, so cancellation could not be sent from this session. Do not describe it as cancelled. User can cancel it from the GitHub Actions run page if it remains active.
 - Previously completed RTL group 3.1, 3.2 and 4 results remain historical evidence; do not repeat those tests merely to reconfirm them.
 - Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Branch comparison after adding the workflow: 711 ahead, 0 behind. Manufacturer handoff remains NOT READY.
+
+
+## User-authorised continuation checkpoint — 2026-11-26 12:35 Asia/Dhaka
+
+### Live repository state
+- Repository: `shamiursunny/openTPU`.
+- Active working branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Branch HEAD before this continuity-only update: `0470472f4cc87a998c063a34c362fcde5f416f0a` (commit message: "Record dedicated Qwen real-checkpoint RTL gate").
+- Protected `main` independently verified at `d84db55712aba0d40811d7762cb052f05d55b7e5`. Do not modify, merge into, or push project work to `main`.
+- All project changes remain on the active feature branch. Zero-spend rule remains in force; no hardware, paid cloud, licences, or services may be purchased without explicit user approval.
+
+### User's explicit no-rerun instruction
+The user personally cancelled workflow run [45765362426](https://github.com/shamiursunny/openTPU/actions/runs/45765362426) and specifically confirmed that groups **3.1, 3.2 and 4 had already passed earlier**. GitHub now reports the run terminal as `completed / cancelled`; its jobs 139724851662 (3.1), 139724852016 (3.2), 139724852036 (4), and 139734601872 (board-functional) are cancelled. These cancellations are not failures and do not erase prior successful evidence. **Never rerun groups 3.1, 3.2 or 4 merely to reconfirm them.** Also preserve accepted historical groups 1 and 2; do not rerun those without a specific source-change/regression reason.
+
+Accepted earlier successful evidence from workflow run [45693821197](https://github.com/shamiursunny/openTPU/actions/runs/45693821197), attempt 3, tested source SHA `fd2a310b303d94226c1e65efa0e63b767ac747f4`:
+- Group 3.1 job 139677037811: SUCCESS, 8 passed.
+- Group 3.2 job 139677071195: SUCCESS, 33 passed.
+- Group 4 job 139677038294: SUCCESS, 5 passed.
+- Historical groups 1 and 2 remain accepted from their previously recorded unchanged-source runs (12 and 24 selected passes respectively).
+These are scoped selector results; do not add them into a claim of unique lifetime tests without overlap reconciliation.
+
+### Board-functional status
+- Board-functional job 139677036786 in run 45693821197 was CANCELLED at approximately 45 minutes before pytest emitted a terminal summary. Its partial log showed tests passing through approximately 82%, with five Qwen/PyTorch-dependent cases skipped because torch was absent in that job. This is **NOT a board-functional PASS**.
+- The board timeout was subsequently increased to 90 minutes in `.github/workflows/sunnyone-rtl-functional.yml`. The newer run 45765362426 was cancelled by the user while its RTL groups were queued/running; its board job did not produce a new qualifying result.
+- Do not restart the whole general RTL workflow just to get to board-functional, because that would repeat already-passed groups. If board-functional is next pursued, create/use a board-only workflow/job that executes the exact board selector without depending on or rerunning the passed RTL matrix. Preserve the test selector and assertions; do not weaken or skip required tests. Record a complete terminal pytest summary.
+
+### Dedicated Qwen real-checkpoint gate
+- Workflow file `.github/workflows/sunnyone-qwen-real-rtl.yml` exists and was read back from the active branch (blob SHA `eb48070c1c371dbc6232631445383fa21c48c812`).
+- Test file `tests/test_models_on_board_rtl.py` read-back SHA: `eb9e0af47ffcf372ae98b794d2ee902a4a26ef67`.
+- Workflow is `workflow_dispatch` only and has **NOT YET BEEN DISPATCHED**. No Qwen real-checkpoint RTL pass is claimed.
+- It pins official Qwen3-0.6B revision `c1899de289a04d12100db370d81485cdf75e47ca` and Qwen3.5-0.8B revision `2b48083dfa97c3cbf0220cf1a5e6cffe0a511157`, checks downloaded checkpoint contents/model type/safetensors, installs CPU-only PyTorch 2.15.0 (valid for Python 3.12; PyTorch 2.15 supports Python >=3.11), and selects only Qwen3/Qwen3.5 cases with `--runslow` and `-k "qwen3 or qwen35"` for MCOLS=2 and 4. LFM2 cases are excluded.
+- This is simulated RTL-vs-ISA bit-exact verification using real model checkpoints, not physical FPGA/board validation. Physical Qwen inference still requires actual supported hardware, bitstream, driver and measurements.
+- The available connected GitHub actions do not expose a workflow-dispatch action. Do not claim it was dispatched. Next action is to manually dispatch this specific Qwen workflow from GitHub Actions when execution is available, then inspect its exact terminal log/artifact. Do not dispatch the general RTL workflow.
+- Before dispatch, confirm the current branch HEAD still contains the above workflow and test-file revisions. If either changed, inspect the diff first.
+
+### Immediate continuation order
+1. Resume by reading this section, then the latest master task register and chronological tracker.
+2. Re-check live feature-branch HEAD and protected `main`; inspect latest workflow status. Never trust a stale run state.
+3. Preserve groups 1, 2, 3.1, 3.2 and 4 as already passed; no duplicate reruns.
+4. Complete the dedicated Qwen real-checkpoint RTL gate (manual dispatch required) and inspect full pytest summary/artifact. If it fails, diagnose the actual error and make a minimal evidence-based correction.
+5. Complete board-functional using a board-only execution path, not the general RTL matrix. Do not count the cancelled partial run as a pass.
+6. Continue remaining consolidated regression, shared-DIMM integration, formal/property coverage, CDC/RDC, lint, PPA/physical implementation, production PCIe/DMA and DDR controller/PHY, DFT, electrical board validation, hardware performance/power/thermal, silicon and commercial feasibility gates.
+7. Investigate the already-recorded Nangate45/OpenROAD PDN/placement failure before any PPA retry; do not repeat the unchanged failing run.
+8. Keep manufacturer handoff **NOT READY** until all applicable release gates have actual evidence. Never claim production/tapeout readiness or zero bugs from simulation-only evidence.
+9. After each meaningful task, update this resume guide, `PROJECT_TRACKER.md`, and `SUNNYONE_AI-X_MANUFACTURER_HANDOFF_READINESS.md` with exact source SHA, run/job IDs, terminal counts, limitations and next action. Re-fetch all three after writes to verify.
+10. In any new chat/tab, the user can simply say **"continue and complete the remaining tasks"**. Start from this checkpoint and current live GitHub state; do not ask the user to repeat the no-rerun instruction.
+
