@@ -419,3 +419,19 @@ Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
 - Next: obtain a true live Actions status poll if an available endpoint permits; then address RSUM producer metadata parity and remaining width/UNOPTFLAT/formal/CDC/mapped-latch/physical/manufacturer gates in dependency order. Manufacturer handoff remains NOT READY.
 - Hard controls: do not modify main; do not restart cancelled run 45765362426; do not rerun groups 3.1, 3.2 or 4 solely to reconfirm; zero spend; keep Track A full product separate from Track B demonstrator.
 - This is a documentation-only save and does not claim that all engineering or tapeout tasks are complete.
+
+
+## 2026-11-27 live CI reconciliation — structural SCC and latch audit
+
+This section supplements the 05:54 documentation-only checkpoint refresh. The following live GitHub Actions evidence was obtained in this continuation:
+- Structural SCC/latch audit run 45913401437 SUCCESS; independent repeat 45913488085 SUCCESS.
+- Yosys/Slang flattened one-copy slice: 0 SCC and 0 inferred latch cells.
+- Yosys/Slang flattened two-slice `otpu_top` (S=2): 0 SCC and 0 inferred latch cells.
+- Therefore generic Verilator UNOPTFLAT paths `gnt`, `pq`, and `sc_gl` are not actual combinational SCCs in these tested configurations. The Verilator warnings remain emitted; do not generalise to all configurations.
+- The seven generic Verilator LATCH diagnostics did not produce inferred latch cells in these two synthesis elaborations. ASIC-wide latch absence is not established.
+- ASIC-specific `aok` UNOPTFLAT remains OPEN; `otpu_asic_top` was not part of the structural audit.
+- Full evidence: docs/sunnyone/STRUCTURAL_SCC_AND_LATCH_AUDIT_2026-11-27.md; artifact 15160673532.
+
+Other verified results retained from earlier runs: FSUM guard 11/11 targeted tests; full-chip lint SUCCESS (76 width warnings); ASIC configuration SUCCESS (additional ASIC DMA/native-DRAM/AW-AR width warnings); reset audit 4 tests passed; loop-stack, isolated 128K TMEM and Qwen/board/subsystem/software runs have their own run-specific states. Do not claim pending workflows as complete.
+
+Next: ASIC-top SCC proof for `aok`; width warning closure; explicit 33-to-34-bit MIG address extension with existing testbench high-bit-zero assertions; formal/SVA, CDC/RDC and remaining physical/manufacturer gates. Manufacturer handoff remains NOT READY.

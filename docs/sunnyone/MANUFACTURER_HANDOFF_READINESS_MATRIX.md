@@ -161,3 +161,10 @@ Correction to the preceding note: editing PPA_REQUEST.md itself initially trigge
 The corrected workflow is in commit 98335138bd73751699afc4a31ce0b206ff2720a1. Push paths are now docs/sunnyone/PPA_EXECUTE_REQUEST.md and the workflow file; a push job also requires [RUN-PPA] in the commit message. The correction run 45911965872 was SKIPPED and caused cancellation of the accidental run. PPA_REQUEST.md is documentation only. Do not create PPA_EXECUTE_REQUEST.md or use workflow_dispatch without explicit user approval of the exact source SHA.
 
 Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
+
+
+## 2026-11-27 structural loop/latch gate update
+
+Generic structural SCC gate: PASS for tested configurations. Yosys/Slang runs 45913401437 and 45913488085 each show zero SCCs and zero inferred latch cells in one-copy slice and S=2 top. Generic `gnt`, `pq`, and `sc_gl` Verilator UNOPTFLAT diagnostics are not actual SCCs in those tested configurations; do not generalise to untested configurations.
+
+ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC-specific latch absence is not yet proven. Width gate remains OPEN: 76 generic full-chip width warnings plus additional ASIC DMA/native-DRAM/AW-AR warnings. Manufacturer handoff remains NOT READY.

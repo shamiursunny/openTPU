@@ -2703,3 +2703,14 @@ Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
 - Remaining work: poll any outstanding/new workflows using an available live Actions endpoint; close RSUM FIFO metadata parity; resolve width warnings and UNOPTFLAT structural paths; complete mapped-latch, formal/SVA and CDC/RDC evidence; finish memory/physical/PDK/interface/DFT/board/manufacturer gates. Manufacturer handoff remains NOT READY.
 - Controls unchanged: never modify main; never restart cancelled run 45765362426; do not rerun RTL groups 3.1, 3.2 or 4 solely to reconfirm; preserve zero-spend and separate Track A full product from Track B demonstrator.
 - This is a documentation-only state refresh. It does not claim that all remaining engineering tasks or tapeout gates are complete.
+
+
+## 115. 2026-11-27 — structural SCC/latch results reconciled
+
+- Structural SCC/latch workflow 45913401437 SUCCESS and independent repeat 45913488085 SUCCESS.
+- One-copy slice: 0 SCC / 0 inferred latch cells. S=2 `otpu_top`: 0 SCC / 0 inferred latch cells. Artifact 15160673532 includes Yosys logs and empty latch-selection files.
+- Generic Verilator UNOPTFLAT paths `gnt`, `pq`, `sc_gl` are not actual SCCs in the tested configurations; keep the warnings visible and do not generalise beyond those configurations.
+- Generic Verilator LATCH diagnostics did not map to latch cells in these two elaborations. ASIC-wide latch absence remains unproven.
+- ASIC `aok` UNOPTFLAT remains OPEN; actual `otpu_asic_top` SCC proof is still required.
+- Remaining width warnings: 76 generic full-chip plus additional ASIC DMA/native-DRAM/AW-AR warnings. Explicit MIG 33-to-34-bit zero-extension cleanup remains planned.
+- Full report: docs/sunnyone/STRUCTURAL_SCC_AND_LATCH_AUDIT_2026-11-27.md.

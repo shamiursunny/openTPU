@@ -536,3 +536,10 @@ Correction to the preceding note: editing PPA_REQUEST.md itself initially trigge
 The corrected workflow is in commit 98335138bd73751699afc4a31ce0b206ff2720a1. Push paths are now docs/sunnyone/PPA_EXECUTE_REQUEST.md and the workflow file; a push job also requires [RUN-PPA] in the commit message. The correction run 45911965872 was SKIPPED and caused cancellation of the accidental run. PPA_REQUEST.md is documentation only. Do not create PPA_EXECUTE_REQUEST.md or use workflow_dispatch without explicit user approval of the exact source SHA.
 
 Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
+
+
+## 21. Structural SCC/latch results — 2026-11-27
+
+Two Yosys/Slang flattened-netlist runs passed (45913401437 and independent repeat 45913488085). The one-copy slice and S=2 `otpu_top` each report zero SCCs and zero inferred latch cells. This closes the actual combinational-loop question for generic `gnt`, `pq`, and `sc_gl` in the tested configurations; Verilator UNOPTFLAT warnings remain emitted but are not actual SCCs in those configurations. The two-slice top blackboxes the behavioral associative-array DRAM model; the real slice/collective logic remains elaborated.
+
+The separate ASIC `aok` UNOPTFLAT warning is not covered and remains OPEN. Generic latch absence is not an all-ASIC configuration proof. Continue with ASIC-top SCC analysis, width-warning closure (76 generic warnings plus ASIC DMA/native-DRAM/AW-AR warnings), explicit MIG address extension, formal/SVA and CDC/RDC. Report: docs/sunnyone/STRUCTURAL_SCC_AND_LATCH_AUDIT_2026-11-27.md.
