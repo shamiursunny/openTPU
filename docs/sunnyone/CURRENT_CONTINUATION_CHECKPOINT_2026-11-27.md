@@ -250,3 +250,48 @@ Current key CI evidence:
 - Main remains d84db55712aba0d40811d7762cb052f05d55b7e5. No main modifications.
 
 No additional RTL changes are planned until active workflows are reconciled and the VPU row-buffer bounds, remaining width warnings and gnt structural path are reviewed. Manufacturer handoff remains NOT READY.
+
+
+## 17. Bounds-contract and PPA CPU propagation review — 2026-11-27
+
+### FSUM row-buffer bound: OPEN for hardware protection
+
+- Source review of `rtl/vpu/otpu_vpu.sv` confirms the row buffer is `rb[NRB / LANES]` with `NRB = 256`; write and flush indices use `rows_done[15:LW]` and `fl[15:LW]` (around lines 1441–1462).
+- RDOT has a synthesizable selection guard: `rdb_i` is true only for `V_RDOT && rows <= NRB && drs == 1` (around lines 1860–1870); larger/non-unit-stride RDOT sums bypass the buffer.
+- FSUM's `rows <= NRB` rejection is in the `ifndef SYNTHESIS` assertion block (around lines 2073–2078). It is not a hardware guard. The FSUM back-end buffers every FSUM row while `fs_b` is active, so an out-of-contract row count could exceed the 256-row buffer.
+- This is relevant to enabled configurations: `targets/bcu1525-wg.toml` and `targets/bcu1525-x2.toml` explicitly set `FSUM = true`. Other current target files omit FSUM, whose default in `opentpu/target.py` is false.
+- Software checks exist: `opentpu/isa.py` defines `FSUM_MAX_ROWS = 256`; `opentpu/isasim.py::_fsum_check` rejects larger rows; `opentpu/compiler.py::fuse_exp2_rowsum` and `isa.exp2sub_sum` enforce the shape. These checks do not constitute synthesizable protection against an invalid/raw program reaching the RTL.
+- No functional RTL change is made in this review. Acceptance requires either (a) a synthesizable invalid-FSUM rejection using the design's established error/halt protocol, with a targeted RTL negative test on an FSUM-enabled target, or (b) a documented and independently enforced program-ingress contract that makes malformed FSUM instructions impossible. Do not rely only on `ifndef SYNTHESIS` assertions. Keep G1/G2 OPEN until resolved.
+
+### PPA workflow CPU propagation mismatch: correction required after current run
+
+- The PPA workflow at source SHA `28c36c52204fe2ec2ed36413b02eb6043506ccc4` sets `ORFS_CPUS=2` inside its pinned container and calls `python3 tools/asic/flow.py run nangate45-wg8`.
+- The exact `tools/asic/flow.py` blob at that source SHA is `4154f6474e0cc03d8ee0e9398ca783e26a96acf4`. Its `run()` chooses `cpus = cpus or (os.cpu_count() if orfs else 6)` and passes `NUM_CORES={cpus}` to ORFS. It does not read `ORFS_CPUS`.
+- Docker's `--cpus 2` still caps actual container CPU consumption, but ORFS's configured worker count may exceed two; therefore the claimed two-worker scheduler configuration is not established and oversubscription is possible. This is not evidence that it caused the previous Error 247.
+- Current diagnostic run `45877786710` remains IN_PROGRESS on source SHA `28c36c52204fe2ec2ed36413b02eb6043506ccc4`. Its immutable image pin and host baseline steps passed; the pinned-container SRAM/ORFS step is still running. Do not cancel, supersede or start another PPA run. Wait for terminal status and archive the existing telemetry/artifact first.
+- After the current run is terminal, correct CPU propagation by making `flow.py` consume and validate `ORFS_CPUS` (or passing an explicit `cpus` argument), add a focused test for the selected worker count, and verify the workflow's effective `NUM_CORES`. Any subsequent PPA dispatch requires a separate justification; do not automatically rerun.
+
+### Live workflow reconciliation at this review
+
+- `45877786738` reset/power-up audit: SUCCESS.
+- `45877786860` ASIC/target configuration: SUCCESS.
+- `45877807906` RTL tail: SUCCESS.
+- `45877807985` isolated 128K one-copy TMEM: SUCCESS.
+- `45877985241` sequencer LOOP stack guard: SUCCESS, 2 passed / 217 deselected.
+- `45877786710` PPA: IN_PROGRESS; no artifact available yet.
+- `45877786754` Qwen real-checkpoint RTL: IN_PROGRESS.
+- `45877786742` board-functional: IN_PROGRESS.
+- `45877786699` subsystem/memory: partially complete; several jobs remain queued or in progress.
+- `45877786705` software/ISA: partially complete; several jobs remain queued or in progress.
+
+No RTL was modified and no new workflow was launched during this review. Main remains untouched. Manufacturer handoff remains NOT READY.
+
+
+## Latest live repository reconciliation — 2026-11-27
+
+- Current branch HEAD before this documentation update: `50607be9d53a3e99aa5b90f8eb564e0e37df6930`.
+- Protected-by-project-rule main SHA remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; GitHub API reports `protected: false`, so protection is a repository control gap. Do not modify main.
+- Latest saved plan/checkpoint/tracker/matrix blobs before this update: plan `90c656cb735655c38f7ab6e96a7edaa29d273d05`; checkpoint `83f3b11ffdde4dff173e572439b88930108b786a`; tracker `0f8e552a7946280e37e4a35fd1a3c2edb8d8a751`; matrix `8e7470cbaf9d4d96ba9c41e161f2bf417f47810b`.
+- New findings and the exact acceptance/closure steps are recorded in `INPUT_BOUNDS_AND_PPA_RESOURCE_CONTROL_REVIEW_2026-11-27.md` and section 111 of the tracker.
+- No RTL changes or new workflows launched. Wait for the active PPA/Qwen/board and remaining matrix jobs; do not cancel or duplicate them. Correct `ORFS_CPUS` propagation only after run 45877786710 terminates.
+- FSUM hardware bounds remain OPEN for the two FSUM-enabled BCU target configurations. Manufacturer handoff remains NOT READY.
