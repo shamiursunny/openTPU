@@ -82,3 +82,8 @@ In any new ChatGPT conversation or tab, type exactly: **Continue and complete th
 - Reset 45845758496, RTL-tail 45845758636 and ASIC/target 45845758681 are terminal SUCCESS.
 
 No new workflows were launched. Continue polling these existing jobs and inspect actual logs/artifacts. Do not rerun groups 3.1, 3.2 or 4; do not restart user-cancelled run 45765362426. Protected main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. The DMA rewrite remains unqualified until PPA and relevant RTL tests complete. Manufacturer handoff NOT READY.
+
+
+### Additional poll — Stream RTL closed
+- Subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), Stream RTL job `139998866364`: **14 passed in 1184.62 s**, actual pytest log inspected; artifact 15132346982 (SHA-256 `f8175ca55e63471deab21903454650631e82e372aed70d4fbc96ed69dd0362f8`). Includes eight bit-exact stream RTL configurations plus destination-order tests.
+- At latest poll the subsystem matrix still had quantizer-corners and quantizer-modes running, DMA/scoreboard and other groups queued. Software VOPS remained running, other software groups queued. PPA, Qwen and board-only remained in progress. Continue polling; do not launch replacement jobs.
