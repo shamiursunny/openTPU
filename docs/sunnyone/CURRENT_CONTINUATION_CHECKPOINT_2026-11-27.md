@@ -318,3 +318,30 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-27_0137.md` immediately after 
 ## Latest continuation review — 2026-11-27
 
 Read `docs/sunnyone/CONTINUATION_REVIEW_2026-11-27_0145.md` after the 01:37 addendum. It corrects the stale ORFS_CPUS diagnosis after checking the current CLI path and records the latest live workflow poll and clarified FSUM ISA bounds. This is a documentation-only update; no RTL or tests were changed.
+
+
+## Latest live reconciliation — 2026-11-27 05:17 Asia/Dhaka
+
+### Live refs at the start of this documentation update
+- Feature branch HEAD: f2594c3f34e21da99ef0192bb53668f7027e8939
+- Main HEAD: d84db55712aba0d40811d7762cb052f05d55b7e5 (unchanged; never modify).
+- GitHub API reports main protection disabled. The project rule remains strict: do not modify main.
+- Latest document blobs before this checkpoint append: [{"path":"docs/sunnyone/PROJECT_TRACKER.md","sha":"beccbab00df3ec53ab0299849af9cb8007567e41"},{"path":"docs/sunnyone/INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md","sha":"ae5761005df7b3ecd9dcb03942fae6874b3e9857"},{"path":"docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md","sha":"96445f264dbb5b56da16b2f64ffaa525651f6da7"},{"path":"docs/sunnyone/PPA_RESOURCE_DIAGNOSIS_2026-11-27.md","sha":"9b161716449e4a90227ce9b328d82be3de34fc20"}].
+
+### Terminal workflow reconciliation
+- PPA 45877786710: FAILURE; artifact 15152974135 inspected. Floorplan, macro placement and tap-cell insertion completed; failure occurred in 2_4_floorplan_pdn/check_placement. cgroup memory.max=max, peak 16,155,115,520 bytes, oom_kill=1, oom=0, oom_group_kill=0; host MemTotal 16,366,484 kB. This is a confirmed OOM-kill event and strongly supports host memory exhaustion, without an archived kernel victim-selection record. Do not repeat full-chip PPA on an equivalent 16 GB runner.
+- Qwen 45877786754 SUCCESS: 6 real-checkpoint RTL tests passed (4 deselected) and 8 tiny board-model tests passed (199 deselected).
+- Board 45877786742 SUCCESS: 198 passed, 8 skipped, 1 deselected.
+- Subsystem/memory 45877786699: all 14 jobs SUCCESS; archived logs total 385 passed, 1 skip.
+- Software/ISA 45877786705: all 15 jobs SUCCESS; archived logs total 825 passed, 3 skips.
+- Reset 45877786738, ASIC config 45877786860, RTL tail 45877807906, isolated 128K TMEM 45877807985 and loop-stack guard 45877985241 SUCCESS. Loop-stack guard: 2 passed, 217 deselected.
+- No new workflows launched, no workflow reruns, no RTL or test source changed.
+
+### Corrections and remaining tasks
+- The 01:37 ORFS_CPUS mismatch claim was corrected in the 01:45 review: the actual CLI reads ORFS_CPUS and passes 2 to run(); do not modify flow.py on that stale basis.
+- Next engineering priority: synthesizable FSUM bounds guard and focused boundary tests. ISA contract: EXP2SUB+FSUM rows 1..256, cols >=64, B mode 0/1/2; scalar mode 3 forbidden; reject FSUM operations when the effective capability is disabled. Review RSUM take ordering separately.
+- Then prove exact elaborated UNOPTFLAT/SCC paths; triage 76 width warnings and ASIC AW/AR width warnings; expand formal/SVA, CDC/RDC and synthesized-netlist latch checks; continue Track A and Track B separately.
+- No spend. No main. No cancelled workflow restart. Do not repeat historical successful groups 3.1, 3.2 or 4.
+- Manufacturer handoff remains NOT READY.
+
+Full PPA evidence: docs/sunnyone/PPA_RESOURCE_DIAGNOSIS_2026-11-27.md.
