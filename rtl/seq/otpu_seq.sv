@@ -94,7 +94,8 @@ module otpu_seq
   parameter int IC_PF      = 2,       // ICACHE: the lines prefetched ahead of fa's (1 .. 4)
   // quantize-once (Config.QONCE; docs/isa.md "Quantize once"; otpu_pkg QO): QACT flag ST (w3 +=
   // R[rc]: its DRAM rows) and LDA (otpu_dma LDA: w1 += R[ra], w2 and w3 immediates)
-  parameter bit QONCE      = 1'b0
+  parameter bit QONCE      = 1'b0,   // QACT ST and LDA (otpu_slice QONCE)
+  parameter bit FSUM       = 1'b0    // VPU FSUM capability, including HAS_SS gating (otpu_slice)
 ) (
   input  logic                clk,
   input  logic                rst,
@@ -620,6 +621,15 @@ module otpu_seq
   int dunit;
   always_comb dunit = ((!STREAMS && (op == OP_DSTEP || op == OP_STREAM)) || (!QONCE && op == OP_LDA))
                       ? -1 : unit_of(op);
+  // FSUM is an EXP2SUB producer plus an RSUM take. The producer's row sums occupy
+  // a fixed 256-row VPU buffer; reject malformed raw programs in hardware, not only
+  // through compiler / ISA-simulator validation or simulation-only assertions.
+  wire fsum_bad = op == OP_VOP && flags[VF_FSUM] &&
+                  (!FSUM ||
+                   !((dcmd.w6[23:16] == V_EXP2SUB) || (dcmd.w6[23:16] == V_RSUM)) ||
+                   (dcmd.w6[23:16] == V_EXP2SUB &&
+                    (dcmd.w4[15:0] == 16'd0 || dcmd.w4[15:0] > 16'd256 ||
+                     dcmd.w4[31:16] < 16'd64 || dcmd.w6[25:24] == B_SCALAR)));
 
   // ---- dispatch pipeline: R (the instruction at pc: registers resolved) -> P (footprint
   // partial products) -> S (products) -> Q (footprint ranges) -> C (dependencies on the window,
@@ -1700,7 +1710,7 @@ module otpu_seq
             end
           end
           default: begin
-            if (dunit < 0) begin
+            if (dunit < 0 || fsum_bad) begin
               error <= 1'b1;
               halted <= 1'b1;
             end else if (r_take) begin
