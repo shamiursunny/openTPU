@@ -1010,3 +1010,12 @@ These are scoped selector results; do not add them into a claim of unique lifeti
 - Dedicated Qwen real-checkpoint workflow remains separate and undispatched. Do not trigger the general RTL matrix.
 - Current branch HEAD at the time of this note: `aedda576e489a297f9452c1cd799072014b565b0`; protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 - Next action: poll only run 45769498674 / job 139738454299 to terminal; inspect the full pytest summary and uploaded artifact. If it passes, record exact counts; if it fails, diagnose without weakening tests. Then proceed to the Qwen real-checkpoint gate and remaining unclosed engineering gates.
+
+
+## Evidence update — 2026-11-26
+
+- Board-only regression run 45769498674 failed under Verilator 5.020 with 133 failed, 65 passed, 8 skipped and 1 deselected. The compile failure is the Verilator 5.020 parser rejecting the function-call bit-select at rtl/mxu/otpu_mxu.sv:2781. This is not accepted as an RTL correctness failure or as a pass.
+- Board-only workflow now pins Verilator 5.044. Retry run 45784404427 / job 139787424587 is still in progress at tool build; no board-functional qualification is available yet.
+- The Qwen real-checkpoint workflow's invalid PyTorch pin was corrected to CPU torch 2.11.0 and huggingface_hub 2.3.0. It remains undispatched; no real-checkpoint RTL qualification is available.
+- Historical RTL groups 3.1, 3.2 and 4 remain accepted from their earlier successful run and were not repeated. Protected main remains unchanged.
+- Manufacturer handoff status: NOT READY. No production PCIe endpoint/PHY, complete DMA/IOMMU, DDR controller/PHY/ECC datapath, full formal/CDC/RDC signoff, foundry PDK, DFT, physical signoff, board electrical validation, silicon, measured power/performance/thermal, or demand-backed commercial qualification is established by this work.
