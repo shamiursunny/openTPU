@@ -2399,3 +2399,5 @@ No new CI runs were launched. Do not start additional builds until the existing 
 ### Stream RTL regression closed — 2026-11-26
 - In subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), Stream RTL job `139998866364` completed SUCCESS. Actual pytest log: `tests/test_stream_rtl.py` **14 passed in 1184.62 s**, including bit-exact configurations across uarch/board settings and destination-order tests. Artifact `15132346982`, SHA-256 `f8175ca55e63471deab21903454650631e82e372aed70d4fbc96ed69dd0362f8`.
 - Other jobs in that matrix remain in progress or queued; this does not close DMA/scoreboard or full subsystem coverage.
+### Quantizer mode RTL regression closed — 2026-11-26
+- Subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), Quantizer modes job `139998866077`: SUCCESS. Actual pytest output: **15 passed in 660.95 s**, `tests/test_quant_rtl.py` mode matrix. Artifact `15132302427`, SHA-256 `387665baf7c670e1329c14d4e9ddc09e8027d6c33be559817d23ff91fe7db1ca`.
