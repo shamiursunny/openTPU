@@ -89,3 +89,11 @@ No new workflows were launched. Continue polling these existing jobs and inspect
 - At latest poll the subsystem matrix still had quantizer-corners and quantizer-modes running, DMA/scoreboard and other groups queued. Software VOPS remained running, other software groups queued. PPA, Qwen and board-only remained in progress. Continue polling; do not launch replacement jobs.
 ### Quantizer mode regression closed
 - Run [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), job `139998866077`: **15 passed in 660.95 s**; actual pytest output inspected. Artifact 15132302427, SHA-256 `387665baf7c670e1329c14d4e9ddc09e8027d6c33be559817d23ff91fe7db1ca`.
+
+### Latest live poll — 2026-11-26
+- Subsystem/memory 45845758545: MX multiply/replay SUCCESS; Stream RTL SUCCESS (14 passed); Quantizer modes SUCCESS (15 passed); Quantizer corners/tie rounding and SPLITQ running; remaining DMA/scoreboard, QST/QSTB, instruction cache, address-window, FP, QHL, wait-state, matrix reset audit and native DRAM/technology RAM jobs queued.
+- Software/ISA 45845758659: compiler, ISA, kernels, formats and quant SUCCESS; VOPS running; other software jobs queued.
+- PPA 45845758658 remains in pinned-container ORFS flow, no report yet.
+- Qwen 45845758847 remains in real-checkpoint RTL pytest; tiny board-model tests not yet started.
+- Board-only 45845758677 remains in board-functional pytest.
+- No further CI jobs were launched. Continue polling existing runs only.
