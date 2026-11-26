@@ -51,14 +51,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install pytest safetensors==0.8.0 huggingface_hub==2.3.0
+          python -m pip install pytest safetensors==0.8.0 huggingface_hub==2.3.0 transformers==4.57.3
           python -m pip install -e .
           python - <<'PY'
-          import torch, safetensors, huggingface_hub
+          import torch, safetensors, huggingface_hub, transformers
           assert torch.version.cuda is None, 'Expected CPU-only PyTorch'
+          from transformers import Qwen3Config, Qwen3ForCausalLM
           print('torch:', torch.__version__)
           print('safetensors:', safetensors.__version__)
           print('huggingface_hub:', huggingface_hub.__version__)
+          print('transformers:', transformers.__version__)
+          print('Qwen3 model classes:', Qwen3Config.__name__, Qwen3ForCausalLM.__name__)
           PY
 
       - name: Download and verify pinned official Apache-2.0 Qwen checkpoints
@@ -103,6 +106,12 @@ jobs:
         run: |
           set -o pipefail
           pytest -vv -ra --runslow tests/test_models_on_board_rtl.py -k "qwen3 or qwen35" 2>&1 | tee /tmp/sunnyone-qwen-real-rtl.log
+
+      - name: Run the eight previously PyTorch-skipped tiny board-model cases
+        shell: bash
+        run: |
+          set -o pipefail
+          pytest -vv -ra tests/test_board.py -k "tiny_qwen3_on_board_model or tiny_qwen3_two_slices_on_board_model or tiny_qwen3_generate_on_board_model or tiny_models_four_slices_wg_on_board_model" 2>&1 | tee -a /tmp/sunnyone-qwen-real-rtl.log
 
       - name: Upload Qwen verification log
         if: always()
