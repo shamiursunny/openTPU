@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     top.write_text(R.harness(R.CONFIGS["copy"]))
     files = " ".join(str(R.RTL / f) for f in R.CORE) + f" {top}"
     slice_script = (
-        f"read_slang -D SYNTHESIS --ignore-assertions --top otpu_xrst_top {files}; "
+        f"read_slang -D SYNTHESIS --ignore-assertions --ignore-initial --top otpu_xrst_top {files}; "
         "hierarchy -check -top otpu_xrst_top; proc; flatten; opt; "
         "tee -o {latches} select -list t:$dlatch t:$adlatch t:$dlatchsr; scc -expect 0"
     )
@@ -74,13 +74,13 @@ def main(argv: list[str] | None = None) -> int:
         "NC": 1, "S": 2, "D": 32, "MCOLS": 2, "ACT_BLOCKS": 32, "ACT_ROWS": 2,
         "TMEM_WORDS": 16384, "IMEM_WORDS": 8192, "DRAM_WORDS": 4096,
         "FIFO_DEPTH": 64, "LANES": 8, "WIN": 16, "RPB": 64, "WPB": 1,
-        "MXU_IMPL": 0, "AXI": 0, "TMEM_IMPL": 0, "COLL_GATHER": 1, "COLL_HUB": 0,
+        "MXU_IMPL": 2, "AXI": 0, "TMEM_IMPL": 0, "COLL_GATHER": 1, "COLL_HUB": 0,
     }
     params = " ".join(f"-G {k}={v}" for k, v in gp.items())
     top_files.append(dram_stub)
     files = " ".join(map(str, top_files))
     top_script = (
-        f"read_slang -D SYNTHESIS --ignore-assertions --top otpu_top {files} {params}; "
+        f"read_slang -D SYNTHESIS --ignore-assertions --ignore-initial --top otpu_top {files} {params}; "
         "hierarchy -check -top otpu_top; proc; flatten; opt; "
         "tee -o {latches} select -list t:$dlatch t:$adlatch t:$dlatchsr; scc -expect 0"
     )
