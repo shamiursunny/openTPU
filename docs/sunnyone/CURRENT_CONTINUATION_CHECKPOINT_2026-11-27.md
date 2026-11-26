@@ -301,3 +301,11 @@ No RTL was modified and no new workflow was launched during this review. Main re
 
 - `Board.load_program` in `opentpu/host/board.py` accepts raw uint32 program arrays and does not perform FSUM semantic validation before writing the program to DRAM/IMEM. The existing compiler and ISA-simulator checks are not a mandatory load-time validator.
 - The FSUM bounds issue is therefore an unclosed end-to-end hardware safety risk on the two FSUM-enabled BCU targets. Trace `otpu_seq.error` and the established slice error/halt path before proposing a synthesizable rejection; `otpu_vpu` has no existing error output. No RTL changes made.
+
+
+### Existing error/halt path traced — candidate guard location, not yet implemented
+
+- `otpu_seq` exposes `error` and its existing invalid decoded-operation branch sets both `error <= 1'b1` and `halted <= 1'b1` before dispatch (around lines 1702–1705).
+- `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
+- A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
+- Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
