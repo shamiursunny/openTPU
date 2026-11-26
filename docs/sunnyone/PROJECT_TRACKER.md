@@ -2564,3 +2564,13 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - WG8 PPA run 45877786710 IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4 with immutable ORFS image pin and telemetry. No duplicate PPA attempt while active.
 - Other active/queued workflows: reset audit 45877786738; Qwen RTL 45877786754; board 45877786742; subsystem/memory 45877786699; software/ISA 45877786705; ASIC config 45877786860; replacement RTL-tail 45877807906; 128K one-copy TMEM investigation 45877807985. Prior tail run 45877787004 was cancelled by the newer commit. Historical user-cancelled run 45765362426 remains cancelled and must never be restarted.
 - No other RTL changes in this section. No manufacturer handoff claim; G1/G2/G3 remain PARTIAL/OPEN as appropriate.
+
+
+## 109. 2026-11-27 targeted loop-stack and 128K TMEM tests passed
+
+- Loop-stack guard workflow 45877985241 SUCCESS on commit 275728cd1484fb3b409ba59b9b409f29160c8f7e: 2 passed, 217 deselected, 47.52 s. Both maximum legal depth-four and fifth-level overflow error/halt tests passed. Artifact 15146995084; ZIP SHA-256 bc7202d01bf896453a2fdd8e3f752d34e719e85db9ddc582ebcba0196380b7ff.
+- This confirms the RTL matches the ISA simulator's four-level nesting limit for the tested legal and illegal boundary cases; it is not full sequencer or chip signoff.
+- Isolated 128K one-copy TMEM run 45877807985 SUCCESS on commit c22c9b1be497b62253693e817d7d3b5fdca1c79f: 2 passed, 217 deselected, 75.03 s.
+- Full-chip lint run 45877786797 SUCCESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4: 76 width warnings (52 expand, 24 truncation), down from 79; three direct stack-index truncation warnings removed.
+- PPA run 45877786710 still IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4 using immutable ORFS manifest digest and cgroup telemetry. Do not dispatch another while active.
+- Integrated plan updated in commit d79f7592703a2706a74cd8438e2671f2d4944aab; checkpoint updated in commit 9ddcdebab56abad10b509e0127b75354dc7eb775.
