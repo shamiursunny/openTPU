@@ -143,3 +143,7 @@ No new workflows were launched. Continue polling these existing jobs and inspect
 5. Continue open formal/CDC/RDC, PCIe/DMA/IOMMU, DDR controller/PHY/ECC, production SRAM/DFT, PDK/package/physical, hardware power/thermal/performance and commercial qualification gates.
 
 Manufacturer handoff remains **NOT READY**. These results are bounded digital simulation/lint evidence only; they do not establish timing closure, full formal/CDC/RDC closure, routed physical signoff, production IP/PHY, silicon validation, measured power/thermal performance or commercial readiness.
+
+
+### Documentation reconciliation — 2026-11-26
+The exact-SHA verification outcomes and open workflow states above have also been appended to section 15 of `docs/sunnyone/PROJECT_TRACKER.md` in commit `bdfd076b692b55b7d4d0f8c9646fed1aff4f16d3`. This is a documentation-only change; no RTL, test, workflow or hardware configuration was altered.
