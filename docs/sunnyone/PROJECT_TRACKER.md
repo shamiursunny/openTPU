@@ -2352,3 +2352,15 @@ All following runs were automatically triggered by the `rtl/dma/otpu_dma.sv` pus
 ### 12.5 Branch and safety
 - Active branch `sunnyone/commercial-profitability-architecture-2026-11-23`; latest branch HEAD after the workflow guard commit: `4999b964d891d02fb93cb805162d5143dfbc4cea`. Protected `main` independently rechecked at `d84db55712aba0d40811d7762cb052f05d55b7e5`, unchanged.
 - No additional RTL or workflow edits until the triggered verification runs finish. Preserve zero-spend. The logical WG8 candidate is not tapeout-ready, production-ready or silicon-validated.
+
+### Live poll — 2026-11-26 21:10 Asia/Dhaka
+- Feature branch latest documentation HEAD at poll: `c289c5dc94f850835f47ea4a5d936fb2b6eb3fdc`; protected main independently remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Run 45845758782 full-chip lint is SUCCESS. Actual log inspected: Verilator 5.032 completed lint; existing warnings include 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. No warning specifically references `rtl/dma/otpu_dma.sv`; these warning classes still need source-by-source triage.
+- Run 45845758681 ASIC/target job: target/config checks and integrated ASIC control, WG8 memory and four-DIMM AXI lint all passed; four-DIMM host AXI simulation is running.
+- Run 45845758636 RTL-tail pytest selection is running. Run 45845758545 subsystem matrix: Stream RTL and MX multiply/replay are running; other groups queued. Relevant DMA/scoreboard group remains queued.
+- Run 45845758496 reset/power-up audit: tool setup and Yosys+Slang frontend validation passed; audit running.
+- Run 45845758677 board-functional-only and run 45845758847 Qwen real-checkpoint rerun are still in setup/build stages. Qwen is rebuilding pinned Verilator 5.044; model downloads and pytest have not begun.
+- Run 45845758658 WG8 PPA: pinned ORFS image setup passed; container flow is running. No new timing, area or power result yet.
+- Run 45845758659 software/ISA tests: compiler, ISA and kernels jobs passed; quant tests running; remaining jobs queued.
+- Run 45845758638 broad legacy workflow is now CANCELLED. Its group 3.1 Verilator build step was cancelled before tests; groups 3.2 and 4 tests did not run. Replacement guard run 45845941442 completed with both jobs skipped. No completed RTL groups were re-executed.
+- These runs were automatically triggered by the DMA RTL path filter; no further code changes or CI runs should be initiated until they reach terminal states. Inspect exact logs/artifacts, then record results and decide the next targeted work.
