@@ -210,3 +210,50 @@ When the user opens a new chat in the SUNNYONE X AI CHIP DESIGN project and type
 5. Do not relaunch completed tests. Preserve exact-SHA evidence and the exclusions for groups 3.1, 3.2, 4 and cancelled run 45765362426.
 
 Manufacturer handoff remains **NOT READY**. The successful runs above close only their named digital test scopes; they do not establish physical-board validation, formal closure, routed timing, power, silicon, production or commercial readiness.
+
+
+## NEWEST CONTINUATION HANDOFF — 2026-11-26 (supersedes all older status snapshots above)
+
+### Start here in the next chat
+When the user says **“Continue and complete the remaining tasks”**, read this newest section first, then read the current checkpoint and tracker as needed. Verify live GitHub branch/main/workflow state before taking action. Do not ask the user to repeat project context.
+
+### Repository and branch protection (rechecked after previous save)
+- Repository: `shamiursunny/openTPU` (not upstream `FeSens/openTPU`).
+- Active working branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Verified branch HEAD at the beginning of this save: `a70ade8b64f7c39777ba190bf185d525fa95ae9d`.
+- Protected `main` independently fetched: `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify or merge into it.
+- Compare at beginning of save: feature branch 824 ahead, 0 behind.
+- Previous documentation reconciliation has been verified live: checkpoint contains the 23:30 continuation update and tracker contains section 98. This save adds the explicit newest handoff so the next chat will not mistake old in-progress notes for current state.
+
+### Latest completed verification status (do not relaunch)
+All listed workflows are terminal; evidence and detailed interpretation are recorded in the 23:30 update above and tracker section 98. Verification source SHA: `2835f1a8da6af454023caff9576f41258c66e2a8`.
+- Qwen real checkpoint: 6 passed, 4 deselected; tiny board-model selection: 8 passed, 199 deselected — run 45845758847 SUCCESS.
+- Subsystem/memory/reset: combined selected logs 377 passed, 1 intentional skip; native DRAM/technology RAM 104 passed; reset audit 4 passed — run 45845758545 SUCCESS.
+- Software/ISA/host: 825 passed, 3 skipped across 15 successful jobs — run 45845758659 SUCCESS.
+- Board functional: 198 passed, 8 skipped, 1 deselected — run 45845758677 SUCCESS.
+- RTL tail: 33 passed, 1 intentional skip, 183 deselected — run 45845758636 SUCCESS.
+- ASIC/target four-DIMM contention: simulation PASS — run 45845758681 SUCCESS.
+- Full-chip lint: workflow SUCCESS; warnings remain 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT — run 45845758782 SUCCESS. These warnings are unresolved debt, not accepted waivers.
+- WG8 Nangate45 PPA: run 45845758658 FAILED at OpenROAD exit 247 during `2_1_floorplan` after preliminary floorplan report. Peak memory 15,191,368 KB; cause not conclusively established. Preliminary WNS/TNS 0.00 ns, worst slack +0.46 ns, minimum period 2.04 ns / 489.55 MHz; synthesis proxy cell area 30,786,988.162 um^2. Not routed STA, not signoff, and not proof of DMA rewrite benefit. Do not rerun until failure diagnosis is complete.
+
+### Immediate remaining work — priority order
+1. **PPA failure diagnosis first:** inspect archived artifact 15137952036, especially `2_1_floorplan.log`, and compare with baseline artifact 14997807086. Establish evidence for process abort vs memory/resource limit vs tool/report-stage defect. Do not label exit 247 as OOM without proof. Keep ORFS pinned image and 2-CPU constraint unless evidence supports a controlled change. Do not trigger a retry before a specific diagnosis and targeted plan.
+2. **PPA completion:** once justified, execute a narrowly scoped, controlled retry on this feature branch only; retain exact source SHA, tool/container version, config, logs and artifact hashes. Require successful subsequent physical stages and routed STA before claiming timing closure. Separate source changes to attribute any DMA timing effect.
+3. **Lint warning triage:** source-level investigation of 7 LATCH and 3 UNOPTFLAT warnings first, then 79 width warnings (52 WIDTHEXPAND + 27 WIDTHTRUNC). No blanket suppressions or cosmetic waivers; prove any correction does not change intended semantics.
+4. Continue formal/SVA proof and CDC/RDC.
+5. Continue production integration evidence: PCIe endpoint/SerDes, DMA/IOMMU, DDR controller/PHY/training/ECC, SRAM macro mapping, DFT, PDK/package and physical signoff.
+6. Continue measured hardware power/thermal/performance/reliability and commercial/manufacturer qualification. No unsupported claims of silicon or production readiness.
+
+### Hard safeguards
+- Do not change protected `main`.
+- Do not rerun RTL groups 3.1, 3.2 or 4 merely to repeat their prior successful evidence.
+- Do not restart cancelled workflow 45765362426.
+- Do not rerun the terminal successful workflows listed above merely to reconfirm.
+- No speculative RTL edits, no warning suppression, no paid services or hardware purchases, and no unnecessary broad regression. Use evidence-driven, minimal, reversible changes.
+- Distinguish verified results, preliminary estimates, user/project assertions and unverified assumptions. Record exact commit SHA for every result.
+- Manufacturer handoff remains **NOT READY**. Passing digital tests do not establish formal closure, routed timing, physical board validation, power, thermal, silicon, production or commercial readiness.
+
+### Documentation state at start of this save
+- Prior checkpoint file SHA: `3aa45841e48818702257c38d2c30a0731b446320`.
+- Prior tracker file SHA: `5b0c616dff47314e90949967a6d752c2c1b43c32`.
+- The next save commit will advance the feature branch; re-fetch and record the resulting branch HEAD after both documentation commits.
