@@ -217,3 +217,13 @@ The plan, checkpoint and tracker are present on the feature branch. No RTL/test/
 - Tail run 45877787004 was cancelled by the newer test commit; replacement run 45877807906 is IN_PROGRESS on c22c9b1be497b62253693e817d7d3b5fdca1c79f.
 - Separate 128K one-copy TMEM investigation run 45877807985 is IN_PROGRESS on c22c9b1be497b62253693e817d7d3b5fdca1c79f.
 - Do not restart cancelled historical run 45765362426. No additional duplicate runs should be launched while these are active.
+
+
+## Completed targeted verification — 2026-11-27
+
+- Loop-stack guard workflow 45877985241 completed SUCCESS on commit 275728cd1484fb3b409ba59b9b409f29160c8f7e. Actual log: 2 passed, 217 deselected, 47.52 seconds. Both test_loop_stack_maximum_legal_depth_four_rtl and test_loop_stack_overflow_reports_error_before_out_of_range_rtl passed. Artifact 15146995084; ZIP SHA-256 bc7202d01bf896453a2fdd8e3f752d34e719e85db9ddc582ebcba0196380b7ff.
+- This verifies the legal four-level stack and fifth-level overflow error/halt under the targeted RTL simulation. It does not establish all sequencer behaviour or full design signoff.
+- Isolated 128K one-copy TMEM workflow 45877807985 completed SUCCESS on commit c22c9b1be497b62253693e817d7d3b5fdca1c79f. Actual log: 2 passed, 217 deselected, 75.03 seconds.
+- Full-chip lint 45877786797 SUCCESS on RTL source 28c36c52204fe2ec2ed36413b02eb6043506ccc4; 76 width warnings remain (52 expand, 24 truncation), down from 79.
+- PPA run 45877786710 remains IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4. It is the single diagnostic run with immutable ORFS manifest pin and telemetry. Do not start a second PPA run.
+- Plan updated with these results in commit d79f7592703a2706a74cd8438e2671f2d4944aab.
