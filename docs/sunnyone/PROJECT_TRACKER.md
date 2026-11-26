@@ -2486,3 +2486,8 @@ Inspected Verilator 5.032 log from lint run 45845758782, artifact 15130078429, t
 - Width warnings remain 52 WIDTHEXPAND and 27 WIDTHTRUNC; not yet individually triaged. No warnings suppressed or waived.
 
 Next: establish actual latch-cell presence/absence, then trace the three UNOPTFLAT paths in their elaborated configurations. Do not register or split handshake signals without protocol-equivalence evidence. PPA root cause remains unconfirmed; manufacturer handoff NOT READY.
+
+
+## 102. GitHub main-branch protection metadata — 2026-11-26
+
+The live GitHub REST response for `main` reports `protected: false` and `protection.enabled: false`; its commit remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. The project instruction still treats main as protected/do-not-touch. However, repository-side branch protection is not technically enabled according to the API observation. This is a control gap, not permission to modify main. No repository-administration setting was changed; consider enabling an appropriate ruleset only as a separately approved action.
