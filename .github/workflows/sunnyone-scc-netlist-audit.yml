@@ -1,0 +1,46 @@
+name: SUNNYONE structural SCC and latch audit
+
+on:
+  push:
+    branches: [sunnyone/commercial-profitability-architecture-2026-11-23]
+    paths:
+      - 'rtl/**'
+      - 'tools/scc_audit.py'
+      - '.github/workflows/sunnyone-scc-netlist-audit.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: sunnyone-scc-netlist-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scc-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package
+        run: pip install -e .
+      - name: Install pinned Yosys + Slang
+        run: |
+          curl -fL --retry 3 -o /tmp/oss-cad-suite.tgz https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-11-23/oss-cad-suite-linux-x64-20261123.tgz
+          echo "c01d93f2f9091ba7eeb18540334fa0aaefa843b343cbdd627fd7669391de47ba  /tmp/oss-cad-suite.tgz" | sha256sum -c -
+          mkdir -p /opt/oss-cad-suite
+          tar -xzf /tmp/oss-cad-suite.tgz -C /opt
+          test -x /opt/oss-cad-suite/bin/yosys
+      - name: Verify Slang frontend
+        run: /opt/oss-cad-suite/bin/yosys -m slang -q -p 'help read_slang'
+      - name: Run flattened structural SCC and latch audit
+        env:
+          YOSYS: /opt/oss-cad-suite/bin/yosys
+        run: python tools/scc_audit.py --keep /tmp/sunnyone-scc
+      - name: Archive SCC and latch reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-scc-netlist-audit
+          path: /tmp/sunnyone-scc/**
+          if-no-files-found: ignore
