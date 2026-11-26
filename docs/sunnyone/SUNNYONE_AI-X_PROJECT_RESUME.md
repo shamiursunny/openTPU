@@ -1173,3 +1173,12 @@ These are scoped selector results; do not add them into a claim of unique lifeti
 ## Continuation update — 2026-11-26
 
 The board-only regression using Ubuntu's default Verilator 5.020 failed at rtl/mxu/otpu_mxu.sv:2781 with 133 failed, 65 passed, 8 skipped and 1 deselected. This is a parser/toolchain incompatibility, not a proven RTL functional defect. The board-only workflow now builds and asserts Verilator 5.044 (commit 74ee09d865633e8d8f8cc3edaaf5cb460bf576cc). Retry run 45784404427 / job 139787424587 is in progress at the pinned tool build; no board pass is yet claimed. The dedicated Qwen gate's invalid torch==2.15.0 pin was corrected to CPU torch==2.11.0 and huggingface_hub==2.3.0 (commit 024e488befcbabdde21731f119b52baaedb9d10f); Qwen workflow remains undispatched. See the latest PROJECT_TRACKER.md section A1.12.11.16.55 and authoritative continuation baseline for exact details. Do not rerun historical RTL groups 3.1, 3.2 or 4. Protected main remains unchanged.
+
+
+## New-chat resume instruction — 2026-11-26 (Asia/Dhaka)
+
+If the user opens any new chat/tab and says “continue and complete the remaining tasks”, resume SUNNYONE X AI CHIP DESIGN from the latest authoritative checkpoint in docs/sunnyone/SUNNYONE_AI-X_AUTHORITATIVE_CONTINUATION_BASELINE_A1.12.11.16.53.md and the latest section of docs/sunnyone/PROJECT_TRACKER.md. Refresh GitHub first; do not rely on stale run states.
+
+At checkpoint save: repo shamiursunny/openTPU; feature branch sunnyone/commercial-profitability-architecture-2026-11-23; branch HEAD 848b7f65884ae049c5a1a19fe4770b6e51d5692c before this continuity commit; protected main d84db55712aba0d40811d7762cb052f05d55b7e5 unchanged. Board-only run 45784404427 / job 139787424587 was running pytest after successful Verilator 5.044 build and dependency install. Poll it and inspect full log/artifact. Qwen-only workflow dependency pins are corrected but it is not dispatched.
+
+Hard constraints: do not rerun historical RTL groups 3.1, 3.2 or 4; do not rerun cancelled workflow 45765362426; do not launch broad RTL matrix; do not weaken tests/assertions; never modify main. Continue serially with low concurrency and update completed/remaining tasks using verified evidence. Manufacturer handoff remains NOT READY.
