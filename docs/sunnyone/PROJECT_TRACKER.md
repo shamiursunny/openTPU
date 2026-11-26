@@ -2491,3 +2491,12 @@ Next: establish actual latch-cell presence/absence, then trace the three UNOPTFL
 ## 102. GitHub main-branch protection metadata — 2026-11-26
 
 The live GitHub REST response for `main` reports `protected: false` and `protection.enabled: false`; its commit remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. The project instruction still treats main as protected/do-not-touch. However, repository-side branch protection is not technically enabled according to the API observation. This is a control gap, not permission to modify main. No repository-administration setting was changed; consider enabling an appropriate ruleset only as a separately approved action.
+
+
+## 103. 2026-11-27 engineering continuation — PPA telemetry and handoff matrix
+
+- Starting live feature HEAD: `5639670d515f18778950c6ce7c1b1ae1cc94cdbc`; main SHA: `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare 832 ahead / 0 behind. GitHub API reports branch protection disabled on main; project-level do-not-touch safeguard remains mandatory.
+- **PPA CI instrumentation implemented** in `.github/workflows/sunnyone-asic-wg8-ppa.yml`, commit `783dc91d835b66279fc69ca0dd82ee3a9c403785`, blob SHA `9d6025838eb01dc7ae93d7f7671e7b5be066ec33`. Corrected missing Docker CPU quota by adding `docker run --cpus 2` (in addition to `ORFS_CPUS=2`). Added host baseline and periodic cgroup v1/v2 memory telemetry, retained as PPA artifact evidence. Workflow-only change does not self-trigger. No PPA retry was launched; telemetry has not yet been exercised.
+- Added `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`, commit `f6730d10c54dde125b68f4abe09b28487e244b07`. Defines G0–G15 handoff acceptance gates and current PASS/PARTIAL/OPEN/BLOCKED/FAIL evidence states. It explicitly prohibits tapeout/production-ready claims while PPA, lint, formal, CDC/RDC, physical, memory PHY, interfaces, DFT, board, package and qualification evidence remain incomplete.
+- No RTL changes; no warning suppressions; no reruns of successful historical tests; no cancelled workflow restart; no paid resources or hardware spend. PPA root cause remains unconfirmed. Manufacturer handoff **NOT READY**.
+- Next: review workflow syntax/behaviour; justified PPA diagnostic dispatch; prove actual latch-cell state and elaborate UNOPTFLAT paths; triage 79 width warnings; extend formal/SVA and CDC/RDC; then target-specific physical/board/manufacturer evidence. See latest continuation checkpoint for full details.
