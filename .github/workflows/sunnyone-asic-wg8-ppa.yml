@@ -64,6 +64,10 @@ jobs:
             export YOSYS="$ORFS_HOME/tools/install/yosys/bin/yosys"
             test -x "$YOSYS"
             "$YOSYS" -V
+            # The previous WG8 floorplan-PDN attempt peaked at ~15.7 GB RSS and exited
+            # during check_placement. Limit ORFS and Docker to two CPUs for a measured,
+            # resource-conscious retry; do not disable PDN or placement checks.
+            export ORFS_CPUS=2
             python3 tools/asic/flow.py prep nangate45-wg8
             python3 tools/asic/flow.py config nangate45-wg8
             python3 tools/asic/flow.py run nangate45-wg8
