@@ -2322,3 +2322,33 @@ This section is the latest resume instruction for any new ChatGPT chat/tab. When
 - Uploaded artifact `sunnyone-qwen-real-rtl-log`, ID `15122919007`, SHA-256 `0e33180ae7ab23408ce4bda5266045f07ff7fe7e61bfbc0afd36fa187fe77c78`; [download from run](https://github.com/shamiursunny/openTPU/actions/runs/45808551468/artifacts/15122919007).
 - This closes the previously skipped eight tiny board-model test gate and the selected real-checkpoint Qwen RTL gate. It does not prove physical FPGA/ASIC operation, host PCIe electrical behaviour, DDR PHY, silicon PPA, measured power/thermal/performance or production readiness.
 - Historical earlier paragraphs describing run 45808551468 as in progress are superseded by this terminal result; retain them as timestamped history, but use this closure entry as authoritative.
+
+## 12. DMA stream-setup timing investigation and current CI — 2026-11-26 (Asia/Dhaka)
+
+### 12.1 Qwen and tiny board-model gates closed
+- Qwen run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), exact SHA `bddf9708657766951e5c0d204ef474d742e53418`: SUCCESS. Actual logs inspected. Real pinned-checkpoint Qwen RTL: 6 passed, 4 deselected. Separate formerly skipped tiny board-model selection: 8 passed, 199 deselected. Both pinned checkpoint repositories passed checksum verification. Artifact 15122919007, SHA-256 `0e33180ae7ab23408ce4bda5266045f07ff7fe7e61bfbc0afd36fa187fe77c78`. This closes these selected tests only.
+
+### 12.2 PPA artifact review and critical-path diagnosis
+- Retrieved and inspected archived artifact 14997807086 from failed research PPA run [45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546). Exact synthesized design configuration was the WG8 candidate (D=128, MCOLS=8, WG=8, SE_R=2, DMA_DEPTH=512, AW=35, TMEM 128K, FIFO_DEPTH=2048), using the Nangate45/fakeram research proxy.
+- Its floorplan timing report shows WNS -10.43 ns, TNS -91.46 ns, core-clock minimum period 12.93 ns / Fmax 77.31 MHz versus the 400 MHz (2.5 ns) SDC target. Worst max path: `u_slice/u_dma/sc[254]` to `u_slice/u_dma/g_sr.cpr_w[0]`. The endpoint is assigned in `rtl/dma/otpu_dma.sv` SRX stream setup; the source expression divides `su_ns` by a runtime-selected divisor `(ds_hw ? 2 * SPC : SPC)`. This is a strong candidate for a general combinational divider and a plausible source of the long path, but the exact synthesis cell-to-expression mapping has not been proven from the available report. The report is pre-route research timing, not signoff STA or silicon frequency.
+- Implemented a semantics-preserving synthesis experiment in commit `2835f1a8da6af454023caff9576f41258c66e2a8`, `rtl/dma/otpu_dma.sv`: use a conditional selection between two compile-time constant-divisor results for cpr_r/cpr_w/rcw_r/bcw_r/rcw_w/bcw_w, instead of dividing by a runtime-selected divisor. This is an optimisation hypothesis pending regression and PPA evidence; no timing gain is claimed yet.
+
+### 12.3 Exact-SHA verification triggered by the DMA change
+All following runs were automatically triggered by the `rtl/dma/otpu_dma.sv` push-path filters on SHA `2835f1a8da6af454023caff9576f41258c66e2a8`; do not start more builds until they finish:
+- Full-chip Verilator lint [45845758782](https://github.com/shamiursunny/openTPU/actions/runs/45845758782): SUCCESS.
+- WG8 research PPA [45845758658](https://github.com/shamiursunny/openTPU/actions/runs/45845758658): IN_PROGRESS at last poll; pinned ORFS image setup passed, flow stage running. This is the key test of whether the critical-path hypothesis improves timing; inspect floorplan/route reports and all warnings before any claim.
+- ASIC/target configuration, integrated lint and four-DIMM benches [45845758681](https://github.com/shamiursunny/openTPU/actions/runs/45845758681): IN_PROGRESS.
+- Board-functional-only [45845758677](https://github.com/shamiursunny/openTPU/actions/runs/45845758677): IN_PROGRESS.
+- RTL tail regressions [45845758636](https://github.com/shamiursunny/openTPU/actions/runs/45845758636): IN_PROGRESS.
+- RTL subsystem/memory matrix [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545): QUEUED overall; Stream RTL and MX multiply/replay jobs had started, others pending. This includes the relevant `tests/test_stream_rtl.py` selection and DMA/scoreboard suites.
+- Reset/power-up synthesis audit [45845758496](https://github.com/shamiursunny/openTPU/actions/runs/45845758496): IN_PROGRESS.
+- Real-checkpoint Qwen rerun [45845758847](https://github.com/shamiursunny/openTPU/actions/runs/45845758847): IN_PROGRESS; checkout/setup passed, pinned Verilator build running at last poll. This rerun is relevant because the DMA RTL changed; the earlier successful Qwen result remains valid for its earlier exact SHA.
+- Software/ISA unit tests [45845758659](https://github.com/shamiursunny/openTPU/actions/runs/45845758659): QUEUED overall; ISA job passed, remaining software jobs queued.
+
+### 12.4 Preventing accidental rerun of completed groups
+- The DMA RTL change also matched the legacy broad workflow, which would have rerun groups 3.1, 3.2 and 4 despite the user's explicit no-repeat instruction. Added a guard in commit `4999b964d891d02fb93cb805162d5143dfbc4cea` to skip both legacy matrix and dependent board job. Original run [45845758638](https://github.com/shamiursunny/openTPU/actions/runs/45845758638) was cancelled by same-workflow concurrency before Verilator build completed; the group 3.1 Verilator build step was cancelled, and groups 3.2/4 test steps were skipped/cancelled. No group test was executed. Replacement run [45845941442](https://github.com/shamiursunny/openTPU/actions/runs/45845941442) completed with both jobs skipped. This is a workflow guard, not test evidence.
+- User-cancelled run 45765362426 remains cancelled and must never be restarted. Previously passed groups 3.1/3.2/4 remain accepted from their historical evidence and are not repeated.
+
+### 12.5 Branch and safety
+- Active branch `sunnyone/commercial-profitability-architecture-2026-11-23`; latest branch HEAD after the workflow guard commit: `4999b964d891d02fb93cb805162d5143dfbc4cea`. Protected `main` independently rechecked at `d84db55712aba0d40811d7762cb052f05d55b7e5`, unchanged.
+- No additional RTL or workflow edits until the triggered verification runs finish. Preserve zero-spend. The logical WG8 candidate is not tapeout-ready, production-ready or silicon-validated.
