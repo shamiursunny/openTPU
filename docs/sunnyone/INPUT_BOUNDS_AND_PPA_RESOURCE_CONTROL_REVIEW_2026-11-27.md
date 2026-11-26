@@ -62,3 +62,11 @@ The in-progress jobs must be allowed to reach terminal states or be reconciled t
 - Do not restart user-cancelled run 45765362426.
 - Do not weaken tests, hide failures, or claim full-chip/manufacturer readiness.
 - Manufacturer handoff remains **NOT READY**.
+
+
+### Program-ingress check — no semantic FSUM validation found in the board loader
+
+- Reviewed `opentpu/host/board.py` at the current feature branch. `Board.load_program()` converts supplied program words to `np.asarray(..., "<u4")`, optionally checks GATHER capability, checks basic slice/wait-entry shape and size constraints, then writes the program into DRAM/IMEM and issues LOAD. It does not validate FSUM instruction semantics or enforce `FSUM_MAX_ROWS`.
+- The loader accepts raw word arrays; therefore compiler/ISA-simulator shape checks are not a complete ingress guarantee. The present repository path does not establish that all loaded FSUM instructions are compiler-generated and semantically validated.
+- This strengthens the FSUM finding from a theoretical boundary question to an unclosed end-to-end bounds-safety issue for the FSUM-enabled BCU targets. The preferred closure is a hardware-side invalid-command rejection, unless a separate validated binary-ingress layer is designed and made mandatory for every load path.
+- VPU has no existing error output in its current module interface; the sequencer does expose an `error` output. Any RTL correction must trace the slice's established error/halt path before deciding where to validate, and must not invent a parallel error protocol.
