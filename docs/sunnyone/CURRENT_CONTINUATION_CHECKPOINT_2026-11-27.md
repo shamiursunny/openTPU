@@ -365,3 +365,35 @@ Proposed R-stage rejection before dispatch:
 5. Keep RSUM take ordering/pending-sum semantics as a separate review; do not add unsupported shape restrictions to the take.
 
 Existing `tests/test_rtl.py::test_attention_decode_fsum_rtl` provides valid functional FSUM coverage, but not the malformed raw-command negative/boundary tests required here. Add focused RTL tests for legal 256x64/non-scalar, 257 rows, 63 cols, scalar B, FSUM-disabled EXP2SUB, FSUM-disabled RSUM, and flag-on-other-function; prove invalid commands halt with error before VPU dispatch. No source/test changes or tests were run by this review.
+
+
+## 2026-11-27 continuation — FSUM hardware guard implemented and verified
+
+Live branch HEAD before this documentation commit: ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a. Protected main reference remains d84db55712aba0d40811d7762cb052f05d55b7e5 and was not modified. GitHub API currently reports main protection disabled; do not modify main.
+
+### FSUM guard implementation
+- New sequencer parameter FSUM is wired as VPU_FSUM != 0 && HAS_SS, matching the VPU's effective feature gate.
+- R-stage guard rejects EXP2SUB+FSUM rows 0 or >256, cols <64, scalar B, unsupported FSUM-flagged VOP functions, disabled effective capability, and RSUM+FSUM take when no producer is pending.
+- Synthesizable fsum_pending counter increments on EXP2SUB+FSUM dispatch and decrements on RSUM+FSUM take dispatch. It resets with the sequencer. HALT with nonzero pending count raises error and uses the stopping path.
+- Valid RSUM+FSUM remains the take operation.
+- Focused workflow 45911471194 SUCCESS: 11 passed, 219 deselected. It covered rows 0/257, cols 63, scalar B, disabled capability, HAS_SS false (LANES=4), unsupported function, unmatched take, HALT with pending sums, and legal 256x64 producer/take with output and sums checked.
+- Full-chip Verilator lint 45911470968 SUCCESS: 76 width warnings (52 expand, 24 truncation), 3 UNOPTFLAT, 7 LATCH. Loop-stack boundary 45911470960 SUCCESS. Isolated 128K one-copy TMEM 45911470982 SUCCESS.
+- Full report: docs/sunnyone/FSUM_HARDWARE_GUARD_REPORT_2026-11-27.md.
+
+### Explicit remaining semantic gap
+The sequencer counter validates pending-take count and HALT state, but does not yet store a FIFO of producer sum destinations and row counts. It therefore does not independently verify that every take matches the oldest producer's exact sum address and row count. ISA simulator does check the exact destination/row-count match. Keep this as OPEN hardware-vs-ISA parity work.
+
+### PPA safety correction
+The WG8 PPA workflow now requires an explicit commit changing docs/sunnyone/PPA_REQUEST.md to trigger on push; ordinary RTL and flow commits no longer auto-launch PPA. Manual workflow_dispatch remains available for a deliberate, separately approved run. No PPA run was launched. Previous OOM evidence remains authoritative.
+
+### Current run set
+On source commit ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a: FSUM guard, full-chip lint, loop-stack and isolated 128K TMEM are terminal SUCCESS. Board-functional, Qwen, reset/power-up, ASIC configuration, RTL tail, subsystem/memory and core software/ISA workflows were still pending or in progress at the time of this checkpoint. Do not claim their outcomes until polled. The explicitly excluded RTL groups 3.1, 3.2 and 4 were not rerun.
+
+### Next order
+1. Width-warning fixes with explicit semantic/range proofs.
+2. Structural SCC/netlist proof for gnt, sc_gl and pq.
+3. ASIC AW/AR width warning closure.
+4. Formal/SVA, CDC/RDC and mapped-latch checks.
+5. PDK/macro/physical/DFT/board/manufacturer gates. Manufacturer handoff remains NOT READY.
+
+No paid compute or hardware spending. No main changes. No PPA dispatch.

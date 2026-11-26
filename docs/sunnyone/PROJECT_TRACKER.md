@@ -2663,3 +2663,21 @@ Proposed R-stage rejection before dispatch:
 5. Keep RSUM take ordering/pending-sum semantics as a separate review; do not add unsupported shape restrictions to the take.
 
 Existing `tests/test_rtl.py::test_attention_decode_fsum_rtl` provides valid functional FSUM coverage, but not the malformed raw-command negative/boundary tests required here. Add focused RTL tests for legal 256x64/non-scalar, 257 rows, 63 cols, scalar B, FSUM-disabled EXP2SUB, FSUM-disabled RSUM, and flag-on-other-function; prove invalid commands halt with error before VPU dispatch. No source/test changes or tests were run by this review.
+
+
+## 113. 2026-11-27 — FSUM synthesizable guard, RSUM pending counter and focused CI
+
+Implementation source commit: ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a.
+
+- rtl/seq/otpu_seq.sv: FSUM parameter, R-stage malformed-command guard, 32-bit producer/take pending counter, reset and HALT-pending error path.
+- rtl/top/otpu_slice.sv: effective FSUM capability wired identically to VPU_FSUM != 0 && HAS_SS.
+- tests/test_rtl.py: 11 directed FSUM tests including 256x64 legal boundary and output/sum checks.
+- .github/workflows/sunnyone-fsum-guard.yml: focused CI workflow.
+- Focused run 45911471194 SUCCESS: 11 passed, 219 deselected.
+- Full-chip lint 45911470968 SUCCESS: 76 width warnings (52 expand, 24 truncation), 3 UNOPTFLAT and 7 LATCH remain. Loop-stack run 45911470960 SUCCESS; isolated 128K TMEM run 45911470982 SUCCESS.
+- RSUM take without a pending producer is now rejected; HALT with pending sums reports error. Valid RSUM+FSUM take is preserved.
+- OPEN: the sequencer does not yet store per-producer sum address/row metadata, so exact take-to-oldest-producer destination/row matching remains an ISA simulator vs hardware semantic gap. Do not mark complete.
+- PPA workflow push path now requires an explicit docs/sunnyone/PPA_REQUEST.md commit; ordinary RTL/flow edits no longer auto-launch full-chip PPA. Manual dispatch remains; no PPA was run.
+- Other branch workflows (board, Qwen, reset, ASIC config, RTL tail, subsystem/memory, software/ISA) were still pending/in progress at checkpoint; poll before claiming.
+- Main unchanged; API reports protection disabled; preserve no-main rule. No spending. Manufacturer handoff NOT READY.
+Full report: docs/sunnyone/FSUM_HARDWARE_GUARD_REPORT_2026-11-27.md.

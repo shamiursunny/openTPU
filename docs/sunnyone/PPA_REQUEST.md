@@ -11,3 +11,7 @@ To request a new PPA run on the feature branch:
 Current request: NONE
 
 Do not use this marker for ordinary RTL progress commits. The PPA workflow is intentionally excluded from broad RTL path changes to avoid repeated multi-hour runs. 
+
+## PPA execution safety update — 2026-11-27
+
+The WG8 PPA workflow now runs on push only when `docs/sunnyone/PPA_REQUEST.md` is explicitly changed. Normal RTL, target and flow commits do not trigger a full-chip PPA automatically. The workflow_dispatch entry remains available for a deliberate run after resource eligibility, zero-spend constraints and the exact source SHA are reviewed. This control was added after the documented 16 GB host-memory OOM-kill evidence. No PPA run was dispatched as part of the FSUM guard work.

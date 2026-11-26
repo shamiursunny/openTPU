@@ -144,3 +144,11 @@ Verification reconciliation: Qwen 45877786754 SUCCESS (6 real-checkpoint RTL + 8
 G7 remains FAIL/PARTIAL: only early floorplan data exists; no route or signoff. G1/G2 remain OPEN/PARTIAL pending synthesizable FSUM row-bound protection for FSUM-enabled BCU targets. G3 remains OPEN for 76 width warnings and unresolved elaborated UNOPTFLAT paths. All other applicable gates remain as previously recorded. Manufacturer handoff remains NOT READY.
 
 Full resource diagnosis: docs/sunnyone/PPA_RESOURCE_DIAGNOSIS_2026-11-27.md.
+
+## 2026-11-27 FSUM gate update
+
+G1/G2 FSUM bounds guard: IMPLEMENTED / TARGETED CI PASS (45911471194: 11 passed, 219 deselected). The sequencer rejects zero/>256 rows, <64 columns, scalar B, unsupported FSUM VOPs, disabled effective capability, and RSUM take with no pending producer. The pending counter is resettable and HALT with untaken sums raises error. The 256x64 legal producer/take path passed with output and row-sum checks.
+
+Residual OPEN item: hardware does not yet retain per-producer sum destination/row metadata, so exact RSUM take matching to the oldest producer is not checked in hardware (the ISA simulator checks it). Do not mark the entire FSUM ISA contract closed.
+
+Full-chip lint 45911470968 SUCCESS: 76 width warnings, 3 UNOPTFLAT and 7 LATCH remain. Manufacturer handoff remains NOT READY. PPA push trigger now requires explicit PPA_REQUEST.md commit; no PPA run was launched.

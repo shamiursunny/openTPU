@@ -514,3 +514,16 @@ Proposed R-stage rejection before dispatch:
 5. Keep RSUM take ordering/pending-sum semantics as a separate review; do not add unsupported shape restrictions to the take.
 
 Existing `tests/test_rtl.py::test_attention_decode_fsum_rtl` provides valid functional FSUM coverage, but not the malformed raw-command negative/boundary tests required here. Add focused RTL tests for legal 256x64/non-scalar, 257 rows, 63 cols, scalar B, FSUM-disabled EXP2SUB, FSUM-disabled RSUM, and flag-on-other-function; prove invalid commands halt with error before VPU dispatch. No source/test changes or tests were run by this review.
+
+
+## 19. FSUM sequencer guard and PPA trigger control — 2026-11-27
+
+The synthesizable sequencer guard is now implemented and verified. FSUM capability is passed to the sequencer as VPU_FSUM != 0 && HAS_SS, matching the VPU. The R-stage rejects EXP2SUB+FSUM rows 0 or >256, columns <64, scalar B mode, FSUM on unrelated VOP functions, and FSUM commands when the effective capability is absent. A 32-bit pending counter tracks dispatched EXP2SUB producers and RSUM takes; an unmatched take and HALT with untaken sums now raise error. The valid RSUM+FSUM take remains accepted.
+
+Focused CI 45911471194 SUCCESS: 11 passed, 219 deselected; legal 256x64 producer/take and output/sums passed. Full-chip lint 45911470968 SUCCESS with 76 width, 3 UNOPTFLAT and 7 LATCH warnings still open. Loop-stack and isolated 128K TMEM checks succeeded.
+
+OPEN semantic gap: the sequencer counter does not store per-producer sum destination/row metadata. Exact RSUM take destination and row-count matching against the oldest producer remains enforced by the ISA simulator but is not independently enforced by hardware. Keep this explicit in the signoff matrix.
+
+PPA safety: WG8 push trigger now requires an explicit docs/sunnyone/PPA_REQUEST.md commit. Ordinary RTL/flow commits cannot auto-launch PPA; workflow_dispatch remains for deliberate approval. No PPA dispatched.
+
+Report: docs/sunnyone/FSUM_HARDWARE_GUARD_REPORT_2026-11-27.md.
