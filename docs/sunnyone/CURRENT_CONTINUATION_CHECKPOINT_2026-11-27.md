@@ -168,3 +168,16 @@ The plan, checkpoint and tracker are present on the feature branch. No RTL/test/
 - Corrected .github/workflows/sunnyone-asic-wg8-ppa.yml in commit e2d96d5364af47503d67cb70635bf3485cbe9b33 (blob 426cfcc62ac4ca1d90cf52b06a0e9009b83a1c29). It now pulls the immutable manifest digest, verifies the resolved image ID exactly, and archives both the image reference and ID. Docker --cpus 2 and cgroup telemetry remain.
 - Updated the integrated plan with this correction in commit 57772f70dd335ec519f38e6f3ed75e392122bd61 (blob 7b826a30775e51e5f80ef567713213d8f4ec414c).
 - No PPA diagnostic run has been dispatched. The change improves reproducibility but does not resolve the prior Error 247 or establish OOM. Next review the exact updated workflow, then decide whether a single diagnostic dispatch is justified.
+
+
+## Latest lint triage — 2026-11-27
+
+- Created docs/sunnyone/LINT_AND_COMBINATIONAL_PATH_TRIAGE_2026-11-27.md in commit e18c5715f11146b0795642251f958d71b9ff1229.
+- Source review confirms all seven LATCH diagnostics in rtl/seq/otpu_seq.sv occur inside ifndef SYNTHESIS diagnostic code; the ASIC synthesis flow defines SYNTHESIS. They are simulation-only and not evidence of hardware latches. Do not change functional RTL to silence them. A synthesized-netlist latch-cell check remains open.
+- pq: likely guest-to-host aliasing false positive; generated g_copy/g_guest mapping and host_of(p) function imply one-way guest-to-owner mapping. Confirm in elaborated netlist.
+- sc_gl: likely process-level dependency over-approximation; cgl_c calculation itself does not read coll_gnt, although the same always_comb process assigns gnt_c[G_COLL] from coll_gnt. Confirm in elaborated graph before splitting.
+- aok: likely vector-level dependency over-approximation; priority logic reads only earlier indices h<g. Confirm per-bit graph.
+- gnt: remains unresolved and highest priority. The Verilator example path reaches the VPU delay enable, but the actual combinational return path has not been proven. Resolve exact parameters and SCC/netlist graph; no register insertion or grant restructuring without proof.
+- Updated MANUFACTURER_HANDOFF_READINESS_MATRIX.md G3 notes in commit 0a3f947610157359f28531f6d0bb6d9ede6b145f; G3 remains OPEN due UNOPTFLAT and width-warning work.
+- Updated integrated plan with source-level lint triage in commit 8ba5ded36e6eb52dde43b7f6f25ee7641a694e10.
+- No RTL changes and no new tests launched. Existing functional evidence remains unchanged.
