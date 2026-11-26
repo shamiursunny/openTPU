@@ -1128,3 +1128,7 @@ Full-chip lint passed on DMA-refactor SHA `2835f1a8da6af454023caff9576f41258c66e
 ## 2026-11-26 readiness re-assessment
 
 Manufacturer handoff remains **NOT READY**. New evidence closes selected digital gates only: RTL tail (33 passed, 1 intentional skip), reset audit (4 passed), and a four-DIMM host/accelerator contention simulation with a logged PASS. Full-chip lint passes but retains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings requiring triage. WG8 PPA, Qwen exact-SHA rerun, board-only, subsystem/memory and software/ISA verification are not yet terminal. No routed signoff, production PCIe/SerDes, DDR PHY, DFT, PDK, package, CDC/RDC/formal closure or real hardware measurements have been established. Do not represent this design as tapeout-ready or production-ready. See `docs/sunnyone/CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md` for exact evidence and next steps.
+
+
+### Stream RTL evidence update — 2026-11-26
+The selected Stream RTL regression passed 14 tests in 1184.62 s on the DMA experiment revision (workflow 45845758545, job 139998866364). This is selected RTL evidence only; DMA/scoreboard, remaining subsystem tests, PPA, formal/CDC/RDC, physical implementation and production IP remain open. Manufacturer handoff remains **NOT READY**.
