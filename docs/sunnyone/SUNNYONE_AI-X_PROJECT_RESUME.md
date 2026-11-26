@@ -1253,3 +1253,16 @@ Hard constraints: do not rerun historical RTL groups 3.1, 3.2 or 4; do not rerun
 - Finalized workflow revision commit `bddf9708657766951e5c0d204ef474d742e53418` pins `transformers==5.24.1` alongside CPU `torch==2.11.0` and `huggingface_hub==2.3.0`; this avoids the v4.x Hub<1.0 dependency conflict and is compatible with the Qwen3 classes used by the eight tiny-model tests. The workflow runs the real pinned Qwen3/Qwen3.5 RTL cases and then separately runs the exact eight previously skipped tiny board-model cases.
 - Current run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), job `139870207686`, source SHA `bddf9708657766951e5c0d204ef474d742e53418`: IN_PROGRESS; checkout and Python setup passed; pinned Verilator 5.044 build is running. No dependency install, model download or pytest result yet.
 - Earlier run 45808346935 and queued run 45808406729 were cancelled by same-workflow supersession before their test stages. The original run 45807130675 remains a recorded failure at the false-positive extra-cache-file verification check; it did successfully download both checkpoint repositories.
+
+## Continuation checkpoint — 2026-11-26 (Asia/Dhaka)
+
+- Repository: `shamiursunny/openTPU`.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Feature-branch HEAD before this checkpoint update: `d60833aafa83f38d94c66ed610146cbcddaa3c57`.
+- Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify.
+- Never rerun passed RTL groups 3.1, 3.2 or 4 merely to reconfirm.
+- Do not restart user-cancelled workflow 45765362426.
+- Existing Qwen real-checkpoint run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468), run SHA `bddf9708657766951e5c0d204ef474d742e53418`, was still running at 18:35 Asia/Dhaka. Steps 1–7 passed, real Qwen3/Qwen3.5 RTL cases at step 8 were running, eight tiny-model tests at step 9 and log upload at step 10 were pending. No Qwen result may be claimed until the run reaches a terminal state and logs are inspected.
+- Immediate next action: poll that exact run; inspect pytest output/artifact; record exact pass/fail/skip counts; diagnose any failure without weakening checks or using dummy checkpoints.
+- Then continue outstanding four-DIMM adversarial AXI, formal, lint, CDC/RDC, research PPA, PCIe/DMA/IOMMU, DDR4 PHY/controller/ECC, SRAM/DFT, physical/package/board, silicon and commercial validation tasks.
+- All work remains zero-spend unless explicitly approved. Keep evidence tied to exact commit SHAs. Do not describe the logical design as tapeout-ready, production-ready or silicon-validated.
