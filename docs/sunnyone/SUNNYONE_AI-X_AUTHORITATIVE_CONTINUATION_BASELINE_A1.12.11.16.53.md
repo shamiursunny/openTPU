@@ -468,3 +468,7 @@ The broad legacy RTL matrix was guarded in commit `4999b964d891d02fb93cb805162d5
 ## 15. Verification progress poll — 2026-11-26 21:10 Asia/Dhaka
 
 Current run IDs, statuses, completed lint warning inventory, and the broad-matrix cancellation details are recorded in `PROJECT_TRACKER.md` section 12, live poll subsection. At the poll, full-chip lint passed with 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings; no warning referenced `rtl/dma/otpu_dma.sv`. The DMA stream arithmetic refactor remains unqualified until the active Stream RTL/Qwen regressions and new WG8 PPA report finish. Do not start more builds before the automatically triggered run set completes. Main remains unchanged.
+
+## 16. Critical-path source-bit clarification
+
+The reported PPA startpoint `sc[254]` maps to `sc.op[6]` because `cmd_t` is a 256-bit packed struct with 8-bit opcode first and `AWX=4`. Thus the path includes opcode-dependent setup/decode and source selection; the runtime-selected stream divisor may contribute downstream, but the available report does not quantify the divider's share. The constant-divisor rewrite is a measured experiment only; use the new STA report to determine whether the critical path moved or improved.
