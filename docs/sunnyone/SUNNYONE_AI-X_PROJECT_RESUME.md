@@ -1283,3 +1283,8 @@ Run [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/458085514
 ## Current CI poll — 2026-11-26 21:10 Asia/Dhaka
 
 See PROJECT_TRACKER.md section 12 live poll for exact statuses. Full-chip lint passed but existing warning debt remains. ASIC target/config and integrated lint passed; four-DIMM simulation is in progress. Stream RTL, RTL tail, reset audit, board tests, Qwen rerun and WG8 PPA are in progress; remaining subsystem/software jobs are queued. Do not launch more CI. The legacy groups 3.1/3.2/4 rerun attempt was cancelled before tests and the replacement guard was skipped. The constant-divisor DMA rewrite is not yet proven by RTL tests or new PPA.
+
+
+## Verification continuation — 2026-11-26
+
+The latest checkpoint records new exact-SHA results: RTL tail 33 passed / 1 intentional skip; reset audit 4 passed; four-DIMM ASIC/target integration simulation PASS for simultaneous host/accelerator contention and response routing; full-chip lint SUCCESS with warning debt (52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT). The PPA, Qwen, board-only, subsystem and software runs remain open. Read `docs/sunnyone/CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md` before continuing and poll the listed workflow IDs. No additional workflows were started during this update.
