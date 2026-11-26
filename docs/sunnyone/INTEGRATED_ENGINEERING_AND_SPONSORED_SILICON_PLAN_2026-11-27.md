@@ -476,3 +476,22 @@ No RTL was modified and no new workflow was launched during this review. Main re
 - `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
 - A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
 - Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
+
+
+## 18. Live verification reconciliation and PPA resource diagnosis — 2026-11-27
+
+The live workflow poll and archived logs now supersede the earlier in-progress statuses in sections 15–17:
+- Qwen 45877786754 SUCCESS: 6 real-checkpoint RTL tests passed (4 deselected) and 8 tiny board-model cases passed (199 deselected).
+- Board-functional 45877786742 SUCCESS: 198 passed, 8 skipped, 1 deselected.
+- Subsystem/memory 45877786699: all 14 jobs SUCCESS; 385 passed, 1 documented skip across archived per-job logs.
+- Software/ISA 45877786705: all 15 jobs SUCCESS; 825 passed, 3 skipped across archived per-job logs.
+- Reset 45877786738, ASIC config 45877786860, RTL tail 45877807906, isolated 128K TMEM 45877807985 and LOOP stack guard 45877985241 all SUCCESS. The focused LOOP stack guard had 2 passed / 217 deselected.
+- WG8 PPA 45877786710 FAILURE and terminal; no active PPA run remains in this listed set. No workflow was relaunched during reconciliation.
+
+The full PPA artifact is documented in docs/sunnyone/PPA_RESOURCE_DIAGNOSIS_2026-11-27.md. The immutable image digest and local ID were verified; Docker --cpus 2 was applied and OpenROAD reported two threads. Floorplan, macro placement and tap-cell insertion completed; failure occurred in 2_4_floorplan_pdn/check_placement with ORFS Error 247. The artifact's cgroup telemetry records memory.max=max, memory.peak=16,155,115,520 bytes and final oom_kill=1 (oom=0, oom_group_kill=0, max=0); host MemTotal was 16,366,484 kB. This is a confirmed OOM-kill event and strongly supports host-level memory exhaustion, but no kernel victim-selection log was archived. Do not claim a more specific kernel mechanism.
+
+Decision: do not rerun full-chip PPA on an equivalent 16 GB runner. Consider only a justified zero-cost larger-memory runner or a technically valid staged diagnostic; no automatic retry or spend.
+
+The 01:37 note that ORFS_CPUS was ignored is superseded by docs/sunnyone/CONTINUATION_REVIEW_2026-11-27_0145.md: the actual CLI reads ORFS_CPUS and passes the parsed value into run(), so the workflow used two workers. Do not change flow.py based on the stale diagnosis.
+
+Remaining high-priority engineering work is FSUM synthesizable bounds rejection and boundary tests; exact elaborated-netlist/SCC analysis of UNOPTFLAT; semantic closure of the remaining 76 width warnings and ASIC AW/AR width warnings; formal/SVA, CDC/RDC and synthesized-netlist latch checks; then PDK/macro/physical/interface/DFT/board/manufacturer gates. Manufacturer handoff remains NOT READY. Track A and Track B stay separate.
