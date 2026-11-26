@@ -351,3 +351,17 @@ The workflow was corrected in commit e2d96d5364af47503d67cb70635bf3485cbe9b33:
 - Keep the existing two-CPU Docker limit and cgroup resource telemetry.
 
 This closes the mutable-image-tag reproducibility gap for the next diagnostic. It is a workflow-only change, not PPA evidence. No PPA run has been dispatched by this correction. Review the resulting workflow on the branch before deciding whether to dispatch the one diagnostic attempt. The pinned image is the same image used by the failed reference run; the run's resource cause remains unconfirmed.
+
+
+## 13. Lint and combinational-path source triage — 2026-11-27
+
+Detailed evidence is recorded in docs/sunnyone/LINT_AND_COMBINATIONAL_PATH_TRIAGE_2026-11-27.md and reflected in the manufacturer matrix.
+
+- All seven LATCH diagnostics in rtl/seq/otpu_seq.sv are within ifndef SYNTHESIS diagnostic branches. The ASIC flow defines SYNTHESIS, so these seven variables are excluded from hardware synthesis. Do not change functional RTL to silence them. A final synthesized-netlist latch-cell check remains required.
+- pq aliasing is likely a Verilator packed-array granularity false positive: guest ports alias a selected host_of(p) port, while only host_of(p)==p creates the owning g_copy. Confirm the generated graph.
+- sc_gl is likely a process-granularity false positive: cgl_c is calculated from request/conflict state in a process that also assigns gnt_c[G_COLL] from coll_gnt; cgl_c itself does not read coll_gnt. Confirm the elaborated graph before any process split.
+- aok is likely a packed-vector granularity false positive: the priority loop only depends on lower-index aok[h] values for h<g. Confirm per-bit dependency.
+- gnt remains OPEN and is the highest-priority structural path. Trace the exact parameterized VPU/TMEM request/grant graph and sequential boundaries; do not insert a register or change handshake semantics based on the warning alone.
+- The 79 width warnings and ASIC-specific AW/AR port-width warnings remain open.
+
+The manufacturer handoff matrix G3 remains OPEN. Source-level triage is not equivalent to a clean lint or a synthesized-netlist proof.
