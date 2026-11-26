@@ -2574,3 +2574,11 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - Full-chip lint run 45877786797 SUCCESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4: 76 width warnings (52 expand, 24 truncation), down from 79; three direct stack-index truncation warnings removed.
 - PPA run 45877786710 still IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4 using immutable ORFS manifest digest and cgroup telemetry. Do not dispatch another while active.
 - Integrated plan updated in commit d79f7592703a2706a74cd8438e2671f2d4944aab; checkpoint updated in commit 9ddcdebab56abad10b509e0127b75354dc7eb775.
+
+
+## 110. 2026-11-27 manufacturer matrix refreshed with loop-stack and lint evidence
+
+- Updated docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md in commit 021f0b8c99e16d125980304602aeb51e6580acd2 (blob 8e7470cbaf9d4d96ba9c41e161f2bf417f47810b).
+- Matrix now records loop-stack boundary tests 2/2 passed, isolated 128K one-copy TMEM investigation 2/2 passed, and full-chip lint warning delta 79 to 76.
+- These results close only the tested loop-stack boundary and isolated TMEM cases. The broader functional, formal, CDC/RDC, lint, PPA, technology-port, physical, DFT, package and manufacturer gates remain open.
+- PPA run 45877786710 remains IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4; do not dispatch a duplicate. The dedicated loop-stack workflow 45877985241 and TMEM investigation 45877807985 are SUCCESS.
