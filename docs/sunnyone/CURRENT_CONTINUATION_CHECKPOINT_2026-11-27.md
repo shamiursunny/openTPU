@@ -406,3 +406,16 @@ Correction to the preceding note: editing PPA_REQUEST.md itself initially trigge
 The corrected workflow is in commit 98335138bd73751699afc4a31ce0b206ff2720a1. Push paths are now docs/sunnyone/PPA_EXECUTE_REQUEST.md and the workflow file; a push job also requires [RUN-PPA] in the commit message. The correction run 45911965872 was SKIPPED and caused cancellation of the accidental run. PPA_REQUEST.md is documentation only. Do not create PPA_EXECUTE_REQUEST.md or use workflow_dispatch without explicit user approval of the exact source SHA.
 
 Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
+
+
+## Continuation state refresh — 2026-11-27 05:54 Asia/Dhaka
+
+- Re-read this checkpoint, CONTINUATION_ADDENDUM_2026-11-27_0137.md, CONTINUATION_REVIEW_2026-11-27_0145.md, integrated plan, tracker, manufacturer readiness matrix, FSUM report and PPA trigger incident report from the active feature branch.
+- Live compare before this documentation save: feature branch 917 commits ahead / 0 behind main; merge base and main SHA d84db55712aba0d40811d7762cb052f05d55b7e5. The compare response did not expose feature HEAD. Tracker update commit 18ebfc9e967b58cc85c766bb2e21cc1b032d5d5d is now the known branch tip immediately before this checkpoint update.
+- Tracker was updated in commit 18ebfc9e967b58cc85c766bb2e21cc1b032d5d5d; resulting tracker blob 96b9c4fc49153096b3166f32c66ff79238ce9b93.
+- Current source review confirms FSUM guard targeted workflow 45911471194 passed 11 tests, but exact RSUM take matching by producer destination/row count remains OPEN because hardware tracks only a pending count, not a producer metadata FIFO.
+- Prior workflow successes and the PPA OOM-kill diagnosis remain bounded historical evidence. This continuation did not launch, cancel or rerun CI; no RTL, test or workflow source was changed.
+- PPA remains unauthorised. Do not create docs/sunnyone/PPA_EXECUTE_REQUEST.md or invoke workflow_dispatch without explicit approval of the exact source SHA. Preserve the incident record for cancelled partial run 45911873124.
+- Next: obtain a true live Actions status poll if an available endpoint permits; then address RSUM producer metadata parity and remaining width/UNOPTFLAT/formal/CDC/mapped-latch/physical/manufacturer gates in dependency order. Manufacturer handoff remains NOT READY.
+- Hard controls: do not modify main; do not restart cancelled run 45765362426; do not rerun groups 3.1, 3.2 or 4 solely to reconfirm; zero spend; keep Track A full product separate from Track B demonstrator.
+- This is a documentation-only save and does not claim that all engineering or tapeout tasks are complete.
