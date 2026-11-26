@@ -2605,3 +2605,41 @@ A further review of `opentpu/host/board.py::Board.load_program` found that the h
 - `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
 - A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
 - Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
+
+
+## 112. 2026-11-27 live reconciliation — completed verification and PPA OOM diagnosis
+
+Live branch ref at the start of this update: 0af11ca294d12e0f5caa3fdf88c42b402a7f099a. Project main remains d84db55712aba0d40811d7762cb052f05d55b7e5 and was not modified. GitHub API reports main protection disabled; the project rule remains do not touch main.
+
+### Completed workflows, polled from GitHub and inspected from archived logs
+- WG8 PPA 45877786710: FAILURE, terminal. Full artifact 15152974135 was downloaded and inspected; report is docs/sunnyone/PPA_RESOURCE_DIAGNOSIS_2026-11-27.md.
+- Qwen 45877786754: SUCCESS. Real official Qwen checkpoint RTL tests: 6 passed, 4 deselected; tiny board-model tests: 8 passed, 199 deselected.
+- Board-functional 45877786742: SUCCESS, 198 passed, 8 skipped, 1 deselected.
+- Subsystem/memory 45877786699: all 14 jobs SUCCESS. Archived per-job pytest logs sum to 385 passed and 1 documented 64-GiB address-window skip. Do not combine these counts with older workflow totals.
+- Software/ISA 45877786705: all 15 jobs SUCCESS. Archived per-job logs sum to 825 passed and 3 skipped.
+- Reset audit 45877786738: SUCCESS.
+- ASIC configuration 45877786860: SUCCESS.
+- RTL tail 45877807906: SUCCESS.
+- Isolated 128K one-copy TMEM 45877807985: SUCCESS, 2 passed, 217 deselected.
+- LOOP stack guard 45877985241: SUCCESS, 2 passed, 217 deselected.
+No workflow was rerun or dispatched during this reconciliation.
+
+### PPA root cause evidence
+- PPA source SHA: 28c36c52204fe2ec2ed36413b02eb6043506ccc4; job 140109157212.
+- Immutable ORFS manifest sha256:f5b2b4ac8cae150c30ad86857328300e20662cf7ff555978711ea8936f8d9539; local image ID sha256:edbd355068b742c5ae2413a49a58578465bd52f57668cebebdd383eb4d97607d.
+- Docker --cpus 2 was applied; OpenROAD log says 2 threads.
+- Floorplan, macro placement and tap-cell insertion completed. Failure occurred during 2_4_floorplan_pdn/check_placement; ORFS Error 247, make exit 2.
+- Host MemTotal 16,366,484 kB; cgroup memory.max was max; memory.peak 16,155,115,520 bytes; final memory.events recorded oom_kill 1, oom 0, oom_group_kill 0, max 0. OpenROAD 2_1 floorplan peak was 15,535,996 kB.
+- This is a confirmed cgroup-recorded OOM-kill event and strongly supports host-level memory exhaustion because the cgroup had no memory cap and peak use approached host RAM. No kernel victim-selection record was archived; do not overstate the exact OS mechanism.
+- Do not repeat this full-chip PPA on an equivalent 16 GB runner. No automatic retry. A zero-cost larger-memory runner or technically valid staged diagnostic must be justified first. No spend without explicit approval.
+
+### Correction to stale CPU-propagation note
+The 01:37 addendum's claim that the actual workflow ignored ORFS_CPUS was corrected by the 01:45 review. The current CLI reads ORFS_CPUS and passes the parsed value to run(); the active workflow therefore did use two workers. Do not modify tools/asic/flow.py based on the stale claim.
+
+### Remaining blockers and next order
+1. Resolve the FSUM 256-row hardware bounds for the two FSUM-enabled BCU targets. The existing FSUM assertion is simulation-only and Board.load_program accepts raw words. Design the narrow sequencer-side invalid-command guard using the established error/halt path, then add boundary and invalid-command RTL tests. ISA contract: EXP2SUB+FSUM rows 1..256, cols >=64, B mode 0/1/2; scalar B mode 3 forbidden. Reject FSUM-flagged operations when capability is disabled. Review RSUM take semantics separately.
+2. Continue exact elaborated-netlist/SCC proof for gnt, sc_gl, pq and aok.
+3. Triage the remaining 76 width warnings and ASIC-specific AW/AR port-width warnings with exact source/configuration and boundary tests.
+4. Expand formal/SVA, CDC/RDC and synthesized-netlist latch-cell checks.
+5. Keep Track A full product separate from Track B demonstrator. Verify IHP PDK compatibility and written sponsorship/eligibility/sample/shipping terms before any demonstrator integration.
+6. Manufacturer handoff remains NOT READY. Zero-spend, no-main, no-cancelled-run, and no-repeat-successful-test controls remain active.
