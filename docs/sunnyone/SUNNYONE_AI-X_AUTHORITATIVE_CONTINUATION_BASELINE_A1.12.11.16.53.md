@@ -479,3 +479,7 @@ The reported PPA startpoint `sc[254]` maps to `sc.op[6]` because `cmd_t` is a 25
 On the DMA stream-setup experiment source SHA `2835f1a8da6af454023caff9576f41258c66e2a8`, the RTL-tail regression passed 33 tests with 1 intentional parameter skip (183 deselected); the Yosys+Slang reset audit passed 4 tests; and the four-DIMM ASIC/target integration job completed with a logged PASS for simultaneous host/accelerator contention, alternating grants, ordered writes, B/R ID routing and independent backpressure. Full-chip lint passed but retains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings; these remain open for triage. See `PROJECT_TRACKER.md` section 14 and `CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md` for run IDs, artifact digests and detailed limitations.
 
 PPA, real-checkpoint Qwen, board-only, subsystem/memory and software/ISA workflow runs remain in progress/queued at the latest poll. Do not launch overlapping builds; inspect terminal logs and exact-SHA evidence when available. No physical, production or manufacturer-readiness claims are supported.
+
+
+### Stream datapath exact-SHA verification — 2026-11-26
+Stream RTL selected regression passed **14 tests in 1184.62 s** on the DMA experiment source revision (workflow 45845758545, job 139998866364; artifact 15132346982). DMA/scoreboard and other subsystem tests remain open; this does not constitute full DMA verification or formal equivalence. See the current continuation checkpoint for the live workflow matrix.
