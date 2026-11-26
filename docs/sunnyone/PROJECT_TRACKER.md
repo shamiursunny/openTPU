@@ -2409,3 +2409,26 @@ No new CI runs were launched. Do not start additional builds until the existing 
 - Qwen 45845758847 remains in the real-checkpoint RTL pytest step; its eight tiny-model tests have not started.
 - Board-only run 45845758677 remains in board-functional pytest.
 - No additional CI runs were launched. Re-poll before any further action.
+
+
+## 15. Live verification continuation — 2026-11-26 22:28 Asia/Dhaka
+
+Operational checkpoint: `docs/sunnyone/CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md` (latest poll and exact workflow IDs).
+
+Active feature branch at the start of this update was `f88e5a8d581da5710240c25a39aa8778f87b7e8f`; protected project `main` remained `d84db55712aba0d40811d7762cb052f05d55b7e5`. Branch comparison: 818 ahead, 0 behind. The RTL experiment SHA under test remains `2835f1a8da6af454023caff9576f41258c66e2a8`. No new workflows were launched. Zero-spend and all historical RTL group exclusions remain active.
+
+### Exact-SHA terminal results inspected
+- Board-functional run 45845758677: 198 passed, 8 skipped (PyTorch-dependent), 1 deselected, 4254.89 s; artifact 15137400985, SHA-256 `d0adc900e0ef37ecec1f2715a555e0e822306a79b01bb562b1bbfa23d4f8f9d8`.
+- RTL tail run 45845758636: 33 passed, 1 intentional skip, 183 deselected.
+- Reset/power-up audit run 45845758496: 4 passed.
+- ASIC/target config run 45845758681: SUCCESS; four-DIMM contention simulation PASS for concurrent host/accelerator requests, arbitration, ordered writes, response IDs and backpressure.
+- Subsystem run 45845758545: MX multiply/replay 17 passed; quantizer corners/tie rounding 8 passed; quantizer modes 15 passed; collective hub/DMA/scoreboard 128 passed; QST/QSTB 13 passed; SPLITQ 5 passed; instruction cache 23 passed; address-window 20 passed/1 expected 64-GiB skip; FP 8 passed; QHL 7 passed; Stream 14 passed; wait-state 11 passed. Reset-audit and native DRAM/technology RAM jobs were still running at poll.
+- Full-chip lint run 45845758782: SUCCESS, Verilator 5.032; warning debt remains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT. No warning suppression/waiver has been applied. LATCH warnings at `rtl/seq/otpu_seq.sv:1153` and `:1823`; UNOPTFLAT at `rtl/top/otpu_slice.sv:611`, `rtl/top/otpu_top.sv:156`, `rtl/mem/otpu_tmem.sv:297`. Structural review remains open.
+
+### In-progress / queued
+- WG8 PPA run 45845758658: pinned ORFS job in progress; no terminal report/artifact yet. DMA constant-divisor rewrite is not accepted as timing improvement until exact report comparison with baseline 45545698546.
+- Qwen run 45845758847: pinned Verilator/dependencies/checkpoint validation passed and real-checkpoint Qwen RTL step completed SUCCESS; separate eight tiny board-model cases still running at poll.
+- Subsystem run 45845758545: reset-audit and native DRAM/technology RAM jobs in progress.
+- Software/ISA run 45845758659: FP, MX, compiler, ISA, kernels, VOPS, stream, formats, quant and dataflow jobs completed SUCCESS; waits job in progress; waitw, host, host-runs and host-lock queued.
+
+Do not start replacement workflows while any of these are active/queued. Do not rerun RTL groups 3.1, 3.2 or 4; do not restart cancelled run 45765362426. Preserve all exact test outcomes, skips and limitations. Manufacturer handoff remains NOT READY: timing closure, full formal, CDC/RDC, remaining verification, production PCIe/PHY/DMA/IOMMU, DDR controller/PHY/ECC, SRAM/DFT, PDK/package/physical signoff, hardware qualification and measured workload/power/thermal/commercial evidence remain open.
