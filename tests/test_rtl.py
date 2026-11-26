@@ -1709,3 +1709,32 @@ def test_axi_vt_append_random_stalls(have_verilator):
     assert np.array_equal(drams[0], m.slices[0].dram)
     assert np.array_equal(tmems[0], m.slices[0].tmem)
     assert sum(d["rmw_a"] for d in st["axi_detail"]) == 0, st["axi_detail"]
+
+
+def _nested_loop_program(depth):
+    """Build distinct nested LOOP end points so the ISA's same-end restriction is respected."""
+    return ([I.loop(2 * (depth - i) - 1, 1) for i in range(depth)]
+            + [I.nop() for _ in range(depth)] + [I.halt()])
+
+
+def test_loop_stack_maximum_legal_depth_four_rtl(have_verilator):
+    """The ISA permits four nested loops; the RTL must execute the maximum legal depth."""
+    cfg = Config(S=1)
+    dram = np.zeros(1 << 16, np.uint8)
+    prog = _nested_loop_program(4)
+    model = Machine(cfg, [prog], [dram.copy()]).run()
+    drams, tmems, stats = rtlsim.run(cfg, [prog], [dram.copy()])
+    assert not stats.get("error", False)
+    assert np.array_equal(drams[0], model.slices[0].dram)
+    assert np.array_equal(tmems[0], model.slices[0].tmem)
+
+
+def test_loop_stack_overflow_reports_error_before_out_of_range_rtl(have_verilator):
+    """A fifth non-zero nested LOOP must halt with ERROR, not write past the four-entry stack."""
+    cfg = Config(S=1)
+    dram = np.zeros(1 << 16, np.uint8)
+    prog = _nested_loop_program(5)
+    with pytest.raises(SimError, match="loop stack overflow"):
+        Machine(cfg, [prog], [dram.copy()]).run()
+    _, _, stats = rtlsim.run(cfg, [prog], [dram.copy()], error_ok=True)
+    assert stats.get("error") is True
