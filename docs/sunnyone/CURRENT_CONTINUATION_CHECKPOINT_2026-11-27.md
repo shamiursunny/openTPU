@@ -295,3 +295,9 @@ No RTL was modified and no new workflow was launched during this review. Main re
 - New findings and the exact acceptance/closure steps are recorded in `INPUT_BOUNDS_AND_PPA_RESOURCE_CONTROL_REVIEW_2026-11-27.md` and section 111 of the tracker.
 - No RTL changes or new workflows launched. Wait for the active PPA/Qwen/board and remaining matrix jobs; do not cancel or duplicate them. Correct `ORFS_CPUS` propagation only after run 45877786710 terminates.
 - FSUM hardware bounds remain OPEN for the two FSUM-enabled BCU target configurations. Manufacturer handoff remains NOT READY.
+
+
+### FSUM ingress follow-up — 2026-11-27
+
+- `Board.load_program` in `opentpu/host/board.py` accepts raw uint32 program arrays and does not perform FSUM semantic validation before writing the program to DRAM/IMEM. The existing compiler and ISA-simulator checks are not a mandatory load-time validator.
+- The FSUM bounds issue is therefore an unclosed end-to-end hardware safety risk on the two FSUM-enabled BCU targets. Trace `otpu_seq.error` and the established slice error/halt path before proposing a synthesizable rejection; `otpu_vpu` has no existing error output. No RTL changes made.
