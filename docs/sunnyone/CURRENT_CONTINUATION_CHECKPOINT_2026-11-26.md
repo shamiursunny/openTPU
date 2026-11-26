@@ -87,3 +87,5 @@ No new workflows were launched. Continue polling these existing jobs and inspect
 ### Additional poll — Stream RTL closed
 - Subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), Stream RTL job `139998866364`: **14 passed in 1184.62 s**, actual pytest log inspected; artifact 15132346982 (SHA-256 `f8175ca55e63471deab21903454650631e82e372aed70d4fbc96ed69dd0362f8`). Includes eight bit-exact stream RTL configurations plus destination-order tests.
 - At latest poll the subsystem matrix still had quantizer-corners and quantizer-modes running, DMA/scoreboard and other groups queued. Software VOPS remained running, other software groups queued. PPA, Qwen and board-only remained in progress. Continue polling; do not launch replacement jobs.
+### Quantizer mode regression closed
+- Run [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), job `139998866077`: **15 passed in 660.95 s**; actual pytest output inspected. Artifact 15132302427, SHA-256 `387665baf7c670e1329c14d4e9ddc09e8027d6c33be559817d23ff91fe7db1ca`.
