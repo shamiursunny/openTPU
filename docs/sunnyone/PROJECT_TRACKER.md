@@ -2597,3 +2597,11 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 ### FSUM program-ingress confirmation — 2026-11-27
 
 A further review of `opentpu/host/board.py::Board.load_program` found that the host loader accepts raw uint32 word arrays and does not perform FSUM semantic validation before writing instructions to DRAM/IMEM. Compiler and ISA-simulator checks therefore do not prove a mandatory validated ingress boundary. The FSUM row-buffer bounds issue remains OPEN for `bcu1525-wg` and `bcu1525-x2`. `otpu_vpu` has no current error output; `otpu_seq` does expose `error`, so any correction must trace and reuse the established slice error/halt path. No RTL edit is made pending that design review.
+
+
+### Existing error/halt path traced — candidate guard location, not yet implemented
+
+- `otpu_seq` exposes `error` and its existing invalid decoded-operation branch sets both `error <= 1'b1` and `halted <= 1'b1` before dispatch (around lines 1702–1705).
+- `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
+- A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
+- Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
