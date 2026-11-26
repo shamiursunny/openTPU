@@ -1,6 +1,6 @@
 # SUNNYONE AI-X Project Tracker
 
-Last updated: 2026-11-25 (Asia/Dhaka)
+Last updated: 2026-11-26 (Asia/Dhaka)
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
 Protected working rule: do not modify `main`; all project work and tracker updates go to the active branch.
@@ -2432,3 +2432,20 @@ Active feature branch at the start of this update was `f88e5a8d581da5710240c25a3
 - Software/ISA run 45845758659: FP, MX, compiler, ISA, kernels, VOPS, stream, formats, quant and dataflow jobs completed SUCCESS; waits job in progress; waitw, host, host-runs and host-lock queued.
 
 Do not start replacement workflows while any of these are active/queued. Do not rerun RTL groups 3.1, 3.2 or 4; do not restart cancelled run 45765362426. Preserve all exact test outcomes, skips and limitations. Manufacturer handoff remains NOT READY: timing closure, full formal, CDC/RDC, remaining verification, production PCIe/PHY/DMA/IOMMU, DDR controller/PHY/ECC, SRAM/DFT, PDK/package/physical signoff, hardware qualification and measured workload/power/thermal/commercial evidence remain open.
+
+
+## 98. Continuation reconciliation — 2026-11-26 23:30 Asia/Dhaka
+
+The live continuation checkpoint was refreshed after independently rechecking the active feature branch and protected main. Branch HEAD at the start of this reconciliation was `4aa4018e420979b4441dd59e37710cee555376ed`; main remained `d84db55712aba0d40811d7762cb052f05d55b7e5`; feature branch 822 ahead / 0 behind. Verification runs below all target exact source SHA `2835f1a8da6af454023caff9576f41258c66e2a8`.
+
+- Qwen real checkpoints and tiny board models, run 45845758847: **6 real RTL cases passed, 4 deselected; 8 tiny board-model cases passed, 199 deselected**. Artifact 15136893309.
+- Subsystem/memory run 45845758545: all jobs terminal SUCCESS; combined selected logs **377 passed, 1 intentional skip**. Native DRAM/technology RAM job: **104 passed**. Reset audit job completed successfully (4 passed in the detailed audit record). Artifacts are retained for all selected jobs.
+- Software/ISA run 45845758659: all 15 jobs terminal SUCCESS; individual logs total **825 passed, 3 skipped**.
+- Board-functional run 45845758677: **198 passed, 8 skipped, 1 deselected**; artifact 15137400985.
+- RTL-tail run 45845758636: **33 passed, 1 intentional skip, 183 deselected**; artifact 15132004314.
+- ASIC/target run 45845758681: SUCCESS; four-DIMM contention simulation PASS markers inspected; artifact 15130743611.
+- Full-chip lint run 45845758782: SUCCESS, but warning debt remains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT. Artifact 15130078429. No warnings were suppressed or declared closed.
+- WG8 PPA run 45845758658: FAILED after floorplan timing reporting; OpenROAD exit 247 during 2_1_floorplan, peak memory 15,191,368 KB, no definitive exit cause in the log. Preliminary floorplan metrics: WNS/TNS 0.00 ns, worst slack +0.46 ns, minimum period 2.04 ns / 489.55 MHz; synthesis proxy cell area 30,786,988.162 um^2. This is not routed STA or signoff and is not accepted as a proven DMA rewrite improvement. PPA artifact 15137952036. Baseline run 45545698546 reports -10.43 ns WNS, -91.46 ns TNS, 12.93 ns / 77.31 MHz at floorplan, cell area 30,794,339.338 um^2; baseline artifact 14997807086.
+- No new workflow was launched during this continuation. Groups 3.1, 3.2 and 4 were not rerun; cancelled run 45765362426 was not restarted.
+
+**Next:** diagnose the PPA exit 247 before any retry; then complete a successful comparable physical flow and routed STA. Continue warning triage and formal/CDC/RDC and production integration gates. Manufacturer handoff remains NOT READY.
