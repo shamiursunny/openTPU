@@ -386,3 +386,26 @@ Highest-priority bounds checks:
 5. Review remaining arithmetic/shift/constant warnings for expression sizing, signedness, carry/borrow and parameter ranges. Use explicit casts only after proof.
 
 No RTL changes were made. The inventory and source-guard classification are evidence organisation, not lint closure. G3 remains OPEN and the manufacturer handoff remains NOT READY.
+
+
+## 15. Sequencer LOOP stack overflow guard — implementation and verification pending
+
+Source review found a real robustness gap: the ISA simulator rejects a fifth non-zero nested LOOP with SimError("loop stack overflow"), and docs/isa.md specifies maximum nesting depth 4. The RTL sequencer had a four-entry stack indexed by three-bit sp but did not visibly guard the push site.
+
+Implemented in rtl/seq/otpu_seq.sv, commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4:
+- Before a non-zero loop push, test sp >= 3'd4.
+- On overflow, set error and halted instead of writing outside the stack.
+- For legal depths, use sp[1:0] after the guard.
+- Legal four-level behaviour is unchanged by construction; it still requires regression evidence.
+
+Added two RTL tests in tests/test_rtl.py, commit c22c9b1be497b62253693e817d7d3b5fdca1c79f:
+- test_loop_stack_maximum_legal_depth_four_rtl
+- test_loop_stack_overflow_reports_error_before_out_of_range_rtl
+
+Added a dedicated workflow .github/workflows/sunnyone-loop-stack-guard.yml in commit 275728cd1484fb3b409ba59b9b409f29160c8f7e. Workflow run 45877985241 is IN_PROGRESS; do not claim the tests pass until its archived log and final status are inspected.
+
+The source commit automatically started the normal suites. Full-chip lint workflow 45877786797 completed SUCCESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4. Its log contains 76 width warnings (52 WIDTHEXPAND, 24 WIDTHTRUNC), down from 79; the three removed diagnostics were the direct 3-bit loop-stack indices. The seven simulation-only LATCH diagnostics and three UNOPTFLAT diagnostics remain. This is a measured lint improvement, not lint closure.
+
+WG8 PPA workflow 45877786710 is IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4 after the RTL change. The workflow now uses the immutable ORFS manifest digest and resource telemetry. Verify its logs, archived telemetry and final status before interpreting the result. No second PPA run should be launched while this one is active.
+
+Other source-triggered workflows on the same source SHA are in progress or queued: reset audit 45877786738, Qwen RTL 45877786754, board functional 45877786742, subsystem/memory 45877786699, software/ISA 45877786705 and ASIC config 45877786860. The tail run 45877787004 was cancelled by the newer commit; the replacement tail run 45877807906 is in progress on the test commit. The separate 128K one-copy TMEM investigation 45877807985 is also in progress. Do not restart the explicitly cancelled historical run 45765362426.
