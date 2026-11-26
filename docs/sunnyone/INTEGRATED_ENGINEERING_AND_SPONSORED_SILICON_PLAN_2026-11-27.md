@@ -495,3 +495,22 @@ Decision: do not rerun full-chip PPA on an equivalent 16 GB runner. Consider onl
 The 01:37 note that ORFS_CPUS was ignored is superseded by docs/sunnyone/CONTINUATION_REVIEW_2026-11-27_0145.md: the actual CLI reads ORFS_CPUS and passes the parsed value into run(), so the workflow used two workers. Do not change flow.py based on the stale diagnosis.
 
 Remaining high-priority engineering work is FSUM synthesizable bounds rejection and boundary tests; exact elaborated-netlist/SCC analysis of UNOPTFLAT; semantic closure of the remaining 76 width warnings and ASIC AW/AR width warnings; formal/SVA, CDC/RDC and synthesized-netlist latch checks; then PDK/macro/physical/interface/DFT/board/manufacturer gates. Manufacturer handoff remains NOT READY. Track A and Track B stay separate.
+
+### FSUM guard source review refinement — 2026-11-27
+
+Current source review confirms the guard can be placed at the R-stage dispatch decision, before the existing `p_v <= 1'b1; p_cmd <= dcmd` handoff. The resolved `dcmd` fields are available combinationally before dispatch:
+- `dcmd.op` is the opcode; FSUM applies only to `OP_VOP`.
+- `dcmd.flags[2]` is `VF_FSUM`.
+- `dcmd.w4[15:0]` is rows and `dcmd.w4[31:16]` is cols.
+- `dcmd.w6[23:16]` is VOP func and `dcmd.w6[25:24]` is B mode.
+- Package constants are `V_EXP2SUB=14`, `V_RSUM=16`, and `B_SCALAR=3`.
+- The VPU's effective feature enable is exactly `VPU_FSUM != 0 && HAS_SS`; pass this same effective value into a new sequencer parameter, not the raw config bit.
+
+Proposed R-stage rejection before dispatch:
+1. For an OP_VOP with VF_FSUM set, accept only func EXP2SUB or RSUM; flag bit 2 is not defined for other VOP functions.
+2. Reject both EXP2SUB+FSUM and RSUM+FSUM if the effective FSUM capability is disabled.
+3. For EXP2SUB+FSUM, reject rows==0, rows>256, cols<64, or B mode==3. ISA has no upper cols bound beyond the 16-bit field; do not invent one.
+4. Route every rejection through the existing `error <= 1'b1; halted <= 1'b1` branch and ensure it does not assert `p_v` or dispatch to the VPU.
+5. Keep RSUM take ordering/pending-sum semantics as a separate review; do not add unsupported shape restrictions to the take.
+
+Existing `tests/test_rtl.py::test_attention_decode_fsum_rtl` provides valid functional FSUM coverage, but not the malformed raw-command negative/boundary tests required here. Add focused RTL tests for legal 256x64/non-scalar, 257 rows, 63 cols, scalar B, FSUM-disabled EXP2SUB, FSUM-disabled RSUM, and flag-on-other-function; prove invalid commands halt with error before VPU dispatch. No source/test changes or tests were run by this review.
