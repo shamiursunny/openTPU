@@ -1132,3 +1132,5 @@ Manufacturer handoff remains **NOT READY**. New evidence closes selected digital
 
 ### Stream RTL evidence update — 2026-11-26
 The selected Stream RTL regression passed 14 tests in 1184.62 s on the DMA experiment revision (workflow 45845758545, job 139998866364). This is selected RTL evidence only; DMA/scoreboard, remaining subsystem tests, PPA, formal/CDC/RDC, physical implementation and production IP remain open. Manufacturer handoff remains **NOT READY**.
+### Quantizer mode evidence — 2026-11-26
+Selected quantizer mode RTL matrix passed 15 tests in 660.95 s (workflow 45845758545, job 139998866077). This is bounded digital verification, not full quantizer signoff or physical qualification. Manufacturer handoff remains **NOT READY**.
