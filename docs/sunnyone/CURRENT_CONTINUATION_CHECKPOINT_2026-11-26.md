@@ -8,7 +8,7 @@ Read this file first, then read `docs/sunnyone/PROJECT_TRACKER.md`. Verify the l
 
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
-Latest verified branch HEAD: `6ca69d24f9c7dbdd960e01531b7d64454c8ccaf3`
+Latest verified branch HEAD before this update: `f88e5a8d581da5710240c25a39aa8778f87b7e8f`
 Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5` — do not modify.
 Latest source RTL experiment: `2835f1a8da6af454023caff9576f41258c66e2a8` (DMA stream setup constant-divisor rewrite).
 Latest documentation clarification commit: `6ca69d24f9c7dbdd960e01531b7d64454c8ccaf3`.
@@ -97,3 +97,49 @@ No new workflows were launched. Continue polling these existing jobs and inspect
 - Qwen 45845758847 remains in real-checkpoint RTL pytest; tiny board-model tests not yet started.
 - Board-only 45845758677 remains in board-functional pytest.
 - No further CI jobs were launched. Continue polling existing runs only.
+
+
+## Continuation update — 2026-11-26 22:28 Asia/Dhaka (live GitHub verification)
+
+### Branch and safety recheck
+- Active branch HEAD before this checkpoint update: `f88e5a8d581da5710240c25a39aa8778f87b7e8f`.
+- Protected project `main` independently rechecked: `d84db55712aba0d40811d7762cb052f05d55b7e5`, unchanged.
+- Active branch is 818 commits ahead and 0 behind `main`.
+- The latest branch commit before this update only refreshed this continuation checkpoint; RTL experiment source remains `2835f1a8da6af454023caff9576f41258c66e2a8`.
+- Repository remains zero-spend. No new workflows were launched during this poll.
+
+### Newly inspected terminal evidence on exact RTL experiment SHA
+- Board-functional run [45845758677](https://github.com/shamiursunny/openTPU/actions/runs/45845758677), job `139998865583`: **198 passed, 8 skipped, 1 deselected in 4254.89 s**. The eight skips are the PyTorch-dependent tiny-model cases; the dedicated Qwen run below separately targets them. Artifact `15137400985`, SHA-256 `d0adc900e0ef37ecec1f2715a555e0e822306a79b01bb562b1bbfa23d4f8f9d8`.
+- RTL tail [45845758636](https://github.com/shamiursunny/openTPU/actions/runs/45845758636): **33 passed, 1 intentional skip, 183 deselected**.
+- Reset/power-up audit [45845758496](https://github.com/shamiursunny/openTPU/actions/runs/45845758496): **4 passed**.
+- ASIC/target configuration [45845758681](https://github.com/shamiursunny/openTPU/actions/runs/45845758681): SUCCESS; four-DIMM shared-memory contention simulation printed PASS for concurrent host/accelerator AW/AR, arbitration, ordered W bursts, B/R ID routing and backpressure.
+- Subsystem/memory exact-SHA jobs inspected from logs:
+  - MX multiply/replay: **17 passed**.
+  - Quantizer corners/tie rounding: **8 passed**.
+  - Quantizer modes: **15 passed**.
+  - Collective hub/DMA/scoreboard: **128 passed**.
+  - QST/QSTB: **13 passed**.
+  - SPLITQ: **5 passed**.
+  - Instruction cache: **23 passed**.
+  - Address-window: **20 passed, 1 skipped** (64-GiB configuration makes every address DRAM).
+  - Floating-point RTL: **8 passed**.
+  - QHL: **7 passed**.
+  - Stream RTL: **14 passed**.
+  - Wait-state RTL: **11 passed**.
+- Full-chip lint [45845758782](https://github.com/shamiursunny/openTPU/actions/runs/45845758782): SUCCESS, Verilator 5.032. Warning inventory remains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. Do not waive or suppress these without source-level analysis. LATCH sites are in `rtl/seq/otpu_seq.sv` at lines 1153 and 1823; UNOPTFLAT sites are `gnt` in `rtl/top/otpu_slice.sv:611`, `sc_gl` in `rtl/top/otpu_top.sv:156`, and `pq` in `rtl/mem/otpu_tmem.sv:297`. Their complete structural impact is not yet resolved.
+
+### Still running or queued — poll before any further CI action
+- WG8 PPA [45845758658](https://github.com/shamiursunny/openTPU/actions/runs/45845758658), job `139998865525`: pinned ORFS flow still IN_PROGRESS; no final timing/area/power report or artifact available. The DMA constant-divisor rewrite is NOT accepted as a timing improvement until the report is inspected against the prior baseline.
+- Qwen real-checkpoint workflow [45845758847](https://github.com/shamiursunny/openTPU/actions/runs/45845758847), job `139998866215`: Verilator 5.044, CPU-only dependencies, official checkpoint downloads/checksums and architecture checks passed; real Qwen RTL pytest step completed SUCCESS; separate eight previously skipped tiny board-model cases were IN_PROGRESS at poll. No terminal workflow result yet.
+- Subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545): all listed functional jobs above are terminal SUCCESS; reset audit job `139998869244` and native DRAM/technology RAM job `139998869342` were still IN_PROGRESS.
+- Software/ISA workflow [45845758659](https://github.com/shamiursunny/openTPU/actions/runs/45845758659): FP, MX, compiler, ISA, kernels, VOPS, stream, formats, quant and dataflow jobs are terminal SUCCESS; waits job `139998866442` was IN_PROGRESS; waitw, host, host-runs and host-lock jobs were QUEUED.
+- Do not start replacement workflows while these existing jobs are running or queued. Do not rerun completed groups.
+
+### Immediate next actions
+1. Poll the four non-terminal workflows above and inspect actual terminal logs/artifacts, especially Qwen tiny-model cases, native DRAM/technology RAM, remaining software/host tests and WG8 PPA.
+2. Compare new PPA WNS/TNS, minimum period/Fmax, critical path, stage, area and any power data against baseline run 45545698546. Do not claim improvement without exact report evidence.
+3. Continue source-level review of LATCH/UNOPTFLAT warnings and width warnings; do not change RTL solely to silence lint.
+4. After the workflows are terminal, update the project tracker and this checkpoint with exact summaries, artifact IDs/checksums and any failures.
+5. Continue open formal/CDC/RDC, PCIe/DMA/IOMMU, DDR controller/PHY/ECC, production SRAM/DFT, PDK/package/physical, hardware power/thermal/performance and commercial qualification gates.
+
+Manufacturer handoff remains **NOT READY**. These results are bounded digital simulation/lint evidence only; they do not establish timing closure, full formal/CDC/RDC closure, routed physical signoff, production IP/PHY, silicon validation, measured power/thermal performance or commercial readiness.
