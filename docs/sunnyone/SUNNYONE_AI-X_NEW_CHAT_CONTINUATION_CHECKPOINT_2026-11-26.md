@@ -34,7 +34,7 @@
 - Current run: [45808551468](https://github.com/shamiursunny/openTPU/actions/runs/45808551468)
 - Job: `139870207686`
 - Source revision: `bddf9708657766951e5c0d204ef474d742e53418`
-- At last poll: checkout and Python setup passed; pinned Verilator 5.044 build was IN_PROGRESS; dependency install, official checkpoint downloads/verification, real Qwen3/Qwen3.5 RTL tests and the separate eight tiny board-model tests were still pending.
+- At latest poll: checkout, Python setup and pinned Verilator 5.044 build PASSED; explicit CPU-only model/test dependency installation was IN_PROGRESS; official checkpoint downloads/verification, real Qwen3/Qwen3.5 RTL tests and the separate eight tiny board-model tests were still pending.
 - Workflow pins CPU-only PyTorch 2.11.0, safetensors 0.8.0, huggingface_hub 2.3.0 and Transformers 5.24.1. It downloads pinned Qwen3-0.6B and Qwen3.5-0.8B Apache-2.0 checkpoints and runs only the named Qwen RTL and tiny-model selections.
 - No terminal result was available at this checkpoint. Poll run 45808551468, inspect job steps and full uploaded artifact/log, and record the exact pytest summaries. Do not count the real-checkpoint tests as passed unless their own step passes; do not count the eight tiny board tests as passed unless their separate step passes.
 - Earlier Qwen run 45807130675 failed at the extra-cache-file verification check (a verifier invocation issue, not missing checkpoint/RTL evidence). Runs 45808346935 and 45808406729 were superseded/cancelled. Current run 45808551468 is the relevant retry.
