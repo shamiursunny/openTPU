@@ -62,3 +62,23 @@ Timing closure; full formal verification; CDC/RDC; warning closure; exhaustive A
 
 ## Continuation instruction
 In any new ChatGPT conversation or tab, type exactly: **Continue and complete the remaining tasks.** Start by opening this checkpoint and `PROJECT_TRACKER.md`, then verify the live GitHub state. Continue from the remaining open gates without asking the user to repeat project context.
+
+
+## Latest continuation poll — 2026-11-26 (verified logs)
+
+### Newly closed exact-SHA jobs
+- RTL tail [45845758636](https://github.com/shamiursunny/openTPU/actions/runs/45845758636): **33 passed, 1 intentional skip, 183 deselected in 923.55 s**; actual pytest output inspected. Artifact 15132004314.
+- Reset audit [45845758496](https://github.com/shamiursunny/openTPU/actions/runs/45845758496): **4 passed in 322.93 s**; pinned OSS CAD Suite checksum and Yosys+Slang setup succeeded.
+- ASIC/target config [45845758681](https://github.com/shamiursunny/openTPU/actions/runs/45845758681): SUCCESS; actual four-DIMM simulation printed PASS for concurrent host/accelerator AW/AR contention, alternating grants, ordered two-beat writes, B/R ID routing and independent backpressure. Artifact 15130743611, SHA-256 `dc0a587493b7b9ca44355fbeb312798b3ef853e2f39e4fecb4ef35c345251863`.
+- Full-chip lint [45845758782](https://github.com/shamiursunny/openTPU/actions/runs/45845758782): SUCCESS; artifact 15130078429, SHA-256 `6a1f1639094cfe3d8c800d4f9bd923375fa4dc613b0cb6c1e4f5c9244c6b8d75`. Warnings: 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT. LATCH warnings are scoped local temporaries in conditional branches of `otpu_seq.sv`; not yet proven harmless or waived. UNOPTFLAT paths: slice `gnt` through VPU compression/grant logic, top `sc_gl` through collective request/grant logic, TMEM `pq` through an always block at line 1074. Structural analysis is still required. No lint warning references the DMA RTL file.
+- Previous successful Qwen evidence remains run 45808551468 on its earlier exact SHA; do not confuse it with the active rerun.
+
+### Active runs — re-poll before action
+- PPA 45845758658: ORFS pinned-container flow in progress; no report yet.
+- Qwen 45845758847: real-checkpoint pytest in progress; eight tiny model tests not yet started.
+- Board-only 45845758677: board-functional pytest in progress.
+- Subsystem/memory 45845758545: MX multiply/replay passed; quantizer modes and Stream RTL running; remaining jobs queued.
+- Software/ISA 45845758659: compiler, ISA, kernels, formats, quant tests passed; VOPS running; other jobs queued.
+- Reset 45845758496, RTL-tail 45845758636 and ASIC/target 45845758681 are terminal SUCCESS.
+
+No new workflows were launched. Continue polling these existing jobs and inspect actual logs/artifacts. Do not rerun groups 3.1, 3.2 or 4; do not restart user-cancelled run 45765362426. Protected main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. The DMA rewrite remains unqualified until PPA and relevant RTL tests complete. Manufacturer handoff NOT READY.
