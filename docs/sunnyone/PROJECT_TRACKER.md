@@ -2690,3 +2690,16 @@ Correction to the preceding note: editing PPA_REQUEST.md itself initially trigge
 The corrected workflow is in commit 98335138bd73751699afc4a31ce0b206ff2720a1. Push paths are now docs/sunnyone/PPA_EXECUTE_REQUEST.md and the workflow file; a push job also requires [RUN-PPA] in the commit message. The correction run 45911965872 was SKIPPED and caused cancellation of the accidental run. PPA_REQUEST.md is documentation only. Do not create PPA_EXECUTE_REQUEST.md or use workflow_dispatch without explicit user approval of the exact source SHA.
 
 Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
+
+
+## 114. 2026-11-27 05:54 Asia/Dhaka — continuation state refresh
+
+- Re-read the current continuation checkpoint, 01:37 addendum, 01:45 review, integrated plan, manufacturer handoff matrix, FSUM hardware guard report and PPA trigger incident report from the active feature branch.
+- Live GitHub compare: feature branch is 917 commits ahead of main and 0 behind; merge base/main remains d84db55712aba0d40811d7762cb052f05d55b7e5. The compare wrapper did not expose the feature HEAD SHA; do not infer it from historical checkpoint SHAs. Resolve the branch ref SHA with a suitable GitHub ref endpoint before any source mutation.
+- Current fetched blob SHAs: checkpoint 35eecd78c62f3f239dfdb0c3e62d94083ce2f4c8; addendum 781c249e97193e896770be89ef51cfb860a7b4cb; review 757bd75353d4b8258e920bf404ac503158b6de59; integrated plan 94b6f5839a9592449012f38fc9ee5451bbb3e085; tracker before this append 65b5c59d21522365720a7b0b450db886d313ee3f; manufacturer matrix 1adb9b22b4037c60e6dc89c6127a2b1762c369c3; FSUM report abb01857c4a79b6cb68d554264faf386614b5459; PPA incident report eb170ef22df3448e7ef2892cb3ce6d9642d4462a.
+- The current project record confirms FSUM guard implementation and targeted CI success (11 passed); the hardware still does not retain per-producer sum destination/row metadata, so exact RSUM take matching to the oldest producer remains OPEN.
+- The previous broad workflow successes and PPA OOM diagnosis remain historical evidence as recorded. This continuation did not launch, cancel or rerun CI and did not modify RTL, tests, workflow source or main.
+- PPA remains unauthorised: do not create docs/sunnyone/PPA_EXECUTE_REQUEST.md or invoke workflow_dispatch without explicit user approval of the exact source SHA. The documented accidental partial run/cancellation remains part of the record.
+- Remaining work: poll any outstanding/new workflows using an available live Actions endpoint; close RSUM FIFO metadata parity; resolve width warnings and UNOPTFLAT structural paths; complete mapped-latch, formal/SVA and CDC/RDC evidence; finish memory/physical/PDK/interface/DFT/board/manufacturer gates. Manufacturer handoff remains NOT READY.
+- Controls unchanged: never modify main; never restart cancelled run 45765362426; do not rerun RTL groups 3.1, 3.2 or 4 solely to reconfirm; preserve zero-spend and separate Track A full product from Track B demonstrator.
+- This is a documentation-only state refresh. It does not claim that all remaining engineering tasks or tapeout gates are complete.
