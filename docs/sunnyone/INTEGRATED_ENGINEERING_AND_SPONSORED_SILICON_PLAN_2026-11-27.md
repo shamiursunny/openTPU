@@ -461,3 +461,10 @@ Full-chip lint 45877786797 also succeeded on RTL source commit 28c36c52204fe2ec2
 - `45877786705` software/ISA: partially complete; several jobs remain queued or in progress.
 
 No RTL was modified and no new workflow was launched during this review. Main remains untouched. Manufacturer handoff remains NOT READY.
+
+
+### FSUM ingress follow-up — 2026-11-27
+
+- Reviewed `opentpu/host/board.py::Board.load_program`: it accepts raw uint32 instruction arrays, performs only the GATHER capability check plus basic slice/wait-entry validation, and writes the words to DRAM/IMEM. No FSUM semantic row-bound validation is present at this ingress.
+- Therefore the compiler and ISA simulator checks do not establish an enforced end-to-end load contract. The FSUM bounds issue is an unclosed hardware safety risk for `bcu1525-wg` and `bcu1525-x2`, not merely a question about hypothetical raw input. Prefer a synthesizable invalid-command rejection after tracing the sequencer's existing error/halt path; do not add a second error protocol.
+- Updated evidence is in `INPUT_BOUNDS_AND_PPA_RESOURCE_CONTROL_REVIEW_2026-11-27.md`. No RTL change made.
