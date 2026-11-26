@@ -181,3 +181,17 @@ The plan, checkpoint and tracker are present on the feature branch. No RTL/test/
 - Updated MANUFACTURER_HANDOFF_READINESS_MATRIX.md G3 notes in commit 0a3f947610157359f28531f6d0bb6d9ede6b145f; G3 remains OPEN due UNOPTFLAT and width-warning work.
 - Updated integrated plan with source-level lint triage in commit 8ba5ded36e6eb52dde43b7f6f25ee7641a694e10.
 - No RTL changes and no new tests launched. Existing functional evidence remains unchanged.
+
+
+## Latest width-warning inventory and risk triage — 2026-11-27
+
+- Created docs/sunnyone/WIDTH_WARNING_INVENTORY_2026-11-27.md in commit c198c07a2896c307b7af4c9f52975442516b86b7. It contains all 79 raw width warnings from full-chip lint run 45845758782, grouped by source file and exact line/column.
+- Cross-checked source ifndef SYNTHESIS regions: nine warning instances are in simulation-only code and marked SIM_ONLY; they are not ASIC hardware-width defects. They remain in the simulation lint inventory, not waived.
+- The other 70 remain OPEN pending semantic and exact-synthesis-source review. The two otpu_dram exists() warnings are in the simulation DRAM model and need confirmation against the exact ASIC source list before classification.
+- High-priority possible bounds risks recorded:
+  1. VPU row-sum buffer rb[NRB/LANES] indexed by rows_done[15:LW] and fl[15:LW]; prove every write/read is within 0..NRB-1 and final-cycle behaviour. RDOT has rows<=NRB gate; FSUM validation currently appears simulation-only and needs hardware input-contract review.
+  2. Sequencer four-entry LOOP stack uses 3-bit sp; ISA says nesting depth 4, but push site has no visible sp<4 guard. Prove host/program validation or add safe overflow/error behaviour.
+  3. VPU 24-bit one-hot function mask uses wider VOP indices; prove all enum indices are 0..23 before narrowing.
+  4. MXU drain/key arrays use wider indices; prove bounds before narrowing.
+- Updated MANUFACTURER_HANDOFF_READINESS_MATRIX.md G3 and width-warning note in commit 7bbf853230f591e314ec9307d0f1277be4ac996f. Updated integrated plan in commit 95230c32013be1780a6980eaaac717123a3d562d.
+- No RTL changes, no new tests. Width warning closure is not claimed; G3 remains OPEN.
