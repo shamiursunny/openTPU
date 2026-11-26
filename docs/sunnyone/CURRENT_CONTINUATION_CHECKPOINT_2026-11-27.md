@@ -195,3 +195,25 @@ The plan, checkpoint and tracker are present on the feature branch. No RTL/test/
   4. MXU drain/key arrays use wider indices; prove bounds before narrowing.
 - Updated MANUFACTURER_HANDOFF_READINESS_MATRIX.md G3 and width-warning note in commit 7bbf853230f591e314ec9307d0f1277be4ac996f. Updated integrated plan in commit 95230c32013be1780a6980eaaac717123a3d562d.
 - No RTL changes, no new tests. Width warning closure is not claimed; G3 remains OPEN.
+
+
+## Active RTL correction and CI status — 2026-11-27
+
+### Sequencer LOOP stack guard
+- Found that docs/isa.md specifies maximum nested LOOP depth 4 and opentpu/isasim.py rejects a fifth non-zero nested loop with SimError("loop stack overflow"), but rtl/seq/otpu_seq.sv had no visible push-site guard before indexing four-entry arrays with 3-bit sp.
+- Added sp >= 3'd4 error/halt guard and used sp[1:0] for the legal array index in commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4.
+- Added two RTL tests in tests/test_rtl.py in commit c22c9b1be497b62253693e817d7d3b5fdca1c79f: maximum legal depth four and fifth-level overflow rejection.
+- Added dedicated workflow .github/workflows/sunnyone-loop-stack-guard.yml in commit 275728cd1484fb3b409ba59b9b409f29160c8f7e. Run 45877985241 is IN_PROGRESS. Do not call the fix verified until both tests pass in the archived log.
+
+### Lint delta
+- Full-chip lint run 45877786797 SUCCESS on source SHA 28c36c52204fe2ec2ed36413b02eb6043506ccc4.
+- Actual log has 76 width warnings: 52 WIDTHEXPAND and 24 WIDTHTRUNC, down from the 79 baseline. Three WIDTHTRUNC diagnostics on the sequencer stack index were removed by the guard and sp[1:0] indexing.
+- Seven simulation-only LATCH diagnostics and three UNOPTFLAT diagnostics remain. G3 stays OPEN.
+- Updated width inventory in commit 0d661732a6c2308dc6cab3bb1ad9294290a8707c; updated manufacturer matrix in commit 2e9483051738ea09ab494b4c5217e1c6972e56ad; updated integrated plan in commit f93dfdd58dfcf7e07035ba7afa3de62517631e2b.
+
+### Source-triggered workflow set
+- WG8 PPA run 45877786710 IN_PROGRESS on source SHA 28c36c52204fe2ec2ed36413b02eb6043506ccc4; it should use the immutable ORFS digest and cgroup telemetry. Verify logs/artifacts after completion. No second PPA run while active.
+- Reset audit 45877786738, Qwen RTL 45877786754, board functional 45877786742, subsystem/memory 45877786699, software/ISA 45877786705 and ASIC config 45877786860 are IN_PROGRESS or queued on the same source SHA.
+- Tail run 45877787004 was cancelled by the newer test commit; replacement run 45877807906 is IN_PROGRESS on c22c9b1be497b62253693e817d7d3b5fdca1c79f.
+- Separate 128K one-copy TMEM investigation run 45877807985 is IN_PROGRESS on c22c9b1be497b62253693e817d7d3b5fdca1c79f.
+- Do not restart cancelled historical run 45765362426. No additional duplicate runs should be launched while these are active.
