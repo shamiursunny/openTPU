@@ -468,3 +468,11 @@ No RTL was modified and no new workflow was launched during this review. Main re
 - Reviewed `opentpu/host/board.py::Board.load_program`: it accepts raw uint32 instruction arrays, performs only the GATHER capability check plus basic slice/wait-entry validation, and writes the words to DRAM/IMEM. No FSUM semantic row-bound validation is present at this ingress.
 - Therefore the compiler and ISA simulator checks do not establish an enforced end-to-end load contract. The FSUM bounds issue is an unclosed hardware safety risk for `bcu1525-wg` and `bcu1525-x2`, not merely a question about hypothetical raw input. Prefer a synthesizable invalid-command rejection after tracing the sequencer's existing error/halt path; do not add a second error protocol.
 - Updated evidence is in `INPUT_BOUNDS_AND_PPA_RESOURCE_CONTROL_REVIEW_2026-11-27.md`. No RTL change made.
+
+
+### Existing error/halt path traced — candidate guard location, not yet implemented
+
+- `otpu_seq` exposes `error` and its existing invalid decoded-operation branch sets both `error <= 1'b1` and `halted <= 1'b1` before dispatch (around lines 1702–1705).
+- `otpu_slice` connects `otpu_seq.error` to `sq_err` and exposes `error = sq_err || to_err` (around lines 355–366 and 437). The VPU itself currently has no error output.
+- A candidate minimal architecture is to pass the slice's `VPU_FSUM` configuration into the sequencer and validate an FSUM-bearing VOP's decoded `cmd_t` before dispatch, reusing the existing sequencer error/halt path. The exact decoded-field timing and full FSUM contract still require a focused review; this is not an approved patch.
+- Do not change `otpu_seq.sv` while PPA run 45877786710 is active: that file is in the PPA workflow path filter and the workflow uses cancel-in-progress concurrency. Wait for the current run's terminal result, then implement only with targeted boundary tests and an explicitly justified CI run.
