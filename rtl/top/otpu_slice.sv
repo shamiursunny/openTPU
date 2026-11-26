@@ -356,7 +356,8 @@ module otpu_slice
              .WIN(WIN), .STREAMS(HAS_SS), .WG(WG), .WAITC(SEQ_WC), .STYLE(IMEM_STYLE),
              .WSTYLE(IMEM_WC_STYLE),
              .DSTEP2(DSTEP2 && HAS_SS), .FOLLOW(FOL), .QB(QB), .AW(AW),
-             .ICACHE(ICACHE), .IC_LINES(IC_LINES), .IC_PF(IC_PF), .QONCE(QONCE)) u_seq (
+             .ICACHE(ICACHE), .IC_LINES(IC_LINES), .IC_PF(IC_PF), .QONCE(QONCE),
+             .FSUM(VPU_FSUM != 0 && HAS_SS)) u_seq (
     .clk, .rst(srst), .ucmd(ucmd_s), .ustart(ustart_s), .urel, .ufol(ufol_s), .urdy(urdy_s),
     .udone(udone_s),
     .halted(sq_halted), .error(sq_err),
