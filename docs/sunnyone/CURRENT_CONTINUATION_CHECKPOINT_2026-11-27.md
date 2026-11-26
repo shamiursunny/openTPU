@@ -160,3 +160,11 @@ Re-fetched all saved documents from the active branch after the tracker update:
 - Live main remains d84db55712aba0d40811d7762cb052f05d55b7e5.
 
 The plan, checkpoint and tracker are present on the feature branch. No RTL/test/workflow source was changed in this documentation save. No tests were relaunched. The latest branch HEAD must be re-polled at the beginning of the next continuation.
+
+
+## Latest engineering continuation — immutable PPA toolchain pin
+
+- Reviewed the failed PPA workflow job log. The old workflow pulled openroad/orfs:latest, then captured local image ID sha256:edbd355068b742c5ae2413a49a58578465bd52f57668cebebdd383eb4d97607d. The registry manifest digest resolved in that run was sha256:f5b2b4ac8cae150c30ad86857328300e20662cf7ff555978711ea8936f8d9539.
+- Corrected .github/workflows/sunnyone-asic-wg8-ppa.yml in commit e2d96d5364af47503d67cb70635bf3485cbe9b33 (blob 426cfcc62ac4ca1d90cf52b06a0e9009b83a1c29). It now pulls the immutable manifest digest, verifies the resolved image ID exactly, and archives both the image reference and ID. Docker --cpus 2 and cgroup telemetry remain.
+- Updated the integrated plan with this correction in commit 57772f70dd335ec519f38e6f3ed75e392122bd61 (blob 7b826a30775e51e5f80ef567713213d8f4ec414c).
+- No PPA diagnostic run has been dispatched. The change improves reproducibility but does not resolve the prior Error 247 or establish OOM. Next review the exact updated workflow, then decide whether a single diagnostic dispatch is justified.
