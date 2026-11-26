@@ -313,3 +313,47 @@ No corrected-SHA ASIC/config simulation result is available. This status superse
 - The Qwen workflow remains manual workflow_dispatch only and is not yet dispatched. The connected GitHub actions currently available in this session do not expose a workflow-dispatch operation. Do not claim Qwen real-checkpoint RTL validation until a run has been dispatched and its exact pytest log confirms the selected tests executed and passed.
 - Current active branch HEAD after the tracker update: 0ee09e6b8fc6cedb4e1b504f8771c272d858d299. Protected main remains d84db55712aba0d40811d7762cb052f05d55b7e5; no main changes. Manufacturer handoff remains NOT READY.
 - Immediate order: finish board-only run 45784404427; then dispatch Qwen-only gate through an available workflow-dispatch route; continue remaining formal/property, CDC/RDC, shared-DIMM, consolidated regression, PPA/physical and product qualification. Preserve all historical RTL group passes; never rerun groups 3.1, 3.2 or 4 merely to reconfirm.
+
+
+## Cross-chat continuation checkpoint — 2026-11-26 (Asia/Dhaka), latest
+
+Resume trigger: when the user types “continue and complete the remaining tasks” in any new chat/tab, continue this exact SUNNYONE X AI CHIP DESIGN / openTPU work. First refresh GitHub branch HEAD and the status/logs/artifacts of workflow 45784404427; then reconcile this checkpoint with actual current evidence and update the completed/remaining task list. Do not ask the user to repeat project context.
+
+Current source state at checkpoint save:
+- Repo shamiursunny/openTPU; branch sunnyone/commercial-profitability-architecture-2026-11-23.
+- HEAD at save time: 848b7f65884ae049c5a1a19fe4770b6e51d5692c.
+- Protected main: d84db55712aba0d40811d7762cb052f05d55b7e5 (unchanged; do not modify).
+- Latest continuity updates were committed to PROJECT_TRACKER.md, this baseline, PROJECT_RESUME.md and MANUFACTURER_HANDOFF_READINESS.md. Since this baseline update itself changes the branch, refresh HEAD before any subsequent action.
+
+Non-negotiable constraints:
+1. Never rerun completed RTL groups 3.1, 3.2 or 4 merely for confirmation; retain the prior successful evidence.
+2. Do not rerun user-cancelled workflow 45765362426.
+3. Do not launch the broad RTL workflow/matrix to work on the remaining tasks.
+4. Do not weaken/remove tests/assertions or conceal failures.
+5. Work on the feature branch only; preserve protected main.
+6. Use serial/low-concurrency workflow execution and distinguish toolchain/environment failures from design defects.
+
+Exact current run:
+- Board-only workflow run 45784404427, job 139787424587, source SHA 74ee09d865633e8d8f8cc3edaaf5cb460bf576cc.
+- Latest observed step states: Verilator 5.044 build SUCCESS; Python/project dependency install SUCCESS; board-functional pytest IN PROGRESS; artifact upload pending.
+- No terminal result or board pass is established. Poll the exact run, then inspect pytest summary and uploaded log/artifact.
+- Previous run 45769498674 failed with Verilator 5.020: 133 failed, 65 passed, 8 skipped, 1 deselected, parser failure at rtl/mxu/otpu_mxu.sv:2781. Board-only workflow was corrected to build/assert Verilator 5.044 in commit 74ee09d865633e8d8f8cc3edaaf5cb460bf576cc.
+
+Qwen gate:
+- .github/workflows/sunnyone-qwen-real-rtl.yml has corrected CPU torch 2.11.0, huggingface_hub 2.3.0 and safetensors 0.8.0; workflow correction commit 024e488befcbabdde21731f119b52baaedb9d10f.
+- Workflow is workflow_dispatch only and NOT DISPATCHED. No real-checkpoint Qwen RTL pass exists. Dispatch this dedicated workflow only when a valid dispatch action is available; never substitute the broad RTL matrix.
+
+Remaining tasks (update statuses from fresh evidence, don't assume):
+A. Board-only regression terminal result and diagnosis.
+B. Dedicated Qwen3/Qwen3.5 real-checkpoint RTL run.
+C. Shared-DIMM/adversarial and remaining integration validation.
+D. Consolidated regression.
+E. Formal/property verification.
+F. CDC/RDC.
+G. Full-chip lint.
+H. PPA and physical design closure.
+I. Production PCIe endpoint/PHY, DMA/IOMMU, DDR controller/PHY/ECC integration.
+J. DFT, board electrical, silicon, measured power/performance/thermal and product qualification.
+K. Commercial/manufacturer evidence and handoff readiness.
+
+Manufacturer handoff: NOT READY. No production readiness claim. Keep the distinction between RTL/board-model evidence and actual silicon/product qualification explicit.
