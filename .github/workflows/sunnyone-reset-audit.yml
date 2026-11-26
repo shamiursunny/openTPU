@@ -10,6 +10,7 @@ on:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     paths:
       - 'tools/reset_audit.py'
+      - 'tools/scc_audit.py'
       - 'tests/test_reset_audit.py'
       - 'rtl/**'
       - 'targets/**'
@@ -38,6 +39,19 @@ jobs:
       - name: Verify Yosys slang frontend
         run: /opt/oss-cad-suite/bin/yosys -m slang -q -p 'help read_slang'
       - name: Run power-up/reset audit
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(join(github.event.head_commit.modified, ','), 'rtl/') || contains(join(github.event.head_commit.modified, ','), 'tools/reset_audit.py') || contains(join(github.event.head_commit.modified, ','), 'tests/test_reset_audit.py') || contains(join(github.event.head_commit.modified, ','), 'targets/') }}
         env:
           YOSYS: /opt/oss-cad-suite/bin/yosys
         run: pytest -q tests/test_reset_audit.py
+      - name: Run flattened structural SCC and latch audit
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(join(github.event.head_commit.modified, ','), 'rtl/') || contains(join(github.event.head_commit.modified, ','), 'tools/scc_audit.py') }}
+        env:
+          YOSYS: /opt/oss-cad-suite/bin/yosys
+        run: python tools/scc_audit.py --keep /tmp/sunnyone-scc
+      - name: Archive SCC and latch reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-structural-scc-audit
+          path: /tmp/sunnyone-scc/**
+          if-no-files-found: ignore
