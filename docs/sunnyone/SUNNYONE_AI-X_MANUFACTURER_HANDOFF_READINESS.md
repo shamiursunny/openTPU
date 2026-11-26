@@ -921,3 +921,12 @@ The overall workflow remains IN_PROGRESS because Group 4 is still executing. Its
 - In the same run, RTL uncovered groups 3.1, 3.2 and 4 all completed SUCCESS. Group 3.2 log explicitly reports **33 passed, 184 deselected**; groups 3.1 and 4 completed successfully with their existing scoped selectors (8 and 5 selected passes respectively). These scoped selector counts are not a consolidated unique-test total.
 - Current branch ref verified at `663433351457c32b0f059bf094fa2b628ff4ea9d`; protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. GitHub compare reports 700 commits ahead, 0 behind. No RTL or verification source changes were made in this continuation; only project records are being updated.
 - Next action: inspect workflow configuration and board-test execution cost/runtime to determine a safe, evidence-preserving way to complete the full board-functional gate. Do not weaken, deselect, or skip required tests; do not claim success from partial progress. Keep zero-spend. Manufacturer handoff remains **NOT READY**; PPA/physical signoff and hardware qualification blockers remain open.
+
+
+## Timeout correction and retry launched — 2026-11-26 06:02 UTC (Asia/Dhaka)
+
+- Root cause of incomplete board gate is now narrowed to the workflow's explicit `timeout-minutes: 45`: job `139677036786` ran approximately 45m 12s and GitHub recorded cancellation before pytest's final summary. This is a workflow time-budget limitation, not an observed test assertion failure.
+- Updated only `.github/workflows/sunnyone-rtl-functional.yml`: board-functional `timeout-minutes` increased from 45 to 90. Test command, selector, test code and assertions are unchanged. RTL uncovered job timeout remains 90.
+- The workflow push automatically queued new run [45765362426](https://github.com/shamiursunny/openTPU/actions/runs/45765362426), run number 121, attempt 1, event push, tested workflow/source commit `455a03232c90b8e631a5add6cd7bebff4afdccad`. At checkpoint time it is **QUEUED**; no result is claimed. Poll this exact run. Its RTL groups will run first due to the workflow dependency graph; board-functional starts only after they succeed.
+- The previous run's five Tiny-Qwen/Qwen3 skips remain documented as dependency-related (`torch` absent); do not mislabel them as passes. No test has been removed or weakened.
+- Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Maintain zero-spend. Manufacturer handoff remains **NOT READY** pending full regression and outstanding physical/hardware gates.
