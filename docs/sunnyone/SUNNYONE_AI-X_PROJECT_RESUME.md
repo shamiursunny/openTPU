@@ -1168,3 +1168,8 @@ These are scoped selector results; do not add them into a claim of unique lifeti
 - Dedicated Qwen real-checkpoint workflow remains separate and undispatched. Do not trigger the general RTL matrix.
 - Current branch HEAD at the time of this note: `aedda576e489a297f9452c1cd799072014b565b0`; protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
 - Next action: poll only run 45769498674 / job 139738454299 to terminal; inspect the full pytest summary and uploaded artifact. If it passes, record exact counts; if it fails, diagnose without weakening tests. Then proceed to the Qwen real-checkpoint gate and remaining unclosed engineering gates.
+
+
+## Continuation update — 2026-11-26
+
+The board-only regression using Ubuntu's default Verilator 5.020 failed at rtl/mxu/otpu_mxu.sv:2781 with 133 failed, 65 passed, 8 skipped and 1 deselected. This is a parser/toolchain incompatibility, not a proven RTL functional defect. The board-only workflow now builds and asserts Verilator 5.044 (commit 74ee09d865633e8d8f8cc3edaaf5cb460bf576cc). Retry run 45784404427 / job 139787424587 is in progress at the pinned tool build; no board pass is yet claimed. The dedicated Qwen gate's invalid torch==2.15.0 pin was corrected to CPU torch==2.11.0 and huggingface_hub==2.3.0 (commit 024e488befcbabdde21731f119b52baaedb9d10f); Qwen workflow remains undispatched. See the latest PROJECT_TRACKER.md section A1.12.11.16.55 and authoritative continuation baseline for exact details. Do not rerun historical RTL groups 3.1, 3.2 or 4. Protected main remains unchanged.
