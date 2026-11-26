@@ -157,3 +157,8 @@ These are marked SIM_ONLY in the table; they remain lint diagnostics but are not
 5. Other width extensions (constants, arithmetic and shifts) need expression-width/signedness analysis; a warning is not automatically a functional defect and must not be silenced with a blind cast.
 
 No RTL was changed. The full 79-warning inventory is retained; all SIM_ONLY labels are source-guard classifications, not waivers or overall lint closure.
+
+
+## Post-fix lint delta — 2026-11-27
+
+After the sequencer loop-stack guard narrowed the checked stack index to sp[1:0], full-chip lint run 45877786797 completed SUCCESS on source commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4. Its archived log now contains 76 width warnings: 52 WIDTHEXPAND and 24 WIDTHTRUNC, down from the 79-warning baseline. The three removed WIDTHTRUNC warnings were the unsafe direct 3-bit sp indices at rtl/seq/otpu_seq.sv lines 1688–1690. This is a measured lint delta, not complete width-warning closure. The 7 simulation-only LATCH diagnostics and 3 UNOPTFLAT diagnostics remain.
