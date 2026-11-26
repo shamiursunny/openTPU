@@ -50,11 +50,23 @@ jobs:
           test -n "${image_id}"
           printf '%s\n' "${image_id}" | tee /tmp/orfs-image-id.txt
           echo "ORFS_IMAGE=${image_id}" >> "${GITHUB_ENV}"
+      - name: Capture host resource baseline
+        run: |
+          set -euo pipefail
+          {
+            date -u
+            echo "=== /proc/meminfo ==="
+            cat /proc/meminfo
+            echo "=== filesystem ==="
+            df -h
+            echo "=== limits ==="
+            ulimit -a
+          } > /tmp/wg8-host-resource-before.txt
       - name: Run pinned-container SRAM probe and WG8 ORFS flow
         run: |
           set -euo pipefail
           image_id="$(cat /tmp/orfs-image-id.txt)"
-          docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace "${image_id}" bash -lc '
+          docker run --rm --cpus 2 -v "$GITHUB_WORKSPACE:/workspace" -w /workspace "${image_id}" bash -lc '
             set -euo pipefail
             apt-get update
             apt-get install -y python3-numpy
@@ -64,10 +76,47 @@ jobs:
             export YOSYS="$ORFS_HOME/tools/install/yosys/bin/yosys"
             test -x "$YOSYS"
             "$YOSYS" -V
-            # The previous WG8 floorplan-PDN attempt peaked at ~15.7 GB RSS and exited
-            # during check_placement. Limit ORFS and Docker to two CPUs for a measured,
-            # resource-conscious retry; do not disable PDN or placement checks.
+            # Apply the two-CPU limit at the Docker boundary as well as in ORFS.
+            # Capture cgroup memory limits, current/peak use and event counters while
+            # the flow runs; retain telemetry even when OpenROAD exits non-zero.
             export ORFS_CPUS=2
+            mkdir -p build/asic/nangate45-wg8/diagnostics
+            telemetry=/workspace/build/asic/nangate45-wg8/diagnostics/resource-telemetry.log
+            marker=/tmp/wg8-flow-finished
+            rm -f "$marker"
+            {
+              date -u
+              echo "=== uname ==="; uname -a
+              echo "=== process cgroup ==="; cat /proc/self/cgroup
+              echo "=== initial meminfo ==="; cat /proc/meminfo
+              for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory.events /sys/fs/cgroup/memory/memory.limit_in_bytes /sys/fs/cgroup/memory/memory.usage_in_bytes /sys/fs/cgroup/memory/memory.max_usage_in_bytes /sys/fs/cgroup/memory/memory.failcnt; do
+                if [ -r "$f" ]; then echo "=== $f ==="; cat "$f"; fi
+              done
+            } > "$telemetry"
+            (
+              while [ ! -e "$marker" ]; do
+                {
+                  echo "=== sample $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+                  for f in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory.events /sys/fs/cgroup/memory/memory.usage_in_bytes /sys/fs/cgroup/memory/memory.max_usage_in_bytes /sys/fs/cgroup/memory/memory.failcnt; do
+                    if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
+                  done
+                } >> "$telemetry"
+                sleep 5
+              done
+            ) &
+            monitor_pid=$!
+            finish_monitor() {
+              touch "$marker"
+              wait "$monitor_pid" || true
+              {
+                echo "=== final sample $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+                for f in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory.events /sys/fs/cgroup/memory/memory.usage_in_bytes /sys/fs/cgroup/memory/memory.max_usage_in_bytes /sys/fs/cgroup/memory/memory.failcnt; do
+                  if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
+                done
+                echo "=== final meminfo ==="; cat /proc/meminfo
+              } >> "$telemetry"
+            }
+            trap finish_monitor EXIT
             python3 tools/asic/flow.py prep nangate45-wg8
             python3 tools/asic/flow.py config nangate45-wg8
             python3 tools/asic/flow.py run nangate45-wg8
@@ -76,6 +125,8 @@ jobs:
       - name: Collect WG8 PPA file inventory
         if: always()
         run: |
+          set -euo pipefail
+          cp /tmp/wg8-host-resource-before.txt /tmp/wg8-host-resource-before-copy.txt 2>/dev/null || true
           find build/asic/nangate45-wg8 -maxdepth 7 -type f | sort > /tmp/wg8-files.txt || true
           if [ -f build/asic/nangate45-wg8/run.log ]; then
             tail -c 200000 build/asic/nangate45-wg8/run.log > /tmp/wg8-run-tail.txt
