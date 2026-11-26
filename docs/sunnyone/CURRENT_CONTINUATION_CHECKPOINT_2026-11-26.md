@@ -8,7 +8,7 @@ Read this file first, then read `docs/sunnyone/PROJECT_TRACKER.md`. Verify the l
 
 Repository: https://github.com/shamiursunny/openTPU
 Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`
-Latest verified branch HEAD before this update: `f88e5a8d581da5710240c25a39aa8778f87b7e8f`
+Latest verified branch HEAD at the start of the 2026-11-26 23:30 Asia/Dhaka continuation: `4aa4018e420979b4441dd59e37710cee555376ed`
 Protected `main`: `d84db55712aba0d40811d7762cb052f05d55b7e5` — do not modify.
 Latest source RTL experiment: `2835f1a8da6af454023caff9576f41258c66e2a8` (DMA stream setup constant-divisor rewrite).
 Latest documentation clarification commit: `6ca69d24f9c7dbdd960e01531b7d64454c8ccaf3`.
@@ -173,3 +173,40 @@ When the user opens a new chat in the SUNNYONE X AI CHIP DESIGN project and type
 - Manufacturer handoff remains NOT READY. Continue formal/CDC/RDC, physical timing closure, production IP/PHY, hardware, power/thermal, reliability and commercial qualification only with evidence.
 - Key outstanding engineering review: compare WG8 PPA against baseline run 45545698546 (prior research result 77.31 MHz); do not accept the DMA constant-divisor rewrite as an improvement without measured comparable reports. Review the outstanding lint LATCH/UNOPTFLAT/width warnings at source level rather than suppressing them.
 - Primary files: this checkpoint and `docs/sunnyone/PROJECT_TRACKER.md`.
+
+
+## Continuation update — 2026-11-26 23:30 Asia/Dhaka (live terminal reconciliation)
+
+### Live branch safety
+- Active feature branch HEAD at continuation start: `4aa4018e420979b4441dd59e37710cee555376ed`.
+- Protected `main` independently fetched and remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Branch comparison: 822 ahead, 0 behind.
+- No RTL, workflow, or hardware changes were made during this continuation; documentation reconciliation only.
+- All four previously open workflows are now terminal. Their job logs and available artifacts were inspected. Workflow source SHA for the completed verification runs is `2835f1a8da6af454023caff9576f41258c66e2a8`.
+
+### Newly closed verification evidence
+1. **Qwen real-checkpoint and tiny board-model tests** — [run 45845758847](https://github.com/shamiursunny/openTPU/actions/runs/45845758847), exact source SHA above, SUCCESS. Official Qwen3-0.6B and Qwen3.5-0.8B checkpoint presence/architecture checks passed. Real RTL: **6 passed, 4 deselected**. Tiny board-model selection: **8 passed, 199 deselected**. Artifact 15136893309, SHA-256 `223804db48d7010633764082a0814e4237a36055aab652f22d5c2f4d069ac7d2`.
+2. **Subsystem/memory suite** — [run 45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), exact source SHA above, all jobs terminal SUCCESS. Combined job logs reviewed: **377 passed, 1 intentional address-window skip** across the selected subsystem, memory and reset-audit jobs. Native DRAM/technology RAM selection alone: **104 passed**. Reset audit completed successfully; prior detailed job result records **4 passed**. Artifacts include 15139026052 (native DRAM/technology RAM log, SHA-256 `9f18856ca1a5d114705645bc6fb541a0e940723356ef0dbdb7842d76e933e50d`) and 13 other selected-job logs, all tied to the same source SHA.
+3. **Software/ISA/host suite** — [run 45845758659](https://github.com/shamiursunny/openTPU/actions/runs/45845758659), exact source SHA above, all 15 jobs terminal SUCCESS. Individual logs reviewed: **825 passed, 3 skipped** across FP, MX, compiler, ISA, kernels, VOPS, waits, stream, formats, quantisation, dataflow, waitw, host, host-runs and host-lock. Fifteen per-job log artifacts are retained and identify the same source SHA.
+4. **Board functional suite** — [run 45845758677](https://github.com/shamiursunny/openTPU/actions/runs/45845758677), SUCCESS: **198 passed, 8 skipped, 1 deselected**. Artifact 15137400985, SHA-256 `d0adc900e0ef37ecec1f2715a555e0e822306a79b01bb562b1bbfa23d4f8f9d8`.
+5. **RTL tail** — [run 45845758636](https://github.com/shamiursunny/openTPU/actions/runs/45845758636), SUCCESS: **33 passed, 1 intentional skip, 183 deselected**. Artifact 15132004314.
+6. **ASIC/target and four-DIMM contention** — [run 45845758681](https://github.com/shamiursunny/openTPU/actions/runs/45845758681), SUCCESS. Actual simulation PASS markers cover concurrent host/accelerator AW/AR contention, alternating arbitration, ordered two-beat writes, B/R ID routing and independent backpressure. Artifact 15130743611, SHA-256 `dc0a587493b7b9ca44355fbeb312798b3ef853e2f39e4fecb4ef35c345251863`.
+7. **Full-chip lint** — [run 45845758782](https://github.com/shamiursunny/openTPU/actions/runs/45845758782), SUCCESS. Warning inventory remains 52 WIDTHEXPAND, 27 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT; no waiver or closure inferred. Artifact 15130078429, SHA-256 `6a1f1639094cfe3d8c800d4f9bd923375fa4dc613b0cb6c1e4f5c9244c6b8d75`.
+
+### WG8 Nangate45 PPA — failure diagnosed to stage boundary; timing result is preliminary
+- Run [45845758658](https://github.com/shamiursunny/openTPU/actions/runs/45845758658), exact source SHA `2835f1a8da6af454023caff9576f41258c66e2a8`, FAILED. Pinned ORFS image: `sha256:edbd355068b742c5ae2413a49a58578465bd52f57668cebebdd383eb4d97607d`; ORFS configured for 2 CPUs.
+- The run completed synthesis and floorplan timing reporting, then OpenROAD exited with code 247 during the `2_1_floorplan` stage. The archived log gives peak memory 15,191,368 KB and does not contain a definitive diagnostic for the exit cause. Do not label this definitively an OOM without further evidence.
+- Preliminary floorplan report: WNS 0.00 ns, TNS 0.00 ns, worst reported slack +0.46 ns, core-clock minimum period 2.04 ns / 489.55 MHz. The report is pre-route, uses wire-load estimates (no estimated parasitics), and is not routed STA or signoff.
+- Synthesis report area: 30,786,988.162 um^2 (Nangate45 proxy cell area, not die area or a foundry estimate).
+- Baseline [run 45545698546](https://github.com/shamiursunny/openTPU/actions/runs/45545698546), source SHA `c568020d91efd045c6dd5d89dbc30ebdbac2c866`, floorplan report WNS -10.43 ns, TNS -91.46 ns, minimum period 12.93 ns / 77.31 MHz; synthesis area 30,794,339.338 um^2.
+- The newer preliminary floorplan numbers are materially better than the archived baseline, but this comparison is not yet a controlled attribution to the DMA rewrite: the source revisions differ in more than the one DMA expression change, the run did not complete, and physical stages are incomplete. Do not call this timing closure or a proven DMA timing improvement.
+- PPA artifact 15137952036, SHA-256 `66d8e83e4f5da5ee5b11be80e851ecfe04f6b801857ef9ee3d786246af47f560`; baseline artifact 14997807086, SHA-256 `bb087bae1049d8364d83f766279a1d77a9f289c3d2747bcb5f796a17fa75d118`.
+
+### Remaining work / next actions
+1. Do not rerun the failed PPA yet. Inspect the archived `2_1_floorplan.log`, OpenROAD exit 247 and runner resource telemetry; identify whether this is a process abort, resource limit, or report-stage defect before designing a targeted retry. Keep the two-CPU constraint unless evidence justifies a change.
+2. Treat floorplan timing as preliminary only. A comparable successful flow through subsequent stages and routed STA is required before accepting timing closure or attributing gains to the DMA rewrite.
+3. Continue source-level triage of the 7 LATCH and 3 UNOPTFLAT warnings and 79 width warnings; do not suppress them.
+4. Continue formal/SVA proof, CDC/RDC, PCIe endpoint/SerDes, DMA/IOMMU, DDR controller/PHY/training/ECC, SRAM macro mapping, DFT, PDK/package, physical signoff, hardware power/thermal/reliability and commercial qualification.
+5. Do not relaunch completed tests. Preserve exact-SHA evidence and the exclusions for groups 3.1, 3.2, 4 and cancelled run 45765362426.
+
+Manufacturer handoff remains **NOT READY**. The successful runs above close only their named digital test scopes; they do not establish physical-board validation, formal closure, routed timing, power, silicon, production or commercial readiness.
