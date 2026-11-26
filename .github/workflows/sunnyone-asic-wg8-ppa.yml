@@ -126,7 +126,6 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          cp /tmp/wg8-host-resource-before.txt /tmp/wg8-host-resource-before-copy.txt 2>/dev/null || true
           find build/asic/nangate45-wg8 -maxdepth 7 -type f | sort > /tmp/wg8-files.txt || true
           if [ -f build/asic/nangate45-wg8/run.log ]; then
             tail -c 200000 build/asic/nangate45-wg8/run.log > /tmp/wg8-run-tail.txt
@@ -142,6 +141,7 @@ jobs:
           name: sunnyone-nangate45-wg8-ppa
           path: |
             /tmp/orfs-image-id.txt
+            /tmp/wg8-host-resource-before.txt
             /tmp/wg8-files.txt
             /tmp/wg8-run-tail.txt
             /tmp/wg8-diagnostic-file-sizes.txt
@@ -151,4 +151,5 @@ jobs:
             build/asic/nangate45-wg8/constraint.sdc
             build/asic/nangate45-wg8/work/logs/**
             build/asic/nangate45-wg8/work/reports/**
+            build/asic/nangate45-wg8/diagnostics/**
           if-no-files-found: ignore
