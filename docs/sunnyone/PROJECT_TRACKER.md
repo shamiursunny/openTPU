@@ -2551,3 +2551,16 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
   - MXU drain/key array indices: prove guard/mask invariants before narrowing.
 - Updated MANUFACTURER_HANDOFF_READINESS_MATRIX.md in commit 7bbf853230f591e314ec9307d0f1277be4ac996f and integrated plan in commit 95230c32013be1780a6980eaaac717123a3d562d. Checkpoint updated in commit edaef098e172457939e76f21f7974c6baa665b7c.
 - No RTL changes or new tests. G3 remains OPEN; lint is not closed. Next: prove VPU/loop-stack bounds and inspect exact synthesis source selection before any cast or functional change.
+
+
+## 108. 2026-11-27 sequencer LOOP stack overflow guard and targeted regression
+
+- Source-level comparison found a real boundary gap: docs/isa.md sets maximum nested LOOP depth to 4; opentpu/isasim.py rejects a fifth non-zero nested loop with SimError("loop stack overflow"); RTL rtl/seq/otpu_seq.sv had no visible guard before writing its four-entry arrays using 3-bit sp.
+- Added guard sp >= 3'd4, setting error and halted before any out-of-range write; legal pushes now index with sp[1:0]. RTL commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4.
+- Added two tests in tests/test_rtl.py in commit c22c9b1be497b62253693e817d7d3b5fdca1c79f: legal maximum four-level nesting and fifth-level overflow error/halt.
+- Added dedicated focused workflow .github/workflows/sunnyone-loop-stack-guard.yml in commit 275728cd1484fb3b409ba59b9b409f29160c8f7e. Run 45877985241 is IN_PROGRESS; do not mark fix verified until archived logs show both tests pass.
+- Full-chip lint run 45877786797 SUCCESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4; width diagnostics fell from 79 to 76 (52 WIDTHEXPAND, 24 WIDTHTRUNC), with three direct stack-index WIDTHTRUNC warnings removed. Seven simulation-only LATCH and three UNOPTFLAT remain.
+- Width inventory updated in commit 0d661732a6c2308dc6cab3bb1ad9294290a8707c; matrix updated in commit 2e9483051738ea09ab494b4c5217e1c6972e56ad; integrated plan updated in commit f93dfdd58dfcf7e07035ba7afa3de62517631e2b; checkpoint updated in commit 8c130d0e2b5c7eeaec9910c8b4c2aa851f76c1f8.
+- WG8 PPA run 45877786710 IN_PROGRESS on source 28c36c52204fe2ec2ed36413b02eb6043506ccc4 with immutable ORFS image pin and telemetry. No duplicate PPA attempt while active.
+- Other active/queued workflows: reset audit 45877786738; Qwen RTL 45877786754; board 45877786742; subsystem/memory 45877786699; software/ISA 45877786705; ASIC config 45877786860; replacement RTL-tail 45877807906; 128K one-copy TMEM investigation 45877807985. Prior tail run 45877787004 was cancelled by the newer commit. Historical user-cancelled run 45765362426 remains cancelled and must never be restarted.
+- No other RTL changes in this section. No manufacturer handoff claim; G1/G2/G3 remain PARTIAL/OPEN as appropriate.
