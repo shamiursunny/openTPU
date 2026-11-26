@@ -1685,10 +1685,17 @@ module otpu_seq
             end else begin
               lp <= 1'b0;
                 if (lp_cnt != 0) begin
-                stk_start[sp] <= pc + 1;
-                stk_end[sp]   <= pc + lp_len;
-                stk_rem[sp]   <= lp_cnt;
-                sp <= sp + 1;
+                // The ISA permits at most four nested loops. Stop an invalid fifth push
+                // before it can index beyond the four-entry hardware stack.
+                if (sp >= 3'd4) begin
+                  error <= 1'b1;
+                  halted <= 1'b1;
+                end else begin
+                  stk_start[sp[1:0]] <= pc + 1;
+                  stk_end[sp[1:0]]   <= pc + lp_len;
+                  stk_rem[sp[1:0]]   <= lp_cnt;
+                  sp <= sp + 1;
+                end
               end
             end
           end
