@@ -313,3 +313,8 @@ No RTL was modified and no new workflow was launched during this review. Main re
 ## Latest live continuation addendum
 
 Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-27_0137.md` immediately after this checkpoint. It contains the 01:37 Asia/Dhaka live workflow poll, FSUM hardware-bounds source review, and the exact next-action order. This addendum supersedes older in-progress workflow snapshots where run IDs overlap. Do not edit `otpu_seq.sv` until PPA run 45877786710 is terminal.
+
+
+## Latest continuation review — 2026-11-27
+
+Read `docs/sunnyone/CONTINUATION_REVIEW_2026-11-27_0145.md` after the 01:37 addendum. It corrects the stale ORFS_CPUS diagnosis after checking the current CLI path and records the latest live workflow poll and clarified FSUM ISA bounds. This is a documentation-only update; no RTL or tests were changed.
