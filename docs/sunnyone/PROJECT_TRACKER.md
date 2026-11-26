@@ -2394,3 +2394,8 @@ Still active at the latest poll:
 - The completed reset-audit job in [45845758496](https://github.com/shamiursunny/openTPU/actions/runs/45845758496) passed as above.
 
 No new CI runs were launched. Do not start additional builds until the existing workflow set reaches terminal states. The PPA result is the key unresolved gate for the DMA timing experiment. Keep main unchanged, do not restart run 45765362426, and do not rerun RTL groups 3.1, 3.2 or 4.
+
+
+### Stream RTL regression closed — 2026-11-26
+- In subsystem/memory workflow [45845758545](https://github.com/shamiursunny/openTPU/actions/runs/45845758545), Stream RTL job `139998866364` completed SUCCESS. Actual pytest log: `tests/test_stream_rtl.py` **14 passed in 1184.62 s**, including bit-exact configurations across uarch/board settings and destination-order tests. Artifact `15132346982`, SHA-256 `f8175ca55e63471deab21903454650631e82e372aed70d4fbc96ed69dd0362f8`.
+- Other jobs in that matrix remain in progress or queued; this does not close DMA/scoreboard or full subsystem coverage.
