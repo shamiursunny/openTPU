@@ -2367,3 +2367,10 @@ All following runs were automatically triggered by the `rtl/dma/otpu_dma.sv` pus
 
 ### Critical-path source-bit clarification
 The command type `cmd_t` in `rtl/top/otpu_pkg.sv` is packed as `op[7:0]`, `flags[7:0]`, `lg[3:0]`, three address-high fields and seven 32-bit words; `AWX=4`, so total width is 256 bits. Therefore reported startpoint `sc[254]` is `sc.op[6]`, an opcode bit. The path necessarily includes opcode-dependent stream setup/decode and data selection. The variable-divisor expressions are plausible contributors in the downstream arithmetic, but the single report path does not isolate the divider's share of the 12.93 ns delay. The rewrite remains an experiment until the new timing report identifies whether the critical path moved or shortened.
+
+
+## 13. Latest continuation checkpoint — 2026-11-26 (Asia/Dhaka)
+
+The latest operational state is maintained in [CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md](CURRENT_CONTINUATION_CHECKPOINT_2026-11-26.md). Read that file at the start of every continuation, then verify live branch/main/workflow state. It records the latest verified branch SHA, protected main SHA, confirmed Qwen and lint evidence, DMA timing experiment and its limitations, live workflow IDs/statuses, and next actions. The user may resume from any new chat/tab with: **“Continue and complete the remaining tasks.”**
+
+Latest verified branch SHA before this documentation update: `6ca69d24f9c7dbdd960e01531b7d64454c8ccaf3`. Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify it. Do not rerun RTL groups 3.1, 3.2 or 4 merely to reconfirm; do not restart cancelled run `45765362426`. Manufacturer handoff remains **NOT READY**.
