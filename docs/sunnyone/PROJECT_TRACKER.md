@@ -2525,3 +2525,16 @@ The live GitHub REST response for `main` reports `protected: false` and `protect
 - Updated .github/workflows/sunnyone-asic-wg8-ppa.yml in commit e2d96d5364af47503d67cb70635bf3485cbe9b33 (blob 426cfcc62ac4ca1d90cf52b06a0e9009b83a1c29) to pull the immutable manifest digest, verify the exact local image ID and archive both identifiers. Existing Docker --cpus 2 and cgroup v1/v2 resource telemetry remain.
 - Updated integrated plan with the exact digest and rationale in commit 57772f70dd335ec519f38e6f3ed75e392122bd61 (blob 7b826a30775e51e5f80ef567713213d8f4ec414c); checkpoint addendum saved in commit d02ce0a012f4408df862ce6a8cf4ab4ef0422a31.
 - No PPA rerun launched. The workflow change improves reproducibility only; it does not resolve the prior Error 247 or prove OOM. Review the resulting YAML/command behaviour and artifact paths before one justified diagnostic run.
+
+
+## 106. 2026-11-27 lint and combinational-path source triage
+
+- Created docs/sunnyone/LINT_AND_COMBINATIONAL_PATH_TRIAGE_2026-11-27.md in commit e18c5715f11146b0795642251f958d71b9ff1229.
+- The seven LATCH diagnostics are within ifndef SYNTHESIS diagnostic code in rtl/seq/otpu_seq.sv; the ASIC synthesis flow defines SYNTHESIS. These are simulation-only warnings, not evidence of hardware latches. Do not modify functional RTL to silence them. A final synthesized-netlist latch-cell check remains required.
+- pq is likely a packed-array alias-analysis false positive: non-host ports map to a selected host port; confirm generated connectivity.
+- sc_gl is likely a process-granularity false positive because cgl_c does not read coll_gnt, although gnt_c[G_COLL] is assigned from it in the same always_comb process; confirm elaborated graph before any process split.
+- aok is likely a packed-vector granularity false positive because the priority loop reads only lower indices h<g; confirm per-bit dependency.
+- gnt remains unresolved and highest priority. The example path reaches a VPU sequential enable pin; actual combinational return path is not proven. Resolve exact parameters and netlist/SCC graph; no speculative register insertion or grant-path restructuring.
+- Updated manufacturer matrix G3 and PPA instrumentation notes in commit 0a3f947610157359f28531f6d0bb6d9ede6b145f. G3 remains OPEN because UNOPTFLAT and width-warning evidence is not closed.
+- Updated integrated plan with lint triage in commit 8ba5ded36e6eb52dde43b7f6f25ee7641a694e10. Checkpoint updated in commit fcaeec4db211a14422b12a7804ab0fa2ed1d3b5e.
+- No RTL changes or new tests. Next: exact gnt path graph, then per-bit sc_gl/pq/aok confirmation and width-warning triage.
