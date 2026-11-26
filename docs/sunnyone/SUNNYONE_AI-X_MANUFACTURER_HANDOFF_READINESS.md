@@ -941,3 +941,14 @@ The overall workflow remains IN_PROGRESS because Group 4 is still executing. Its
 - Do not call simulated RTL execution physical-hardware validation. Actual FPGA/board Qwen execution still requires the supported board, bitstream, driver, host interface and real measurements. No zero-bug guarantee is possible; acceptance requires layered regressions and recorded evidence.
 - Latest poll of workflow run [45765362426](https://github.com/shamiursunny/openTPU/actions/runs/45765362426), run 121, attempt 1, tested SHA `455a03232c90b8e631a5add6cd7bebff4afdccad`: group 3.1 job `139724851662` was **IN_PROGRESS**; groups 3.2 (`139724852016`) and 4 (`139724852036`) were **QUEUED**; run-level status still **QUEUED**, no conclusion and no artifacts yet. Do not claim completion; poll this exact run.
 - Protected `main` remains unchanged at `d84db55712aba0d40811d7762cb052f05d55b7e5`; working branch comparison last confirmed 707 ahead / 0 behind. Manufacturer handoff remains **NOT READY**. No RTL tests or assertions were weakened.
+
+
+## Qwen real-checkpoint RTL gate added — 2026-11-26
+
+- Added `.github/workflows/sunnyone-qwen-real-rtl.yml` in commit `d68e7aa3ff651ed03fc58537c93d4d2ab1913844`. This is a separate `workflow_dispatch`-only gate; it does not rerun the already-passed general RTL groups 3.1, 3.2 or 4.
+- The gate downloads the official Apache-2.0 `Qwen/Qwen3-0.6B` checkpoint at revision `c1899de289a04d12100db370d81485cdf75e47ca` and `Qwen/Qwen3.5-0.8B` at revision `2b48083dfa97c3cbf0220cf1a5e6cffe0a511157`, verifies the downloaded repository contents, checks model types and safetensors presence, and uses CPU-only PyTorch plus safetensors.
+- It runs only `tests/test_models_on_board_rtl.py` cases selected by `-k "qwen3 or qwen35"` with `--runslow`: Qwen3 and Qwen3.5 real-checkpoint RTL cases across MCOLS=2 and MCOLS=4. LFM2 cases are intentionally excluded from this Qwen-only gate.
+- **Status: workflow added and read-back verified; NOT YET DISPATCHED; no Qwen RTL result claimed.** A green result must show the selected real-checkpoint cases actually executed and passed. This workflow is not a physical-board validation.
+- The general RTL workflow run #121 (run ID `45765362426`) was still active at the latest check: group 3.1 in progress, groups 3.2 and 4 queued. The connected GitHub action set did not expose a cancel-run operation, so cancellation could not be sent from this session. Do not describe it as cancelled. User can cancel it from the GitHub Actions run page if it remains active.
+- Previously completed RTL group 3.1, 3.2 and 4 results remain historical evidence; do not repeat those tests merely to reconfirm them.
+- Protected `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Branch comparison after adding the workflow: 711 ahead, 0 behind. Manufacturer handoff remains NOT READY.
