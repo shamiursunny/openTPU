@@ -303,3 +303,13 @@ For corrected diagnostic commit `76966009274be54ce26d87e333744b5cc17f72b4`, late
 - Subsystems/WG8 Run 45481815735: all 14 jobs QUEUED.
 - Isolated TMEM Run 45481815691: IN_PROGRESS.
 No corrected-SHA ASIC/config simulation result is available. This status supersedes the initial all-QUEUED snapshot in Section 17. See PROJECT_TRACKER.md Section 131.
+
+
+## Board-only regression and Qwen gate dependency checkpoint — 2026-11-26 (Asia/Dhaka)
+
+- Latest board-only run 45769498674 / job 139738454299 failed because the workflow installed Verilator 5.020. Pytest summary: 133 failed, 65 passed, 8 skipped, 1 deselected. The repeated compile failure was at rtl/mxu/otpu_mxu.sv:2781, where Verilator 5.020 rejected bit-selecting bk_ad(rq_ad, rq_en)[b]. Do not treat this as an RTL functional mismatch or weaken the assertion.
+- Board-only workflow corrected to build and assert Verilator 5.044 in commit 74ee09d865633e8d8f8cc3edaaf5cb460bf576cc. Dedicated board-only retry run 45784404427 / job 139787424587 tests that commit. At the time of this checkpoint it remains IN PROGRESS at the Verilator 5.044 build step; pytest has not started. Poll this exact run. It does not execute the passed RTL groups.
+- The dedicated Qwen real-checkpoint workflow had an invalid PyTorch pin (2.15.0). Corrected to CPU-only torch 2.11.0 and huggingface_hub 2.3.0 in commit 024e488befcbabdde21731f119b52baaedb9d10f. PyTorch's official previous-version page lists the 2.11.0 CPU wheel command: https://pytorch.org/get-started/previous-versions/ . Safetensors remains pinned at 0.8.0.
+- The Qwen workflow remains manual workflow_dispatch only and is not yet dispatched. The connected GitHub actions currently available in this session do not expose a workflow-dispatch operation. Do not claim Qwen real-checkpoint RTL validation until a run has been dispatched and its exact pytest log confirms the selected tests executed and passed.
+- Current active branch HEAD after the tracker update: 0ee09e6b8fc6cedb4e1b504f8771c272d858d299. Protected main remains d84db55712aba0d40811d7762cb052f05d55b7e5; no main changes. Manufacturer handoff remains NOT READY.
+- Immediate order: finish board-only run 45784404427; then dispatch Qwen-only gate through an available workflow-dispatch route; continue remaining formal/property, CDC/RDC, shared-DIMM, consolidated regression, PPA/physical and product qualification. Preserve all historical RTL group passes; never rerun groups 3.1, 3.2 or 4 merely to reconfirm.
