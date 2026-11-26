@@ -295,3 +295,30 @@ Next: prove or disprove latch inference with the actual synthesis/elaboration co
 ## Repository protection metadata clarification — 2026-11-26
 
 The live GitHub REST branch response for `main` returned `protected: false` and `protection.enabled: false` while its HEAD remained `d84db55712aba0d40811d7762cb052f05d55b7e5`. The project rule remains to treat `main` as protected and never modify it, but GitHub branch protection is **not technically enabled** according to the API response observed in this continuation. Do not conflate the project safeguard with an enforced GitHub ruleset. Enabling branch protection would be a separate repository-administration change and was not attempted; preserve zero-change to main.
+
+
+## Continuation update — 2026-11-27: PPA instrumentation and manufacturer gate matrix
+
+### Live starting state and safeguards
+- Revalidated branch `sunnyone/commercial-profitability-architecture-2026-11-23`, `main` and compare before work. At start, branch HEAD was `5639670d515f18778950c6ce7c1b1ae1cc94cdbc`; main was `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare 832 ahead / 0 behind.
+- GitHub API still reports `main.protected=false` and `protection.enabled=false`. Project safeguard remains: do not modify main. No admin setting changed.
+- Historical RTL verification SHA remains `2835f1a8da6af454023caff9576f41258c66e2a8`; no RTL source was modified in this continuation.
+
+### Implemented PPA workflow instrumentation
+- Updated `.github/workflows/sunnyone-asic-wg8-ppa.yml` in commit `783dc91d835b66279fc69ca0dd82ee3a9c403785` (final file blob SHA `9d6025838eb01dc7ae93d7f7671e7b5be066ec33`).
+- Fixed a real configuration/documentation mismatch: the prior comment said Docker itself was constrained to two CPUs, but the command only set `ORFS_CPUS=2` inside the container. The workflow now invokes Docker with `--cpus 2` as well as setting ORFS_CPUS.
+- Added runner host resource baseline capture (`/proc/meminfo`, `df -h`, `ulimit -a`); container cgroup identity; cgroup v2 memory limit/current/peak/events and cgroup v1 limit/usage/max-usage/failcnt where exposed; five-second samples during ORFS; and final memory snapshot. The telemetry is retained under `build/asic/nangate45-wg8/diagnostics/` and uploaded with the PPA artifact.
+- This is workflow instrumentation only, not PPA evidence. The workflow intentionally does not self-trigger on workflow-file-only changes. No PPA retry was launched. Review the workflow and dispatch only when a justified run is approved; keep pinned ORFS image and source SHA fixed for diagnosis. If a container is SIGKILLed, the EXIT trap may not run, but already-written samples should remain in the mounted workspace if the runner survives.
+
+### Manufacturer handoff gate matrix created
+- Added `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md` in commit `f6730d10c54dde125b68f4abe09b28487e244b07`.
+- The matrix defines G0–G15 acceptance gates for architecture/product definition, RTL, functional verification, lint, formal/SVA, CDC/RDC, synthesis/mapping, physical design/timing, memory, external interfaces, DFT, power/thermal/reliability, security, package/PCB/BOM, foundry data, and production/commercial qualification.
+- It labels current evidence honestly and defines required source/tool/configuration provenance for every result. It distinguishes early feasibility discussion from a formal tapeout/production manufacturer handoff. Current decision remains **NOT READY**.
+
+### Work not done / remaining
+- No RTL was edited; no lint finding was suppressed or closed; no formal/CDC/physical flow was claimed complete; no board, foundry, PDK, package, DFT or power/thermal qualification was fabricated.
+- The seven LATCH, three UNOPTFLAT and 79 width diagnostics remain open pending proof and source-level review. The PPA Error 247 cause remains unconfirmed. No new PPA or redundant successful RTL workflows were launched.
+- Immediate engineering sequence: (1) review/validate updated PPA workflow and run a diagnostic attempt only when justified; (2) establish actual latch-cell presence/absence and elaborate UNOPTFLAT paths; (3) triage width warnings; (4) extend formal/SVA and CDC/RDC; (5) complete target-specific memory, PCIe/SerDes, IOMMU, SRAM, DFT and physical design; (6) board power/thermal/performance/reliability; (7) manufacturer-specific signoff and qualification.
+
+### New continuation instruction
+When the user says **“continue and complete the remaining tasks”**, fetch this newest handoff section and tracker section 103 first; independently verify live branch HEAD, main SHA/protection metadata and compare; then continue from the PPA workflow instrumentation and lint/formal gate order. Do not repeat completed tests just for confirmation. Update this checkpoint and tracker after meaningful work, then re-fetch both and record exact final SHAs. Main must remain unchanged.
