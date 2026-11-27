@@ -238,3 +238,13 @@ Manufacturer handoff remains **NOT READY**. This refresh changed documentation o
 - `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
 
 Zero spend. No PPA retry, no paid compute/PDK/IP, no fabrication, packaging, board or lab expenditure. Manufacturer handoff remains **NOT READY**.
+
+
+## Save verification — 2026-11-28 05:13 Asia/Dhaka
+
+- Live feature branch immediately before this final checkpoint metadata commit: `2b2e5306523b2ebc85e13fb8520a2dffa746d86d`.
+- Live main SHA: `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare: **1,140 ahead / 0 behind**. Main remains unchanged. GitHub reports `protected=false` for both main and feature branch; do not write to main.
+- Final deterministic harness: run `46081103514`, job `140780031472`, SUCCESS on tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`; 34 tests, 0.517s, OK.
+- Outstanding waits-only job: `140775908058`, workflow `46053311585`, attempt 3; still IN_PROGRESS at the latest poll. Start `2026-11-27T22:58:36Z`; workflow timeout 45 minutes. Poll only this job and preserve other 14 successful module jobs.
+- Latest docs blobs before this metadata commit: checkpoint `e7c78e2501740e5c8ac51a71267dbea3f666d10d`; addendum `5f7a7f2a2b3a8141d243d7e4d253fdf3d4a03a4a`; resource model spec `4de8857c46b26e58b88c279dd93d242bac184ba1`; source/workload spec `164027f331c1b02b80249485ba37e9d31b113bb6`; tracker `fa03a7a929f255a91db739883524eed012e1b7d3`.
+- Next continuation trigger remains: **“Continue and complete the remaining tasks.”** Read this checkpoint, the continuation addendum and resource-model spec first, then re-check live branch/workflow state before changing files or running tests.
