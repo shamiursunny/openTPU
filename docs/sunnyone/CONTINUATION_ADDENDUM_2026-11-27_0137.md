@@ -93,3 +93,10 @@ The prior wording that the exact seed-3 power-up case “passes” refers specif
 The no-trace A/B run 45914084753 reproduced `test_random_power_up[1-3]`: the FSUM-guard source failed and the pre-FSUM source passed. The candidate tail-init flush fix must therefore remain PROVISIONAL until clean non-trace broad RTL-tail run 45915615625 and the stream RTL/ISA suite complete. Do not state that seed-3 is closed before inspecting those terminal logs.
 
 The temporary `tb_top.sv` hierarchical monitor, trace test helper and temporary A/B workflow were removed/restored in commits 6290b360 and 425e794. A failure-only `$display` diagnostic remains inside the simulation-only tail assertion in `rtl/vpu/otpu_se_tail.sv`; it does not affect synthesis. Structural/reset audit 45914912691 is terminal PASS (reset 4/4; three tops 0 SCC/0 inferred latches), and ASIC integration 45914912733 is terminal PASS. See the current checkpoint for all other run states.
+
+
+## 2026-11-27 current branch update — explicit MIG address extension
+
+Commit 600f3aa4822e18f03ba80d06ab86fd447189c126 makes the MIG-pair's 33-bit AW/AR outputs explicitly zero-extended into the 34-bit host mux. ASIC config run 45916680920 is validating; initial lint stages passed and host AXI simulation is running. Full-chip lint 45916680866 passed with zero errors but 76 width, 7 LATCH and 3 UNOPTFLAT warnings remain.
+
+Do not close the stream-tail random-power-up issue from trace-enabled run 45915433368. The no-trace A/B result still fails post-FSUM and passes pre-FSUM; clean no-trace RTL-tail run 45916680719 is pending. Structural/reset audit 45914912691 and prior ASIC integration 45914912733 are terminal PASS. PPA remains unauthorised; main untouched; manufacturer handoff NOT READY.
