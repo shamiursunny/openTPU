@@ -267,13 +267,15 @@ module otpu_se_tail
     end
   // the valids in reset registers (otpu_vdelay): the lines advance only with pe, inside a
   // stream, so a power-up one would push the first stream's d FIFO
-  otpu_vdelay #(.N(SL)) u_e2 (.clk, .rst, .en(pe), .d(kv_v), .q(e2));
-  otpu_vdelay #(.N(SL)) u_e3 (.clk, .rst, .en(pe), .d(e2), .q(e3));
-  otpu_vdelay #(.N(SL)) u_dv (.clk, .rst, .en(pe), .d(e3), .q(dv));
+  // A new stream init flushes the row-slot valid pipeline as well as the row counter/FIFO.
+  // Without this, stale e2/e3/dv bits from the previous stream can overlap the new stream.
+  otpu_vdelay #(.N(SL)) u_e2 (.clk, .rst(rst || init), .en(pe), .d(kv_v), .q(e2));
+  otpu_vdelay #(.N(SL)) u_e3 (.clk, .rst(rst || init), .en(pe), .d(e2), .q(e3));
+  otpu_vdelay #(.N(SL)) u_dv (.clk, .rst(rst || init), .en(pe), .d(e3), .q(dv));
   otpu_delay #(.W(8), .N(SL)) u_rd (.clk, .en(pe), .d(rr), .q(rd));
 `ifndef SYNTHESIS
   always_ff @(posedge clk)
-    if (!rst && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
+    if (!rst && !init && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
       $display("otpu_se_tail: state rst=%0d pe=%0d init=%0d in_v=%0d cfg=%h ns=%0d x0=%h jn=%0d kv_v=%0d e2=%0d e3=%0d rv=%0d rr=%0d",
                rst, pe, init, in_v, cfg, ns, x0, jn, kv_v, e2, e3, rv, rr);
       $fatal(1, "otpu_se_tail: two rows' d slots meet (kv_v %0d e2 %0d e3 %0d)", kv_v, e2, e3);
