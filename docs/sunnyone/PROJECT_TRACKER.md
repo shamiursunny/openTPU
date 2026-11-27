@@ -2874,3 +2874,21 @@ Repository: `shamiursunny/openTPU`; active branch: `sunnyone/commercial-profitab
 - Do not rerun successful Qwen, board, reset, RTL-tail, ASIC-config or lint workflows solely to reconfirm. Do not restart run 45765362426 or rerun historical RTL groups 3.1, 3.2 or 4. Do not dispatch PPA or incur spend without explicit approval.
 
 No RTL or test change was made in this reconciliation. All results are limited to their recorded source/configuration and selected test scopes.
+
+
+## 122. 2026-11-27 — PPA failure root cause and ORFS worker-setting correction
+
+### Run 45877786710 (source 28c36c52204fe2ec2ed36413b02eb6043506ccc4)
+The `wg8-ppa` job 140109157212 completed FAILURE during ORFS stage `2_4_floorplan_pdn`, not during synthesis or RTL verification. The uploaded diagnostic artifact is 15152974135 (SHA-256 `bd93a2e68be7e2c3b782dba2e26824b67977a98867fd17cddceb1348c56a16f5`). It contains the pinned ORFS image ID, host resource snapshot, cgroup telemetry, stage logs and reports.
+
+Resource evidence establishes a host-level out-of-memory kill: `/proc/meminfo` reports 16,366,484 kB total RAM; sampled cgroup `memory.peak` reached 16,155,115,520 bytes (about 15.0 GiB); final `memory.events` reports `oom_kill 1` and `oom 0`, `oom_group_kill 0`. The cgroup `memory.max` was `max`, so this is not evidence of a cgroup memory.max cap; it is evidence that the kernel OOM killer killed a process while host memory was exhausted. ORFS reports stage peak memory 15,713,660 KB, and the run exits 247 at `2_4_floorplan_pdn`. This is a confirmed OOM-related PPA infrastructure/resource failure, not an RTL functional test failure and not a completed PPA result. No area/timing/power result is valid from this run.
+
+### Correction to the stale ORFS_CPUS diagnosis
+The continuation addendum's proposed action to fix a missing `ORFS_CPUS` propagation mismatch is superseded by source inspection. On the PPA run's source snapshot, `tools/asic/flow.py` already reads `ORFS_CPUS` at lines 452-458 and passes it into `run(point, cpus, ...)`; `run()` passes that value as ORFS `NUM_CORES` and Docker `--cpus`. The PPA workflow explicitly exported `ORFS_CPUS=2`, and the run command used Docker `--cpus 2`. Therefore no demonstrated ORFS_CPUS propagation bug exists in this source snapshot. Do not change this code or create a test for a bug that is not present. The run's CPU cap was two; memory exhaustion still occurred. A smaller-memory design point, reduced elaboration/placement scope, or materially higher-memory runner is a separate future experiment, but no PPA retry is authorised.
+
+### Updated next actions
+1. Keep PPA marked FAILED / OOM at floorplan PDN; no PPA metrics claimed. Preserve artifact 15152974135 and the immutable ORFS image identity from it.
+2. Do not implement the stale ORFS_CPUS fix. If any future PPA experiment is approved, first design a distinct resource-bounded experiment with a justified memory estimate and explicit approval; do not duplicate this run.
+3. Continue the FSUM synthesizable ingress guard design only after reading the current sequencer RTL path and parameter wiring. Candidate rules: feature enabled, EXP2SUB+VF_FSUM, rows 1..256, cols >=64, B mode non-scalar; reject via existing error/halt before VPU dispatch. This is not yet implemented or validated. Tests must prove legal 256x64 boundary and each invalid case is rejected without VPU issue/row-buffer write.
+4. Keep QHL power-up overlap failure from run 45916680829 open; do not conflate it with the separate prior tail run or suppress the assertion.
+5. Maintain no-main, no-spend, and no duplicate historical regression policy. Manufacturer handoff remains NOT READY.
