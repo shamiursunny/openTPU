@@ -199,3 +199,13 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Full-chip lint 45915615693 PASS, 0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings remain open. Do not equate Verilator LATCH warnings with synthesized latch-cell counts.
 - Reset/power-up audit step PASS in run 45914912691; ASIC-top flattened SCC/latch stage still IN PROGRESS. Four-DIMM WG8 host AXI integration run 45914912733 still IN PROGRESS.
 - Manufacturer handoff remains NOT READY. PPA not authorised; RSUM producer metadata FIFO, ASIC proof, width, formal, CDC/RDC, DFT and physical gates remain open.
+
+
+## 2026-11-27 terminal structural and reset audit update
+
+- Reset/power-up audit 45914912691: PASS, 4/4 tests.
+- Yosys/Slang structural audit artifact 15162062669: PASS, 3/3 elaborated tops. One-copy slice, S=2 two-slice `otpu_top`, and actual `otpu_asic_top` (card configuration) each show 0 SCCs and 0 inferred latch cells.
+- ASIC `aok` UNOPTFLAT warning is no longer an OPEN structural-loop blocker for the tested ASIC top; classify as a Verilator dependency/partitioning over-approximation in this elaboration. Do not generalise beyond tested configuration.
+- Stream-tail init flush fix is committed; exact seed-3 random power-up regression passes (45915433368, 1 passed). Broad clean RTL-tail run 45915615625 still in progress.
+- Full-chip lint 45915615693 PASS, 0 errors; 76 width warnings, 7 Verilator LATCH and 3 UNOPTFLAT diagnostics remain. Synthesized latch-cell audit is zero in all three tested netlists.
+- Four-DIMM WG8 host AXI integration 45914912733 remains in progress. Manufacturer handoff remains NOT READY pending width cleanup, integration, formal/SVA, CDC/RDC, DFT and physical/timing signoff.
