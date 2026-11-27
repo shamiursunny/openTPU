@@ -1756,7 +1756,6 @@ module otpu_vpu
         if (root_v) kh <= kh + 1'b1;
       end
     assign vt_q = kq[kh];
-`ifndef SYNTHESIS
     assign ss_y_v = sen && t_yv;
     assign ss_o_v = sen && t_ov;
   end else begin : g_nse
