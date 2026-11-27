@@ -523,3 +523,10 @@ Latest workflow reconciliation is recorded in PROJECT_TRACKER.md section 121 and
 New regression blocker: subsystem/memory 45916680829 has 13/14 jobs SUCCESS, QHL job FAILED with 6 passed and 1 failed. Failing test `test_qhl_power_up_rtl[1-False]` reaches the DUT and trips the simulation assertion at `rtl/vpu/otpu_se_tail.sv:281`: `kv_v=0,e2=1,e3=1`, with `rst=0, pe=1, init=0, in_v=1, cfg=6f8069, ns=32, jn=14, rv=51, rr=51`. This is a QHL random-power-up failure and is not closed by the separate 33-pass RTL-tail selection. Since init is low, the prior init-flush change does not by itself explain it. Root cause remains unproven; inspect VPU root/root_v and tail valid spacing against the QHL program/reset schedule before any RTL or assertion change.
 
 Keep G3 width warnings and formal/CDC/RDC/DFT/physical gates open. PPA remains unauthorised after confirmed OOM on the equivalent 16-GB runner. Manufacturer handoff NOT READY. Do not rerun successful jobs solely to reconfirm; do not restart 45765362426 or historical RTL groups 3.1/3.2/4; do not modify main or incur spend.
+
+
+## 2026-11-27 continuation update — PPA artifact reviewed
+
+PPA run 45877786710 / job 140109157212 is terminal FAILURE at ORFS `2_4_floorplan_pdn` (exit 247). Artifact 15152974135 was downloaded and inspected. It proves host OOM-killer activity: cgroup `oom_kill=1`, peak `memory.peak=16,155,115,520` bytes, host MemTotal 16,366,484 kB; cgroup `memory.max=max`. ORFS stage log reports 15,713,660 KB peak. No final PPA report or valid PPA metrics. `ORFS_CPUS=2` was correctly propagated through `tools/asic/flow.py` to `NUM_CORES=2` and Docker `--cpus=2`; the addendum's stale proposal to fix ORFS_CPUS propagation is withdrawn. No PPA retry is authorised.
+
+Continue with QHL random-power-up failure diagnosis and review the FSUM synthesizable guard candidate in the real `rtl/seq/otpu_seq.sv` path. Do not claim either fixed without focused verification. Keep formal/SVA, CDC/RDC, DFT, SRAM technology mapping and physical signoff open. Main untouched, no spend, manufacturer handoff NOT READY.
