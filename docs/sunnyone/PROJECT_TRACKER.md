@@ -3260,3 +3260,12 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Implementation order: workload/trace inventory and deterministic software/simulator baseline; profile existing model paths; validate algorithms and KV correctness; only then consider a narrow RTL/ISA proposal with resource estimates, formal properties and focused tests.
 - No RTL, ISA, workflow or hardware was changed. No benchmark/performance/power claim is made. No PPA, paid QPU/cloud, fabrication or spend. Protected main untouched. Manufacturer handoff remains NOT READY.
 - Current separate waits recovery remains pending at last live poll: run `46053311585`, job `140738728795` (`tests/test_waits.py`) was still in progress; do not infer success from other module jobs.
+
+## 133. 2026-11-28 — unified NPU + matrix TPU + quantum-inspired LPU proposal
+
+- User clarified the target is a combined architecture: matrix-oriented TPU/MXU, quantum-inspired classical LPU for language-model prefill/long-context/KV/decode, and NPU/VPU neural/vector capabilities cooperating rather than isolated accelerators.
+- Added `docs/sunnyone/UNIFIED_NPU_TPU_LPU_PETASCALE_AI_ARCHITECTURE_2026-11-28.md` (commit `dfb9f96bd14b77404afbdc66c14d7715c23d181d`).
+- Architecture defines shared scheduling, memory/context management, DMA/interconnect, per-engine roles and staged implementation. Existing MXU/VPU/stream/TMEM/DMA/sequencer/host runtime are the initial concrete implementation base; "unified NPU" and "LPU" are logical architecture roles, not claims of already integrated standalone blocks.
+- Clarified "petabyte-level": distributed system/cluster storage and data/context corpus handling may reach petabyte scale, but on-chip SRAM/HBM capacity, bandwidth, latency, model context length and compute throughput are distinct. Retrieval over a petabyte corpus does not mean the model attends to every byte in one context window.
+- No petabyte-capacity, throughput, power, quantum advantage or performance claim. No RTL/ISA/workflow change, PPA, paid service, QPU or hardware activity. Main untouched. Manufacturer handoff remains NOT READY.
+- Next: inventory real source interfaces and map engine responsibilities; build deterministic heterogeneous scheduler/workload simulation; profile supported models; only then propose targeted RTL.
