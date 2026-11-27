@@ -2714,3 +2714,34 @@ Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
 - ASIC `aok` UNOPTFLAT remains OPEN; actual `otpu_asic_top` SCC proof is still required.
 - Remaining width warnings: 76 generic full-chip plus additional ASIC DMA/native-DRAM/AW-AR warnings. Explicit MIG 33-to-34-bit zero-extension cleanup remains planned.
 - Full report: docs/sunnyone/STRUCTURAL_SCC_AND_LATCH_AUDIT_2026-11-27.md.
+
+
+## 116. 2026-11-27 06:00 Asia/Dhaka — power-up A/B and live branch reconciliation
+
+Live feature branch HEAD before this documentation update: 18493ca5f681d44051eaeb960b89d496ac0968e1. Repository: shamiursunny/openTPU; active branch: sunnyone/commercial-profitability-architecture-2026-11-23. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5. GitHub API reports main branch protection disabled; project rule remains never modify main.
+
+### New power-up A/B workflow — infrastructure failure, no comparison obtained
+- Workflow run 45913977727, source commit 18493ca5f681d44051eaeb960b89d496ac0968e1, attempted the exact random-power-up parameter test_random_power_up[1-3] on both post-FSUM-guard source ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a and pre-FSUM-guard source 0d367ba1906b8e187e6e2feb2db576364d85b4fb.
+- Both matrix jobs FAILED before Verilator compilation/simulation because the Ubuntu 24.04 apt-installed Verilator rejected the repository's required --no-assert-case option: "%Error: Invalid option: --no-assert-case". Artifacts 15161656130 and 15161705956 preserve the logs (SHA-256 c4182a1ce3b430fb9f65ca5f2cde8ec3f331f337f30bdc4d3270ecdd841e74f0 and a51f5e52cd108a9e9895de6ae1f69da689224077e1b4ab87cd79ac9c95b97fe8 respectively).
+- This is a simulator/toolchain compatibility failure, not a DUT pass or fail. No A/B conclusion about the FSUM guard can be drawn. The workflow needs a pinned Verilator build known to support --no-assert-case (or a validated runner/toolchain), plus an explicit version/capability check, before the same comparison is retried. Do not silently remove the option: it is part of the random power-up test's intended semantics.
+
+### Separate real random-power-up RTL regression failure
+- RTL-tail workflow 45911471173 on source ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a ran 32 passed, 1 skipped, 1 failed, 196 deselected. The failing test was test_random_power_up[1-3]. Simulation reached the DUT and stopped at rtl/vpu/otpu_se_tail.sv:277 with assertion "two rows' d slots meet (kv_v 0 e2 1 e3 1)".
+- This is an unresolved functional/assertion regression in the FSUM-guard source snapshot. It is not yet attributable to the FSUM guard: the intended pre/post A/B comparison did not execute because both jobs failed at the unsupported Verilator option. Preserve the failure; do not suppress the assertion or classify it as a false positive without a timing/reset proof.
+
+### Reconciled subsystem status
+- FSUM hardware bounds: targeted workflow 45911471194 SUCCESS, 11 passed, 219 deselected. Residual hardware/ISA parity gap remains: no FIFO storing each producer's sum destination and row count, so exact RSUM oldest-producer matching is not enforced in hardware.
+- Structural SCC/latch audits 45913401437 and 45913488085 SUCCESS: one-copy slice and S=2 top each have 0 SCC and 0 inferred latch cells. This closes generic gnt/pq/sc_gl SCC concerns only in those tested configurations. ASIC-top aok SCC and ASIC-wide latch proof remain OPEN.
+- Width-warning gate remains OPEN: 76 generic warnings (52 WIDTHEXPAND, 24 WIDTHTRUNC) plus ASIC-specific DMA/native-DRAM/AW-AR warnings. Do not blanket-cast or suppress.
+- WG8 PPA 45877786710 remains terminal FAILURE with confirmed cgroup oom_kill=1 and memory peak near the 16 GB host limit. No equivalent-runner retry. PPA remains unauthorised; do not create PPA_EXECUTE_REQUEST.md or dispatch manually without explicit approval of the exact source SHA.
+- Manufacturer handoff remains NOT READY. Track A full product and Track B first-silicon demonstrator remain separate.
+
+### Next actions
+1. Resolve the power-up test toolchain mismatch with a pinned/capability-checked Verilator that supports --no-assert-case; then obtain the intended pre/post-FSUM A/B evidence before attributing the seed-3 assertion.
+2. Investigate the real otpu_se_tail slot-overlap assertion with cycle-accurate timing/reset evidence; do not weaken it.
+3. Close RSUM producer metadata FIFO parity with the ISA contract and directed ordering/address/row tests.
+4. Complete ASIC-top aok SCC/latch proof; continue width-warning and AW/AR address-width semantic proofs.
+5. Expand formal/SVA, CDC/RDC, production DDR/PCIe/DMA/IOMMU, DFT, physical, package, board and manufacturer gates.
+6. Preserve zero-spend, no-main, no-cancelled-run-45765362426, and no-repeat-successful-groups-3.1/3.2/4 controls.
+
+This section records evidence and open work only. No RTL was modified in this reconciliation; no workflow was dispatched, rerun or cancelled by this documentation update.
