@@ -102,3 +102,13 @@ Read `docs/sunnyone/QUANTUM_INSPIRED_LPU_LONG_CONTEXT_ARCHITECTURE_2026-11-28.md
 - No RTL/ISA/workflow change or performance claim. Next engineering step is deterministic workload/trace inventory and profiling of existing supported model paths; do not create a new hardware block until a measured bottleneck and verification plan justify it.
 - The targeted waits job `140738728795` in run `46053311585` was still IN_PROGRESS at the last poll; re-poll before claiming a result.
 - Continue feature branch only; no main writes, no PPA retry, no paid service or spend. Manufacturer handoff remains NOT READY.
+
+## 2026-11-28 — unified NPU / TPU / LPU architecture direction
+
+Read `docs/sunnyone/UNIFIED_NPU_TPU_LPU_PETASCALE_AI_ARCHITECTURE_2026-11-28.md` and tracker section 133.
+
+- User wants matrix TPU acceleration, quantum-inspired classical LPU and NPU technology combined to share their strongest capabilities for AI inference.
+- Proposed organisation: TPU/MXU for matrix projections and attention GEMMs; LPU for chunked prefill, long-context attention/KV management and decode scheduling; NPU/VPU for supported vector, elementwise, reduction and neural operators; shared scheduler, memory/context fabric, DMA and interconnect.
+- "Petabyte-level" is interpreted as distributed system/cluster-scale storage and data/context corpus processing, not petabytes of on-chip memory or a single request attending to an entire petabyte. Capacity, bandwidth, latency, compute throughput and model context length must be measured separately.
+- Unified architecture proposal created in `UNIFIED_NPU_TPU_LPU_PETASCALE_AI_ARCHITECTURE_2026-11-28.md` (commit `dfb9f96bd14b77404afbdc66c14d7715c23d181d`). It is documentation only. Existing MXU/VPU/TMEM/DMA/sequencer/host runtime are concrete foundations; integrated NPU/LPU fabric is not yet implemented.
+- Next engineering step: source/interface inventory, deterministic heterogeneous scheduling and long-context workload traces, then profile supported model paths. No speculative RTL, benchmark claim, PPA, paid compute or hardware. Main remains untouched; manufacturer handoff NOT READY.
