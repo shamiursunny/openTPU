@@ -3187,3 +3187,17 @@ See `LINT_TRIAGE_UPDATE_2026-11-28.md` and `CONTINUATION_ADDENDUM_2026-11-28_VPU
 - Focused VPU run `46053329340` failed during compile with apt Verilator 5.020 before simulation. Workflow pinned to 5.044; run `46053471843` pending/in progress and is the required regression gate.
 - Broad `rtl/**` path filters unintentionally triggered additional unrelated suites. No connector cancellation action is available; no further broad runs should be initiated. Keep historical test evidence exact and avoid repeating passed groups.
 - Manufacturer handoff **NOT READY**; zero spend and no protected-main writes.
+
+
+## 127. 2026-11-28 — VPU regression closed and current CI state reconciled
+
+See `CONTINUATION_ADDENDUM_2026-11-28_0220.md` and `CURRENT_CONTINUATION_CHECKPOINT_2026-11-28.md` for the full source/configuration and release constraints.
+
+- VPU focused workflow `46053471843` succeeded on source `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`: 31 VPU tests passed and 11 raw FSUM ingress/boundary tests passed (219 deselected). Artifact `15225689330`.
+- Full-chip lint `46053311384` succeeded as a job, with 52 WIDTHEXPAND, 7 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT diagnostics. This is not warning-free lint closure.
+- Structural SCC/latch evidence remains limited to the exact elaborations in audit `45914912691`; behavioral DRAM exists() warnings are SIM_ONLY in the ASIC source closure.
+- Latest poll: Qwen `46053311477` IN_PROGRESS (real checkpoint/RTL stage passed; tiny board-model stage still running); software/ISA `46053311585` QUEUED. Do not claim either overall workflow passed. Other recorded board/subsystem/tail/reset/ASIC configuration runs succeeded; `46053311433` was skipped.
+- No workflow was launched or cancelled in this continuation. The current GitHub connector exposes no cancellation action. Do not initiate duplicate broad runs.
+- MXU `dlane_a` index has a source-level guard proof; the synthesizable `mx_key` access at line 2663 still requires full `c_M`/MCOLS proof before any RTL change.
+- Feature branch at the pre-documentation poll was `75a02e23bfb1b841be4805914659c4823252c370`; compare was 1,072 ahead / 0 behind protected baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`. All documentation changes remain on the feature branch.
+- No PPA retry or spending. Manufacturer handoff remains **NOT READY**; formal/SVA, CDC/RDC, DFT, technology mapping, production interfaces, DDR PHY, routed physical signoff, power/thermal and demonstrator sponsorship gates remain open.
