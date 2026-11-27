@@ -577,3 +577,12 @@ The debug artifact contains a program, DRAM image, sync metadata and textual tra
 The init-flush candidate (RTL commit 024928752fef7ab774502d2a19f49111cc86b1ff) passes the exact previously failing test_random_power_up[1-3] on run 45915433368 (1 passed, 40.33 s, RTL/ISA comparison completed). This validates the deterministic seed-3 failure correction, but broad stream-tail regression run 45915615625 remains in progress. The temporary tracing and A/B harness was removed by commits 6290b360 and 425e794; the standard unique-random test remains.
 
 Full-chip lint 45915615693 passed with zero errors but still reports 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings. Reset/power-up stage passed in 45914912691; ASIC-top SCC/latch stage is still running. Four-DIMM WG8 integration 45914912733 remains open. Do not claim complete G1/G2 or manufacturer readiness until broad RTL/ISA, ASIC structural and integration evidence is terminal and reconciled.
+
+
+## 23. Terminal ASIC structural audit and stream-tail reset correction
+
+Workflow 45914912691 is terminal SUCCESS. Reset/power-up audit passed 4/4. Artifact 15162062669 confirms zero SCCs and zero inferred latch cells in all three elaborated tops: one-copy slice, S=2 two-slice `otpu_top`, and actual `otpu_asic_top` with the card configuration and SRAM macro boundaries blackboxed. The ASIC `aok` UNOPTFLAT diagnostic is therefore not a structural combinational loop in the tested ASIC netlist; it is a Verilator dependency/partitioning over-approximation for this configuration.
+
+The stream-tail reset correction flushes `u_e2`, `u_e3` and `u_dv` on `rst || init`; the overlap assertion is suppressed only on the synchronous init edge. The exact previously failing seed-3 power-up test passes on the corrected source (45915433368, 1 passed, 40.33 s). This supports the diagnosis that stale stream-valid pipeline state survived stream init. The clean full RTL-tail suite 45915615625 remains in progress and is required before declaring the broader stream gate closed.
+
+Full-chip lint 45915615693 passed with zero errors; 76 width warnings, 7 Verilator LATCH diagnostics and 3 UNOPTFLAT diagnostics remain. The three flattened structural netlists contain zero latch cells, but warning triage and width cleanup remain required. Four-DIMM WG8 host AXI integration 45914912733 remains in progress. No PPA rerun or spend; manufacturer handoff remains NOT READY.
