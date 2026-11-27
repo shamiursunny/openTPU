@@ -148,8 +148,16 @@ class ResourceEventModelTests(unittest.TestCase):
             ServiceProfile.from_dict(raw)
 
     def test_tick_unit_mismatch_is_rejected(self):
-        raw = profile().__dict__.copy()
-        raw["tick_unit"] = "other_tick"
+        raw = {
+            "profile_id": "unit-test-profile",
+            "version": "1",
+            "origin": "synthetic_fixture",
+            "provenance": "unit-test fixture only",
+            "tick_unit": "other_tick",
+            "resources": {"shared_engine": 1},
+            "prefill": [{"name": "p", "resource": "shared_engine", "service_ticks_per_unit": 2}],
+            "decode": [{"name": "d", "resource": "shared_engine", "service_ticks_per_unit": 3}],
+        }
         with self.assertRaisesRegex(ValueError, "tick_unit differ"):
             ResourceEventModel(ServiceProfile.from_dict(raw), 2).run(trace(request("r1")))
 
