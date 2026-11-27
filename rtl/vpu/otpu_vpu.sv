@@ -1753,6 +1753,22 @@ module otpu_vpu
         if (root_v) kh <= kh + 1'b1;
       end
     assign vt_q = kq[kh];
+`ifndef SYNTHESIS
+    // Diagnostic-only cycle trace for the QHL random-power-up failure. Activated only by
+    // +OTPU_QHL_TRACE; no trace/VCD mode and no datapath or control changes.
+    integer qhl_dbg_cycle;
+    initial qhl_dbg_cycle = 0;
+    always @(posedge clk) begin
+      qhl_dbg_cycle <= qhl_dbg_cycle + 1;
+      if ($test$plusargs("OTPU_QHL_TRACE") && !rst &&
+          (s_init || (en_b && root_v) || (sen && (u_tail.e2 || u_tail.e3)))) begin
+        $display("QHLTRACE cycle=%0d en_b=%0d sen=%0d s_init=%0d ss_act=%0d root_v=%0d vt_q=%0d kv_v=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d kq=%h kh=%0d kt=%0d e2=%0d e3=%0d",
+                 qhl_dbg_cycle, en_b, sen, s_init, ss_act, root_v, vt_q,
+                 root_v && !vt_q, cap, a_cap, q_cap, vt_rl, vt_sub, kq, kh, kt,
+                 u_tail.e2, u_tail.e3);
+      end
+    end
+`endif
     assign ss_y_v = sen && t_yv;
     assign ss_o_v = sen && t_ov;
   end else begin : g_nse
