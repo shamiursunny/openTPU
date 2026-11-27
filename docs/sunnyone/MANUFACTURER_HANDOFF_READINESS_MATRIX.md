@@ -450,3 +450,17 @@ This handoff records the latest evidence available in this conversation. It does
 - The STREAM workflow file was reviewed: it is restricted to the active feature branch, builds pinned Verilator 5.044, and runs only tests/test_stream.py. No workflow change is required from this successful result.
 - Open gates remain: semantic width-warning closure; exact UNOPTFLAT dependency analysis (especially gnt); formal/SVA, CDC/RDC, DFT, SRAM technology mapping; production PCIe/SerDes, DMA/IOMMU and DDR controller/PHY/training/ECC; routed physical signoff; Track B demonstrator down-select and verified sponsorship/sample logistics. Manufacturer handoff remains **NOT READY**.
 - Zero-spend remains mandatory. No PPA retry, fabrication, packaging, lab test, paid compute, or hardware purchase is authorised. Protected main remains untouched.
+
+
+## 2026-11-28 status reconciliation
+
+This is a status update, not a gate closure. See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0050.md` for exact run/source/artifact references.
+
+- Functional/software evidence now includes isolated STREAM 46/46 at its tested source SHA; this closes only that module.
+- QHL seed-1 reset-qualified targeted case and the 7-test subsystem QHL selection passed; broader power-up/seed/configuration coverage is not declared closed.
+- FSUM hardware-ingress guard is implemented and focused-tested (11 passed, 219 deselected); no further action absent a new defect.
+- Board-functional 198 passed, 8 skipped, 1 deselected remains historical scoped evidence, not a current-SHA full board signoff. Qwen real-checkpoint runs are simulation evidence only.
+- WG8 PPA remains failed with no routed PPA report; no retry authorised. No area/timing/power signoff claim.
+- Lint/structural gate remains OPEN: width warnings and `gnt`/ `sc_gl`/ `pq` plus ASIC `aok` dependencies require exact elaborated evidence. Formal/SVA, CDC/RDC, DFT, real memory mapping, production interfaces, routed physical and thermal/reliability gates remain open or blocked.
+
+**Release decision unchanged: NOT READY for manufacturer handoff.** Zero spend and protected-main exclusion remain in force.
