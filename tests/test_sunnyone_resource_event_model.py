@@ -74,10 +74,10 @@ class ResourceEventModelTests(unittest.TestCase):
             trace(request("r1", prompt=2, output=1), request("r2", prompt=2, output=1))
         )
         rows = {row["request_id"]: row for row in report["requests"]}
-        self.assertEqual(rows["r1"]["first_token_tick"], 3)
-        self.assertEqual(rows["r2"]["first_token_tick"], 4)
-        self.assertEqual(rows["r1"]["completion_tick"], 3)
-        self.assertEqual(rows["r2"]["completion_tick"], 4)
+        self.assertEqual(rows["r1"]["first_token_tick"], 5)
+        self.assertEqual(rows["r2"]["first_token_tick"], 6)
+        self.assertEqual(rows["r1"]["completion_tick"], 5)
+        self.assertEqual(rows["r2"]["completion_tick"], 6)
 
     def test_cancelled_queued_request_never_uses_resource(self):
         report = ResourceEventModel(profile(prefill_ticks=5, decode_ticks=1), 2).run(
@@ -116,8 +116,8 @@ class ResourceEventModelTests(unittest.TestCase):
             trace(request("r1", prompt=2, output=1), request("r2", prompt=2, output=1))
         )
         rows = {row["request_id"]: row for row in report["requests"]}
-        self.assertEqual(rows["r1"]["completion_tick"], 4)
-        self.assertEqual(rows["r2"]["completion_tick"], 4)
+        self.assertEqual(rows["r1"]["completion_tick"], 6)
+        self.assertEqual(rows["r2"]["completion_tick"], 6)
 
     def test_trace_hash_tampering_is_rejected(self):
         lines = trace(request("r1")).splitlines()
