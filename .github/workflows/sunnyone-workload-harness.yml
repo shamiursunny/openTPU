@@ -10,7 +10,7 @@ on:
     branches:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     paths:
-      - 'tools/sunnyone/endpoint_benchmark.py'
+      - 'tools/sunnyone/endpoint_benchmark.py'\n      - 'tools/sunnyone/resource_event_model.py'
       - 'tests/test_sunnyone_*.py'
       - '.github/workflows/sunnyone-workload-harness.yml'
   workflow_dispatch:
