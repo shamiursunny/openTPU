@@ -1762,6 +1762,8 @@ module otpu_vpu
                  $time, en_b, sen, s_init, ss_act, s_in_v, s_mt.v, s_mt.final_,
                  s_mt.row_last, s_mt.sub, root_v, vt_q, root_v && !vt_q, cap,
                  a_cap, q_cap, vt_rl, vt_sub, t_qc, t_qrl, t_qsub, kq, kh, kt);
+        $fflush();
+    end
 `endif
 
     assign ss_y_v = sen && t_yv;
