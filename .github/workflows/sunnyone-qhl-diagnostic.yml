@@ -26,6 +26,7 @@ jobs:
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
       - name: Run exact QHL seed-1 case with flushed QHLTRACE event history
         # The temporary diagnostic branch contains stateless, non-SYNTHESIS event tracing.
+        # Full simulator stdout is retained by the isolated diagnostic rtlsim.py change.
         # This is deliberately the single failing seed/configuration, not a broad regression.
         shell: bash
         run: |
