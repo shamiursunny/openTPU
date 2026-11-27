@@ -723,3 +723,36 @@ Dispatch .github/workflows/sunnyone-qhl-diagnostic.yml on branch sunnyone/qhl-se
 - Live main SHA: `d84db55712aba0d40811d7762cb052f05d55b7e5`, unchanged. GitHub branch listing reports `protected=false`; record this as a branch-governance gap. No main write or merge.
 - Documentation updates in this save include this checkpoint, project tracker, integrated engineering/sponsored-silicon plan and manufacturer readiness matrix. The final live feature-branch HEAD and final document blob SHAs must be re-polled after the last documentation commit.
 - QHL seed-1 assertion/reset-qualification issue is resolved for the exact tested case. Broader QHL configurations, lint-warning closure, formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production host/memory interfaces, routed physical signoff, demonstrator down-select and fully funded sample/fabrication/testing access remain open. Manufacturer handoff remains **NOT READY**.
+
+
+## 2026-11-27 continuation update — QHL reset qualification and downstream workflow reconciliation
+This checkpoint supersedes earlier pending QHL diagnostic states. The 45967861319 failure is superseded by the full-output diagnostic and reset-qualified active-branch regression evidence below.
+
+
+### Live repository state at this update
+- Active engineering branch: `sunnyone/commercial-profitability-architecture-2026-11-23`; live HEAD before this documentation update: `b3fc28fdab1551fa23d59eb6e4f531f8b7899dd4`.
+- `main` remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare reports feature branch 1,038 commits ahead and 0 behind. No main write, merge or rebase was performed in this continuation.
+- Keep all engineering/documentation work on the active feature branch. Zero spend remains mandatory. No PPA retry or physical fabrication/test spend is authorised.
+
+### QHL diagnostic disposition
+- Run `45967861319` completed FAILURE on the temporary diagnostic branch. It reproduced the assertion with `kv_v=0,e2=1,e3=1` and the same-cycle upstream snapshot, but the wrapper included only the last 3,000 simulator-output characters. Treat it as a reproduced assertion, not as proof of the functional root cause.
+- Follow-on full-output diagnostic run `46014477752` preserved complete simulator output and showed only one QHLTRACE event at time 5 while reset was still propagating. Source inspection found the tail overlap assertion was evaluated before its two-stage local reset replica had been observed. The tail already used a two-edge `rst_seen` qualification for its d-FIFO assertion; vtree/slice assertions follow the same reset-qualified pattern.
+- Diagnostic-only correction commit `0875b167a642c51fee259c6ee2fa49bf6134f6b3` reused the existing two-edge reset qualification for the overlap assertion. Diagnostic run `46015574176` on temporary branch commit `1bbcd1ade3ce9b2707af2e4ceb82a5ecc501da77` passed the exact selection `tests/test_quant_rtl.py::test_qhl_power_up_rtl[1-False]`: 1 passed in 92.45s; artifact `15205847584`, ZIP SHA-256 `076ea696000e14ef98811b1ba74a4db8db595aa75d1e6048cf4ed0486cd2b020`.
+- Reviewed and applied only the same simulation-assertion qualification correction to active-branch RTL in commit `672a4fc13f9f708582f4fca0462a32363654ff93`. It is under `ifndef SYNTHESIS`; no datapath, reset hardware, FIFO, scheduling, pipeline or assertion threshold was changed. Diagnostic trace ports/instrumentation were not copied to the active branch.
+- Active-branch exact regression run `46016087510`, job `140563454048`, passed: 1 passed in 81.93s on tested commit `e123b331582495e12e7f32f81472011f0929c2cb`; artifact `15205448777`, ZIP SHA-256 `d90ee7f6f3a184e085c675a7f99c86da982e6fd75b2779ca6508438f346e5390`.
+- The original seed-1 false-positive assertion is resolved for the exact tested case. Do not claim all-seed, all-QHL or broad power-up closure from this targeted result alone.
+
+### Automatically triggered workflow reconciliation on source commit 672a4fc13f9f708582f4fca0462a32363654ff93
+- Reset/power-up structural audit run `46016022824`: terminal SUCCESS. Actual log: reset/power-up tests 4 passed; `copy_slice`, `two_slice_top`, and `asic_top` each reported zero combinational SCCs and zero inferred latch cells in the audited configurations (SRAM leaves remain blackboxed). Artifact `15205214662`. This is scoped structural evidence, not complete CDC/RDC/formal closure.
+- RTL subsystem/memory run `46016022758`: terminal SUCCESS, all 14 jobs successful. QHL job `140563230730`: 7 passed in 502.86s. This adds the subsystem QHL suite evidence on the corrected assertion source; preserve the exact run/job scope and do not infer exhaustive power-up coverage.
+- Board-functional run `46016022808`: terminal CANCELLED. No board-functional PASS may be claimed from this run; do not automatically restart it or duplicate successful tests. Determine the missing board coverage from the current evidence ledger before proposing a targeted replacement.
+- Software/ISA run `46016022887`: terminal FAILURE only because the stream job's Verilator installation step could not fetch the Microsoft Ubuntu package repository (HTTP 403; repository reported unsigned). The stream pytest step never ran. The other 14 software-core jobs completed SUCCESS. This is an environment/setup failure, not a stream test failure. Do not mark stream tests passed or failed; retain as NOT RUN due dependency-install failure.
+- No new broad workflow was dispatched in this continuation. Preserve earlier successful results and cancelled-run restrictions.
+
+### Open engineering gates and next actions
+1. Poll any newer active-branch workflows before starting additional work; reconcile automatic cancellations and avoid duplicate successful runs.
+2. Resolve the cancelled board-functional coverage with a minimal, isolated replacement only after checking current concurrency and the exact missing test scope.
+3. Repair the reproducibility of Verilator installation in the software stream job (e.g. use the Ubuntu archive package or pinned trusted binary/source) only after reviewing the workflow; run only the affected stream job/test scope, not the entire software matrix.
+4. Continue semantic width-warning triage and UNOPTFLAT path analysis; retain exact warning counts and prove every narrowing/bounds assumption. Structural SCC success does not by itself clear Verilator UNOPTFLAT warnings.
+5. Continue formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes and DMA/IOMMU, DDR controller/PHY/training/ECC, routed physical signoff, and demonstrator down-select.
+6. Keep Track A full product separate from Track B demonstrator. Manufacturer handoff remains **NOT READY**; no sponsor, free fabrication, package/test, custody, delivery or shipping arrangement is confirmed.
