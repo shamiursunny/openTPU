@@ -242,3 +242,10 @@ PPA run 45877786710 is FAILED at ORFS floorplan PDN (exit 247). Downloaded artif
 ## 2026-11-27 — FSUM hardware ingress guard evidence
 
 The synthesizable raw-program FSUM guard is present in `rtl/seq/otpu_seq.sv`; focused tests in `tests/test_rtl.py` cover invalid row/column/B-mode shapes, feature-disabled producer/take, missing producer, effective HAS_SS capability, pending producer at HALT, unrelated function, and legal 256x64 producer/take. Workflow 45915615614 job 140233980040: SUCCESS, 11 passed, 219 deselected. Mark this specific FSUM guard gate PASS for its tested scope only. It does not clear QHL random-power-up, broad VPU/stream, formal, CDC/RDC, DFT, technology SRAM or physical implementation gates. Overall manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 latest terminal run-state reconciliation
+
+All previously listed workflows have now been polled to terminal state. The older broad RTL-tail run 45915615625 is CANCELLED (not a pass). The replacement scoped RTL-tail run 45916680719 is SUCCESS with 33 passed and 1 documented skip; 196 tests were deselected, so this is not a complete full-suite pass. Reset audit 45916680730 and ASIC config 45916680920 are SUCCESS. Qwen real-checkpoint RTL run 45916680844 is SUCCESS (6 passed in the selected checkpoint cases; companion tiny board-model selection 8 passed). Board-functional 45916680721 is SUCCESS (198 passed, 8 skipped, 1 deselected). Full-chip lint 45916680866 is SUCCESS with zero errors but warnings remain. Subsystem/memory run 45916680829 remains partially failed: 13 of 14 jobs SUCCESS; QHL job failed its random-power-up case as previously recorded. Software core run 45916680756 has 13 jobs SUCCESS and `tests/test_waits.py` CANCELLED; the waits test is not complete.
+
+No active run remains among this listed batch. Do not rerun successful jobs merely to refresh status. Focus next on a deterministic, cycle-accurate diagnosis of the QHL power-up valid overlap; preserve the cancelled waits job as incomplete; continue warning/formal/CDC/RDC/DFT/physical gates. No PPA retry, no paid resources, no main modifications. Manufacturer handoff remains NOT READY.
