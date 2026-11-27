@@ -107,7 +107,22 @@ module otpu_se_tail
   input  f32_t             q_a [LANES],
   input  f32_t             q_b [LANES],
   input  f32_t             q_c [LANES],
-  output f32_t             q_y [LANES]
+  output f32_t             q_y [LANES],
+  // Diagnostic-only upstream context, tied to live parent signals; no state.
+  input  logic             dbg_en_b,
+  input  logic             dbg_root_v,
+  input  logic             dbg_vt_q,
+  input  logic             dbg_cap,
+  input  logic             dbg_a_cap,
+  input  logic             dbg_q_cap,
+  input  logic             dbg_vt_rl,
+  input  logic [7:0]       dbg_vt_sub,
+  input  logic [7:0]       dbg_kq,
+  input  logic [2:0]       dbg_kh,
+  input  logic [2:0]       dbg_kt,
+  input  logic             dbg_ss_act,
+  input  logic             dbg_sen,
+  input  logic             dbg_s_init
 );
   localparam int L = LANES;
   localparam int LM = 2, LA = 4;
@@ -276,8 +291,11 @@ module otpu_se_tail
 `ifndef SYNTHESIS
   always_ff @(posedge clk)
     if (!rst && !init && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
-      $display("otpu_se_tail: state rst=%0d pe=%0d init=%0d in_v=%0d cfg=%h ns=%0d x0=%h jn=%0d kv_v=%0d e2=%0d e3=%0d rv=%0d rr=%0d",
-               rst, pe, init, in_v, cfg, ns, x0, jn, kv_v, e2, e3, rv, rr);
+      $display("otpu_se_tail: state rst=%0d pe=%0d init=%0d in_v=%0d cfg=%h ns=%0d x0=%h jn=%0d kv_v=%0d e2=%0d e3=%0d rv=%0d rr=%0d en_b=%0d root_v=%0d vt_q=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d kq=%h kh=%0d kt=%0d ss_act=%0d sen=%0d s_init=%0d",
+               rst, pe, init, in_v, cfg, ns, x0, jn, kv_v, e2, e3, rv, rr,
+               dbg_en_b, dbg_root_v, dbg_vt_q, dbg_cap, dbg_a_cap, dbg_q_cap,
+               dbg_vt_rl, dbg_vt_sub, dbg_kq, dbg_kh, dbg_kt, dbg_ss_act, dbg_sen, dbg_s_init);
+      $fflush();
       $fatal(1, "otpu_se_tail: two rows' d slots meet (kv_v %0d e2 %0d e3 %0d)", kv_v, e2, e3);
     end
 `endif
