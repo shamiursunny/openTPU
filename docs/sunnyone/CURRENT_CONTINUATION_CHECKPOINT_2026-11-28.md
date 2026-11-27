@@ -51,3 +51,7 @@ User continuation command: **Continue and complete the remaining tasks.**
 5. Keep manufacturer release gate closed until every required evidence and external dependency is satisfied.
 
 No RTL, test or workflow source was changed in the 02:20 continuation. Documentation-only updates are recorded in the continuation addendum and tracker.
+
+
+## Additional MXU safety finding (2026-11-28)
+ISA documentation requires `M <= MCOLS` for RMAX/ASCALE/PAIR. The MXU stores `h.M` directly from the command's `w6[23:16]`, and the RMAX key array has depth `MCOLS`. The current RTL review did not find explicit hardware rejection of malformed RMAX/ASCALE/PAIR shapes. This is an open malformed-command bounds-safety question, not a failure for legal ISA programs. Trace loader validation and parameter wiring before deciding whether a synthesizable guard is required. Do not narrow the `mx_key` index until this is resolved.
