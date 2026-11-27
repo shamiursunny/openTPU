@@ -820,3 +820,16 @@ This update reconciles the cancelled board run against earlier successful board 
 - The STREAM workflow file was reviewed: it is restricted to the active feature branch, builds pinned Verilator 5.044, and runs only tests/test_stream.py. No workflow change is required from this successful result.
 - Open gates remain: semantic width-warning closure; exact UNOPTFLAT dependency analysis (especially gnt); formal/SVA, CDC/RDC, DFT, SRAM technology mapping; production PCIe/SerDes, DMA/IOMMU and DDR controller/PHY/training/ECC; routed physical signoff; Track B demonstrator down-select and verified sponsorship/sample logistics. Manufacturer handoff remains **NOT READY**.
 - Zero-spend remains mandatory. No PPA retry, fabrication, packaging, lab test, paid compute, or hardware purchase is authorised. Protected main remains untouched.
+
+
+## 2026-11-28 continuation — live reconciliation and next engineering gates
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0050.md` for the full run ledger and ordered plan. Live HEAD at this save: `4f26ec9d280f601587f474a4dd535c24f2945e39` before this documentation update; the 28-Nov addendum itself is committed on the active feature branch. Compare before this save: 1,055 ahead / 0 behind; main baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+
+The isolated STREAM regression is terminal SUCCESS: 46 passed in 1183.29s on source `5ef0c28bdbbb1e8b2b7219b5d37d24e0d6d8a942`, run `46037445046`. The active-branch QHL exact seed-1 reset-qualified selection passed 1 test; subsystem QHL job passed 7 tests. These are scoped results, not all-seed closure. FSUM guard is already implemented and focused-tested: 11 passed, 219 deselected in run `45915615614`; no further patch or repeat is required without source change. Board and Qwen evidence remain at their exact earlier SHAs/scopes as documented in the addendum.
+
+WG8 PPA run `45877786710` is terminal FAILURE; no routed PPA report or signoff metrics. Existing resource diagnosis records host-memory exhaustion. No PPA retry is authorised. Latest Actions reconciliation found no active run. Preserve all successful evidence and do not rerun historical RTL groups 3.1/3.2/4 or the long board suite solely to reconfirm.
+
+Remaining priority: (1) exact semantic width-warning triage and elaborated `gnt` dependency/SCC analysis, then `sc_gl`, `pq`, ASIC `aok`; (2) formal/SVA; (3) CDC/RDC; (4) real SRAM/DDR technology mapping and production memory controller/PHY/ECC; (5) production PCIe/SerDes and DMA/IOMMU; (6) DFT; (7) routed physical/power/thermal signoff; (8) Track B demonstrator down-select and verified sponsorship/sample logistics. Keep Track A and Track B distinct.
+
+Hard constraints unchanged: zero spend, no PPA retry, no protected-main writes, no duplicate passed tests, no unsupported physical/silicon claims. Manufacturer handoff remains **NOT READY**.
