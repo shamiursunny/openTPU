@@ -168,6 +168,46 @@ class ResourceEventModelTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "single-use"):
             model.run(workload)
 
+    def test_ttft_waits_for_final_stage_of_first_decode_token(self):
+        raw = {
+            "profile_id": "multi-stage",
+            "version": "1",
+            "origin": "synthetic_fixture",
+            "provenance": "unit-test fixture only",
+            "tick_unit": "sim_tick",
+            "resources": {"mxu": 1, "memory": 1},
+            "prefill": [{"name": "prefill", "resource": "mxu", "service_ticks_per_unit": 1}],
+            "decode": [
+                {"name": "decode_compute", "resource": "mxu", "service_ticks_per_unit": 2},
+                {"name": "decode_memory", "resource": "memory", "service_ticks_per_unit": 3},
+            ],
+        }
+        report = ResourceEventModel(ServiceProfile.from_dict(raw), 2).run(
+            trace(request("r1", prompt=2, output=1))
+        )
+        self.assertEqual(report["requests"][0]["first_token_tick"], 7)
+        self.assertEqual(report["requests"][0]["completion_tick"], 7)
+
+    def test_multiple_phase_stages_accumulate_resource_occupancy(self):
+        raw = {
+            "profile_id": "multi-stage",
+            "version": "1",
+            "origin": "synthetic_fixture",
+            "provenance": "unit-test fixture only",
+            "tick_unit": "sim_tick",
+            "resources": {"mxu": 1, "memory": 1},
+            "prefill": [
+                {"name": "prefill_compute", "resource": "mxu", "service_ticks_per_unit": 1},
+                {"name": "prefill_memory", "resource": "memory", "service_ticks_per_unit": 2},
+            ],
+            "decode": [{"name": "decode", "resource": "mxu", "service_ticks_per_unit": 1}],
+        }
+        report = ResourceEventModel(ServiceProfile.from_dict(raw), 2).run(
+            trace(request("r1", prompt=2, output=1))
+        )
+        self.assertEqual(report["resources"]["mxu"]["busy_ticks"], 3)
+        self.assertEqual(report["resources"]["memory"]["busy_ticks"], 4)
+
     def test_report_labels_synthetic_profile_and_excludes_power_claims(self):
         report = ResourceEventModel(profile(), 2).run(trace(request("r1")))
         self.assertEqual(report["profile"]["origin"], "synthetic_fixture")
