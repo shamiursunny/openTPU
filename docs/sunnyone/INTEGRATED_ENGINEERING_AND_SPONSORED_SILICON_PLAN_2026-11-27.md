@@ -716,3 +716,14 @@ Resume trigger in a new chat: **“Continue and complete the remaining tasks.”
 6. Keep manufacturer handoff NOT READY until all mandatory gates and a documented zero-cost fabrication/testing path are independently evidenced.
 
 This handoff records the latest evidence available in this conversation. It does not claim that the QHL trace was completed, that any new test passed, or that RTL was changed. Documentation-only updates do not constitute engineering verification.
+
+
+## 2026-11-27 continuation — QHL trace-capture correction and rerun
+
+- Live active engineering branch at start of this update: `3c68d11ba5647c66b2466538fca81e85617fa09d`. Protected-main baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main write.
+- Diagnostic run `46001085532` (job `140512599407`) tested the stateless event-trace branch at `60e3c03a47620f077f84fc01b7c0d9d78999a2e2` and failed at the same QHL tail overlap assertion. QHLTRACE was executing, but only the final trace line was retained in the pytest traceback because `opentpu/rtlsim.py` raised with `out[-3000:]`. Therefore the run did not provide the event history needed for root-cause classification.
+- Corrected only the temporary diagnostic branch: commit `e2dc582705dc70c29104448d443149e3e3066056` changes the simulation-failure exception to retain the complete simulator output; workflow metadata commit `f421ebacbc455bcc815a7531595a31a5da8f7430` triggers the path-filtered exact-case workflow. No production RTL or test logic changed.
+- New targeted run `46014477752`, run #9, tests exact SHA `f421ebacbc455bcc815a7531595a31a5da8f7430`, job `140557974695`, exact selection `tests/test_quant_rtl.py::test_qhl_power_up_rtl[1-False]`. At this documentation update it is IN_PROGRESS; no pass/fail or trace conclusion is available.
+- Trace implementation is stateless, non-SYNTHESIS, event-filtered and flushed; it is NOT plusarg-gated. It remains isolated on `sunnyone/qhl-seed1-diagnostic-2026-11-27`; never merge diagnostic instrumentation into the active engineering branch.
+- QHL remains OPEN. Do not change functional RTL, assertion semantics, reset behaviour or pipeline depth until complete history identifies the failure mechanism. Preserve prior successful regression evidence; no duplicate completed-group reruns, no PPA retry, no spend, no main writes. Manufacturer handoff remains NOT READY.
+- Next: poll run `46014477752`; if terminal, inspect the complete log and artifact, extract every QHLTRACE line, correlate `cap && vt_rl` FIFO enqueue events with `root_v`/ `kv_v` events and `kq[kh]` classification. If the output still does not expose the needed queue events, add only passive trace visibility on the diagnostic branch and repeat this one case.
