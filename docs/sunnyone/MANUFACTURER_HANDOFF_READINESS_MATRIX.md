@@ -237,3 +237,8 @@ The latest subsystem/memory workflow 45916680829 exposed a QHL random-power-up f
 ## 2026-11-27 — PPA resource failure evidence
 
 PPA run 45877786710 is FAILED at ORFS floorplan PDN (exit 247). Downloaded artifact 15152974135 confirms host OOM-killer activity: `oom_kill=1`, peak cgroup-accounted memory 16,155,115,520 bytes, host MemTotal 16,366,484 kB, while cgroup `memory.max=max`. This is not a completed PPA result and supplies no signoff area/timing/power metrics. The run had `ORFS_CPUS=2` correctly propagated to ORFS `NUM_CORES=2` and Docker `--cpus=2`; prior suspected propagation mismatch is disproven for this source. No PPA retry authorised. Physical implementation and timing/power signoff remain OPEN / BLOCKED. No handoff readiness upgrade.
+
+
+## 2026-11-27 — FSUM hardware ingress guard evidence
+
+The synthesizable raw-program FSUM guard is present in `rtl/seq/otpu_seq.sv`; focused tests in `tests/test_rtl.py` cover invalid row/column/B-mode shapes, feature-disabled producer/take, missing producer, effective HAS_SS capability, pending producer at HALT, unrelated function, and legal 256x64 producer/take. Workflow 45915615614 job 140233980040: SUCCESS, 11 passed, 219 deselected. Mark this specific FSUM guard gate PASS for its tested scope only. It does not clear QHL random-power-up, broad VPU/stream, formal, CDC/RDC, DFT, technology SRAM or physical implementation gates. Overall manufacturer handoff remains NOT READY.
