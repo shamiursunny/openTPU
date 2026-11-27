@@ -464,3 +464,12 @@ The corrected A/B comparison established pre-FSUM pass / post-FSUM-guard fail fo
 The ASIC-top SCC attempt 45914201799 failed due to literal escaped newlines in generated macro stubs; tools/scc_audit.py was corrected in d43fa38047b250e008e9d25b039708f621b96282. The corrected audit is included in run 45914912691 and remains pending. Full-chip lint 45914912719 passed. Targeted FSUM 45914592880, loop-stack 45914592843 and isolated 128K TMEM 45914592827 passed.
 
 Main remains d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched. Keep no-spend, no-PPA, no cancelled-run restart, and no unnecessary reruns of groups 3.1/3.2/4. Manufacturer handoff NOT READY.
+
+
+## 2026-11-27 — targeted stream-tail regression passes; broad verification pending
+
+Latest tracker section 119 records the current evidence. Exact previously failing test_random_power_up[1-3] now PASSES on source f2559a3bead2f2058808f81890ae0a9b91d074a0 (run 45915433368, 1 passed in 40.33 s) after the init flush in RTL commit 024928752fef7ab774502d2a19f49111cc86b1ff. The RTL-vs-ISA memory comparison completed. Temporary tracing/workflow instrumentation was removed by 6290b360 and 425e794; the normal test harness again defaults to unique random power-up.
+
+Full-chip lint run 45915615693 passes on commit 6290b360 with 0 errors; warning counts remain 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. The clean full RTL-tail suite 45915615625 remains in progress. Reset audit run 45914912691 has passed its power-up/reset stage; its ASIC structural SCC/latch stage remains in progress. Four-DIMM WG8 ASIC integration run 45914912733 remains in progress. See tracker section 119 for all active run IDs.
+
+Main is still d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched. Preserve no-spend/no-PPA, no cancelled-run restart, and no unnecessary repeats of groups 3.1/3.2/4. Manufacturer handoff NOT READY.
