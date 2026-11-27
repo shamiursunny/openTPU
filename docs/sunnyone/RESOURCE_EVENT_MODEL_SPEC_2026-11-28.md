@@ -109,15 +109,30 @@ Do not run a model without a reviewed profile. The repository currently has no p
 ## 8. Unit-test evidence
 
 - `tests/test_sunnyone_resource_event_model.py` covers deterministic FIFO timing, chunked prefill, token-by-token decode, finite resource capacity, cancellation while queued/active, fault abort, deadline marking, multi-stage resource occupancy, TTFT after the final first-token stage, trace hash validation, profile validation, tick-unit matching and single-use state.
-- Final targeted workflow `46080976923`, job `140779640735`, tested source `7703ff4a8bf6c8fb4e34dcf200bb259eed1ef79b`: **31 tests passed in 0.521 seconds; OK**. This includes 16 resource-model tests, 10 workload-trace tests, 3 endpoint benchmark tests and 3 retrieval-metric tests.
+- Earlier model milestone workflow `46080976923`, job `140779640735`, tested source `7703ff4a8bf6c8fb4e34dcf200bb259eed1ef79b`: 31 tests passed. The expanded semantic-validation suite then passed in workflow `46081103514`, job `140780031472`, tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`: **34 tests passed in 0.517 seconds; OK**. This includes 18 resource-model tests, 10 workload-trace tests, 3 endpoint benchmark tests and 3 retrieval-metric tests.
 - Earlier intermediate failures were corrected before the final passing revision. The workflow YAML syntax issue was fixed; the final run compiled both Python modules and executed the complete 31-test deterministic harness.
 
 ## 9. Next work
 
-1. Add trace semantic validation for per-request arrival-before-cancel/fault/deadline and malformed event payloads.
+1. Trace semantic validation is now implemented and tested: reject malformed event schema/payloads, control events before arrival, duplicate controls, invalid arrival token counts, and tampered replay hashes.
 2. Build explicit admission/tenant-fairness semantics from the existing runtime scheduler before adding hardware assumptions.
 3. Inspect and correlate actual RTL trace records and TMEM traces on the same workload/source/configuration.
 4. Add a calibrated profile only when reproducible trace evidence supports each field. No fabricated service time, bandwidth, power or temperature values.
 5. Extend W1/W2/W3 fixture coverage; enable W4 only after model/context and memory-capacity support are verified.
 
 Manufacturer handoff remains **NOT READY**. The model milestone is software-only evidence and does not close physical implementation, formal, CDC/RDC, DFT, memory-controller, production-interface, PPA or qualification gates.
+
+
+## 10. Trace lifecycle validation extension — implemented
+
+The resource model now validates the trace as an input contract before scheduling:
+- exact event field set and supported event kinds;
+- contiguous sequence numbers and ordered non-negative integer ticks;
+- replay SHA-256 and event count;
+- one arrival per request and required non-empty model/tenant/checkpoint/tokenizer/template/quality metadata;
+- positive prompt/output token counts;
+- cancellation/fault/deadline must follow a known arrival and cannot precede it;
+- duplicate control events for the same request are rejected;
+- fault events require a non-empty fault kind; cancel/deadline payloads must be empty.
+
+Three additional tests cover valid-hash forged control-before-arrival, duplicate control events, and malformed arrival payloads. The complete 34-test deterministic harness passed in workflow `46081103514`, job `140780031472`, exact tested commit `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`. This is still software-model validation only; no calibrated accelerator profile has been established.
