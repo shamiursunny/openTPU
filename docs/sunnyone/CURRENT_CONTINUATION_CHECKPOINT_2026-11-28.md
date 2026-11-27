@@ -55,3 +55,15 @@ No RTL, test or workflow source was changed in the 02:20 continuation. Documenta
 
 ## Additional MXU safety finding (2026-11-28)
 ISA documentation requires `M <= MCOLS` for RMAX/ASCALE/PAIR. The MXU stores `h.M` directly from the command's `w6[23:16]`, and the RMAX key array has depth `MCOLS`. The current RTL review did not find explicit hardware rejection of malformed RMAX/ASCALE/PAIR shapes. This is an open malformed-command bounds-safety question, not a failure for legal ISA programs. Trace loader validation and parameter wiring before deciding whether a synthesizable guard is required. Do not narrow the `mx_key` index until this is resolved.
+
+
+## 2026-11-28 — matrix-first and quantum-hybrid continuation
+
+Read `MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md` and tracker section 129.
+
+- Matrix computing is prioritised as a core classical architecture improvement using the existing MXU, VPU, TMEM/local storage, DMA and compiler/runtime. Proposed investigations: tile/dataflow selection, precision semantics, operand reuse, memory traffic, fusion and optional sparsity. No unsupported precision or performance claim is made.
+- Quantum computing remains an optional host-side adapter to an external QPU for workload-specific research. It is not integrated into the silicon die and is not a substitute for the MXU/VPU.
+- Live branch at the start of this update: `965ebd0d50f7bf942af1d7bf5365a98d614397ca`; compare 1,079 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. All documentation writes are restricted to the feature branch.
+- Qwen workflow `46053311477` is now terminal SUCCESS. Software-core run `46053311585` has a CANCELLED waits job; all other listed module jobs concluded SUCCESS. The software matrix is not wholly green; inspect only missing waits scope.
+- MXU malformed-command bounds investigation remains the next source-level priority. Do not cast/narrow `mx_key` before proving command validation and `c_M <= MCOLS` for every supported configuration.
+- Zero spend; no PPA retry; no historical successful-suite reruns; no main writes. Manufacturer handoff remains NOT READY.
