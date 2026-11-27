@@ -59,3 +59,27 @@ Do not invent energy numbers. Until power models or measured wall-power data exi
 ## 6. Initial finding and next action
 
 The source supports a credible heterogeneous foundation: matrix MXU + vector/stream VPU + sequencer + DMA + TMEM. The LPU should initially be a software/runtime/simulator scheduling role built around these existing blocks. The immediate next work is to finish the concrete instance/handshake map and find the existing simulator workload/trace extension points before adding code or RTL.
+
+
+## 7. Existing LLM serving scheduler: important LPU software foundation
+
+Further source inspection adds a significant existing software capability:
+
+- `opentpu/serve/scheduler.py` implements a worker around one Engine. It admits up to `max_running` requests, admits new prompts before continuing running requests, and rotates running requests in round-robin order.
+- Default scheduler constants in this source are `QUANTUM = 32` decoded tokens per turn and `CHUNK = 64` tokens for a backend that cannot poll stop mid-run. These are existing defaults, not proven optimal SUNNYONE values.
+- Prefill continues the longest compatible context available from the device or saved KV store. Contexts are switched/saved and restored; host RAM and disk storage are supported. Prefix caching and pinning exist in `opentpu/serve/store.py`.
+- Decode has device-card and host-step paths; stop/cancel/yield checks are implemented. The scheduler tracks request timing/phases, cache hits, swaps, save/restore traffic and MTP counters in its existing statistics.
+- `tests/test_serve_scheduler.py` already covers multi-request turns, equivalence against fresh engine runs, shared prefixes, stop strings, max_new, cancellation, disk-backed store and stateful conversation continuation. This test file exists; it has not been run as part of this investigation.
+- `opentpu/hwtrace.py` decodes RTL trace records for dispatch/start/grant/completion and unit/memory pressure. `tools/tmem_trace.py` analyses per-cycle TMEM access, reuse, overlap and arbitration loss. `opentpu/rtlsim.py` builds/runs Verilator simulations; `opentpu/isasim.py` is the ISA-level simulator.
+- `tools/sunnyone/endpoint_benchmark.py` measures endpoint latency, TTFT and server-reported token usage; its own docstring explicitly says it does not measure wall power or independently score output quality. `tools/sunnyone/retrieval_benchmark.py` measures retrieval ranking quality (recall/MRR/NDCG) and embedding/reranking time on a labelled dataset.
+
+### Consequence for architecture
+
+The initial LPU should be treated as a software/runtime subsystem that coordinates prefill, decode, KV reuse, batching, cancellation and fairness over the existing MXU/VPU/DMA/TMEM resources. First measure current policy parameters (max_running, quantum, chunk size, prefill priority, cache policy and storage tier) and the resulting latency/fairness/memory traffic. Do not add a new LPU RTL block until trace evidence identifies a bottleneck that software scheduling and existing hardware cannot address.
+
+### Evidence gaps
+
+- Existing scheduler unit tests demonstrate correctness scenarios, not production-scale throughput or energy efficiency.
+- Endpoint benchmark timing and server token counts are not equivalent to hardware-cycle or per-token latency; streamed chunks may contain multiple tokens.
+- No calibrated joules/token result follows from RTL trace counts. Hardware wall-power telemetry must be instrumented/calibrated at the complete-system boundary before energy claims.
+- Long-context and petabyte-scale retrieval are distinct: the serving store's host/disk KV persistence does not prove distributed petabyte corpus capability or unlimited model context.
