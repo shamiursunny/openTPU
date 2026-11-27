@@ -168,3 +168,12 @@ Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
 Generic structural SCC gate: PASS for tested configurations. Yosys/Slang runs 45913401437 and 45913488085 each show zero SCCs and zero inferred latch cells in one-copy slice and S=2 top. Generic `gnt`, `pq`, and `sc_gl` Verilator UNOPTFLAT diagnostics are not actual SCCs in those tested configurations; do not generalise to untested configurations.
 
 ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC-specific latch absence is not yet proven. Width gate remains OPEN: 76 generic full-chip width warnings plus additional ASIC DMA/native-DRAM/AW-AR warnings. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 continuation evidence addendum
+
+- FSUM bounds guard: targeted PASS (45911471194, 11 tests), but exact RSUM take matching to the oldest producer's destination and row count remains OPEN because hardware has no producer metadata FIFO.
+- Generic structural SCC/latch audit: PASS for tested one-copy slice and S=2 top (45913401437, 45913488085; zero SCCs and zero inferred latch cells). ASIC-top aok SCC and ASIC-wide latch absence remain OPEN.
+- Random power-up: RTL-tail run 45911471173 failed test_random_power_up[1-3] at otpu_se_tail.sv:277 (two D slots meet); this is an unresolved assertion/regression. Intended pre/post-FSUM A/B run 45913977727 was inconclusive because both jobs failed before simulation on unsupported --no-assert-case in the Ubuntu 24.04 apt Verilator.
+- Width gate remains OPEN: 76 generic width warnings plus ASIC-specific DMA/native-DRAM/AW-AR warnings. WG8 PPA run 45877786710 failed with confirmed cgroup OOM-kill evidence; no routed STA/physical signoff. Do not rerun on an equivalent 16 GB runner.
+- G1/G2 are improved by targeted FSUM checks but not fully closed due the RSUM metadata parity gap and the unresolved random-power-up assertion. G3 remains OPEN for ASIC-specific structural proof and width closure. G7 remains FAIL/PARTIAL. Manufacturer handoff remains NOT READY.
