@@ -625,3 +625,25 @@ Resume trigger in a new chat: **“Continue and complete the remaining tasks.”
 6. Keep manufacturer handoff NOT READY until all mandatory gates and a documented zero-cost fabrication/testing path are independently evidenced.
 
 This handoff records the latest evidence available in this conversation. It does not claim that the QHL trace was completed, that any new test passed, or that RTL was changed. Documentation-only updates do not constitute engineering verification.
+
+
+## Continuation review — 2026-11-27 18:30 Asia/Dhaka
+
+### Live repository poll
+- Active branch HEAD before this documentation-only update: 1537765f5b85a6050c4ee50735af537b8c019da4.
+- Protected-main baseline remains d84db55712aba0d40811d7762cb052f05d55b7e5. GitHub branch listing currently reports main protected=false. Treat this as a governance gap; do not write to main.
+- Isolated diagnostic branch HEAD: 64943951e89f1fe91ac20d56f34fddea66c05923, commit message: "debug(qhl): capture flushed root and FIFO event history". Parent is 35dce2e57d0448988411ba98e5f931f420b8463f.
+- The latest diagnostic branch commit adds a stateless, non-SYNTHESIS, per-cycle QHLTRACE $display with $fflush() in rtl/vpu/otpu_se_tail.sv. It observes existing root_v/kv_v, e2/e3, PE enable, stream/init and kind FIFO state; it adds no sequential monitor counter/register. This is consistent with the passive-trace requirement on source inspection.
+- Important distinction: failed run 45967861319 tested parent commit 35dce2e..., before the new stateless event-history trace commit 64943951. Its failure therefore does not test or invalidate the new trace.
+- The isolated workflow .github/workflows/sunnyone-qhl-diagnostic.yml has workflow_dispatch and a narrowly scoped exact seed-1 pytest command. Current connected GitHub actions tools expose run/job inspection but no workflow-dispatch action; no run was launched. Do not claim trace completion or a result until the diagnostic workflow is dispatched and its log/artifact inspected.
+
+### Current engineering disposition
+- QHL remains OPEN; root scheduling vs FIFO alignment vs grant/reset phasing is not yet classified. No production RTL change is justified.
+- The diagnostic branch remains isolated; do not merge its debug ports/instrumentation into the active engineering branch.
+- No RTL/test/workflow source was changed on the active branch. No tests were rerun or dispatched in this continuation.
+- Existing successful regression evidence remains preserved; do not rerun it merely for confirmation. Do not restart cancelled workflow 45765362426 or repeat successful RTL groups 3.1, 3.2 and 4.
+- PPA retry remains unauthorised after the recorded host OOM. Zero spend remains mandatory.
+- Manufacturer handoff remains NOT READY. Formal/SVA, CDC/RDC, DFT, semantic width-warning closure, structural cycle confirmation, SRAM technology mapping, production host/memory interfaces, routed physical signoff and zero-cost sponsorship/sample-access arrangements remain open.
+
+### Next exact action
+Dispatch .github/workflows/sunnyone-qhl-diagnostic.yml on branch sunnyone/qhl-seed1-diagnostic-2026-11-27 at commit 64943951e89f1fe91ac20d56f34fddea66c05923; inspect the complete QHLTRACE history and correlate root_v dequeue events against cap/vt_rl kind FIFO enqueues and kq[kh] classification. Do not change functional RTL until the trace demonstrates the defect. After the diagnostic, update this checkpoint, tracker, integrated plan and readiness matrix with the exact run ID, commit, artifact hash and evidence-based conclusion.
