@@ -10,7 +10,8 @@ on:
     branches:
       - sunnyone/commercial-profitability-architecture-2026-11-23
     paths:
-      - 'tools/sunnyone/endpoint_benchmark.py'\n      - 'tools/sunnyone/resource_event_model.py'
+      - 'tools/sunnyone/endpoint_benchmark.py'
+      - 'tools/sunnyone/resource_event_model.py'
       - 'tests/test_sunnyone_*.py'
       - '.github/workflows/sunnyone-workload-harness.yml'
   workflow_dispatch:
@@ -30,6 +31,6 @@ jobs:
         with:
           python-version: '3.12'
       - name: Compile benchmark tools
-        run: python -m py_compile tools/sunnyone/endpoint_benchmark.py tools/sunnyone/retrieval_benchmark.py tools/sunnyone/workload_trace.py
+        run: python -m py_compile tools/sunnyone/endpoint_benchmark.py tools/sunnyone/retrieval_benchmark.py tools/sunnyone/workload_trace.py tools/sunnyone/resource_event_model.py
       - name: Run deterministic SUNNYONE tests
         run: python -m unittest discover -s tests -p 'test_sunnyone_*.py' -v
