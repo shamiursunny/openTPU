@@ -3282,3 +3282,13 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Branch/workflow chronology requires care: current branch ref was live-read at `5be983d46a1caca5d715ca08064c5d81b1eabf9f`, while software-core workflow `46053311585` reports tested source `05879ea34eafc2559c54722c6c940b2acb9ac3ee`. Do not conflate this workflow's source with current branch HEAD; reconcile branch ancestry before treating it as validation of current files.
 - Latest poll: software-core run `46053311585` attempt 2 remains IN_PROGRESS solely because job `140738728795` (`tests/test_waits.py`) is running; the other 14 module jobs in that attempt are SUCCESS. No full-matrix pass claim. Qwen run `46053311477` was previously recorded SUCCESS in tracker; re-poll before relying on current status.
 - No RTL, ISA, test, workflow, PPA, paid service, fabrication or hardware changes were made in this step. Main untouched; zero spend; historical RTL group 3.1/3.2/4 and cancelled run `45765362426` remain excluded. Manufacturer handoff NOT READY.
+
+
+## 135. 2026-11-28 — existing LLM scheduler and profiling path discovered
+
+- Extended source inventory with `opentpu/serve/scheduler.py`, `opentpu/serve/store.py`, `opentpu/hwtrace.py`, `opentpu/rtlsim.py`, `opentpu/isasim.py`, `tools/tmem_trace.py`, existing serving scheduler tests and SUNNYONE endpoint/retrieval benchmarks.
+- Important finding: an LPU-like software path already exists. Serving scheduler admits up to max_running requests, prioritises new prefill, round-robins active requests, uses a 32-token default decode quantum and 64-token non-polling chunk cap, checks cancellation/yield, and supports prefix/KV context persistence in host RAM/disk. These are existing defaults, not proven optimal values.
+- Existing scheduler tests cover multi-request turns, fresh-engine token equivalence, prefix reuse, stop/max_new/cancel, disk store and stateful continuation. Not run during this investigation.
+- RTL trace tooling can decode unit dispatch/grants/completions and TMEM access contention. Endpoint benchmark measures TTFT/latency and reported token usage but explicitly does not measure wall power or independently score output quality. Retrieval benchmark reports ranking metrics on labelled data.
+- Revised lowest-cost direction: first benchmark and tune existing scheduler/runtime/cache and trace/profile pipeline; do not add dedicated LPU silicon unless measured bottleneck remains after software and existing MXU/VPU/TMEM/DMA optimisation.
+- Current software-core workflow `46053311585`: targeted waits job `140738728795` remains IN_PROGRESS; other 14 jobs SUCCESS. Qwen workflow `46053311477` must be re-polled for current state. No new tests launched.
