@@ -2804,3 +2804,14 @@ No change to main. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5; GitHub
 - Clean broad RTL-tail suite 45915615625 remains in progress; four-DIMM WG8 integration 45914912733 remains in progress.
 - Latest full-chip lint 45915615693 SUCCESS, 0 errors; 76 width warnings (52 expand, 24 trunc), 7 Verilator LATCH and 3 UNOPTFLAT diagnostics remain. Synthesized latch-cell audit remains 0 for all three tested tops.
 - No PPA retry or spend. Manufacturer handoff NOT READY pending full regression, interface width closure, integration and remaining signoff gates.
+
+## 118. 2026-11-27 ASIC integration and focused regression results
+
+ASIC/target config workflow 45914912733 PASS: ASIC chip/memory/WG8 DDR4 lint and four-DIMM hmux contention simulation. The simulation covered simultaneous host/accelerator AW/AR contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure; finished at 320 ns. The run emitted 99 WIDTH warning occurrences and 3 UNOPTFLAT occurrences across ASIC top elaborations; width cleanup remains open. The 33-bit `otpu_mig_pair` AW/AR outputs feeding 34-bit `p_awaddr/p_araddr` need explicit zero-extension through 33-bit intermediate nets.
+
+Focused regressions:
+- FSUM guard: 11 passed, 219 deselected (45915615614).
+- Isolated 128K one-copy TMEM: 2 passed, 228 deselected (45915615624).
+- Sequencer loop-stack boundary: 2 passed, 228 deselected (45915615653).
+
+Broad clean RTL-tail 45915615625 is still running. Qwen, board-functional, subsystem/memory and software/ISA runs remain nonterminal. Structural/reset audit 45914912691 is PASS: reset 4/4 and three elaborated tops each 0 SCC / 0 latch cells. No PPA retry or spend; manufacturer handoff remains NOT READY.
