@@ -798,3 +798,11 @@ This update reconciles the cancelled board run against earlier successful board 
 3. Continue unresolved `gnt` dependency graph and width/bounds triage with exact elaborated configurations; no speculative RTL edits.
 4. Continue formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes and DMA/IOMMU, DDR controller/PHY/training/ECC, routed physical signoff, and demonstrator down-select.
 5. Manufacturer handoff remains **NOT READY**. No sponsor, no-cost fabrication, packaging, test, custody or shipping commitment is confirmed. No paid work is authorised.
+
+
+## Final verification for this continuation update
+- Feature branch HEAD before this final checkpoint metadata update: `b893b8331416d4a7d06932fe73902d456341b902`.
+- Protected main SHA: `d84db55712aba0d40811d7762cb052f05d55b7e5`; expected unchanged baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Isolated STREAM workflow run `46037445046`: status `in_progress`, conclusion `pending`, tested commit `5ef0c28bdbbb1e8b2b7219b5d37d24e0d6d8a942`. At last job inspection, job `140636330408` was still building pinned Verilator; no STREAM pytest result is yet available.
+- Documentation updates in this continuation: checkpoint, 0137 addendum, integrated plan, project tracker and manufacturer readiness matrix. Their latest blob SHAs are verified after update in the next re-fetch.
+- No main-branch write, merge, rebase, paid compute, PPA, fabrication or physical test booking was performed. The only new workflow dispatched was the isolated STREAM software regression, automatically triggered by its workflow-file commit.
