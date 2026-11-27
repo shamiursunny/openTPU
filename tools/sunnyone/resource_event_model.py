@@ -301,7 +301,8 @@ class ResourceEventModel:
         resource.busy_ticks += self._now - active[1]
         if state is None or state.terminal_reason is not None:
             return
-        if state.phase == "DECODE" and state.first_token_tick is None:
+        if (state.phase == "DECODE" and state.unit_index == 0 and
+                state.stage_index == len(self.profile.decode) - 1 and state.first_token_tick is None):
             state.first_token_tick = self._now
         state.stage_index += 1
         # Completion schedules the next stage/unit at the same integer tick.
