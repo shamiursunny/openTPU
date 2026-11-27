@@ -70,3 +70,13 @@ The current LPU is a software/runtime scheduling role, not a separate RTL block.
 **Manufacturer handoff: NOT READY.** No routed physical signoff, production memory/host interface qualification, complete formal/CDC/RDC/DFT closure, calibrated power/thermal result or fully funded fabrication and sample logistics are established.
 
 This refresh changed documentation only. No RTL, ISA, PPA, hardware or paid service changed or ran. The only test action was the previously accepted isolated waits-job rerun.
+
+
+## 9. Deterministic workload trace generator — implemented and tested
+
+- Added `tools/sunnyone/workload_trace.py` in commit `3b03f52ad525f7f4c38d212dbd2ecab7a83a9353`. It validates workload/request identity, model/checkpoint/tokenizer/template metadata, integer arrival/deadline/cancel/fault ticks, prompt/output/context lengths, priority and deterministic seeds. It emits canonical JSONL request events with stable same-timestamp ordering and a replay SHA-256.
+- Added `tests/test_sunnyone_workload_trace.py` in commit `b8451c5393bc22d02512182349395bfca27c2913`. The 10 tests cover deterministic serialization/hash, same-tick ordering, context default, duplicate IDs, past events, bool-vs-int rejection, fault contract, unknown fields and no invented service/power fields.
+- Updated `.github/workflows/sunnyone-workload-harness.yml` in commit `88e3f5636d9d1818e59e8309e7bd26fa7c07e807` to compile the new generator.
+- Targeted workflow `46080190053`, job `140777139012`, tested head `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`: **SUCCESS**. The combined deterministic SUNNYONE harness ran **16 tests in 0.513s, OK** (10 workload-trace, 3 endpoint benchmark, 3 retrieval metric tests). Superseded run `46080182042` was cancelled by the workflow concurrency rule after the subsequent workflow-file update; the replacement run passed.
+- This closes only the deterministic exogenous request-trace generator and its unit tests. It does not simulate MXU/VPU/DMA/TMEM/DRAM service, cycle counts, throughput, energy, power or thermal behaviour. Do not report any accelerator performance result from it.
+- Next implementation: a separate integer-time discrete-event resource model that consumes the validated trace and requires explicit, versioned stage service profiles. Unknown service time/bandwidth/power values must remain unset. Validate model-level queue/resource invariants and correlate with actual `hwtrace`/`tmem_trace` outputs before using it to rank architectural alternatives.
