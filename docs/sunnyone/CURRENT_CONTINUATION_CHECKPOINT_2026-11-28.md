@@ -182,3 +182,13 @@ Read first on the next continuation:
 5. Keep Track A full accelerator separate from Track B demonstrator. No down-select/fabrication until technical, PDK, area/timing, DFT and full sponsorship/sample logistics are evidenced.
 
 Manufacturer handoff remains **NOT READY**. This refresh changed documentation only; no RTL, ISA, test or workflow source was modified and no new test was launched except the previously accepted waits-only job rerun.
+
+
+## Final save metadata — 2026-11-28
+
+- Latest continuation addendum: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0457.md`, commit `52dd39718a0c17a133619e43e48b7b3699aa9bc1`, blob `ef7c59dc813d81dbadd73e789327b250197cb948`.
+- Source/interface/workload spec blob: `d224ab00f35871a9c9fdd8e423b508ff245800c8`.
+- Source inventory blob: `18c055222993e8c022e0b5191ba4999acebb1493`.
+- Project tracker update commit: `5b462819f6013f6c09cb68b06e23a62ebb784fca`, blob `56a0caa5261e80abd3ebd2df12e36142b41777ee`.
+- The final branch HEAD and checkpoint blob must be re-polled after this commit. Do not infer a final HEAD from this note's parent commit.
+- Only outstanding CI recovery at the last poll: waits job `140775908058` in workflow `46053311585`; all other listed module jobs were successful and must not be rerun.
