@@ -273,3 +273,45 @@ The existing Yosys structural audit's zero inferred latch-cell result does not a
 - QHL diagnosis is isolated on temporary branch `sunnyone/qhl-seed1-diagnostic-2026-11-27`; do not merge its instrumentation. The first instrumented pass `45964405350` was inconclusive because the added counter could perturb unique-X initialisation and emitted no trace. Runs `45965156322`, `45965732887`, and `45966389125` reproduced the original seed-1 assertion, but parent-level trace text was not preserved before fatal termination. A subsequent diagnostic compile `45967519265` exposed an unclosed preprocessor guard in the temporary branch; it was corrected there only. Run `45967861319` is validating the next diagnostic: upstream root/FIFO/classification context is passed into the tail assertion and flushed at the failure site. No result from this run is available yet.
 - The QHL functional failure remains OPEN. No assertion weakening, pipeline-depth change, reset masking or production RTL fix is authorised until the cycle-level root/FIFO evidence identifies the cause. No diagnostic RTL edits were made on the active engineering branch.
 - No PPA retry, paid resources, manufacturer commitment or main-branch modification. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 continuation handoff — saved resume state
+
+Resume trigger in a new chat: **“Continue and complete the remaining tasks.”**
+
+### Verified state at handoff
+- Repository: `shamiursunny/openTPU`; all documentation updates in this handoff are restricted to the active engineering branch `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Protected `main` baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. Do not write to, merge into, or otherwise modify `main`.
+- Latest source-level investigation remains the QHL random-power-up failure. Diagnostic branch `sunnyone/qhl-seed1-diagnostic-2026-11-27` is temporary and isolated; do not merge its instrumentation.
+- The no-trace seed-1 failure recurs at the stream-tail assertion with `kv_v=0,e2=1,e3=1`. The captured same-cycle upstream snapshot is `root_v=0, vt_q=0, cap=1, a_cap=1, q_cap=0, vt_rl=1, vt_sub=122, kq=0x66, kh=0, kt=6, sen=1, s_init=0`. This snapshot does not include preceding root/valid pulse history and does not establish the root cause.
+- For LANES=8, the reviewed tail delays are 7 and 14 PE cycles; the observed overlap is consistent with two accepted valid events seven cycles apart, while the A-row spacing contract requires multiples of RL=8. Root scheduling, Q/A-kind FIFO alignment, and stream grant/reset phasing remain competing hypotheses, not findings.
+- The next diagnostic must be passive, plusarg-gated and confined to the temporary branch. Trace existing per-cycle signals only: root_v[0], kv_v, vt_q, cap/a_cap/q_cap, vt_rl/vt_sub, kq/kh/kt, sen/s_init, e2/e3. Do not add sequential counters/registers that can perturb `--x-initial unique`. Correlate FIFO enqueue/dequeue and root-valid pulse history. Preserve/flush failure evidence. No assertion weakening, reset masking, pipeline-depth changes or production RTL fix before the cause is demonstrated.
+
+### Preserved verification evidence and limitations
+- ASIC AW/AR configuration run `45916680920`: PASS for the tested integration and expected invalid-address rejection cases; width-warning inventory remains open.
+- Scoped RTL-tail run `45916680719`: 33 passed, 1 documented skip, 196 deselected; not a full-suite pass.
+- Reset audit `45916680730`: PASS for its tested configurations.
+- Qwen checkpoint RTL run `45916680844`: 6 passed; companion tiny board-model selection 8 passed. This is not evidence of fine-tuning or full deployment.
+- Board-functional run `45916680721`: 198 passed, 8 skipped, 1 deselected; PyTorch-dependent cases were skipped.
+- Full-chip lint `45916680866`: zero errors, but 86 warnings remain: 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 procedural LATCH diagnostics, 3 UNOPTFLAT.
+- WAITC remainder run `45963867548`: three jobs terminal SUCCESS; combined remainder evidence records 33 passed and 1 optional torch-dependent skip. Original waits run `45916680756` was cancelled; do not label that original workflow a standalone full pass.
+- Subsystem/memory run `45916680829`: 13/14 jobs successful; QHL job failed the random-power-up case. Keep QHL OPEN.
+- PPA run `45877786710`: confirmed host OOM at ORFS floorplan PDN; no valid PPA metrics. No retry authorised.
+- Structural/reset, formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production memory/host interfaces, routed physical signoff and manufacturer G0–G15 gates remain open or scoped as documented. Manufacturer handoff is **NOT READY**.
+
+### Non-negotiable operating constraints
+- Zero spend; no paid compute, PPA, fabrication or test booking without explicit approval.
+- No duplicate reruns of successful historical groups. Do not restart cancelled run `45765362426`; do not rerun historical RTL groups 3.1, 3.2 or 4 solely for confirmation.
+- Preserve prior test evidence with exact run, commit, selection, skips and deselections. Never convert skipped/cancelled/deselected tests into passes.
+- Do not claim that a free sample, sponsor, packaging, test coverage, custody or shipping arrangement is secured. IHP/university collaboration remains a feasibility route, not a confirmed offer.
+- Keep the full AI-X architecture distinct from a compact first-silicon demonstrator; do not silently reduce the product architecture to match the demonstrator.
+
+### Next work sequence
+1. Resolve live feature-branch and main SHAs before further edits; verify no concurrent branch movement.
+2. Inspect the isolated diagnostic branch and finish the passive plusarg-gated QHL trace. Run only the narrowly justified diagnostic test; do not touch the active production branch until evidence is conclusive.
+3. Classify the QHL failure as tree scheduling, FIFO ordering/alignment, stream grant/reset phasing, or another evidence-supported cause. Then implement the smallest proven correction and a deterministic regression, if required.
+4. Continue semantic lint-warning triage without blanket casts/suppressions; then progress RSUM producer metadata parity, formal/SVA, CDC/RDC, DFT, SRAM mapping and physical-readiness gates.
+5. Update this checkpoint, addendum, integrated plan, tracker and handoff matrix with exact commit/test evidence after each meaningful milestone.
+6. Keep manufacturer handoff NOT READY until all mandatory gates and a documented zero-cost fabrication/testing path are independently evidenced.
+
+This handoff records the latest evidence available in this conversation. It does not claim that the QHL trace was completed, that any new test passed, or that RTL was changed. Documentation-only updates do not constitute engineering verification.
