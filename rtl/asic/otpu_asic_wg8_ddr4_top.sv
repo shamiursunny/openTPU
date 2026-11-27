@@ -108,6 +108,8 @@ module otpu_asic_wg8_ddr4_top #(
   output logic [7:0] bridge_error
 );
   localparam int CL = CAW + $clog2(CB); // 33 byte-address bits per virtual channel
+  localparam int PAIR_AW = CL + $clog2(2); // otpu_mig_pair's two-channel address width
+  localparam int PAIR_ADDR_PAD = 34 - PAIR_AW; // explicit zero-extension into the 34-bit DIMM mux
   logic [1:0] mem_calib_groups;
   logic [7:0] n_cvalid, n_cready, n_cwe, n_wvalid, n_wready, n_rvalid, n_err;
   logic [7:0][CAW-1:0] n_caddr;
@@ -130,6 +132,7 @@ module otpu_asic_wg8_ddr4_top #(
   logic [3:0] p_awvalid, p_awready, p_wvalid, p_wready, p_wlast;
   logic [3:0][3:0] p_awid, p_bid, p_arid, p_rid;
   logic [3:0][33:0] p_awaddr, p_araddr;
+  logic [3:0][PAIR_AW-1:0] pair_awaddr, pair_araddr;
   logic [3:0][7:0] p_awlen, p_arlen;
   logic [3:0][511:0] p_wdata, p_rdata;
   logic [3:0][63:0] p_wstrb;
@@ -222,6 +225,8 @@ module otpu_asic_wg8_ddr4_top #(
   end
 
   for (genvar d = 0; d < 4; d++) begin : g_dimm
+    assign p_awaddr[d] = {{PAIR_ADDR_PAD{1'b0}}, pair_awaddr[d]};
+    assign p_araddr[d] = {{PAIR_ADDR_PAD{1'b0}}, pair_araddr[d]};
     otpu_mig_pair #(.IDW(4), .RD(32), .CL(CL), .NC(2), .BHW(0), .WOC(1), .RS(1'b0)) u_pair (
       .clk(aclk), .rst(dimm_rst_sync[d]),
       .s_awvalid(ch_awvalid[2*d +: 2]), .s_awready(ch_awready[2*d +: 2]),
@@ -237,12 +242,12 @@ module otpu_asic_wg8_ddr4_top #(
       .s_rdata(ch_rdata[2*d +: 2]), .s_rresp(ch_rresp[2*d +: 2]),
       .s_rlast(ch_rlast[2*d +: 2]),
       .m_awvalid(p_awvalid[d]), .m_awready(p_awready[d]), .m_awid(p_awid[d]),
-      .m_awaddr(p_awaddr[d]), .m_awlen(p_awlen[d]),
+      .m_awaddr(pair_awaddr[d]), .m_awlen(p_awlen[d]),
       .m_wvalid(p_wvalid[d]), .m_wready(p_wready[d]), .m_wdata(p_wdata[d]),
       .m_wstrb(p_wstrb[d]), .m_wlast(p_wlast[d]),
       .m_bvalid(p_bvalid[d]), .m_bready(p_bready[d]), .m_bid(p_bid[d]), .m_bresp(p_bresp[d]),
       .m_arvalid(p_arvalid[d]), .m_arready(p_arready[d]), .m_arid(p_arid[d]),
-      .m_araddr(p_araddr[d]), .m_arlen(p_arlen[d]),
+      .m_araddr(pair_araddr[d]), .m_arlen(p_arlen[d]),
       .m_rvalid(p_rvalid[d]), .m_rready(p_rready[d]), .m_rid(p_rid[d]),
       .m_rdata(p_rdata[d]), .m_rresp(p_rresp[d]), .m_rlast(p_rlast[d])
     );
