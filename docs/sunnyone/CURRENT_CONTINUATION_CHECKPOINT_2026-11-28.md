@@ -67,3 +67,12 @@ Read `MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md` and tracker sectio
 - Qwen workflow `46053311477` is now terminal SUCCESS. Software-core run `46053311585` has a CANCELLED waits job; all other listed module jobs concluded SUCCESS. The software matrix is not wholly green; inspect only missing waits scope.
 - MXU malformed-command bounds investigation remains the next source-level priority. Do not cast/narrow `mx_key` before proving command validation and `c_M <= MCOLS` for every supported configuration.
 - Zero spend; no PPA retry; no historical successful-suite reruns; no main writes. Manufacturer handoff remains NOT READY.
+
+
+## Final live verification — 2026-11-28
+
+- Matrix/quantum architecture addendum: `MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md`; its creation commit is `8d8800c6b3cdadb966c008f73b98d5dd27c7415b`.
+- Post-update live verification at this checkpoint revision: branch HEAD `86940ff75b03852f113ad167aef9e6fda893ce96`, 1,082 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- GitHub API reports main `protected=false`; treat this as an administrative protection gap, not permission to write to main. Keep all work on the feature branch.
+- Qwen run `46053311477` SUCCESS. Software-core run `46053311585` CANCELLED overall because its waits job was cancelled; remaining listed module jobs succeeded. Full software matrix is not green.
+- The architecture and tracking changes are documentation-only. No RTL/test/workflow/PPA run, no spend and no hardware/QPU action. Manufacturer handoff NOT READY.
