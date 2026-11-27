@@ -860,3 +860,13 @@ The live state and complete evidence ledger are recorded in `CONTINUATION_ADDEND
 8. Maintain separate Track A full product and Track B demonstrator. No sponsor or no-cost sample/fabrication/testing path is confirmed.
 
 Zero-spend, no-main-write, no-duplicate-test and evidence-qualified-claim constraints remain mandatory. Manufacturer handoff remains **NOT READY**.
+
+
+
+## 22. 2026-11-28 — structural lint closure and VPU index-width remediation
+
+The structural audit `45914912691` reports zero SCCs and zero inferred latch cells in the one-copy slice, two-slice top and actual ASIC card top. Treat `gnt`, `pq`, `sc_gl` and `aok` as no confirmed combinational SCC in those configurations; retain Verilator warnings as tool diagnostics and do not generalise beyond the audited elaborations.
+
+VPU source commit `05879ea34eafc2559c54722c6c940b2acb9ac3ee` explicitly sizes the 24 function-mask indices and exact row-buffer index slices. Full-chip lint run `46053311384` passes with 59 width warnings (52 expand, 7 trunc), 17 fewer than the 76-warning baseline. The remaining five MXU index truncations and two behavioral DRAM `exists()` warnings require separate treatment; 52 expansions remain open.
+
+The VPU-focused workflow first failed at build under Verilator 5.020 before simulation; it now pins 5.044 and run `46053471843` is the required regression gate. Do not claim functional closure until that run passes. Broad `rtl/**` workflow filters caused unintended additional suites; no further broad runs are authorised. Zero-spend and no-main-write constraints remain. Manufacturer handoff NOT READY.
