@@ -112,3 +112,12 @@ The FSUM hardware guard remains a candidate and is not yet implemented. Verify a
 ## 2026-11-27 superseding correction — FSUM guard already exists and passes focused RTL
 
 This supersedes the old Next actions item 4 proposing FSUM guard implementation. The current `rtl/seq/otpu_seq.sv` already implements the synthesizable guard via `FSUM`, `fsum_bad`, dispatch-time error/halt before VPU issue, pending producer accounting, and HALT pending-producer error handling. `tests/test_rtl.py` contains the focused test matrix. Workflow 45915615614 / job 140233980040 completed SUCCESS with 11 passed, 219 deselected in 153.05s. No duplicate implementation or test rerun is warranted without a relevant change. The specific guard task is complete for its tested scope; the QHL power-up failure and broader verification gates remain open.
+
+
+## 2026-11-27 continuation — QHL overlap timing decomposition
+
+A source-level timing review narrowed the QHL failure without changing RTL. In `otpu_se_tail.sv`, `SL = 1 + LM + LA = 7` pe cycles and, for LANES=8, `RL = 64 / LANES = 8` pe cycles. Thus `e2` is `kv_v` delayed 7 pe cycles and `e3` is `kv_v` delayed 14 pe cycles. The failed assertion with `e2=1,e3=1,kv_v=0` proves that two accepted `kv_v` pulses entered the tail exactly 7 pe cycles apart. Both valid pipelines are reset by `rst || init`; the failure occurs with `rst=0,init=0`, so an uninitialised startup bit alone is not a sufficient explanation.
+
+For the LANES=8 stream-tail configuration, A-row roots are required to be spaced by multiples of RL=8. The observed 7-cycle spacing violates that contract. The upstream path to investigate is the shared `otpu_vtree.root_v`, Q/A classification through `vt_q = kq[kh]`, and `kv_v = root_v && !vt_q`. A deterministic trace must record `root_v, vt_q, cap, a_cap, q_cap, vt_rl, vt_sub, ss_act, sen, s_init, kv_v, e2, e3` for the QHL seed-1 no-trace case. This will distinguish a tree-input scheduling violation from Q/A FIFO alignment or stream grant/reset phasing. Do not weaken the assertion, mask the event, or change pipeline depth before the trace identifies the source.
+
+The diagnosis is narrowed, not closed. No RTL changed and no CI rerun was launched. Preserve all prior test results at their exact scope; QHL random-power-up, cancelled software waits, lint warnings, formal/SVA, CDC/RDC, DFT, SRAM mapping and physical signoff remain open. PPA retry remains unauthorised after host OOM. No spend; protected main untouched; manufacturer handoff NOT READY.
