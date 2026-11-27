@@ -844,3 +844,19 @@ This update adds board-functional historical evidence, real Qwen checkpoint RTL/
 - The STREAM workflow file was reviewed: it is restricted to the active feature branch, builds pinned Verilator 5.044, and runs only tests/test_stream.py. No workflow change is required from this successful result.
 - Open gates remain: semantic width-warning closure; exact UNOPTFLAT dependency analysis (especially gnt); formal/SVA, CDC/RDC, DFT, SRAM technology mapping; production PCIe/SerDes, DMA/IOMMU and DDR controller/PHY/training/ECC; routed physical signoff; Track B demonstrator down-select and verified sponsorship/sample logistics. Manufacturer handoff remains **NOT READY**.
 - Zero-spend remains mandatory. No PPA retry, fabrication, packaging, lab test, paid compute, or hardware purchase is authorised. Protected main remains untouched.
+
+
+## 21. 2026-11-28 continuation reconciliation and execution order
+
+The live state and complete evidence ledger are recorded in `CONTINUATION_ADDENDUM_2026-11-28_0050.md`. This section supersedes pending snapshots in prior sections where later terminal run evidence exists.
+
+1. Preserve latest software result: isolated STREAM regression `46037445046` passed 46 tests on its recorded source SHA. Do not rerun the other 14 software-core modules.
+2. Preserve QHL results: exact seed-1 reset-qualified selection passed 1 test and the subsystem QHL job passed 7 tests. This is not exhaustive all-seed or all-configuration verification.
+3. FSUM guard is already implemented and independently tested (11 passed, 219 deselected); no implementation action remains absent a new defect.
+4. Preserve board evidence (198 passed, 8 skipped, 1 deselected) at its exact older SHA and Qwen real-checkpoint simulation evidence. Do not represent either as physical silicon/FPGA performance.
+5. WG8 PPA run `45877786710` is terminal FAILURE with no routed report; resource diagnosis records host-memory exhaustion. PPA retry remains unauthorised.
+6. First active engineering task is exact semantic lint warning triage and elaborated combinational dependency/SCC evidence, prioritising `gnt`; then resolve or prove `sc_gl`, `pq` and ASIC `aok`. Do not suppress warnings or alter arbitration without proof and focused regressions.
+7. Continue formal/SVA, CDC/RDC, SRAM/DDR technology mapping, production host/DMA interfaces, DFT and routed physical/power/thermal signoff.
+8. Maintain separate Track A full product and Track B demonstrator. No sponsor or no-cost sample/fabrication/testing path is confirmed.
+
+Zero-spend, no-main-write, no-duplicate-test and evidence-qualified-claim constraints remain mandatory. Manufacturer handoff remains **NOT READY**.
