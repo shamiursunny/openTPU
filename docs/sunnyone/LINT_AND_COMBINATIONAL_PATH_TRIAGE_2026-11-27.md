@@ -87,3 +87,17 @@ The ASIC configuration compile reported an additional warning on aok in rtl/top/
 - 79 width warnings remain (52 WIDTHEXPAND, 27 WIDTHTRUNC), plus ASIC-specific 34-bit to 33-bit AW/AR port-connection warnings from the ASIC configuration compile.
 
 No blanket waivers, warning suppressions, speculative RTL edits or timing/functional claims are permitted. A warning is closed only with source/configuration evidence, elaborated/synthesized evidence where appropriate, and regression/proof results.
+
+
+
+## 2026-11-28 superseding structural evidence and VPU width remediation
+
+See `LINT_TRIAGE_UPDATE_2026-11-28.md` for the complete evidence ledger. The earlier OPEN classifications of `gnt`, `pq`, `sc_gl` and `aok` are superseded for the exact audited configurations: reset/SCC workflow `45914912691` completed successfully with zero SCCs and zero inferred latch cells on the one-copy slice, two-slice top and actual ASIC card top. These warning names are not confirmed combinational cycles in those elaborations; Verilator warnings remain. This is not a blanket proof across all configurations.
+
+The seven generic LATCH diagnostics are in `ifndef SYNTHESIS` diagnostic/oracle code. Three synthesis elaborations found no latch cells. Keep simulation diagnostics distinct from ASIC hardware latch signoff.
+
+VPU source commit `05879ea34eafc2559c54722c6c940b2acb9ac3ee` explicitly sized all 24 VPU function-mask bit indices to five bits and changed row-buffer indices to the exact `RBW` width. Full-chip lint run `46053311384` passed with 52 WIDTHEXPAND, 7 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT diagnostics: 17 fewer width warnings than the 76-warning baseline. Five MXU index warnings and two behavioral-DRAM `exists()` warnings remain in WIDTHTRUNC. All 52 WIDTHEXPAND warnings remain open.
+
+The first dedicated VPU regression attempt `46053329340` failed before RTL simulation because Verilator 5.020 rejected an existing `otpu_se_tail.sv` instantiation. The focused workflow is now pinned to Verilator 5.044; run `46053471843` is the valid regression attempt and must pass before the source change is marked regression-verified.
+
+Do not suppress warnings or infer functional closure from lint success. Manufacturer handoff remains NOT READY.
