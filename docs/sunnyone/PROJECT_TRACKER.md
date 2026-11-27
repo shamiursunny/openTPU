@@ -2775,3 +2775,21 @@ Priority correction: the FSUM bounds guard's 11 focused tests still pass, but th
 - ASIC-top SCC attempt 45914201799 FAILED because the generated SRAM macro stub contained literal backslash-n sequences; the two generic tops still passed, but the ASIC top was not elaborated. The stub writer was corrected in tools/scc_audit.py (commit d43fa38047b250e008e9d25b039708f621b96282). Intermediate run 45914493638 was cancelled by newer commits. Current run 45914912691 includes the corrected script and must be inspected before any ASIC-top SCC/latch claim.
 
 No main changes. Do not restart cancelled workflow 45765362426. Do not rerun historical groups 3.1, 3.2 or 4 merely to reconfirm; the current changed-source regression suites are targeted to validate the new stream-tail correction. PPA remains unauthorised; manufacturer handoff NOT READY.
+
+
+## 119. 2026-11-27 — stream-tail init flush validated on exact seed-3 case
+
+### Confirmed targeted regression result
+- Workflow 45915433368 on source f2559a3bead2f2058808f81890ae0a9b91d074a0 passed the exact previously failing test_random_power_up[1-3]: 1 passed in 40.33 seconds. The RTL run completed its ISA-reference DRAM/TMEM comparison. This validates the candidate stream-tail init flush for the deterministic failing case.
+- Candidate RTL change remains commit 024928752fef7ab774502d2a19f49111cc86b1ff: reset e2/e3/dv delay-valid pipelines on rst || init; do not evaluate the overlap assertion on the synchronous init flush edge. The later commits only added/removed temporary diagnostics and did not alter this RTL fix.
+- Debug artifact 15162615480, SHA-256 82e0d8f2a2c848b43b0b0b78632de481a98525614e11191362593663e4158d84, includes program, input/output DRAM, TMEM, sync metadata and debug log. No VCD was produced; the workflow's historic "VCD" label was inaccurate.
+
+### Harness cleanup and current clean validation
+- Commit 6290b360a2a8e1a2ee6d8126a4849e9e16c637ba restored the standard test harness by removing temporary power-up tracing and the temporary debug workflow from the power-up workflow file. Commit 425e7946c08dd8e4bc4a8c03483f4537f8e5f2b8 deleted the temporary A/B workflow file. Current RTL remains the validated init-flush change; test_random_power_up defaults to OTPU_X_INITIAL=unique again.
+- Full-chip Verilator lint run 45915615693 SUCCESS on 6290b360a2a8e1a2ee6d8126a4849e9e16c637ba, Verilator 5.032, zero errors; warnings remain 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. These lint warning counts are not equivalent to Yosys inferred-latch cell counts.
+- A full clean RTL-tail regression run 45915615625 is IN_PROGRESS on 6290b360a2a8e1a2ee6d8126a4849e9e16c637ba; this is the broad validation still needed after the targeted seed-3 pass.
+- Latest targeted run set on 6290b360: FSUM 45915615614 IN_PROGRESS; loop-stack 45915615653 IN_PROGRESS; isolated 128K TMEM 45915615624 IN_PROGRESS; Qwen3/Qwen3.5 checkpoint run 45915615674 IN_PROGRESS; core software/ISA run 45915615621 QUEUED; subsystem/WG8 run 45915615604 QUEUED; board-functional run 45915615615 PENDING.
+- Reset/ASIC audit run 45914912691 on source 024928: power-up/reset audit step SUCCESS; flattened structural SCC/latch audit still IN_PROGRESS. ASIC configuration run 45914912733 (four-DIMM WG8 host AXI integration) still IN_PROGRESS. Do not claim ASIC-top SCC/latch or board/ASIC integration closure until terminal reports are inspected.
+- Previously confirmed targeted passes remain: FSUM 45914592880 (11 tests), loop-stack 45914592843, isolated 128K one-copy TMEM 45915433421. Newer equivalent runs are in progress as above.
+
+No change to main. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5; GitHub protection is disabled, but the project rule remains never modify main. Do not restart 45765362426 or rerun historical groups 3.1/3.2/4 merely to reconfirm. PPA remains unauthorised; no PPA request or dispatch. RSUM producer metadata FIFO parity, ASIC-top SCC/latch, width warnings, formal/SVA, CDC/RDC, DFT, physical, package, board and manufacturer gates remain open. Manufacturer handoff NOT READY.
