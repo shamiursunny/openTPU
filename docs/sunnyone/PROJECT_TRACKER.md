@@ -2840,3 +2840,37 @@ The temporary testbench monitor, trace helper and A/B workflow were removed/rest
 - Focused FSUM 45915615614 PASS (11), loop-stack 45915615653 PASS (2), isolated 128K TMEM 45915615624 PASS (2). Qwen 45915615674 was cancelled by the new commit; replacement Qwen run 45916680844 is pending. Software 45916680756, subsystem/WG8 45916680829 and board-functional 45916680721 are pending.
 
 Current source commit 600f3aa4822e18f03ba80d06ab86fd447189c126. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched; GitHub protection remains disabled but project no-main rule is absolute. PPA not authorised. RSUM producer metadata FIFO parity and manufacturer handoff remain open/NOT READY.
+
+
+## 121. 2026-11-27 live verification reconciliation — latest source snapshot 600f3aa
+
+Repository: `shamiursunny/openTPU`; active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`. The feature branch is five documentation commits ahead of source commit `600f3aa4822e18f03ba80d06ab86fd447189c126`; compare against `main` reports 967 commits ahead / 0 behind, with merge base `d84db55712aba0d40811d7762cb052f05d55b7e5`. This continuation did not change RTL, tests, workflow source, PPA configuration or `main`.
+
+### Terminal workflow evidence polled from GitHub
+
+- ASIC config 45916680920: workflow job SUCCESS. Source review of the log confirms the two `%Fatal` messages for the deliberately invalid `bad_aw` and `bad_ar` addresses are expected negative-test outcomes; the testbench prints `PASS: bad_aw correctly rejected...` and `PASS: bad_ar correctly rejected...`. Do not classify these expected checks as an ASIC integration regression. The ordinary four-DIMM AW/AR, W ordering, B/R routing and backpressure simulation also reports PASS. The explicit 33-to-34-bit AW/AR zero-extension is validated by this workflow for the tested configuration, but the full ASIC width-warning inventory is still open.
+- RTL-tail 45916680719: SUCCESS, 33 passed, 1 documented skip, 196 deselected. This is a scoped tail selection, not the entire RTL suite.
+- Reset audit 45916680730: SUCCESS.
+- Qwen real-checkpoint RTL 45916680844: SUCCESS, 6 passed, 4 deselected; tiny board-model Qwen cases: 8 passed, 199 deselected. This verifies the tested real checkpoints and board-model paths, not model fine-tuning or full model deployment.
+- Board-functional 45916680721: SUCCESS, 198 passed, 8 skipped, 1 deselected. Eight skips are due to unavailable PyTorch in that job; do not describe them as passed.
+- Full-chip lint 45916680866: SUCCESS, zero lint errors. Width warnings and the three generic UNOPTFLAT diagnostics remain; seven simulation-context LATCH diagnostics are not equivalent to inferred hardware latch cells. The prior structural audit remains scoped to its three tested netlists.
+- Software core 45916680756: 14 jobs SUCCESS and the `tests/test_waits.py` job was CANCELLED. Do not count the waits job as passed or report this workflow as a fully completed software suite. Preserve prior complete software/ISA evidence where relevant; do not rerun this long job merely to obtain a duplicate result.
+- Subsystem/memory 45916680829: 13 of 14 jobs SUCCESS; QHL job 140237559976 FAILED. The log shows 6 passed and 1 failed: `test_qhl_power_up_rtl[1-False]`. Failure is a simulation assertion at `rtl/vpu/otpu_se_tail.sv:281`: `kv_v=0, e2=1, e3=1`, with diagnostic `rst=0, pe=1, init=0, in_v=1, cfg=6f8069, ns=32, jn=14, rv=51, rr=51`. This is a real test failure on the tested source snapshot. It occurs with `init=0`, so the previously added stream-init flush does not by itself explain or close this QHL power-up failure. The exact cause is not yet proven; do not suppress the assertion or infer an FSUM-specific cause. The QHL test exercises the QHL quantizer program at random power-up; inspect the stream-tail/partial-tree valid timing and testbench event schedule before changing RTL.
+
+### Reconciled engineering status
+
+1. ASIC AW/AR explicit extension: targeted ASIC workflow PASS; expected out-of-aperture negative tests pass by rejecting invalid addresses. Do not leave this specific negative-test log as an unresolved integration failure.
+2. Stream-tail/QHL random-power-up: OPEN due the QHL power-up assertion above, despite the separate RTL-tail workflow's 33-pass result. The test contexts differ; the broad selected tail result does not override the QHL failure.
+3. Software waits: CANCELLED in run 45916680756; incomplete evidence only.
+4. Qwen/board: scoped successes as listed; board-model PyTorch-dependent cases remain skipped in the board-functional job.
+5. Width/formal/CDC-RDC/DFT/physical gates remain open as previously documented. PPA remains blocked by confirmed OOM on the equivalent 16-GB runner and is not authorised. Manufacturer handoff remains NOT READY.
+
+### Next actions — do not duplicate completed work
+
+- First perform source-level timing review of `otpu_vpu.sv` root/root_v/stream enable and `otpu_se_tail.sv` e2/e3 delay semantics, alongside the exact QHL test program and reset schedule. Establish whether QHL's active stream path can legitimately generate root-valid spacing that violates the tail's one-row-at-a-time assumption. Obtain cycle-accurate evidence before changing the assertion or datapath.
+- If the failure is a real RTL defect, implement the smallest correction and add a deterministic regression for this QHL seed; if it is an invalid assertion assumption, prove the legal overlap semantics and replace it with an invariant that matches the architecture, not a blanket disable.
+- Keep the cancelled waits job marked incomplete; only run a narrow replacement if needed for a specific change or release gate.
+- Continue semantic width-warning closure, RSUM producer metadata parity, formal/SVA, CDC/RDC, DFT and physical gates.
+- Do not rerun successful Qwen, board, reset, RTL-tail, ASIC-config or lint workflows solely to reconfirm. Do not restart run 45765362426 or rerun historical RTL groups 3.1, 3.2 or 4. Do not dispatch PPA or incur spend without explicit approval.
+
+No RTL or test change was made in this reconciliation. All results are limited to their recorded source/configuration and selected test scopes.
