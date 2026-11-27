@@ -192,3 +192,12 @@ Manufacturer handoff remains **NOT READY**. This refresh changed documentation o
 - Project tracker update commit: `5b462819f6013f6c09cb68b06e23a62ebb784fca`, blob `56a0caa5261e80abd3ebd2df12e36142b41777ee`.
 - The final branch HEAD and checkpoint blob must be re-polled after this commit. Do not infer a final HEAD from this note's parent commit.
 - Only outstanding CI recovery at the last poll: waits job `140775908058` in workflow `46053311585`; all other listed module jobs were successful and must not be rerun.
+
+
+## 2026-11-28 — deterministic workload trace generator progress
+
+- Implemented `tools/sunnyone/workload_trace.py` (commit `3b03f52ad525f7f4c38d212dbd2ecab7a83a9353`) and 10 focused tests in `tests/test_sunnyone_workload_trace.py` (commit `b8451c5393bc22d02512182349395bfca27c2913`). It emits canonical JSONL request arrival/fault/cancel/deadline events with integer timestamps, stable ordering and replay SHA-256. It contains no assumed hardware service times, performance or power.
+- Updated isolated harness compile workflow (commit `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`). Run `46080190053`, job `140777139012`, SUCCESS on that exact head. Combined SUNNYONE unit harness: **16 tests in 0.513s, OK**. Superseded run `46080182042` was cancelled by concurrency and replaced by the successful run.
+- Updated source/workload spec in commit `ca4df9a19bb2f62d71d169ce368a52a58b438b7c`; continuation addendum in commit `6bf9a5479093abde62c49053eaa84a0784913349`; tracker in commit `31d64191b35df1a7d31a61bbe98ad92a8dbcf003`.
+- Next: implement and test the separate discrete-event resource model using only explicit, versioned service profiles, then correlate model events with RTL `hwtrace` and `tmem_trace`. Do not claim throughput, joules/token or thermal values until validated/calibrated evidence exists.
+- The isolated waits-only recovery job `140775908058` from run `46053311585` remained IN_PROGRESS at the last poll. Poll this one job; do not rerun the other 14 successful software modules.
