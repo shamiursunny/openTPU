@@ -576,7 +576,7 @@ def _run(cfg, programs: list, images: list, dram_lat: int = 8, max_cycles: int =
             f.writelines(m + "\n" for m in re.findall(r"(?:TMEMSTAT|TMMODEL) .*", out))
     m = re.search(r"RESULT cycles=(\d+) halted=(\d+) error=(\d+)", out)
     if not m:
-        raise RuntimeError(f"RTL simulation failed:\n{out[-3000:]}")
+        raise RuntimeError(f"RTL simulation failed (full simulator output follows):\n{out}")
     cycles, halted, err = (int(x) for x in m.groups())
     if not halted or (err and not error_ok):
         raise RuntimeError(f"RTL did not halt cleanly (halted={halted} error={err}):\n{out[-2000:]}")
