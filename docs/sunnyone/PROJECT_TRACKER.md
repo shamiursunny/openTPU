@@ -2821,3 +2821,22 @@ Broad clean RTL-tail 45915615625 is still running. Qwen, board-functional, subsy
 The exact seed-3 pass 45915433368 was trace-enabled (`OTPU_TRACE_POWERUP=1`), which changes Verilator instrumentation and may change the `--x-initial unique` pattern. No-trace A/B run 45914084753 reproduced the failure on the FSUM-guard source and passed on the pre-FSUM source. Therefore the stream-tail init-flush candidate remains PROVISIONAL until clean no-trace RTL-tail run 45915615625 and stream RTL/ISA comparisons finish. Do not close the seed-3 issue on the trace run alone.
 
 The temporary testbench monitor, trace helper and A/B workflow were removed/restored in commits 6290b360 and 425e794. A failure-only simulation diagnostic remains in `rtl/vpu/otpu_se_tail.sv`; it is excluded from synthesis. Structural/reset audit 45914912691 and ASIC integration 45914912733 are terminal PASS. Full run ledger is in CURRENT_CONTINUATION_CHECKPOINT_2026-11-27.md.
+
+
+## 120. 2026-11-27 — explicit MIG-pair AW/AR extension and clean no-trace revalidation
+
+### ASIC AW/AR width correction
+- Commit 600f3aa4822e18f03ba80d06ab86fd447189c126 updates rtl/asic/otpu_asic_wg8_ddr4_top.sv: connect the 33-bit otpu_mig_pair m_awaddr/m_araddr outputs to explicit PAIR_AW-width intermediate nets, then zero-extend to the 34-bit p_awaddr/p_araddr host-mux inputs using PAIR_ADDR_PAD. This preserves the existing unsigned address semantics and 34-bit mux checks; it does not truncate or alter the local DIMM mapping.
+- Verification is running on the exact commit: ASIC config 45916680920 (control/compute, native-memory and four-DIMM AXI lint stages have passed; four-DIMM host AXI simulation in progress); full-chip lint 45916680866 SUCCESS (0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT); reset audit 45916680730 IN_PROGRESS; clean non-trace RTL-tail run 45916680719 IN_PROGRESS.
+- Prior ASIC configuration 45914912733 passed functional integration but emitted 99 WIDTH warning occurrences and 3 UNOPTFLAT across top elaborations. The new run must be inspected for the exact warning reduction; do not claim the width gate closed based on the source edit alone.
+
+### No-trace power-up status — still provisional
+- The trace-enabled seed-3 pass 45915433368 is supplementary only: OTPU_TRACE_POWERUP=1 changes Verilator instrumentation and may change the --x-initial unique pattern. The no-trace A/B run 45914084753 still shows pre-FSUM PASS / post-FSUM FAIL at the tail overlap assertion.
+- Candidate init-flush RTL change 024928752fef7ab774502d2a19f49111cc86b1ff remains PROVISIONAL until the current no-trace broad RTL-tail run 45916680719 and stream RTL/ISA suite finish. The earlier no-trace broad run 45915615625 was cancelled during the test step by a subsequent commit; it is not a pass or failure.
+
+### Other current verification
+- Reset/structural audit 45914912691 terminal PASS: reset 4/4; copy_slice, two_slice_top and asic_top each 0 SCC / 0 inferred latch cells in tested configurations. New reset audit 45916680730 is running against the AW/AR fix commit.
+- ASIC integration 45914912733 terminal PASS: WG8 lint and four-DIMM host/accelerator AXI mapping/contention simulations passed; 99 WIDTH warnings and 3 UNOPTFLAT remain under review pending the new run.
+- Focused FSUM 45915615614 PASS (11), loop-stack 45915615653 PASS (2), isolated 128K TMEM 45915615624 PASS (2). Qwen 45915615674 was cancelled by the new commit; replacement Qwen run 45916680844 is pending. Software 45916680756, subsystem/WG8 45916680829 and board-functional 45916680721 are pending.
+
+Current source commit 600f3aa4822e18f03ba80d06ab86fd447189c126. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched; GitHub protection remains disabled but project no-main rule is absolute. PPA not authorised. RSUM producer metadata FIFO parity and manufacturer handoff remain open/NOT READY.
