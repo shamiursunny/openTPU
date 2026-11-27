@@ -1,0 +1,97 @@
+name: SUNNYONE WAITC remainder verification
+
+# The original tests/test_waits.py job reached 87% and was cancelled at the
+# 45-minute job limit. Run only the unfinished parameter cases and later tests.
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - '.github/workflows/sunnyone-waits-remainder.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hazard-seed-1-2:
+    name: WAITC hazard stress — seeds 1 and 2
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest transformers && python -m pip install -e .
+      - name: Run unfinished WAITC hazard cases
+        run: |
+          pytest -vv -ra \
+            'tests/test_waits.py::test_waitc_rtl_hazard_stress[1-32]' \
+            'tests/test_waits.py::test_waitc_rtl_hazard_stress[2-16]' \
+            'tests/test_waits.py::test_waitc_rtl_hazard_stress[2-32]'
+
+  hazard-seed-3:
+    name: WAITC hazard stress — seed 3
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest transformers && python -m pip install -e .
+      - name: Run unfinished WAITC hazard cases
+        run: |
+          pytest -vv -ra \
+            'tests/test_waits.py::test_waitc_rtl_hazard_stress[3-16]' \
+            'tests/test_waits.py::test_waitc_rtl_hazard_stress[3-32]'
+
+  waits-rest:
+    name: WAITC window, MX scale and host-entry tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator
+      - name: Install project and test dependencies
+        run: python -m pip install --upgrade pip pytest transformers && python -m pip install -e .
+      - name: Run tests not reached by the cancelled module job
+        run: |
+          pytest -vv -ra \
+            tests/test_waits.py::test_waitc_rtl_window_32 \
+            tests/test_waits.py::test_mx_mm_scale_rows \
+            tests/test_waits.py::test_mx_qst_scale_rows \
+            tests/test_waits.py::test_a_waitc_bitstream_refuses_a_program_without_entries \
+            tests/test_waits.py::test_a_waitc_bitstream_loads_the_entries_after_the_program \
+            tests/test_waits.py::test_a_bitstream_without_seq_wc_loads_the_words_alone \
+            tests/test_waits.py::test_the_window_guard_on_the_host \
+            tests/test_waits.py::test_a_bitstream_at_a_window_of_32_takes_saturated_entries \
+            tests/test_waits.py::test_device_config_takes_seq_wc_and_check_fits_needs_its_room \
+            tests/test_waits.py::test_a_host_without_seq_wc_refuses_a_waitc_bitstream \
+            tests/test_waits.py::test_board_backend_runs_with_the_entries_and_its_chain_slots_hold_them \
+            tests/test_waits.py::test_the_entries_room \
+            tests/test_waits.py::test_the_caches_key_on_seq_wc_and_the_waits_pass \
+            tests/test_waits.py::test_entries_are_kept \
+            tests/test_waits.py::test_words_pickle_with_their_run_args_and_entries \
+            tests/test_waits.py::test_worker_words_carry_the_entries_on_a_waitc_configuration \
+            tests/test_waits.py::test_entries_many_in_a_pool \
+            tests/test_waits.py::test_prebuild_keeps_the_sessions_entries \
+            tests/test_waits.py::test_prebuilds_backend_has_the_cards_flags \
+            tests/test_waits.py::test_an_rld_bound_narrows_the_footprints_and_the_isa_simulator_checks_it \
+            tests/test_waits.py::test_a_range_across_4gib_waits_at_aw \
+            tests/test_waits.py::test_ranges_4gib_apart_do_not_alias_at_aw \
+            tests/test_waits.py::test_counts_cover_a_run_above_4gib \
+            tests/test_waits.py::test_entries_key_keeps_its_value_at_aw_32 \
+            tests/test_waits.py::test_an_rld_bound_past_4gib_bounds_an_aw_product
