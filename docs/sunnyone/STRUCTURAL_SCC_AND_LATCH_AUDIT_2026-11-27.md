@@ -54,3 +54,19 @@ The two-slice audit blackboxes the behavioral DRAM model. It proves the selected
 3. Explicit zero-extension cleanup for the 33-bit per-DIMM MIG address outputs feeding the 34-bit host mux interface, with existing high-bit-zero test retained.
 4. Formal/SVA and CDC/RDC verification.
 5. Manufacturer handoff remains NOT READY.
+
+
+## Additional ASIC-top structural result — 2026-11-27
+
+The ASIC-top structural stage in reset/SCC workflow 45914912691 completed successfully. Artifact 15162062669 was downloaded and inspected. The audit used the actual `otpu_asic_top` source closure for the `card` configuration from `tools/asic/flow.py`, with SRAM macro boundaries blackboxed and real ASIC control/slice logic retained.
+
+Terminal structural results:
+- `otpu_xrst_top` / one-copy slice: 0 SCCs; 0 inferred latch cells.
+- `otpu_top`, S=2: 0 SCCs; 0 inferred latch cells.
+- `otpu_asic_top`: 0 SCCs; 0 inferred latch cells.
+
+All three logs report `Found 0 SCCs` and `Found and expected 0 SCCs`; all three latch selection files are empty (0 bytes). This covers the ASIC `aok` warning path in the tested card configuration. The Verilator `UNOPTFLAT aok` diagnostic remains a warning, but it is not backed by a structural combinational SCC in this elaborated ASIC netlist; classify it as a dependency/partitioning over-approximation for this configuration, not as a confirmed loop.
+
+The same workflow's reset/power-up stage passed 4/4 tests. Scope remains limited to these elaborated configurations; this is not formal equivalence, timing signoff, CDC/RDC or production qualification.
+
+Earlier statement in this report that ASIC `aok` was OPEN is superseded by this terminal ASIC-top result.
