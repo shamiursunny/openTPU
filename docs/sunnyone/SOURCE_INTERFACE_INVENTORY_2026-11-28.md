@@ -83,3 +83,12 @@ The initial LPU should be treated as a software/runtime subsystem that coordinat
 - Endpoint benchmark timing and server token counts are not equivalent to hardware-cycle or per-token latency; streamed chunks may contain multiple tokens.
 - No calibrated joules/token result follows from RTL trace counts. Hardware wall-power telemetry must be instrumented/calibrated at the complete-system boundary before energy claims.
 - Long-context and petabyte-scale retrieval are distinct: the serving store's host/disk KV persistence does not prove distributed petabyte corpus capability or unlimited model context.
+
+
+## 2026-11-28 — verified interface map and workload trace contract
+
+- Added `docs/sunnyone/SOURCE_INTERFACE_AND_WORKLOAD_TRACE_SPEC_2026-11-28.md` (creation commit `53012371e598c8ce546e91770caaff93f8cf0063`).
+- The new document records exact source blob IDs for the ASIC chip wrapper, compute top, slice, serving scheduler/store, hardware trace decoder, TMEM trace parser and Verilator simulator.
+- It closes the source-level role map: chip wrapper and external PCIe/memory boundary; one-slice ASIC compute top and collective; sequencer/unit handshakes; MXU/VPU/quantizer/DMA/stream resources; eight TMEM read-port identities and four write sources; A/B/SW/W external memory paths.
+- It defines deterministic W1/W2/W3 request traces and conditional W4 long-context/KV pressure, integer event ordering, cancellation/fault/recovery, tenant isolation, replay hash and required performance/memory metrics. Energy and thermal metrics remain blocked until calibrated power/thermal evidence exists.
+- This is documentation/source inspection only. No RTL, ISA, simulator implementation, test, PPA, hardware or paid service changed or ran.
