@@ -3,7 +3,6 @@
 Every test runs the same program on the same DRAM images through both and requires identical
 DRAM and TMEM contents in every slice.
 """
-import os
 import re
 import subprocess
 
@@ -495,7 +494,7 @@ def test_random_power_up(have_verilator, monkeypatch, card, seed):
     not reset (the writes of the cycles before the reset holds land in some), and the ISA starts
     TMEM at 0. The words the program writes are those an ISA run from TMEM all ones agrees on,
     and the program reads no other (its DRAM is the same)."""
-    monkeypatch.setenv("OTPU_X_INITIAL", os.environ.get("OTPU_TEST_X_INITIAL", "unique"))
+    monkeypatch.setenv("OTPU_X_INITIAL", "unique")
     monkeypatch.setenv("OTPU_X_SEED", str(seed))
     rng = np.random.default_rng(5000 + seed)
     uarch = {**rtlsim.BOARD_UARCH, **R2_TMEM, **R2_ARB, "COLL_GATHER": 1} if card else None
@@ -515,14 +514,8 @@ def test_random_power_up(have_verilator, monkeypatch, card, seed):
     m1.run()
     assert np.array_equal(m1.slices[0].dram, m.slices[0].dram)
     wr = m.slices[0].tmem == m1.slices[0].tmem
-    trace = os.environ.get("OTPU_TRACE_POWERUP") == "1"
-    keep = "/tmp/powerup-debug" if trace else None
-    if trace:
-        print("POWERUP_PROGRAM:")
-        for n, ins in enumerate(prog):
-            print(f"{n}: {ins!r}")
     drams, tmems, _ = rtlsim.run(cfg, [prog], [i.copy() for i in imgs], uarch=uarch,
-                                 max_cycles=1_000_000, trace=trace, keep=keep)
+                                 max_cycles=1_000_000)
     assert np.array_equal(drams[0], m.slices[0].dram)
     assert np.array_equal(tmems[0][wr], m.slices[0].tmem[wr])
 

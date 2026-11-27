@@ -136,24 +136,6 @@ module tb_top;
     .x2_abort(), .x2_rst(1'b1), .x2_card('0), .x2_ncards(8'd1),
     .coll_wd('0), .coll_status(), .x2_seq());
 
-  // POWERUP-REPRO only: observe the DMA stream request and dispatch at the
-  // exact failing startup boundary. This monitor is simulation-only and does not drive DUT nets.
-  logic dbg_prev_ss_req = 1'b0;
-  always @(posedge clk) begin
-    if (rst) dbg_prev_ss_req <= 1'b0;
-    else begin
-      if (dut.g_slice[0].u_slice.ss_req && !dbg_prev_ss_req)
-        $display("POWERUP_MON ss_req rise: rst_dma=%0d rst_vpu=%0d dma_start=%0d dma_cmd=%02h sc_op=%02h ds_su=%0d ss_cfg=%h",
-                 dut.g_slice[0].u_slice.rst_dma, dut.g_slice[0].u_slice.rst_vpu,
-                 dut.g_slice[0].u_slice.u_dma.start, dut.g_slice[0].u_slice.u_dma.cmd.op,
-                 dut.g_slice[0].u_slice.u_dma.sc.op, dut.g_slice[0].u_slice.u_dma.ds_su,
-                 dut.g_slice[0].u_slice.u_dma.ss_cfg);
-      if (dut.g_slice[0].u_slice.ustart[0])
-        $display("POWERUP_MON DMA dispatch: op=%02h", dut.g_slice[0].u_slice.ucmd[0].op);
-      dbg_prev_ss_req <= dut.g_slice[0].u_slice.ss_req;
-    end
-  end
-
   // TMEM_PMP 1: clk_f (2 x clk) rises with each edge of clk, in clk's own process (no race between
   // the two domains); clk's edges stay where they are (the memory models' clocks are absolute)
   if (TMEM_PMP == 1 || MXU_PUMP != 0) begin : g_clkf         // (and the pumped MXU's)
