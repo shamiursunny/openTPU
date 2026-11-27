@@ -756,3 +756,14 @@ This checkpoint supersedes earlier pending QHL diagnostic states. The 4596786131
 4. Continue semantic width-warning triage and UNOPTFLAT path analysis; retain exact warning counts and prove every narrowing/bounds assumption. Structural SCC success does not by itself clear Verilator UNOPTFLAT warnings.
 5. Continue formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes and DMA/IOMMU, DDR controller/PHY/training/ECC, routed physical signoff, and demonstrator down-select.
 6. Keep Track A full product separate from Track B demonstrator. Manufacturer handoff remains **NOT READY**; no sponsor, free fabrication, package/test, custody, delivery or shipping arrangement is confirmed.
+
+
+## Final verification for this continuation save
+- Live active-branch HEAD immediately before this final checkpoint metadata commit: `8f626607a2529f40f137552257f9bb59d0d00651`.
+- Live main SHA: `d84db55712aba0d40811d7762cb052f05d55b7e5` (expected unchanged protected baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`).
+- Integrated plan blob: `4baa2a2de90c9908ef6aadb9c7092959ad6954c3`.
+- Project tracker blob: `e3cd288024b5d42d3e047effc6c3e300d32c97c1`.
+- Manufacturer handoff matrix blob: `f3c6dafa4c105e1e001d811a5a5bd2fefe27682b`.
+- This checkpoint blob before final metadata append: `39cce7fe065f19cb34c6eb9fde7b366677e94a8d`.
+- The final metadata-only checkpoint commit is recorded by the commit returned for this update. Re-fetch the checkpoint and both branch refs after this commit to confirm the final saved state.
+- No RTL, test logic, workflow source or production branch behaviour was changed in this documentation save. No new CI was dispatched. The QHL correction itself remains the separately verified simulation-assertion qualification change documented above.
