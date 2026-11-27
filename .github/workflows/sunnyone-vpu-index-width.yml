@@ -1,0 +1,54 @@
+name: SUNNYONE focused VPU index-width regression
+
+on:
+  push:
+    branches:
+      - sunnyone/commercial-profitability-architecture-2026-11-23
+    paths:
+      - 'rtl/vpu/otpu_vpu.sv'
+      - 'tests/test_se_vpu.py'
+      - 'tests/test_rtl.py'
+      - '.github/workflows/sunnyone-vpu-index-width.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sunnyone-vpu-index-width-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vpu-index-width:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Verilator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator
+          verilator --version
+      - name: Install project and test dependencies
+        run: |
+          python -m pip install --upgrade pip pytest
+          python -m pip install -e .
+      - name: Run full VPU stream, VOP, reduction and FSUM differential suite
+        run: |
+          set -o pipefail
+          pytest -q -rs tests/test_se_vpu.py 2>&1 | tee /tmp/sunnyone-vpu-index-width.log
+      - name: Run raw FSUM ingress and 256-row boundary tests
+        run: |
+          set -o pipefail
+          pytest -q -rs tests/test_rtl.py -k "fsum_exp2sub_invalid_shape_halts_before_vpu_dispatch_rtl or fsum_exp2sub_rejected_when_capability_disabled_rtl or fsum_take_rejected_when_capability_disabled_rtl or fsum_take_without_pending_producer_halts_before_vpu_dispatch_rtl or fsum_capability_requires_eight_lane_stream_unit_rtl or fsum_pending_at_halt_reports_error_after_drain_rtl or fsum_flag_rejected_on_unrelated_vop_function_rtl or fsum_exp2sub_maximum_legal_shape_runs_and_takes_rtl" 2>&1 | tee -a /tmp/sunnyone-vpu-index-width.log
+      - name: Archive focused VPU regression log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnyone-vpu-index-width-log
+          path: /tmp/sunnyone-vpu-index-width.log
+          if-no-files-found: ignore
