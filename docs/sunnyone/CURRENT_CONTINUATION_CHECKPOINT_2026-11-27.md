@@ -647,3 +647,12 @@ This handoff records the latest evidence available in this conversation. It does
 
 ### Next exact action
 Dispatch .github/workflows/sunnyone-qhl-diagnostic.yml on branch sunnyone/qhl-seed1-diagnostic-2026-11-27 at commit 64943951e89f1fe91ac20d56f34fddea66c05923; inspect the complete QHLTRACE history and correlate root_v dequeue events against cap/vt_rl kind FIFO enqueues and kq[kh] classification. Do not change functional RTL until the trace demonstrates the defect. After the diagnostic, update this checkpoint, tracker, integrated plan and readiness matrix with the exact run ID, commit, artifact hash and evidence-based conclusion.
+
+
+## Workflow recheck — 2026-11-27 18:45 Asia/Dhaka
+
+- Re-polled the latest 100 Actions runs. The newest run for .github/workflows/sunnyone-qhl-diagnostic.yml remains run 45967861319 (run #7), completed FAILURE, branch sunnyone/qhl-seed1-diagnostic-2026-11-27, tested SHA 35dce2e57d0448988411ba98e5f931f420b8463f.
+- Inspected its only job (140400790723) and full decoded log. It failed exactly at the previously known tail assertion: kv_v=0, e2=1, e3=1. This run used the pre-trace commit; no QHLTRACE lines appear. Artifact 15183802907 exists (5,221 bytes; SHA-256 zip digest f0e88620f845e311a7996b1b54cf2023b73edeb2b73026ab8c7703e2c5a48926), but it is the old no-trace log and adds no root-cause history.
+- Verified the current diagnostic branch HEAD is 64943951e89f1fe91ac20d56f34fddea66c05923. The latest trace commit changed rtl/vpu/otpu_se_tail.sv only. The workflow's push trigger is path-filtered to .github/workflows/sunnyone-qhl-diagnostic.yml; therefore that RTL-only commit did not trigger another run. No workflow_dispatch run appears in the latest 100 Actions runs.
+- Therefore the passive QHLTRACE implementation has still NOT been executed. The previous conclusion that the GitHub connection lacks a dispatch action remains: available actions support run/job/artifact inspection and rerun operations, but no workflow dispatch operation was found. Do not rerun the older failed run; it would replay the old SHA. User must use Actions -> SUNNYONE QHL seed-1 no-trace diagnostic -> Run workflow, select branch sunnyone/qhl-seed1-diagnostic-2026-11-27, and start the manual run.
+- QHL remains OPEN; no functional root-cause conclusion or RTL fix. No production branch source changes and no main writes. Manufacturer handoff NOT READY.
