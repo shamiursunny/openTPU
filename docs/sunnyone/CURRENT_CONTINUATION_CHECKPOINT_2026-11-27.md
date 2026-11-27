@@ -453,3 +453,14 @@ No RTL/test/workflow changes or CI dispatches in this documentation reconciliati
 Correction to the preceding A/B note: workflow 45913977727 failed on both jobs due to an unsupported Verilator option. A corrected workflow on ubuntu-latest (commit 7ce1d8a21a0f01a8ee05043d66c666fd1b9c3416) completed run 45914084753: pre-FSUM snapshot 0d367ba1906b8e187e6e2feb2db576364d85b4fb PASSED test_random_power_up[1-3] (1 passed, 44.40 s); post-FSUM snapshot ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a FAILED at rtl/vpu/otpu_se_tail.sv:277 (kv_v=0, e2=1, e3=1). This is a real reproducible regression associated with the FSUM guard snapshot; the exact causal mechanism is not yet proven. Do not suppress the assertion or assume the counter alone is responsible. See PROJECT_TRACKER.md section 117.
 
 ASIC-top SCC/latch audit run 45914201799 (source commit 2a8228c957d94ff443638dbf2b6e3d901336ef63) is in progress; its reset/power-up test step was intentionally skipped by [SCC-ONLY]. Poll the SCC job and inspect its artifact before updating G3. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 — stream-tail diagnosis and candidate correction
+
+Latest source commit at this checkpoint: 024928752fef7ab774502d2a19f49111cc86b1ff. Read PROJECT_TRACKER.md section 118 for full run IDs and evidence.
+
+The corrected A/B comparison established pre-FSUM pass / post-FSUM-guard fail for test_random_power_up[1-3]. Debug run 45914665954 showed the failure at stream init with rst=0, pe=1, init=1, kv_v=0, e2=1, e3=1, rv=102, rr=102. Its artifact contains program/DRAM/sync/text logs, not a VCD. Candidate commit 024928 resets e2/e3/dv valid delay lines on rst||init and gates the overlap assertion during init. It is not yet accepted: current RTL-tail run 45914912747 and reset/power-up plus ASIC structural audit 45914912691 are still running. Confirm the previous stream's final outputs are preserved by RTL-vs-ISA comparison.
+
+The ASIC-top SCC attempt 45914201799 failed due to literal escaped newlines in generated macro stubs; tools/scc_audit.py was corrected in d43fa38047b250e008e9d25b039708f621b96282. The corrected audit is included in run 45914912691 and remains pending. Full-chip lint 45914912719 passed. Targeted FSUM 45914592880, loop-stack 45914592843 and isolated 128K TMEM 45914592827 passed.
+
+Main remains d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched. Keep no-spend, no-PPA, no cancelled-run restart, and no unnecessary reruns of groups 3.1/3.2/4. Manufacturer handoff NOT READY.
