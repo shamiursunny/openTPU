@@ -3173,3 +3173,17 @@ See `CONTINUATION_ADDENDUM_2026-11-28_0050.md` for exact source SHAs, run IDs, a
 - Latest Actions reconciliation: no active run identified. Successful jobs remain preserved; historical groups 3.1/3.2/4 and long board suite must not be rerun solely for reassurance.
 - Open: semantic width warning closure; exact `gnt` SCC/dependency graph then `sc_gl`, `pq`, `aok`; formal/SVA; CDC/RDC; SRAM/DDR technology mapping; PCIe/SerDes and DMA/IOMMU; DFT; routed physical, timing, power and thermal signoff; Track B demonstrator and independently verified sponsorship/sample logistics.
 - Zero spend, no PPA retry, no main writes. Manufacturer handoff **NOT READY**.
+
+
+
+## 126. 2026-11-28 — VPU width remediation and structural lint reconciliation
+
+See `LINT_TRIAGE_UPDATE_2026-11-28.md` and `CONTINUATION_ADDENDUM_2026-11-28_VPU_WIDTH_REMEDIATION.md`.
+
+- Structural SCC/latch audit run `45914912691`: one-copy slice, two-slice top and actual ASIC card top each reported 0 combinational SCCs and 0 inferred latch cells. This scopes `gnt`, `pq`, `sc_gl`, `aok` to no real combinational SCC in the tested configurations; warnings remain in generic Verilator logs.
+- VPU RTL commit `05879ea34eafc2559c54722c6c940b2acb9ac3ee`: sized 24 VPU function-mask indices and row-buffer index slices. No intended datapath/schedule/ISA change.
+- Full-chip lint run `46053311384`: SUCCESS, 52 WIDTHEXPAND + 7 WIDTHTRUNC = 59 width warnings, 7 simulation-only LATCH and 3 UNOPTFLAT. Width warning count down 17 from 76.
+- Remaining truncation: five MXU index warnings and two behavioral DRAM associative-array warnings; all 52 expansion warnings remain open.
+- Focused VPU run `46053329340` failed during compile with apt Verilator 5.020 before simulation. Workflow pinned to 5.044; run `46053471843` pending/in progress and is the required regression gate.
+- Broad `rtl/**` path filters unintentionally triggered additional unrelated suites. No connector cancellation action is available; no further broad runs should be initiated. Keep historical test evidence exact and avoid repeating passed groups.
+- Manufacturer handoff **NOT READY**; zero spend and no protected-main writes.
