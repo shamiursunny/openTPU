@@ -3158,3 +3158,18 @@ This handoff records the latest evidence available in this conversation. It does
 - The STREAM workflow file was reviewed: it is restricted to the active feature branch, builds pinned Verilator 5.044, and runs only tests/test_stream.py. No workflow change is required from this successful result.
 - Open gates remain: semantic width-warning closure; exact UNOPTFLAT dependency analysis (especially gnt); formal/SVA, CDC/RDC, DFT, SRAM technology mapping; production PCIe/SerDes, DMA/IOMMU and DDR controller/PHY/training/ECC; routed physical signoff; Track B demonstrator down-select and verified sponsorship/sample logistics. Manufacturer handoff remains **NOT READY**.
 - Zero-spend remains mandatory. No PPA retry, fabrication, packaging, lab test, paid compute, or hardware purchase is authorised. Protected main remains untouched.
+
+
+## 125. 2026-11-28 — live continuation reconciliation
+
+See `CONTINUATION_ADDENDUM_2026-11-28_0050.md` for exact source SHAs, run IDs, artifacts and release constraints.
+
+- Live feature branch HEAD before this documentation save: `4f26ec9d280f601587f474a4dd535c24f2945e39`; compare was 1,055 ahead / 0 behind protected baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- STREAM isolated run `46037445046`: SUCCESS, 46 passed. This closes only `tests/test_stream.py` at its tested SHA.
+- QHL exact seed-1 reset-qualified regression `46016087510`: 1 passed; subsystem QHL job in `46016022758`: 7 passed. Preserve scoped interpretation; do not infer all-seed closure.
+- FSUM hardware-ingress guard: already implemented in sequencer; focused run `45915615614` / job `140233980040`: 11 passed, 219 deselected. No duplicate rerun or new patch needed absent a source change.
+- Board-functional result remains 198 passed, 8 skipped, 1 deselected on SHA `600f3aa...`; later run `46016022808` was cancelled. Qwen selected real-checkpoint verification remains successful at the documented simulation scope.
+- WG8 PPA `45877786710`: terminal FAILURE; resource diagnosis records host-memory exhaustion; no valid routed PPA result. No retry authorised.
+- Latest Actions reconciliation: no active run identified. Successful jobs remain preserved; historical groups 3.1/3.2/4 and long board suite must not be rerun solely for reassurance.
+- Open: semantic width warning closure; exact `gnt` SCC/dependency graph then `sc_gl`, `pq`, `aok`; formal/SVA; CDC/RDC; SRAM/DDR technology mapping; PCIe/SerDes and DMA/IOMMU; DFT; routed physical, timing, power and thermal signoff; Track B demonstrator and independently verified sponsorship/sample logistics.
+- Zero spend, no PPA retry, no main writes. Manufacturer handoff **NOT READY**.
