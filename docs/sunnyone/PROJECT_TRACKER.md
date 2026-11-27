@@ -2757,3 +2757,21 @@ This establishes a reproducible difference between these two source snapshots fo
 A separate ASIC-top structural SCC/latch audit was started by commit 2a8228c957d94ff443638dbf2b6e3d901336ef63; run 45914201799 was IN_PROGRESS at the time of this entry. Its power-up/reset step was explicitly skipped because the commit message carried [SCC-ONLY]. Do not claim ASIC-top SCC closure until the job and archived report are terminal and inspected.
 
 Priority correction: the FSUM bounds guard's 11 focused tests still pass, but the source change must not be treated as regression-clean. First isolate and fix the seed-3 random-power-up regression while preserving all FSUM guard tests; rerun the exact A/B comparison after a minimal correction. Exact RSUM producer metadata FIFO parity remains a separate open semantic issue. All zero-spend, no-main, no-cancelled-run and no-repeat-successful-group constraints remain in force.
+
+
+## 118. 2026-11-27 — stream-tail power-up diagnosis and candidate flush fix
+
+### Diagnostic evidence
+- Debug workflow 45914665954 on source 8e84d848dc486b2693b610cb3ba30d9926b96b92 reproduced test_random_power_up[1-3] failure at rtl/vpu/otpu_se_tail.sv:279. Diagnostic state: rst=0, pe=1, init=1, in_v=0, cfg=4f797b, ns=24, x0=15445, jn=17, kv_v=0, e2=1, e3=1, rv=102, rr=102.
+- Artifact 15161492847 (ZIP SHA-256 2517078d706d7d70864935cd9df34e3e14da313c06f6a4277b5e4f176866b7c1) contains the generated program, DRAM image, sync file and textual debug log. It contains no VCD waveform; do not claim a waveform was captured.
+- The failure is at a new-stream init boundary while the D-slot valid pipeline still contains e2/e3. This narrows the immediate condition to stale/in-flight stream-tail row valids at init. It does not by itself prove whether those valids should be drained or flushed at that boundary.
+
+### Candidate RTL fix and validation pending
+- Commit 024928752fef7ab774502d2a19f49111cc86b1ff changes otpu_se_tail so e2/e3/dv valid delay lines reset on rst || init. The simulation-only overlap assertion is gated with !init to avoid checking pre-edge old values on the same synchronous flush cycle.
+- This is a targeted candidate fix, not yet accepted. It must preserve the previous stream's final valid outputs and pass RTL-vs-ISA comparisons. Do not suppress the assertion outside the init flush cycle.
+- Current validation at this entry: RTL-tail regression run 45914912747 IN_PROGRESS; reset/power-up plus ASIC structural audit run 45914912691 IN_PROGRESS; ASIC config run 45914912733 IN_PROGRESS; subsystem suite 45914912881 IN_PROGRESS/queued; Qwen checkpoint run 45914912823 IN_PROGRESS; core software suite 45914912813 IN_PROGRESS/queued. Full-chip Verilator lint 45914912719 SUCCESS. Earlier targeted FSUM run 45914592880 SUCCESS; loop-stack 45914592843 SUCCESS; isolated 128K one-copy TMEM 45914592827 SUCCESS.
+
+### ASIC structural audit correction
+- ASIC-top SCC attempt 45914201799 FAILED because the generated SRAM macro stub contained literal backslash-n sequences; the two generic tops still passed, but the ASIC top was not elaborated. The stub writer was corrected in tools/scc_audit.py (commit d43fa38047b250e008e9d25b039708f621b96282). Intermediate run 45914493638 was cancelled by newer commits. Current run 45914912691 includes the corrected script and must be inspected before any ASIC-top SCC/latch claim.
+
+No main changes. Do not restart cancelled workflow 45765362426. Do not rerun historical groups 3.1, 3.2 or 4 merely to reconfirm; the current changed-source regression suites are targeted to validate the new stream-tail correction. PPA remains unauthorised; manufacturer handoff NOT READY.
