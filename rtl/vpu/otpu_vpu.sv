@@ -810,17 +810,17 @@ module otpu_vpu
       ax = {1'b0, xz[30:0]};
       st[0] = '0;
       unique case (1'b1)
-        m0d.fh[V_MAX], m0d.fh[V_MIN]: st[0].v = fp_mm(x, y, m0d.fh[V_MIN]);
-        m0d.fh[V_COPY]:  st[0].v = xz;
-        m0d.fh[V_ABS]:   st[0].v = fabs(x);
-        m0d.fh[V_FILL]:  st[0].v = ftz(y);
-        m0d.fh[V_RECIP]: begin                               // on the significand a
+        m0d.fh[5'(V_MAX)], m0d.fh[5'(V_MIN)]: st[0].v = fp_mm(x, y, m0d.fh[5'(V_MIN)]);
+        m0d.fh[5'(V_COPY)]:  st[0].v = xz;
+        m0d.fh[5'(V_ABS)]:   st[0].v = fabs(x);
+        m0d.fh[5'(V_FILL)]:  st[0].v = ftz(y);
+        m0d.fh[5'(V_RECIP)]: begin                               // on the significand a
           st[0].k1 = {9'h17F, xz[22:0]};                     // -a
           st[0].k2 = RECIP_MAGIC - {9'h07F, xz[22:0]};       // seed
           st[0].ii = rcp_ek(xz);                             // y * 2^(127 - field)
           st[0].f  = {xz[31], (ax >= 32'h7E80_0000), (ax == 0)};
         end
-        m0d.fh[V_RSQRT]: begin                               // on 16x / x / 16 (rsq_lo / hi)
+        m0d.fh[5'(V_RSQRT)]: begin                               // on 16x / x / 16 (rsq_lo / hi)
           logic lo, hi;
           lo = rsq_lo(xz);
           hi = rsq_hi(xz);
@@ -829,7 +829,7 @@ module otpu_vpu
           st[0].ii = lo ? 9'sd2 : hi ? -9'sd2 : 9'd0;         // y * 4, y / 4
           st[0].f  = {2'b00, (xz[31] || xz[30:0] == 0 || xz == F_INF)};
         end
-        m0d.fh[V_LOG2]: begin                                // m in [sqrt(1/2), sqrt(2)), e
+        m0d.fh[5'(V_LOG2)]: begin                                // m in [sqrt(1/2), sqrt(2)), e
           logic ge, z;
           ge = (xz[22:0] >= LOG2_SQRT2);
           z  = (xz[30:0] == 0);
@@ -1054,9 +1054,9 @@ module otpu_vpu
     always_comb begin
       st[0] = '0;
       unique case (1'b1)
-        m0d.fh[V_COPY]:  st[0] = ftz(x);
-        m0d.fh[V_ABS]:   st[0] = fabs(x);
-        m0d.fh[V_FILL]:  st[0] = ftz(y);
+        m0d.fh[5'(V_COPY)]:  st[0] = ftz(x);
+        m0d.fh[5'(V_ABS)]:   st[0] = fabs(x);
+        m0d.fh[5'(V_FILL)]:  st[0] = ftz(y);
         default: ;                                 // MAX, MIN: lmv
       endcase
     end
@@ -1064,14 +1064,14 @@ module otpu_vpu
     always_comb begin
       ia = F_ZERO; ib = F_ONE; ic_ = F_NZ; ie = F_ONE;
       unique case (1'b1)
-        m0d.fh[V_MUL]:  begin ia = x; ib = y; end
-        m0d.fh[V_OUTER]: if (OUTER) begin ia = x; ib = xd[l]; ic_ = y; ie = xc[l]; end
+        m0d.fh[5'(V_MUL)]:  begin ia = x; ib = y; end
+        m0d.fh[5'(V_OUTER)]: if (OUTER) begin ia = x; ib = xd[l]; ic_ = y; ie = xc[l]; end
                          else begin ia = y; ib = xc[l]; ic_ = x; end      // (OUTER1)
-        m0d.fh[V_MAC]:  begin ia = x; ib = (m0.bmode == B_SCALAR) ? m0.imm : xc[l]; ic_ = xb[l]; end
-        m0d.fh[V_ADD]:  begin ia = x; ic_ = y; end
-        m0d.fh[V_SUB]:  begin ia = x; ic_ = fneg(y); end
-        m0d.fh[V_RSUB]: begin ia = y; ic_ = fneg(x); end
-        m0d.fh[V_RSUM], m0d.fh[V_RSSQ], m0d.fh[V_RDOT]:
+        m0d.fh[5'(V_MAC)]:  begin ia = x; ib = (m0.bmode == B_SCALAR) ? m0.imm : xc[l]; ic_ = xb[l]; end
+        m0d.fh[5'(V_ADD)]:  begin ia = x; ic_ = y; end
+        m0d.fh[5'(V_SUB)]:  begin ia = x; ic_ = fneg(y); end
+        m0d.fh[5'(V_RSUB)]: begin ia = y; ic_ = fneg(x); end
+        m0d.fh[5'(V_RSUM)], m0d.fh[5'(V_RSSQ)], m0d.fh[5'(V_RDOT)]:
           if (RMA) begin ia = rsa[l]; ib = rsb[l]; ic_ = rfb[l]; end
         default: ;
       endcase
@@ -1096,8 +1096,8 @@ module otpu_vpu
     // the result of the entry that ends at tap 0 or 1 this cycle (other taps: masked here), or
     // (C8) a composite's
     assign lres[l] = (C8 && c_ov) ? c_od[l] : hit[0] ? st[0] : st[1];
-    assign lmm[l] = !(C8 && c_ov) && hit[0] && (m0d.fh[V_MAX] || m0d.fh[V_MIN]);
-    assign lmv[l] = fp_mm(x, y, m0d.fh[V_MIN]);
+    assign lmm[l] = !(C8 && c_ov) && hit[0] && (m0d.fh[5'(V_MAX)] || m0d.fh[5'(V_MIN)]);
+    assign lmv[l] = fp_mm(x, y, m0d.fh[5'(V_MIN)]);
     assign c_ia[l] = x;
     assign c_ib[l] = y;
   end
@@ -1441,6 +1441,7 @@ module otpu_vpu
   // RDOT's row-sum buffer: row i in bank i % LANES; the flush writes rows fl .. fl+LANES-1
   // (FSUM's sums too: at imm, the EXP2SUB's w7 + R[rd])
   localparam int NRB = 256;
+  localparam int RBW = $clog2(NRB / LANES); // exact row-buffer index width
   logic          rdb;                        // this reduction's row sums are buffered
   logic          flushing;
   logic [15:0]   fl;
@@ -1458,8 +1459,8 @@ module otpu_vpu
     always_ff @(posedge clk)
       if (en_b && ((red_act_b && is_sum_b && rdb) || fs_b) && root_v &&
           rows_done[LW-1:0] == LW'(l))
-        rb[rows_done[15:LW]] <= root;
-    assign rbuf_q[l] = rb[fl[15:LW]];
+        rb[rows_done[LW +: RBW]] <= root;
+    assign rbuf_q[l] = rb[fl[LW +: RBW]];
   end
 
   // ------------------------------------------------------------------ TMEM writes
