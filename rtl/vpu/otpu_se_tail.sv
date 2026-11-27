@@ -289,6 +289,15 @@ module otpu_se_tail
   otpu_vdelay #(.N(SL)) u_dv (.clk, .rst(rst || init), .en(pe), .d(e3), .q(dv));
   otpu_delay #(.W(8), .N(SL)) u_rd (.clk, .en(pe), .d(rr), .q(rd));
 `ifndef SYNTHESIS
+  // Stateless event trace for the seed-1 QHL overlap. Flush each line before any fatal.
+  always @(posedge clk)
+    if (!rst && (dbg_s_init || dbg_cap || dbg_root_v || kv_v || e2 || e3)) begin
+      $display("QHLTRACE time=%0t pe=%0d init=%0d in_v=%0d kv_v=%0d e2=%0d e3=%0d en_b=%0d root_v=%0d vt_q=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d kq=%h kh=%0d kt=%0d ss_act=%0d sen=%0d s_init=%0d",
+               $time, pe, init, in_v, kv_v, e2, e3, dbg_en_b, dbg_root_v,
+               dbg_vt_q, dbg_cap, dbg_a_cap, dbg_q_cap, dbg_vt_rl, dbg_vt_sub,
+               dbg_kq, dbg_kh, dbg_kt, dbg_ss_act, dbg_sen, dbg_s_init);
+      $fflush();
+    end
   always_ff @(posedge clk)
     if (!rst && !init && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
       $display("otpu_se_tail: state rst=%0d pe=%0d init=%0d in_v=%0d cfg=%h ns=%0d x0=%h jn=%0d kv_v=%0d e2=%0d e3=%0d rv=%0d rr=%0d en_b=%0d root_v=%0d vt_q=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d kq=%h kh=%0d kt=%0d ss_act=%0d sen=%0d s_init=%0d",
