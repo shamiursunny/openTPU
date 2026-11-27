@@ -2745,3 +2745,15 @@ Live feature branch HEAD before this documentation update: 18493ca5f681d44051eae
 6. Preserve zero-spend, no-main, no-cancelled-run-45765362426, and no-repeat-successful-groups-3.1/3.2/4 controls.
 
 This section records evidence and open work only. No RTL was modified in this reconciliation; no workflow was dispatched, rerun or cancelled by this documentation update.
+
+
+## 117. 2026-11-27 — corrected random-power-up A/B result
+
+The initial A/B run 45913977727 failed before simulation on both matrix jobs because Ubuntu 24.04's apt Verilator did not support --no-assert-case. The workflow was corrected in commit 7ce1d8a21a0f01a8ee05043d66c666fd1b9c3416 to use ubuntu-latest. The corrected A/B run 45914084753 now provides a valid comparison on the exact test_random_power_up[1-3] parameter:
+- Post-FSUM-guard snapshot ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a: FAILED at rtl/vpu/otpu_se_tail.sv:277, assertion "two rows' d slots meet (kv_v 0 e2 1 e3 1)". Artifact 15161372698; ZIP SHA-256 9e9fda69e29052f49f5caa50e743f5105bbca5ed0f07bd9b190b08389925a7f9.
+- Pre-FSUM-guard snapshot 0d367ba1906b8e187e6e2feb2db576364d85b4fb: PASSED, 1 passed in 44.40 seconds. Artifact 15161223485; ZIP SHA-256 6a83c7256c109ec7ac7ab83cb865e3b9dd5dd0ff567f4144e927cc242cd3a525.
+This establishes a reproducible difference between these two source snapshots for this deterministic random-power-up test: the post-FSUM-guard snapshot fails while the pre-guard snapshot passes. Treat this as a regression associated with the FSUM guard change. It does not yet identify the exact causal RTL mechanism; do not assume the fsum_pending counter alone is responsible, and do not suppress the tail assertion. The failure occurs in the stream-engine tail's D-slot valid pipeline, not in the FSUM arithmetic path. Investigate reset/initialisation and Verilator unique-random assignment interactions as hypotheses, then prove with waveforms and a minimal reproducer.
+
+A separate ASIC-top structural SCC/latch audit was started by commit 2a8228c957d94ff443638dbf2b6e3d901336ef63; run 45914201799 was IN_PROGRESS at the time of this entry. Its power-up/reset step was explicitly skipped because the commit message carried [SCC-ONLY]. Do not claim ASIC-top SCC closure until the job and archived report are terminal and inspected.
+
+Priority correction: the FSUM bounds guard's 11 focused tests still pass, but the source change must not be treated as regression-clean. First isolate and fix the seed-3 random-power-up regression while preserving all FSUM guard tests; rerun the exact A/B comparison after a minimal correction. Exact RSUM producer metadata FIFO parity remains a separate open semantic issue. All zero-spend, no-main, no-cancelled-run and no-repeat-successful-group constraints remain in force.
