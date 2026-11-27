@@ -274,8 +274,17 @@ module otpu_se_tail
   otpu_vdelay #(.N(SL)) u_dv (.clk, .rst(rst || init), .en(pe), .d(e3), .q(dv));
   otpu_delay #(.W(8), .N(SL)) u_rd (.clk, .en(pe), .d(rr), .q(rd));
 `ifndef SYNTHESIS
+  // The unit reset is a two-stage replica of the slice reset. Qualify the overlap assertion only
+  // after reset has been observed on two clock edges, as for the d-FIFO checks below. Before that,
+  // the reset replica and datapath valids may still contain arbitrary power-up values.
+  bit rst_p, rst_seen;
+  initial begin rst_p = 1'b0; rst_seen = 1'b0; end
+  always @(posedge clk) begin
+    rst_p <= rst;
+    if (rst && rst_p) rst_seen <= 1'b1;
+  end
   always_ff @(posedge clk)
-    if (!rst && !init && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
+    if (rst_seen && !rst && !init && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
       $display("otpu_se_tail: state rst=%0d pe=%0d init=%0d in_v=%0d cfg=%h ns=%0d x0=%h jn=%0d kv_v=%0d e2=%0d e3=%0d rv=%0d rr=%0d",
                rst, pe, init, in_v, cfg, ns, x0, jn, kv_v, e2, e3, rv, rr);
       $fatal(1, "otpu_se_tail: two rows' d slots meet (kv_v %0d e2 %0d e3 %0d)", kv_v, e2, e3);
@@ -357,11 +366,7 @@ module otpu_se_tail
     if (d_pop) d_cur <= dq[dq_h];
   end
 `ifndef SYNTHESIS
-  // the checks start once the reset has held two edges (registers start arbitrary, and so does a
-  // unit's reset register until the slice's reset pipeline fills: otpu_slice)
-  bit rst_p, rst_seen;
-  initial begin rst_p = 1'b0; rst_seen = 1'b0; end
-  always @(posedge clk) begin rst_p <= rst; if (rst && rst_p) rst_seen <= 1'b1; end
+  // Share the reset qualification declared above with the d-FIFO checks.
   always_ff @(posedge clk)
     if (!rst && rst_seen && pe && ((d_pop && dq_n == 0) || (dv && !d_pop && 32'(dq_n) == DFD)))
       $fatal(1, "otpu_se_tail: d FIFO %s", (d_pop && dq_n == 0) ? "underflow" : "overflow");
