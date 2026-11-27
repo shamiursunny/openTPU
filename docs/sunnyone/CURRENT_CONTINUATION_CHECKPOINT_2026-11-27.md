@@ -446,3 +446,10 @@ Latest tracker update is section 116 in docs/sunnyone/PROJECT_TRACKER.md. Read i
 Verified improvements remain: FSUM bounds targeted CI 11/11 passed; generic one-copy and S=2 structural SCC/latch audits each report zero SCC and zero inferred latch cells. ASIC aok, ASIC-wide latches, RSUM producer destination/row FIFO parity, 76 generic width warnings plus ASIC-specific widths, formal/SVA, CDC/RDC and physical/manufacturer gates remain open. PPA 45877786710 is terminal failure with confirmed OOM-kill evidence; no retry authorised. Manufacturer handoff NOT READY.
 
 No RTL/test/workflow changes or CI dispatches in this documentation reconciliation. Continue zero-spend, do not touch main, do not restart 45765362426, and do not rerun historical groups 3.1, 3.2 or 4 merely to reconfirm. Track A and Track B remain separate.
+
+
+## 2026-11-27 — corrected power-up A/B result and next blocker
+
+Correction to the preceding A/B note: workflow 45913977727 failed on both jobs due to an unsupported Verilator option. A corrected workflow on ubuntu-latest (commit 7ce1d8a21a0f01a8ee05043d66c666fd1b9c3416) completed run 45914084753: pre-FSUM snapshot 0d367ba1906b8e187e6e2feb2db576364d85b4fb PASSED test_random_power_up[1-3] (1 passed, 44.40 s); post-FSUM snapshot ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a FAILED at rtl/vpu/otpu_se_tail.sv:277 (kv_v=0, e2=1, e3=1). This is a real reproducible regression associated with the FSUM guard snapshot; the exact causal mechanism is not yet proven. Do not suppress the assertion or assume the counter alone is responsible. See PROJECT_TRACKER.md section 117.
+
+ASIC-top SCC/latch audit run 45914201799 (source commit 2a8228c957d94ff443638dbf2b6e3d901336ef63) is in progress; its reset/power-up test step was intentionally skipped by [SCC-ONLY]. Poll the SCC job and inspect its artifact before updating G3. Manufacturer handoff remains NOT READY.
