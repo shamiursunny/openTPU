@@ -3022,3 +3022,11 @@ This handoff records the latest evidence available in this conversation. It does
 - The isolated diagnostic RTL at 64943951e89f1fe91ac20d56f34fddea66c05923 uses stateless, non-SYNTHESIS event-filtered QHLTRACE output with flush. It is not plusarg-gated (correcting earlier checkpoint wording) and must remain isolated.
 - Corrected stale “no-trace” labels in the temporary diagnostic workflow in commit 60e3c03a47620f077f84fc01b7c0d9d78999a2e2. Its path-filtered push trigger matches this workflow-only update and should launch the one targeted test: tests/test_quant_rtl.py::test_qhl_power_up_rtl[1-False]. Await and inspect the new run; no functional RTL changed.
 - QHL OPEN; no root cause established, no production RTL fix authorised, manufacturer handoff NOT READY. No main writes, paid resources, PPA retry or successful regression reruns.
+
+
+## 2026-11-27 18:45+ Asia/Dhaka — targeted trace run launched
+
+- Workflow-only correction commit `60e3c03a47620f077f84fc01b7c0d9d78999a2e2` on the isolated diagnostic branch triggered Actions run `46001085532` (run #8), event `push`, exact tested SHA `60e3c03a47620f077f84fc01b7c0d9d78999a2e2`. The run is the event-trace diagnostic, not the previous no-trace test.
+- Job `140512599407` entered the exact pytest step `tests/test_quant_rtl.py::test_qhl_power_up_rtl[1-False]`. At last poll it remained IN_PROGRESS; dependency installation and Verilator setup had completed. No final test conclusion or log artifact was yet available. Do not infer pass/fail from an in-progress job.
+- No production RTL or test logic was changed. The only diagnostic-branch change since trace commit `64943951e89f1fe91ac20d56f34fddea66c05923` is workflow naming/log-artifact metadata. Active engineering branch changes are documentation-only. Protected main untouched; no paid resources, no PPA retry, no historical successful regression reruns.
+- Next: poll run `46001085532`; once terminal, fetch job log and artifact, extract all QHLTRACE lines, correlate cap&&vt_rl enqueue events with root_v dequeue and kv_v classification, then record the evidence-based root cause (or state that it remains unresolved). QHL OPEN; manufacturer handoff NOT READY.
