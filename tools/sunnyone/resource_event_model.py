@@ -160,16 +160,22 @@ class ResourceEventModel:
         if header.get("tick_unit") is None:
             raise ValueError("trace header is missing tick_unit")
         events = records[1:]
-        if header.get("event_count") != len(events):
+        if isinstance(header.get("event_count"), bool) or header.get("event_count") != len(events):
             raise ValueError("trace event_count does not match records")
+        _positive_int("trace prefill_chunk_tokens", header.get("prefill_chunk_tokens"))
         canonical_events = "".join(_canonical(event) + "\n" for event in events)
         digest = hashlib.sha256(canonical_events.encode("utf-8")).hexdigest()
         if header.get("replay_sha256") != digest:
             raise ValueError("trace replay_sha256 mismatch")
         previous: tuple[int, int] | None = None
+        arrivals: dict[str, int] = {}
+        seen_controls: set[tuple[str, str]] = set()
+        allowed = {"REQUEST_ARRIVAL", "REQUEST_CANCEL", "REQUEST_FAULT", "REQUEST_DEADLINE"}
         for index, event in enumerate(events):
             if not isinstance(event, dict):
                 raise ValueError("trace event must be an object")
+            if set(event) != {"tick", "sequence", "kind", "request_id", "payload"}:
+                raise ValueError("trace event fields do not match schema v1")
             tick, sequence = event.get("tick"), event.get("sequence")
             if isinstance(tick, bool) or not isinstance(tick, int) or tick < 0:
                 raise ValueError("event tick must be a non-negative integer")
@@ -179,6 +185,36 @@ class ResourceEventModel:
             if previous is not None and order < previous:
                 raise ValueError("trace events are not ordered")
             previous = order
+            kind, request_id, payload = event["kind"], event["request_id"], event["payload"]
+            if kind not in allowed:
+                raise ValueError(f"unsupported exogenous event kind: {kind}")
+            if not isinstance(request_id, str) or not request_id.strip():
+                raise ValueError("event request_id must be a non-empty string")
+            if not isinstance(payload, dict):
+                raise ValueError("event payload must be an object")
+            if kind == "REQUEST_ARRIVAL":
+                if request_id in arrivals:
+                    raise ValueError(f"duplicate arrival for request {request_id}")
+                for name in ("tenant_id", "model_id", "checkpoint_id", "tokenizer_id", "template_id", "quality_gate"):
+                    if not isinstance(payload.get(name), str) or not payload[name].strip():
+                        raise ValueError(f"arrival payload {name} must be a non-empty string")
+                _positive_int("arrival prompt_tokens", payload.get("prompt_tokens"))
+                _positive_int("arrival max_new_tokens", payload.get("max_new_tokens"))
+                arrivals[request_id] = tick
+            else:
+                if request_id not in arrivals:
+                    raise ValueError(f"{kind} precedes or lacks request arrival: {request_id}")
+                if tick < arrivals[request_id]:
+                    raise ValueError(f"{kind} occurs before arrival: {request_id}")
+                control = (request_id, kind)
+                if control in seen_controls:
+                    raise ValueError(f"duplicate {kind} for request {request_id}")
+                seen_controls.add(control)
+                if kind == "REQUEST_FAULT":
+                    if not isinstance(payload.get("fault_kind"), str) or not payload["fault_kind"].strip():
+                        raise ValueError("REQUEST_FAULT requires a non-empty fault_kind")
+                elif payload:
+                    raise ValueError(f"{kind} payload must be empty")
         return header, events
 
     def run(self, trace_text: str) -> dict[str, Any]:
