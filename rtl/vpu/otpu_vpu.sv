@@ -1720,6 +1720,8 @@ module otpu_vpu
     logic t_yv, t_ov, t_qc, t_qrl;
     logic [7:0] t_qsub;
     f32_t t_qd [LANES];
+    logic [7:0] kq;
+    logic [2:0] kh, kt;
     otpu_se_tail #(.LANES(LANES), .TA(TA), .QD(1), .DSTEP2(DSTEP2)) u_tail (
       .clk, .rst, .init(s_init), .cfg(s_cfg), .fk(s_fk), .fi(s_fi), .fd(s_fd),
       .pe(sen), .in_v(s_in_v), .in_d(s_in_d), .xd(s_xd), .xa(s_xa), .xm(s_xm),
@@ -1728,7 +1730,10 @@ module otpu_vpu
       .qo_v(root_v && vt_q), .qo_d(root_o),
       .cm_u, .cm_q, .cen(en_l), .u_sel(c_sel[1]), .u_a(c_sa[1]), .u_b(c_sb[1]), .u_c(c_sc[1]),
       .u_e(c_se[1]), .u_y(c_uy), .q_sel(c_sel[2]), .q_a(c_sa[2]), .q_b(c_sb[2]), .q_c(c_sc[2]),
-      .q_y(c_qy));
+      .q_y(c_qy),
+      .dbg_en_b(en_b), .dbg_root_v(root_v), .dbg_vt_q(vt_q), .dbg_cap(cap),
+      .dbg_a_cap(a_cap), .dbg_q_cap(q_cap), .dbg_vt_rl(vt_rl), .dbg_vt_sub(vt_sub),
+      .dbg_kq(kq), .dbg_kh(kh), .dbg_kt(kt), .dbg_ss_act(ss_act), .dbg_sen(sen), .dbg_s_init(s_init));
     // Q's partials registered here (QD = 1: the tail pads its Q path for it), so no path
     // runs from the tail's adders into the tree's; the roots come out in window order, so
     // a FIFO of their kinds routes each to kv (A) or back to the tail (Q)
@@ -1740,8 +1745,6 @@ module otpu_vpu
       q_sub <= t_qsub;
       q_pd <= t_qd;
     end
-    logic [7:0] kq;
-    logic [2:0] kh, kt;
     always_ff @(posedge clk)
       if (rst || s_init) begin
         kh <= '0; kt <= '0;
@@ -1754,18 +1757,6 @@ module otpu_vpu
       end
     assign vt_q = kq[kh];
 `ifndef SYNTHESIS
-    // Diagnostic-only, stateless cycle trace. Print throughout active stream windows so the
-    // parent monitor runs before the tail's same-edge assertion can terminate simulation.
-    always @(posedge clk)
-      if (!rst && (ss_act || s_init || root_v || q_cap || t_qc)) begin
-        $display("QHLTRACE time=%0t en_b=%0d sen=%0d s_init=%0d ss_act=%0d in_v=%0d s_mt_v=%0d s_mt_final=%0d s_mt_row_last=%0d s_mt_sub=%0d root_v=%0d vt_q=%0d kv_v=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d t_qc=%0d t_qrl=%0d t_qsub=%0d kq=%h kh=%0d kt=%0d",
-                 $time, en_b, sen, s_init, ss_act, s_in_v, s_mt.v, s_mt.final_,
-                 s_mt.row_last, s_mt.sub, root_v, vt_q, root_v && !vt_q, cap,
-                 a_cap, q_cap, vt_rl, vt_sub, t_qc, t_qrl, t_qsub, kq, kh, kt);
-        $fflush();
-    end
-`endif
-
     assign ss_y_v = sen && t_yv;
     assign ss_o_v = sen && t_ov;
   end else begin : g_nse
