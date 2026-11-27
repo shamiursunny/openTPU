@@ -512,3 +512,14 @@ Latest source commit: 600f3aa4822e18f03ba80d06ab86fd447189c126. It explicitly ze
 Critical power-up qualification: trace-enabled seed-3 pass 45915433368 is supplementary only. No-trace A/B 45914084753 still showed pre-FSUM pass / post-FSUM failure. Candidate init-flush fix remains provisional until clean no-trace broad RTL-tail run 45916680719 and stream RTL/ISA suite finish. Earlier no-trace run 45915615625 was cancelled during its test step by a subsequent commit; it is inconclusive.
 
 Reset audit 45914912691 and ASIC integration 45914912733 are terminal PASS; new reset audit 45916680730 is running on the current AW/AR fix. Focused FSUM 11/11, loop-stack 2/2 and isolated 128K TMEM 2/2 passed on commit 6290b360. Qwen, software, subsystem/WG8 and board runs are pending/queued under 45916680844, 45916680756, 45916680829 and 45916680721. See tracker section 120 for full evidence. Main remains untouched; PPA not authorised; manufacturer handoff NOT READY.
+
+
+## Latest continuation update — 2026-11-27, 13:00 Asia/Dhaka
+
+Source snapshot: `600f3aa4822e18f03ba80d06ab86fd447189c126`; five later commits on this branch are documentation-only. Live compare: feature branch 967 commits ahead / 0 behind `main`, merge base `d84db55712aba0d40811d7762cb052f05d55b7e5`. No source RTL/test/workflow changes were made in this continuation.
+
+Latest workflow reconciliation is recorded in PROJECT_TRACKER.md section 121 and integrated plan section 20. Key results: ASIC config 45916680920 SUCCESS (bad AW/AR `%Fatal` logs are expected negative tests and both testbench cases report PASS); RTL-tail 45916680719 SUCCESS (33 passed, 1 skipped); reset 45916680730 SUCCESS; Qwen real RTL 6 passed and tiny board-model 8 passed; board-functional 198 passed, 8 skipped, 1 deselected; full-chip lint 45916680866 SUCCESS with warnings still open. Software workflow 45916680756 has a CANCELLED waits job, so that part is incomplete.
+
+New regression blocker: subsystem/memory 45916680829 has 13/14 jobs SUCCESS, QHL job FAILED with 6 passed and 1 failed. Failing test `test_qhl_power_up_rtl[1-False]` reaches the DUT and trips the simulation assertion at `rtl/vpu/otpu_se_tail.sv:281`: `kv_v=0,e2=1,e3=1`, with `rst=0, pe=1, init=0, in_v=1, cfg=6f8069, ns=32, jn=14, rv=51, rr=51`. This is a QHL random-power-up failure and is not closed by the separate 33-pass RTL-tail selection. Since init is low, the prior init-flush change does not by itself explain it. Root cause remains unproven; inspect VPU root/root_v and tail valid spacing against the QHL program/reset schedule before any RTL or assertion change.
+
+Keep G3 width warnings and formal/CDC/RDC/DFT/physical gates open. PPA remains unauthorised after confirmed OOM on the equivalent 16-GB runner. Manufacturer handoff NOT READY. Do not rerun successful jobs solely to reconfirm; do not restart 45765362426 or historical RTL groups 3.1/3.2/4; do not modify main or incur spend.
