@@ -3346,3 +3346,10 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Next: implement exact-source trace correlation, explicit scheduler admission/tenant-fairness semantics, W1/W2/W3 fixtures, then MXU bounds, width warning review, formal/CDC/DFT/physical gates.
 - Software-core waits-only retry `140775908058` in run `46053311585` remains IN_PROGRESS at the latest check. It is attempt 3; other 14 module jobs remain passed and must not be rerun.
 - Manufacturer handoff remains NOT READY. No RTL/ISA/PPA source, paid compute, fabrication or hardware spend changed in this milestone.
+
+
+## 141. 2026-11-28 — final continuation save
+
+- Final model-validation evidence remains workflow `46081103514`, job `140780031472`, tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`: 34/34 passed.
+- Continuation checkpoint was refreshed in commit `b1da6ec2f3ace9c91edaa42952f65c260fdf87be`; it explicitly records active branch/main baseline, current CI recovery and the exact next-step sequence.
+- The waits-only recovery job `140775908058` remains IN_PROGRESS on attempt 3; do not rerun the other 14 successful software modules. Manufacturer handoff remains NOT READY.
