@@ -136,7 +136,7 @@ module tb_top;
     .x2_abort(), .x2_rst(1'b1), .x2_card('0), .x2_ncards(8'd1),
     .coll_wd('0), .coll_status(), .x2_seq());
 
-  // POWERUP-REPRO only: observe the DMA stream request and VPU stream grant at the
+  // POWERUP-REPRO only: observe the DMA stream request and dispatch at the
   // exact failing startup boundary. This monitor is simulation-only and does not drive DUT nets.
   logic dbg_prev_ss_req = 1'b0;
   always @(posedge clk) begin
@@ -148,16 +148,6 @@ module tb_top;
                  dut.g_slice[0].u_slice.u_dma.start, dut.g_slice[0].u_slice.u_dma.cmd.op,
                  dut.g_slice[0].u_slice.u_dma.sc.op, dut.g_slice[0].u_slice.u_dma.ds_su,
                  dut.g_slice[0].u_slice.u_dma.ss_cfg);
-      if (dut.g_slice[0].u_slice.u_vpu.g_se.s_init)
-        $display("POWERUP_MON s_init: ss_req=%0d ss_rq=%0d ss_act=%0d ss_act_d=%0d idle=%0d start=%0d cq_n=%0d busy=%0d empty_b=%0d done_i=%0d dpend=%0d wb_e=%0d ss_pe=%0d sen=%0d cfg=%h",
-                 dut.g_slice[0].u_slice.u_vpu.ss_req, dut.g_slice[0].u_slice.u_vpu.g_se.ss_rq,
-                 dut.g_slice[0].u_slice.u_vpu.g_se.ss_act, dut.g_slice[0].u_slice.u_vpu.g_se.ss_act_d,
-                 dut.g_slice[0].u_slice.u_vpu.g_se.idle, dut.g_slice[0].u_slice.u_vpu.start,
-                 dut.g_slice[0].u_slice.u_vpu.cq_n, dut.g_slice[0].u_slice.u_vpu.busy,
-                 dut.g_slice[0].u_slice.u_vpu.empty_b, dut.g_slice[0].u_slice.u_vpu.done_i,
-                 dut.g_slice[0].u_slice.u_vpu.dpend, dut.g_slice[0].u_slice.u_vpu.wb_e,
-                 dut.g_slice[0].u_slice.u_vpu.ss_pe, dut.g_slice[0].u_slice.u_vpu.g_se.sen,
-                 dut.g_slice[0].u_slice.u_vpu.ss_cfg);
       if (dut.g_slice[0].u_slice.ustart[0])
         $display("POWERUP_MON DMA dispatch: op=%02h", dut.g_slice[0].u_slice.ucmd[0].op);
       dbg_prev_ss_req <= dut.g_slice[0].u_slice.ss_req;
