@@ -209,3 +209,14 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Stream-tail init flush fix is committed; exact seed-3 random power-up regression passes (45915433368, 1 passed). Broad clean RTL-tail run 45915615625 still in progress.
 - Full-chip lint 45915615693 PASS, 0 errors; 76 width warnings, 7 Verilator LATCH and 3 UNOPTFLAT diagnostics remain. Synthesized latch-cell audit is zero in all three tested netlists.
 - Four-DIMM WG8 host AXI integration 45914912733 remains in progress. Manufacturer handoff remains NOT READY pending width cleanup, integration, formal/SVA, CDC/RDC, DFT and physical/timing signoff.
+
+## 2026-11-27 ASIC integration and focused regression update
+
+- ASIC/target configuration 45914912733: PASS. Chip, memory and WG8 DDR4 lint stages passed; four-DIMM hmux contention simulation passed host/accelerator AW/AR contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure (320 ns).
+- ASIC lint still reports 99 WIDTH warning occurrences and 3 UNOPTFLAT occurrences across top elaborations. Explicit zero-extension of 33-bit MIG-pair AW/AR outputs into 34-bit host mux nets remains OPEN.
+- FSUM guard: 11 passed (45915615614).
+- 128K one-copy TMEM: 2 passed (45915615624).
+- Loop-stack boundary: 2 passed (45915615653).
+- Broad RTL-tail 45915615625 remains IN PROGRESS; Qwen, board, subsystem/memory and software/ISA runs remain nonterminal.
+- Structural/reset audit 45914912691 PASS: reset 4/4; one-copy, two-slice and actual ASIC top each 0 SCC / 0 latch cells.
+- Manufacturer handoff NOT READY pending broad regression, width cleanup, formal/SVA, CDC/RDC, DFT and physical/timing signoff.
