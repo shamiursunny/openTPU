@@ -103,3 +103,16 @@ Proceed only if independently reproducible results show a practical advantage on
 ## 6. Evidence boundary
 
 The repository currently demonstrates selected functional RTL/software simulations and selected real-checkpoint Qwen simulation. Those results do not demonstrate physical QPU integration, physical silicon, production throughput, power/thermal efficiency, routed timing closure or manufacturer qualification.
+
+
+## 7. Revised direction — quantum-inspired LPU for language-model inference
+
+The user's intended application is **not quantum-computing workloads**. The requested concept is a faster classical Language Processing Unit (LPU) for prompt ingestion, long-context reading, attention and token generation. The detailed proposal is in `QUANTUM_INSPIRED_LPU_LONG_CONTEXT_ARCHITECTURE_2026-11-28.md`.
+
+- Interpret "quantum-inspired" as optional classical algorithmic research only. It does not imply qubits, quantum gates, quantum speedup or a QPU in the inference datapath.
+- Organise existing MXU, VPU/stream engine, TMEM, DMA, sequencer and host runtime around prefill, attention, KV/context management and decode before proposing a new hardware block.
+- Prioritise chunked prefill; tiled QKᵀ/PV on MXU; supported VPU reductions/softmax; paged and safely managed KV; exact prefix reuse; continuous batching; and, where compatible, verified speculative decoding.
+- Explore tensor-network/low-rank or structured attention, compression and quantum-inspired scheduling only as measured alternatives with exact/dense fallback and explicit quality/error controls.
+- Evaluate useful prefill/decode tokens/s, TTFT, inter-token latency p50/p95/p99, long-context coverage, KV/DMA bytes per token, quality/equivalence, concurrency, and energy only with a clearly defined measurement boundary.
+- This is a design proposal, not an implemented separate LPU or proven speedup. First create deterministic workload traces and profile current supported model paths. No RTL/ISA change until a measured bottleneck, interface contract, resource estimate and focused verification plan are approved.
+- This inference-focused LPU direction supersedes the external-QPU adapter as the meaning of the user's "quantum" request. The optional external QPU research adapter remains unrelated and outside this LPU performance goal.
