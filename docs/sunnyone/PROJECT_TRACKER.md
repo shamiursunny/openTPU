@@ -3316,3 +3316,11 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Architecture finding: no separate LPU RTL block is present. First LPU implementation should be the existing software/runtime scheduler and measured resource coordination around MXU/VPU/DMA/TMEM. Existing 32-token quantum and 64-token chunk cap are defaults, not tuned optima. Use `hwtrace.py` and `tmem_trace.py` to correlate model-level stages with RTL activity.
 - Next: finish waits-only recovery; implement deterministic trace generator and explicit-profile discrete-event model without inventing service times; run W1/W2/W3 and conditionally W4; correlate with RTL traces; continue MXU `mx_key` malformed-command bound proof and 52 width-expansion triage; expand formal/SVA, CDC/RDC, DFT, technology mapping, production interfaces and physical signoff.
 - No RTL/ISA/PPA/workflow source change, paid compute, fabrication or hardware spend in this update. No PPA retry. Do not rerun RTL groups 3.1/3.2/4 or cancelled run `45765362426`. Manufacturer handoff remains **NOT READY**.
+
+
+## 138. 2026-11-28 — continuation save confirmation
+
+- Continuation addendum saved at `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0457.md`, creation commit `52dd39718a0c17a133619e43e48b7b3699aa9bc1`, blob `ef7c59dc813d81dbadd73e789327b250197cb948`.
+- Source/interface/workload spec blob: `d224ab00f35871a9c9fdd8e423b508ff245800c8`; source inventory blob after link: `18c055222993e8c022e0b5191ba4999acebb1493`.
+- Live branch HEAD at this confirmation: `52dd39718a0c17a133619e43e48b7b3699aa9bc1`; compare to main: 1,110 ahead / 0 behind. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched. Re-poll final branch and blob SHAs after the checkpoint save.
+- The waits-only retry job `140775908058` remained IN_PROGRESS at the last live poll; this remains the sole outstanding test recovery. No duplicate module jobs.
