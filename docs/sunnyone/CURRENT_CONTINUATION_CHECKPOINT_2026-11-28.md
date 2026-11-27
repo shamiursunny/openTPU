@@ -1,0 +1,53 @@
+# SUNNYONE — Current Continuation Checkpoint
+Last updated: 2026-11-28 02:20 Asia/Dhaka
+
+## Start here in every new chat
+Read this file, then:
+1. `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0220.md`
+2. `docs/sunnyone/INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md`
+3. `docs/sunnyone/PROJECT_TRACKER.md`
+4. `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
+
+Before any code write or test, re-resolve the live branch HEAD, compare against main and current Actions states.
+
+User continuation command: **Continue and complete the remaining tasks.**
+
+## Repository and controls
+- Repository: `shamiursunny/openTPU`.
+- Working branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Branch HEAD before this checkpoint save: `75a02e23bfb1b841be4805914659c4823252c370`.
+- Main baseline: `d84db55712aba0d40811d7762cb052f05d55b7e5`; do not modify main.
+- Live compare at 02:20 poll: 1,072 ahead, 0 behind.
+- Zero spend. No PPA retry, paid runner/compute, PDK/IP purchase, hardware, fabrication, packaging or lab test without explicit approval.
+- Never rerun historical RTL groups 3.1, 3.2 and 4 solely for reassurance. Preserve all historical pass evidence and exclusions, including cancelled run `45765362426`.
+
+## Latest verified engineering
+- VPU source fix commit: `05879ea34eafc2559c54722c6c940b2acb9ac3ee`.
+- Focused VPU workflow `46053471843`: SUCCESS on `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`; 31 VPU tests passed and 11 raw FSUM ingress/boundary tests passed (219 deselected). Artifact `15225689330`.
+- Full-chip lint `46053311384`: SUCCESS as a completed lint job, not warning-free; 52 WIDTHEXPAND, 7 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. Width warnings reduced from 76 to 59.
+- Structural audit `45914912691`: zero combinational SCCs and zero inferred latch cells in the three exact audited elaborations; scope-limited.
+- Two behavioral DRAM `exists()` diagnostics are simulation-only because the ASIC source list excludes the behavioral DRAM model.
+- MXU `dlane_a` index has a source-level range guard; MXU `mx_key` access at line 2663 still needs full `c_M <= MCOLS` proof before any narrowing.
+- Remaining 52 expansion warnings require semantic review. Formal/SVA, CDC/RDC, DFT, technology mapping, production interfaces, DDR PHY, routed physical signoff and measured power/thermal remain open.
+
+## Current workflow state at last poll
+- Qwen run `46053311477`: IN_PROGRESS; real checkpoint and selected RTL stage passed, eight tiny board-model cases still running. Overall workflow is not a pass yet.
+- Software/ISA run `46053311585`: QUEUED; no result.
+- Board `46053311399`, subsystem `46053311328`, RTL tail `46053311551`, reset audit `46053311560` and ASIC config `46053311358`: SUCCESS.
+- Run `46053311433`: SKIPPED.
+- No workflow cancellation action is available through the current connector. Do not claim cancellation; re-poll existing runs without dispatching duplicates.
+
+## Physical / manufacturer status
+- WG8 PPA `45877786710`: FAILURE with cgroup OOM-kill / host-memory exhaustion evidence; no routed PPA/signoff. Do not retry.
+- Manufacturer handoff: **NOT READY**. G0-G15 remain open/partial/blocked as recorded in the readiness matrix.
+- Track A full programmable inference accelerator and Track B first-silicon demonstrator remain separate.
+- No zero-cost fabrication, sponsor, package/test, sample custody or shipping arrangement is confirmed.
+
+## Next work
+1. Re-poll only existing Qwen and software-core runs for terminal status and exact counts.
+2. Prove the MXU `mx_key` index range across supported parameter configurations.
+3. Continue width-expression semantic review without blanket casts or suppressions.
+4. Continue formal/SVA, CDC/RDC, DFT, SRAM/DDR mapping, production interfaces and demonstrator feasibility.
+5. Keep manufacturer release gate closed until every required evidence and external dependency is satisfied.
+
+No RTL, test or workflow source was changed in the 02:20 continuation. Documentation-only updates are recorded in the continuation addendum and tracker.
