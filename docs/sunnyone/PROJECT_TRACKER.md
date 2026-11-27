@@ -3014,3 +3014,11 @@ This handoff records the latest evidence available in this conversation. It does
 - QHL remains OPEN. Do not alter production RTL, weaken assertions, change pipeline depth or mask reset until the trace establishes whether spacing originates in root scheduling, kind FIFO ordering/alignment or stream grant/reset phasing.
 - No active-branch RTL/test/workflow changes, no test reruns, no PPA retry, no paid resources and no main writes in this continuation. Manufacturer handoff remains NOT READY.
 - Next action: dispatch the exact diagnostic workflow on the diagnostic branch at 64943951e89f1fe91ac20d56f34fddea66c05923; inspect trace/artifact, then update the plan, checkpoint and handoff matrix with exact run evidence. Preserve all previously successful test evidence and cancellation constraints.
+
+
+## 2026-11-27 QHL event-trace diagnostic status
+
+- Run 45967861319 is a pre-trace failure on SHA 35dce2e57d0448988411ba98e5f931f420b8463f; artifact 15183802907 contains no QHLTRACE history. It reproduces the existing overlap assertion only.
+- The isolated diagnostic RTL at 64943951e89f1fe91ac20d56f34fddea66c05923 uses stateless, non-SYNTHESIS event-filtered QHLTRACE output with flush. It is not plusarg-gated (correcting earlier checkpoint wording) and must remain isolated.
+- Corrected stale “no-trace” labels in the temporary diagnostic workflow in commit 60e3c03a47620f077f84fc01b7c0d9d78999a2e2. Its path-filtered push trigger matches this workflow-only update and should launch the one targeted test: tests/test_quant_rtl.py::test_qhl_power_up_rtl[1-False]. Await and inspect the new run; no functional RTL changed.
+- QHL OPEN; no root cause established, no production RTL fix authorised, manufacturer handoff NOT READY. No main writes, paid resources, PPA retry or successful regression reruns.
