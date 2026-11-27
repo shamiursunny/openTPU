@@ -586,3 +586,14 @@ Workflow 45914912691 is terminal SUCCESS. Reset/power-up audit passed 4/4. Artif
 The stream-tail reset correction flushes `u_e2`, `u_e3` and `u_dv` on `rst || init`; the overlap assertion is suppressed only on the synchronous init edge. The exact previously failing seed-3 power-up test passes on the corrected source (45915433368, 1 passed, 40.33 s). This supports the diagnosis that stale stream-valid pipeline state survived stream init. The clean full RTL-tail suite 45915615625 remains in progress and is required before declaring the broader stream gate closed.
 
 Full-chip lint 45915615693 passed with zero errors; 76 width warnings, 7 Verilator LATCH diagnostics and 3 UNOPTFLAT diagnostics remain. The three flattened structural netlists contain zero latch cells, but warning triage and width cleanup remain required. Four-DIMM WG8 host AXI integration 45914912733 remains in progress. No PPA rerun or spend; manufacturer handoff remains NOT READY.
+
+## 24. ASIC integration and focused regression terminal update
+
+ASIC/target configuration run 45914912733 completed SUCCESS. Chip, memory and WG8 DDR4 lint stages passed; the four-DIMM hmux contention simulation passed simultaneous host/accelerator AW/AR contention, alternating grants, ordered two-beat W bursts, B/R ID routing and independent backpressure (320 ns). The run still emitted 99 WIDTH warning occurrences and 3 UNOPTFLAT occurrences across ASIC top elaborations. The 33-bit `otpu_mig_pair` AW/AR outputs feeding 34-bit `p_awaddr/p_araddr` should be connected to 33-bit intermediate nets and explicitly zero-extended; this remains open.
+
+Focused runs completed:
+- FSUM guard: 11 passed, 219 deselected (45915615614).
+- 128K one-copy TMEM: 2 passed, 228 deselected (45915615624).
+- Loop-stack boundary: 2 passed, 228 deselected (45915615653).
+
+The clean broad RTL-tail run 45915615625 and Qwen/board/subsystem/software runs remain nonterminal. Structural/reset audit 45914912691 passed 4/4 reset tests and 3/3 structural tops with zero SCCs and zero latch cells. Manufacturer handoff remains NOT READY; PPA remains blocked by the previously diagnosed memory limit and no retry is authorised.
