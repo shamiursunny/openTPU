@@ -89,3 +89,16 @@ Read `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md` and tracker secti
 
 
 - Follow-up poll after documentation save: software-core run `46053311585` is on attempt 2, overall IN_PROGRESS. The only rerun job is now job ID `140738728795` (`tests/test_waits.py`); setup, checkout, Python, Verilator and dependency installation succeeded, and the selected pytest step is still running. No conclusion or test count is available yet.
+
+
+## 2026-11-28 — user-directed quantum-inspired LPU architecture
+
+Read `docs/sunnyone/QUANTUM_INSPIRED_LPU_LONG_CONTEXT_ARCHITECTURE_2026-11-28.md` and tracker section 132.
+
+- Clarification: the user wants quantum-computing ideas used as inspiration for **classical language-model inference acceleration**, not quantum-computing workloads. Target is higher prompt/prefill throughput, faster long-context reading/attention, faster decode tokens/s, improved concurrency and lower memory traffic/energy per useful token.
+- Proposal uses existing MXU/VPU/stream engine/TMEM/DMA/sequencer/host runtime: chunked prefill; tiled QKᵀ and PV; stable online softmax where supported; tiered/paged KV with exact prefix reuse and isolation; continuous batching; optional verified speculative decoding.
+- Quantum-inspired low-rank/tensor-network, structured routing and scheduling ideas remain experimental software/compiler hypotheses, not quantum hardware or guaranteed speedups. Dense/exact fallback and quality/equivalence checks are mandatory.
+- New design note created at `QUANTUM_INSPIRED_LPU_LONG_CONTEXT_ARCHITECTURE_2026-11-28.md`; matrix/quantum addendum and tracker updated. Documentation-only commits: LPU note `42cd44e4a1c97d74501fbbbb604927d629d7a448`, architecture clarification `08424b3dd64fa78bec5e7019e52c436963e0f1aa`, tracker `f23acf9a8cf464677fd38daf24db78c0fc8ef7f0`.
+- No RTL/ISA/workflow change or performance claim. Next engineering step is deterministic workload/trace inventory and profiling of existing supported model paths; do not create a new hardware block until a measured bottleneck and verification plan justify it.
+- The targeted waits job `140738728795` in run `46053311585` was still IN_PROGRESS at the last poll; re-poll before claiming a result.
+- Continue feature branch only; no main writes, no PPA retry, no paid service or spend. Manufacturer handoff remains NOT READY.
