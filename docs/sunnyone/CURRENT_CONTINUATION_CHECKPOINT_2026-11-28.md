@@ -86,3 +86,6 @@ Read `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md` and tracker secti
 - RMAX `mx_key` write index depends on the lane mask and command M. Do not cast, clamp or suppress the warning. Design a synthesizable reject path and focused raw-command tests first.
 - Only cancelled waits module job `140689717010` from run `46053311585` was targeted for rerun; GitHub accepted attempt 2. Pending at checkpoint note creation. Other 14 module jobs were already successful and were not rerun.
 - No RTL change, broad tests, main write, PPA retry or spending. Manufacturer handoff NOT READY.
+
+
+- Follow-up poll after documentation save: software-core run `46053311585` is on attempt 2, overall IN_PROGRESS. The only rerun job is now job ID `140738728795` (`tests/test_waits.py`); setup, checkout, Python, Verilator and dependency installation succeeded, and the selected pytest step is still running. No conclusion or test count is available yet.
