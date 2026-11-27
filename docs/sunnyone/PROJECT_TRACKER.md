@@ -3209,3 +3209,18 @@ See `CONTINUATION_ADDENDUM_2026-11-28_0220.md` and `CURRENT_CONTINUATION_CHECKPO
 - In `rtl/mxu/otpu_mxu.sv`, `c_M=h.M`, `h.M` is loaded from command `w6[23:16]`, and `mx_key` has `MCOLS` entries. RMAX lane enables depend on `mx_i+k<c_M`; the `mx_key` access is gated by the lane mask.
 - No explicit RMAX/ASCALE/PAIR `M<=MCOLS` reject guard was found in the reviewed MXU or sequencer command path. This is a potential malformed-command bounds-safety gap, not a proven legal-program functional defect. Trace raw program loading, parameter wiring and the hardware legality contract before any RTL edit. If malformed commands can reach this point, add a synthesizable rejection path and focused raw-command tests.
 - Do not silence the MXU index warning with a cast/narrowing until the bound is enforced or proven across every supported configuration. See the 2026-11-28 02:20 continuation addendum follow-up.
+
+
+## 129. 2026-11-28 — matrix-first and quantum-hybrid architecture review
+
+See `MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md`.
+
+- Architecture decision: prioritise the existing classical MXU/matrix datapath, local SRAM/TMEM reuse, DMA/dataflow, compiler tile planning and measured precision support. Do not presume new precision modes or performance gains until ISA/RTL/compiler and numerical tests prove them.
+- Quantum computing is a separate host-side research adapter to an external QPU, not an on-die accelerator block. No qubits, cryogenic control, quantum memory, quantum interconnect or quantum instruction extension is included in the first silicon.
+- Candidate matrix roadmap covers tiling/dataflow, exact numerical precision semantics, data movement, optional sparsity and workload metrics (useful tokens/s, latency, quality, memory traffic, sustained energy and area/timing).
+- Current RTL evidence remains bounded to existing MXU/VPU/quantisation/TMEM/DMA architecture and the recorded simulation runs. This addendum makes no throughput, energy, QPU advantage, PPA or silicon claim.
+- Current live branch HEAD before these documentation commits: `965ebd0d50f7bf942af1d7bf5365a98d614397ca`; main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; feature branch compare 1,079 ahead / 0 behind. Main untouched.
+- Live Qwen workflow `46053311477`: terminal SUCCESS; all job steps including real-checkpoint RTL and eight tiny board-model cases completed. Keep the exact selection scope from the checkpoint; this is simulation evidence, not physical performance or fine-tuning.
+- Software-core workflow `46053311585`: jobs completed but the waits module job concluded CANCELLED; the other listed modules concluded SUCCESS. Do not label the entire software matrix green. Inspect exact missing waits coverage before any isolated recovery; do not rerun the full matrix.
+- MXU `mx_key` index remains OPEN pending command-ingress/legality and parameter proof. No speculative RTL change or cast.
+- No RTL/test/workflow rerun, PPA retry, spending or hardware action was performed in this documentation update. Historical exclusions and zero-spend controls remain in force. Manufacturer handoff remains NOT READY.
