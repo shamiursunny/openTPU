@@ -3246,3 +3246,6 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - No RTL patch made: the MXU has no general error output, so the correct reject path must be designed against the sequencer/wrapper status contract. Required boundary tests and assertions are specified in the investigation note. No casts, clamps or warning suppressions.
 - Software-core run `46053311585`: 14 module jobs succeeded; only `tests/test_waits.py` job `140689717010` was cancelled. GitHub accepted a targeted rerun of that single job (attempt 2). At note creation it was in progress; no other jobs repeated.
 - No broad regression, protected-main write, PPA retry or spend. Manufacturer handoff remains NOT READY.
+
+
+- Follow-up poll after documentation save: software-core run `46053311585` is on attempt 2, overall IN_PROGRESS. The only rerun job is now job ID `140738728795` (`tests/test_waits.py`); setup, checkout, Python, Verilator and dependency installation succeeded, and the selected pytest step is still running. No conclusion or test count is available yet.
