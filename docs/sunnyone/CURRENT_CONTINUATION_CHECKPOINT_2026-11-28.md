@@ -248,3 +248,9 @@ Zero spend. No PPA retry, no paid compute/PDK/IP, no fabrication, packaging, boa
 - Outstanding waits-only job: `140775908058`, workflow `46053311585`, attempt 3; still IN_PROGRESS at the latest poll. Start `2026-11-27T22:58:36Z`; workflow timeout 45 minutes. Poll only this job and preserve other 14 successful module jobs.
 - Latest docs blobs before this metadata commit: checkpoint `e7c78e2501740e5c8ac51a71267dbea3f666d10d`; addendum `5f7a7f2a2b3a8141d243d7e4d253fdf3d4a03a4a`; resource model spec `4de8857c46b26e58b88c279dd93d242bac184ba1`; source/workload spec `164027f331c1b02b80249485ba37e9d31b113bb6`; tracker `fa03a7a929f255a91db739883524eed012e1b7d3`.
 - Next continuation trigger remains: **“Continue and complete the remaining tasks.”** Read this checkpoint, the continuation addendum and resource-model spec first, then re-check live branch/workflow state before changing files or running tests.
+
+
+## Final document-chain metadata
+
+- Tracker final-save commit: `39a3cfd77bc01f04b39b86ffec23373191d96c3c`, tracker blob `0277173662d40b64e43b383b8301e4d5ccfa1d47`.
+- This checkpoint is now updated after the tracker commit. Re-fetch the live branch ref on the next continuation rather than treating any SHA written earlier in this file as the live tip.
