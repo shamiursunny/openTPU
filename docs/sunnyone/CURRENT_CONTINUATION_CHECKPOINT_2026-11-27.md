@@ -435,3 +435,14 @@ This section supplements the 05:54 documentation-only checkpoint refresh. The fo
 Other verified results retained from earlier runs: FSUM guard 11/11 targeted tests; full-chip lint SUCCESS (76 width warnings); ASIC configuration SUCCESS (additional ASIC DMA/native-DRAM/AW-AR width warnings); reset audit 4 tests passed; loop-stack, isolated 128K TMEM and Qwen/board/subsystem/software runs have their own run-specific states. Do not claim pending workflows as complete.
 
 Next: ASIC-top SCC proof for `aok`; width warning closure; explicit 33-to-34-bit MIG address extension with existing testbench high-bit-zero assertions; formal/SVA, CDC/RDC and remaining physical/manufacturer gates. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 06:00 Asia/Dhaka — latest continuation addendum
+
+Live feature branch HEAD before this documentation update: 18493ca5f681d44051eaeb960b89d496ac0968e1. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5; GitHub reports branch protection disabled, but the project rule remains do not modify main.
+
+Latest tracker update is section 116 in docs/sunnyone/PROJECT_TRACKER.md. Read it before further action. Key new finding: the random power-up A/B workflow 45913977727 failed on both pre-FSUM and post-FSUM jobs before simulation because Ubuntu 24.04's apt Verilator does not support --no-assert-case. The comparison is inconclusive. Separately, RTL-tail run 45911471173 on the FSUM-guard source failed test_random_power_up[1-3] at rtl/vpu/otpu_se_tail.sv:277 (two rows' D slots meet; kv_v=0, e2=1, e3=1), while 32 other selected tests passed and 1 skipped. Preserve this as an unresolved regression; do not attribute it to FSUM until a valid A/B run is available.
+
+Verified improvements remain: FSUM bounds targeted CI 11/11 passed; generic one-copy and S=2 structural SCC/latch audits each report zero SCC and zero inferred latch cells. ASIC aok, ASIC-wide latches, RSUM producer destination/row FIFO parity, 76 generic width warnings plus ASIC-specific widths, formal/SVA, CDC/RDC and physical/manufacturer gates remain open. PPA 45877786710 is terminal failure with confirmed OOM-kill evidence; no retry authorised. Manufacturer handoff NOT READY.
+
+No RTL/test/workflow changes or CI dispatches in this documentation reconciliation. Continue zero-spend, do not touch main, do not restart 45765362426, and do not rerun historical groups 3.1, 3.2 or 4 merely to reconfirm. Track A and Track B remain separate.
