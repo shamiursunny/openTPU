@@ -833,3 +833,13 @@ WG8 PPA run `45877786710` is terminal FAILURE; no routed PPA report or signoff m
 Remaining priority: (1) exact semantic width-warning triage and elaborated `gnt` dependency/SCC analysis, then `sc_gl`, `pq`, ASIC `aok`; (2) formal/SVA; (3) CDC/RDC; (4) real SRAM/DDR technology mapping and production memory controller/PHY/ECC; (5) production PCIe/SerDes and DMA/IOMMU; (6) DFT; (7) routed physical/power/thermal signoff; (8) Track B demonstrator down-select and verified sponsorship/sample logistics. Keep Track A and Track B distinct.
 
 Hard constraints unchanged: zero spend, no PPA retry, no protected-main writes, no duplicate passed tests, no unsupported physical/silicon claims. Manufacturer handoff remains **NOT READY**.
+
+
+
+## 2026-11-28 VPU width remediation continuation
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_VPU_WIDTH_REMEDIATION.md` and `docs/sunnyone/LINT_TRIAGE_UPDATE_2026-11-28.md` after the earlier 0050 addendum. Source commit `05879ea34eafc2559c54722c6c940b2acb9ac3ee` sizes VPU function-mask indices and row-buffer indices. Full-chip lint run `46053311384` succeeded with 59 width warnings (52 WIDTHEXPAND, 7 WIDTHTRUNC), down from 76; 7 LATCH and 3 UNOPTFLAT remain. Structural SCC run `45914912691` found zero SCCs and zero inferred latch cells in the one-copy slice, two-slice top and actual ASIC card top, resolving `gnt`, `pq`, `sc_gl`, `aok` only for those exact configurations.
+
+The first focused VPU run `46053329340` failed at build with old Verilator 5.020 before tests executed; workflow is pinned to 5.044 and run `46053471843` is the valid regression attempt. Do not mark the RTL correction regression-verified until that run passes.
+
+Broad existing `rtl/**` push filters unintentionally triggered additional board, Qwen, software-core and RTL workflows. These were not intentionally requested; no workflow cancellation operation is available through the current GitHub connection. Do not initiate further broad reruns. Preserve exact prior test evidence and reconcile only relevant terminal results. Manufacturer handoff remains NOT READY; protected main and zero-spend constraints remain unchanged.
