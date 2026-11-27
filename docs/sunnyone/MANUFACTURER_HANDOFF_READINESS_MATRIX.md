@@ -220,3 +220,10 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Broad RTL-tail 45915615625 remains IN PROGRESS; Qwen, board, subsystem/memory and software/ISA runs remain nonterminal.
 - Structural/reset audit 45914912691 PASS: reset 4/4; one-copy, two-slice and actual ASIC top each 0 SCC / 0 latch cells.
 - Manufacturer handoff NOT READY pending broad regression, width cleanup, formal/SVA, CDC/RDC, DFT and physical/timing signoff.
+
+## 2026-11-27 explicit AW/AR extension update
+
+- Commit 600f3aa4822e18f03ba80d06ab86fd447189c126 adds explicit zero-extension of 33-bit MIG-pair AW/AR outputs into 34-bit host-mux nets. ASIC config 45916680920 is validating it; initial ASIC control, native-memory and four-DIMM AXI lint stages pass, host AXI simulation remains in progress. Previous 99 WIDTH warnings / 3 UNOPTFLAT are not yet closed.
+- Full-chip lint 45916680866 PASS, 0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT remain.
+- No-trace power-up regression remains OPEN pending 45916680719; trace-enabled seed-3 pass is supplementary only. Reset/structural audit 45914912691 and prior ASIC integration 45914912733 are PASS.
+- Manufacturer handoff remains NOT READY; PPA not authorised.
