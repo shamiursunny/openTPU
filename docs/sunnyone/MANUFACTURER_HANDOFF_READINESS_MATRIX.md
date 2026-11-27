@@ -184,3 +184,10 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Corrected deterministic A/B run 45914084753: pre-FSUM source 0d367ba1906b8e187e6e2feb2db576364d85b4fb passed test_random_power_up[1-3] (1 passed); post-FSUM-guard source ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a failed at rtl/vpu/otpu_se_tail.sv:277 (kv_v=0, e2=1, e3=1). This is a reproducible regression associated with the FSUM guard snapshot, causal mechanism still open. G1/G2 must remain PARTIAL/OPEN until fixed and regression-tested; the 11 targeted FSUM passes do not supersede this failure.
 - The initial A/B tool mismatch is superseded by corrected run 45914084753; the corrected run used ubuntu-latest. Do not continue describing the A/B comparison as inconclusive.
 - ASIC-top SCC audit run 45914201799 remains in progress at this update; no ASIC aok closure claim yet.
+
+
+## 2026-11-27 stream-tail candidate fix and live verification
+
+- Random-power-up regression: A/B pre-FSUM passes, post-FSUM guard fails at stream init with e2/e3 valid overlap. Debug artifact 15161492847 captures textual trace/program/DRAM/sync files (no VCD).
+- Candidate stream-tail correction in 024928752fef7ab774502d2a19f49111cc86b1ff flushes e2/e3/dv on rst||init. NOT YET VERIFIED. RTL-tail run 45914912747 and reset/ASIC structural run 45914912691 are in progress; preserve this gate as OPEN until both relevant regression and RTL-vs-ISA output checks pass.
+- ASIC-top SCC audit attempt 45914201799 failed in the generated SRAM stub; corrected in d43fa38047b250e008e9d25b039708f621b96282 and re-running in 45914912691. No ASIC-top closure claim yet.
