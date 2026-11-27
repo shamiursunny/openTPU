@@ -464,3 +464,14 @@ This is a status update, not a gate closure. See `docs/sunnyone/CONTINUATION_ADD
 - Lint/structural gate remains OPEN: width warnings and `gnt`/ `sc_gl`/ `pq` plus ASIC `aok` dependencies require exact elaborated evidence. Formal/SVA, CDC/RDC, DFT, real memory mapping, production interfaces, routed physical and thermal/reliability gates remain open or blocked.
 
 **Release decision unchanged: NOT READY for manufacturer handoff.** Zero spend and protected-main exclusion remain in force.
+
+
+
+## 2026-11-28 VPU lint remediation status
+
+- Structural SCC/latch audit: PASS for one-copy slice, two-slice top and actual ASIC card top (run `45914912691`): zero combinational SCCs and zero inferred latch cells. The `gnt`, `pq`, `sc_gl`, `aok` warnings are not backed by SCCs in these exact elaborations; generic warnings remain.
+- VPU index-width cleanup committed on feature branch (source SHA `05879ea34eafc2559c54722c6c940b2acb9ac3ee`). Full-chip lint passed (run `46053311384`) with 59 width warnings, down from 76. This is partial lint remediation, not warning-free closure.
+- Focused VPU regression is not yet verified: first run failed at build on Verilator 5.020 before RTL simulation; pinned 5.044 run `46053471843` is pending/in progress.
+- Five MXU index warnings, 52 width expansions, formal/SVA, CDC/RDC, DFT, technology mapping, production interfaces and physical signoff remain open.
+
+**Release decision remains NOT READY for manufacturer handoff.**
