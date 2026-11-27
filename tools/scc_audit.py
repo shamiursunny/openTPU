@@ -92,17 +92,25 @@ def main(argv: list[str] | None = None) -> int:
     # filtering from the production flow. The SRAM macro leaves are blackboxed, matching
     # tools/asic/flow.py's prep probe; the real otpu_asic_top and slice arbitration are retained.
     macro_stub = work / "asic_sram_macro_blackboxes.sv"
-    macro_stub.write_text(
-        "(* blackbox *)\nmodule otpu_sram_1r1w #(parameter int W=1, parameter int N=2) ("
-        "input logic clk, re, we, input logic [$clog2(N)-1:0] ra, wa, "
-        "input logic [W-1:0] wd, wm, output logic [W-1:0] rd);\nendmodule\n"
-        "(* blackbox *)\nmodule otpu_sram_1rw #(parameter int W=1, parameter int N=2) ("
-        "input logic clk, en, we, input logic [$clog2(N)-1:0] a, "
-        "input logic [W-1:0] wd, wm, output logic [W-1:0] rd);\nendmodule\n"
-        "(* blackbox *)\nmodule otpu_sram_1rw1r #(parameter int W=1, parameter int N=2) ("
-        "input logic clk, ena, wea, enb, input logic [$clog2(N)-1:0] aa, ab, "
-        "input logic [W-1:0] wd, wm, output logic [W-1:0] rda, rdb);\nendmodule\n"
-    )
+    macro_stub.write_text("""(* blackbox *)
+module otpu_sram_1r1w #(parameter int W=1, parameter int N=2) (
+  input logic clk, re, we, input logic [$clog2(N)-1:0] ra, wa,
+  input logic [W-1:0] wd, wm, output logic [W-1:0] rd
+);
+endmodule
+(* blackbox *)
+module otpu_sram_1rw #(parameter int W=1, parameter int N=2) (
+  input logic clk, en, we, input logic [$clog2(N)-1:0] a,
+  input logic [W-1:0] wd, wm, output logic [W-1:0] rd
+);
+endmodule
+(* blackbox *)
+module otpu_sram_1rw1r #(parameter int W=1, parameter int N=2) (
+  input logic clk, ena, wea, enb, input logic [$clog2(N)-1:0] aa, ab,
+  input logic [W-1:0] wd, wm, output logic [W-1:0] rda, rdb
+);
+endmodule
+""")
     asic_files = ASIC_FLOW.sources("card") + [R.RTL / ASIC_FLOW.ASIC_TOP, macro_stub]
     asic_params = " ".join(f"-G {k}={v}" for k, v in ASIC_FLOW.params("card").items())
     files = " ".join(map(str, asic_files))
