@@ -2793,3 +2793,14 @@ No main changes. Do not restart cancelled workflow 45765362426. Do not rerun his
 - Previously confirmed targeted passes remain: FSUM 45914592880 (11 tests), loop-stack 45914592843, isolated 128K one-copy TMEM 45915433421. Newer equivalent runs are in progress as above.
 
 No change to main. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5; GitHub protection is disabled, but the project rule remains never modify main. Do not restart 45765362426 or rerun historical groups 3.1/3.2/4 merely to reconfirm. PPA remains unauthorised; no PPA request or dispatch. RSUM producer metadata FIFO parity, ASIC-top SCC/latch, width warnings, formal/SVA, CDC/RDC, DFT, physical, package, board and manufacturer gates remain open. Manufacturer handoff NOT READY.
+
+
+## 117. 2026-11-27 terminal ASIC structural audit and tail-fix validation
+
+- Reset/power-up audit run 45914912691: SUCCESS, 4/4 tests passed.
+- Flattened Yosys/Slang structural audit artifact 15162062669: three tops passed. `otpu_xrst_top` one-copy slice: 0 SCC / 0 latch cells; `otpu_top` S=2: 0/0; actual `otpu_asic_top` card config: 0/0. All logs show 0 SCCs and empty latch-cell selections.
+- ASIC `aok` UNOPTFLAT warning is structurally cleared for the tested ASIC configuration; it remains a Verilator diagnostic, not a confirmed loop.
+- Stream-tail fix in `rtl/vpu/otpu_se_tail.sv`: reset `u_e2/u_e3/u_dv` on `rst || init` and skip overlap assertion during init. Exact former failure `test_random_power_up[1-3]` passes (45915433368, 1 passed, 40.33s).
+- Clean broad RTL-tail suite 45915615625 remains in progress; four-DIMM WG8 integration 45914912733 remains in progress.
+- Latest full-chip lint 45915615693 SUCCESS, 0 errors; 76 width warnings (52 expand, 24 trunc), 7 Verilator LATCH and 3 UNOPTFLAT diagnostics remain. Synthesized latch-cell audit remains 0 for all three tested tops.
+- No PPA retry or spend. Manufacturer handoff NOT READY pending full regression, interface width closure, integration and remaining signoff gates.
