@@ -80,3 +80,33 @@ This refresh changed documentation only. No RTL, ISA, PPA, hardware or paid serv
 - Targeted workflow `46080190053`, job `140777139012`, tested head `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`: **SUCCESS**. The combined deterministic SUNNYONE harness ran **16 tests in 0.513s, OK** (10 workload-trace, 3 endpoint benchmark, 3 retrieval metric tests). Superseded run `46080182042` was cancelled by the workflow concurrency rule after the subsequent workflow-file update; the replacement run passed.
 - This closes only the deterministic exogenous request-trace generator and its unit tests. It does not simulate MXU/VPU/DMA/TMEM/DRAM service, cycle counts, throughput, energy, power or thermal behaviour. Do not report any accelerator performance result from it.
 - Next implementation: a separate integer-time discrete-event resource model that consumes the validated trace and requires explicit, versioned stage service profiles. Unknown service time/bandwidth/power values must remain unset. Validate model-level queue/resource invariants and correlate with actual `hwtrace`/`tmem_trace` outputs before using it to rank architectural alternatives.
+
+
+## 10. Resource event model and semantic trace validation — 2026-11-28 23:12 Asia/Dhaka
+
+### Implemented files
+- `tools/sunnyone/resource_event_model.py`: deterministic integer-time, profile-driven resource queue model.
+- `tests/test_sunnyone_resource_event_model.py`: model timing, FIFO, finite capacity, multi-stage resources, TTFT, cancellation, fault, deadline, trace integrity and profile validation.
+- `.github/workflows/sunnyone-workload-harness.yml`: compiles the resource model and includes its source path in the isolated deterministic harness.
+- `docs/sunnyone/RESOURCE_EVENT_MODEL_SPEC_2026-11-28.md`: profile contract, semantics, CLI, limitations and calibration procedure.
+
+### Final passing evidence
+- Workflow `46081103514`, job `140780031472`, exact tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`: **SUCCESS; 34 tests passed in 0.517s; OK**.
+- Breakdown: 18 resource event model tests, 10 deterministic workload trace tests, 3 endpoint benchmark tests, 3 retrieval metric tests. The job log confirms all test groups and terminal OK.
+- The earlier model-only revision `7703ff4a8bf6c8fb4e34dcf200bb259eed1ef79b` passed 31 tests; subsequent semantic validation added three more tests. Superseded/cancelled harness runs were not counted as passes.
+- During development, intermediate runs exposed a missing trace-chunk state, incorrect active-cancellation occupancy accounting, a malformed tick-unit test fixture and a YAML syntax error. These were corrected. The final tested commit passes the complete harness; do not hide the earlier failures when describing history.
+
+### Model semantics and limits
+- Profile is mandatory and explicit: identity/version, origin, provenance, tick unit, resource capacities and per-stage service ticks per unit. No default hardware service times or capacities.
+- Model supports sequential ordered stages in prefill and decode, FIFO resource queues, finite concurrency, prompt chunking, one-token decode units, cancellation/fault abort, deadline marking, TTFT after final stage of first decode token, and resource occupancy/queue-wait reports.
+- Trace input is validated for schema, event count/hash, contiguous sequence, integer ordered ticks, unique arrival, required metadata, positive token counts, arrival-before-control, unique controls and valid fault payload.
+- No production or RTL-calibrated profile exists yet. Test profiles are synthetic fixtures only. The model does not infer chip throughput, power, energy, temperature, area or manufacturing cost. Admission/fairness, batching, KV/cache, explicit DMA byte timing, TMEM arbitration, DRAM, NoC and preemption are not yet represented as independent mechanisms.
+- RTL calibration path inspected: `opentpu/hwtrace.py` decodes D/S/G/E and U/P/Q/H records; `tools/tmem_trace.py` parses TMEM access, instruction and producer/consumer flow. Correlation adapter/profile extraction is not yet implemented.
+
+### Outstanding work
+1. Finish the existing waits-only recovery job `140775908058` in software-core workflow `46053311585`. It remains IN_PROGRESS on attempt 3; all other 14 module jobs were already successful and must not be rerun. Workflow timeout is 45 minutes; check elapsed/start time and exact job status before any action. Do not cancel unless it has exceeded timeout or become demonstrably stuck, and never rerun the other modules.
+2. Implement correlation tooling for `hwtrace.py` and `tmem_trace.py` using exact same-source/configuration traces; do not guess per-request stage attribution from aggregate counters.
+3. Add explicit admission and tenant-fairness semantics from existing runtime scheduler source, then add W1/W2/W3 controlled fixtures. W4 remains conditional on supported context/KV capacity.
+4. Continue MXU `mx_key` proof, width-warning semantic triage, formal/SVA, CDC/RDC, DFT, SRAM mapping, production interfaces, routed physical signoff and evidence-based cost/thermal gates.
+
+Manufacturer handoff remains **NOT READY**. No RTL or ISA change, no PPA retry, no paid compute, no fabrication or hardware spend was made in this milestone.
