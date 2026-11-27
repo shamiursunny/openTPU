@@ -473,3 +473,14 @@ Latest tracker section 119 records the current evidence. Exact previously failin
 Full-chip lint run 45915615693 passes on commit 6290b360 with 0 errors; warning counts remain 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT. The clean full RTL-tail suite 45915615625 remains in progress. Reset audit run 45914912691 has passed its power-up/reset stage; its ASIC structural SCC/latch stage remains in progress. Four-DIMM WG8 ASIC integration run 45914912733 remains in progress. See tracker section 119 for all active run IDs.
 
 Main is still d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched. Preserve no-spend/no-PPA, no cancelled-run restart, and no unnecessary repeats of groups 3.1/3.2/4. Manufacturer handoff NOT READY.
+
+
+## 2026-11-27 ASIC structural audit terminal update
+
+- Workflow 45914912691 completed SUCCESS. Reset/power-up audit: 4/4 tests passed.
+- Structural audit artifact 15162062669 independently inspected: copy slice, S=2 two-slice top and actual `otpu_asic_top` (card config) each have 0 SCCs and 0 inferred latch cells. All three Yosys logs report 0 SCCs; all three latch selection files are empty.
+- This closes the tested ASIC `aok` combinational-loop question. Verilator `UNOPTFLAT aok` remains a warning but is not a structural SCC in the tested ASIC top; treat as a dependency over-approximation for this configuration.
+- Exact seed-3 random power-up test passes after stream-tail init flush (45915433368, 1 passed, 40.33 s). The clean full RTL-tail suite 45915615625 remains in progress at this checkpoint.
+- Full-chip lint 45915615693 passed with 0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT diagnostics remain to triage. Do not equate the 7 Verilator LATCH warnings with inferred synthesized latch cells: the three audited elaborations contain zero latch cells.
+- Four-DIMM WG8 host AXI integration 45914912733 and the clean full RTL-tail suite remain in progress. No PPA rerun; prior OOM diagnosis remains.
+- Manufacturer handoff remains NOT READY. Width closure, full RTL-tail result, four-DIMM integration, formal/SVA, CDC/RDC, DFT and physical/timing gates remain open.
