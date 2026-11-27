@@ -201,3 +201,40 @@ Manufacturer handoff remains **NOT READY**. This refresh changed documentation o
 - Updated source/workload spec in commit `ca4df9a19bb2f62d71d169ce368a52a58b438b7c`; continuation addendum in commit `6bf9a5479093abde62c49053eaa84a0784913349`; tracker in commit `31d64191b35df1a7d31a61bbe98ad92a8dbcf003`.
 - Next: implement and test the separate discrete-event resource model using only explicit, versioned service profiles, then correlate model events with RTL `hwtrace` and `tmem_trace`. Do not claim throughput, joules/token or thermal values until validated/calibrated evidence exists.
 - The isolated waits-only recovery job `140775908058` from run `46053311585` remained IN_PROGRESS at the last poll. Poll this one job; do not rerun the other 14 successful software modules.
+
+
+## 2026-11-28 05:12 Asia/Dhaka — latest continuation checkpoint
+
+### Current working state
+- Repository: `shamiursunny/openTPU`.
+- Branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Main baseline must remain untouched: `d84db55712aba0d40811d7762cb052f05d55b7e5`. Never merge/write to main without explicit approval. GitHub API reports main protection false; treat as governance risk, not permission.
+- Latest implemented source/test commits: resource model `ef9eeb8ff929ae2dd6cee4e6c8c6a0197895d673`; expanded model tests `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`; final passing harness run tested exactly `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`.
+- Latest passing workflow `46081103514`, job `140780031472`: **SUCCESS, 34 tests in 0.517s, OK**. Breakdown: 18 resource event model, 10 workload trace, 3 endpoint benchmark, 3 retrieval metrics.
+- The final model harness compiles `resource_event_model.py`, runs all SUNNYONE deterministic unit tests, and has a valid YAML workflow path filter. Superseded runs include failures/cancellations; use only final successful run as current evidence.
+
+### Newly implemented modules
+- `tools/sunnyone/workload_trace.py`: deterministic validated JSONL exogenous request trace generator with replay SHA-256.
+- `tools/sunnyone/resource_event_model.py`: deterministic integer-tick queue model with mandatory explicit profile, ordered prefill/decode stages, finite resource capacities, FIFO queues, cancellation/fault abort, deadline marking, TTFT and resource occupancy.
+- Trace semantic validation covers exact event schema, hash/count/sequence/order, required arrival metadata, positive token counts, arrival-before-control, duplicate controls and valid fault payload.
+- Model specification: `docs/sunnyone/RESOURCE_EVENT_MODEL_SPEC_2026-11-28.md`. No production/RTL-calibrated profile exists; unit tests use synthetic fixture profiles only. No accelerator throughput, power, energy, thermal or manufacturing-cost claim.
+
+### Current CI recovery
+- Software-core workflow `46053311585`, attempt 3. Only waits module job `140775908058` remains IN_PROGRESS at last poll; attempt started 2026-11-27T22:58:36Z and workflow timeout is 45 minutes. Check the exact job state/log and elapsed time. Do not rerun the other 14 successful module jobs. If the waits-only job exceeds its configured timeout or is demonstrably stuck, cancel/retry only that job, preserving all 14 successful module results.
+- Do not rerun RTL groups 3.1/3.2/4 or cancelled workflow `45765362426` merely to reconfirm historical passes.
+
+### Next work sequence
+1. Poll and resolve the waits-only recovery job.
+2. Implement source-grounded trace correlation between `opentpu/hwtrace.py` D/S/G/E/U/P/Q/H records and `tools/tmem_trace.py` access/instruction/producer-consumer records. Use identical source/config/workload; no aggregate-to-request attribution guesses.
+3. Model scheduler admission and tenant fairness from existing runtime source; add W1/W2/W3 fixtures. W4 only after context/KV capacity support is verified.
+4. Continue MXU `mx_key` bounds proof, semantic width-warning triage, formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes, DMA/IOMMU, DDR controller/PHY/ECC and routed physical signoff.
+5. Preserve Track A full accelerator versus Track B demonstrator separation; no down-select/fabrication without target workload, PDK, area/timing, DFT, supplier quotes and funded sample/package/test/shipping plan.
+
+### Latest documentation
+- `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0457.md`
+- `docs/sunnyone/RESOURCE_EVENT_MODEL_SPEC_2026-11-28.md`
+- `docs/sunnyone/SOURCE_INTERFACE_AND_WORKLOAD_TRACE_SPEC_2026-11-28.md`
+- `docs/sunnyone/PROJECT_TRACKER.md`
+- `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
+
+Zero spend. No PPA retry, no paid compute/PDK/IP, no fabrication, packaging, board or lab expenditure. Manufacturer handoff remains **NOT READY**.
