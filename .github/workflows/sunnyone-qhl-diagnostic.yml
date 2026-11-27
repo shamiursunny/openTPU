@@ -25,7 +25,7 @@ jobs:
       - name: Install project and test dependencies
         run: python -m pip install --upgrade pip pytest && python -m pip install -e .
       - name: Run exact no-trace QHL seed-1 case with opt-in text monitor
-        # Capture active stream windows before the failing tail assertion; no added state.
+        # Flush each stateless trace line so fatal termination cannot discard stdout.
         shell: bash
         run: |
           set -o pipefail
