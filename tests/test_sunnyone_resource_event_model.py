@@ -1,3 +1,4 @@
+import hashlib
 import json
 import unittest
 
@@ -126,6 +127,52 @@ class ResourceEventModelTests(unittest.TestCase):
         lines[0] = json.dumps(header)
         with self.assertRaisesRegex(ValueError, "replay_sha256"):
             ResourceEventModel(profile(), 2).run("\n".join(lines))
+
+    def test_control_event_without_prior_arrival_is_rejected_even_with_valid_hash(self):
+        lines = trace(request("r1", arrival=10, prompt=2, output=1)).splitlines()
+        header = json.loads(lines[0])
+        arrival = json.loads(lines[1])
+        cancel = {
+            "tick": 9,
+            "sequence": 0,
+            "kind": "REQUEST_CANCEL",
+            "request_id": "r1",
+            "payload": {},
+        }
+        arrival["sequence"] = 1
+        events = [cancel, arrival]
+        body = "".join(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n" for event in events)
+        header["event_count"] = len(events)
+        header["replay_sha256"] = hashlib.sha256(body.encode()).hexdigest()
+        forged = json.dumps(header, sort_keys=True, separators=(",", ":")) + "\n" + body
+        with self.assertRaisesRegex(ValueError, "precedes or lacks request arrival"):
+            ResourceEventModel(profile(), 2).run(forged)
+
+    def test_duplicate_control_events_are_rejected_even_with_valid_hash(self):
+        lines = trace(request("r1", arrival=10, prompt=2, output=1, cancel_tick=11)).splitlines()
+        header = json.loads(lines[0])
+        events = [json.loads(line) for line in lines[1:]]
+        duplicate = dict(events[-1])
+        duplicate["tick"] = 12
+        duplicate["sequence"] = len(events)
+        events.append(duplicate)
+        body = "".join(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n" for event in events)
+        header["event_count"] = len(events)
+        header["replay_sha256"] = hashlib.sha256(body.encode()).hexdigest()
+        forged = json.dumps(header, sort_keys=True, separators=(",", ":")) + "\n" + body
+        with self.assertRaisesRegex(ValueError, "duplicate REQUEST_CANCEL"):
+            ResourceEventModel(profile(), 2).run(forged)
+
+    def test_malformed_arrival_payload_is_rejected(self):
+        lines = trace(request("r1")).splitlines()
+        header = json.loads(lines[0])
+        event = json.loads(lines[1])
+        event["payload"]["max_new_tokens"] = 0
+        body = json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n"
+        header["replay_sha256"] = hashlib.sha256(body.encode()).hexdigest()
+        forged = json.dumps(header, sort_keys=True, separators=(",", ":")) + "\n" + body
+        with self.assertRaisesRegex(ValueError, "max_new_tokens"):
+            ResourceEventModel(profile(), 2).run(forged)
 
     def test_unknown_resource_is_rejected(self):
         raw = {
