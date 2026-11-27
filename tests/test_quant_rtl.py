@@ -478,8 +478,7 @@ def test_qhl_power_up_rtl(have_verilator, monkeypatch, seed, wmx):
     m1.run()
     assert np.array_equal(m1.slices[0].dram, m.slices[0].dram)
     wr = m.slices[0].tmem == m1.slices[0].tmem
-    drams, tmems, _ = rtlsim.run(cfg, [prog], [dram.copy()], uarch=ua,
-                                   plusargs=["+OTPU_QHL_TRACE"])
+    drams, tmems, _ = rtlsim.run(cfg, [prog], [dram.copy()], uarch=ua)
     assert np.array_equal(drams[0], m.slices[0].dram)
     assert np.array_equal(tmems[0][wr], m.slices[0].tmem[wr])
 
