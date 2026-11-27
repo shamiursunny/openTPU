@@ -3249,3 +3249,14 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 
 
 - Follow-up poll after documentation save: software-core run `46053311585` is on attempt 2, overall IN_PROGRESS. The only rerun job is now job ID `140738728795` (`tests/test_waits.py`); setup, checkout, Python, Verilator and dependency installation succeeded, and the selected pytest step is still running. No conclusion or test count is available yet.
+
+
+## 132. 2026-11-28 — quantum-inspired LPU for long-context AI inference
+
+- User clarified that "quantum computing" is requested as inspiration for a faster **classical LPU**, not to execute quantum-computing tasks. Target outcomes: prompt/prefill throughput, long-context reading/attention latency, decode tokens/s, concurrency, memory efficiency and energy per useful token.
+- Added `docs/sunnyone/QUANTUM_INSPIRED_LPU_LONG_CONTEXT_ARCHITECTURE_2026-11-28.md` (creation commit `42cd44e4a1c97d74501fbbbb604927d629d7a448`) and clarified the matrix/quantum architecture addendum (commit `08424b3dd64fa78bec5e7019e52c436963e0f1aa`).
+- Proposed logical LPU stages: streamed/chunked prefill; MXU QKᵀ/PV; VPU reductions/online softmax where supported; tiered context/KV management with paging, exact prefix cache and isolation; decode scheduling/continuous batching; optional speculative decoding only with target-model verification.
+- "Quantum-inspired" methods (tensor-network/low-rank structures, structured routing, scheduling heuristics) are optional classical research hypotheses. No quantum speedup is claimed; compare against strong classical baselines and preserve exact/dense fallback.
+- Implementation order: workload/trace inventory and deterministic software/simulator baseline; profile existing model paths; validate algorithms and KV correctness; only then consider a narrow RTL/ISA proposal with resource estimates, formal properties and focused tests.
+- No RTL, ISA, workflow or hardware was changed. No benchmark/performance/power claim is made. No PPA, paid QPU/cloud, fabrication or spend. Protected main untouched. Manufacturer handoff remains NOT READY.
+- Current separate waits recovery remains pending at last live poll: run `46053311585`, job `140738728795` (`tests/test_waits.py`) was still in progress; do not infer success from other module jobs.
