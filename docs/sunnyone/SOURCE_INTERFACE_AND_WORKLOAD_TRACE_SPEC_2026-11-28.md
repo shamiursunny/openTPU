@@ -160,3 +160,13 @@ No RTL, ISA, PPA, workflow, hardware or external service was changed or run whil
 - Updated `.github/workflows/sunnyone-workload-harness.yml` to compile the generator (commit `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`). Workflow `46080190053`, job `140777139012`, completed SUCCESS on that exact head. The combined SUNNYONE deterministic harness ran **16 tests in 0.513s: OK**, including 10 workload-trace tests, 3 endpoint benchmark tests and 3 retrieval metric tests.
 - Superseded harness run `46080182042` was cancelled by the workflow concurrency rule when the workflow-file update pushed the newer revision; the replacement `46080190053` is the successful evidence. No other CI suite was triggered by this targeted harness change.
 - This is an exogenous request-trace generator only. It does not yet model resource service time, compute cycles, throughput, power, energy or thermal behaviour. Those remain the next separate implementation and require explicit versioned service profiles.
+
+
+## 10. Discrete-event resource model — implemented and validated
+
+- Added `tools/sunnyone/resource_event_model.py` and `tests/test_sunnyone_resource_event_model.py`. The model consumes the deterministic JSONL workload trace and a mandatory explicit/versioned service profile. It models ordered prefill/decode stages, finite resource slots, FIFO queues, stage completion, cancellation/fault abort, deadlines, TTFT and resource occupancy.
+- Profile values are never inferred or defaulted. A profile must declare origin (`synthetic_fixture`, `rtl_trace_calibrated`, or `measured_system`), provenance, tick unit, capacities and per-stage positive integer service ticks. No production/calibrated profile is committed because no calibrated service evidence has yet been established.
+- Trace parser now validates event schema, replay hash, event count, contiguous sequence, monotonic tick order, required arrival metadata, positive token counts, arrival-before-control ordering, unique controls and fault payloads.
+- Targeted harness `46081103514`, job `140780031472`, tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`: **34 tests passed in 0.517s** (18 resource-model, 10 trace-generator, 3 endpoint benchmark, 3 retrieval metrics). Exact job log records final `OK`.
+- Full model limitations, profile schema, CLI and RTL/TMEM calibration procedure are documented in `RESOURCE_EVENT_MODEL_SPEC_2026-11-28.md`.
+- This milestone does not model calibrated MXU/VPU/DMA/TMEM/DRAM service, admission/fairness, KV allocation/cache, interconnect contention, batching, energy, thermal or cost. It makes no hardware performance claim.
