@@ -3224,3 +3224,13 @@ See `MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md`.
 - Software-core workflow `46053311585`: jobs completed but the waits module job concluded CANCELLED; the other listed modules concluded SUCCESS. Do not label the entire software matrix green. Inspect exact missing waits coverage before any isolated recovery; do not rerun the full matrix.
 - MXU `mx_key` index remains OPEN pending command-ingress/legality and parameter proof. No speculative RTL change or cast.
 - No RTL/test/workflow rerun, PPA retry, spending or hardware action was performed in this documentation update. Historical exclusions and zero-spend controls remain in force. Manufacturer handoff remains NOT READY.
+
+
+## 130. 2026-11-28 — post-update live GitHub verification
+
+- Matrix/quantum architecture addendum created at `docs/sunnyone/MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md`; documentation commits: addendum `8d8800c6b3cdadb966c008f73b98d5dd27c7415b`, tracker `e89ef759cb981baff6b7bdafb73a3d51b31625d3`, checkpoint `86940ff75b03852f113ad167aef9e6fda893ce96`.
+- Live branch HEAD verified as `86940ff75b03852f113ad167aef9e6fda893ce96`; compare against main: 1,082 ahead / 0 behind.
+- Main SHA remains `d84db55712aba0d40811d7762cb052f05d55b7e5`. GitHub API currently reports `protected=false` for main. This is a repository protection-control gap. The project-level no-write rule remains absolute: do not modify main; enable branch protection only with explicit user authority and appropriate admin permission.
+- Qwen workflow `46053311477`: SUCCESS after every step, including real-checkpoint RTL selection and eight tiny board-model cases.
+- Software-core workflow `46053311585`: workflow conclusion CANCELLED; waits job CANCELLED, other listed module jobs SUCCESS. Do not report the full software matrix as passed. Identify the exact waits test coverage gap before considering an isolated run.
+- New architecture document is documentation-only. No RTL, test, workflow, PPA, hardware or external quantum service was changed or run. Manufacturer handoff remains NOT READY; zero-spend and historical test exclusions remain.
