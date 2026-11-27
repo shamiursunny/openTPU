@@ -1765,6 +1765,7 @@ module otpu_vpu
                  u_tail.e2, u_tail.e3);
 `endif
 
+    assign ss_y_v = sen && t_yv;
     assign ss_o_v = sen && t_ov;
   end else begin : g_nse
     assign ss_rq = 1'b0;
