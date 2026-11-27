@@ -177,3 +177,10 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Random power-up: RTL-tail run 45911471173 failed test_random_power_up[1-3] at otpu_se_tail.sv:277 (two D slots meet); this is an unresolved assertion/regression. Intended pre/post-FSUM A/B run 45913977727 was inconclusive because both jobs failed before simulation on unsupported --no-assert-case in the Ubuntu 24.04 apt Verilator.
 - Width gate remains OPEN: 76 generic width warnings plus ASIC-specific DMA/native-DRAM/AW-AR warnings. WG8 PPA run 45877786710 failed with confirmed cgroup OOM-kill evidence; no routed STA/physical signoff. Do not rerun on an equivalent 16 GB runner.
 - G1/G2 are improved by targeted FSUM checks but not fully closed due the RSUM metadata parity gap and the unresolved random-power-up assertion. G3 remains OPEN for ASIC-specific structural proof and width closure. G7 remains FAIL/PARTIAL. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 corrected power-up A/B result
+
+- Corrected deterministic A/B run 45914084753: pre-FSUM source 0d367ba1906b8e187e6e2feb2db576364d85b4fb passed test_random_power_up[1-3] (1 passed); post-FSUM-guard source ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a failed at rtl/vpu/otpu_se_tail.sv:277 (kv_v=0, e2=1, e3=1). This is a reproducible regression associated with the FSUM guard snapshot, causal mechanism still open. G1/G2 must remain PARTIAL/OPEN until fixed and regression-tested; the 11 targeted FSUM passes do not supersede this failure.
+- The initial A/B tool mismatch is superseded by corrected run 45914084753; the corrected run used ubuntu-latest. Do not continue describing the A/B comparison as inconclusive.
+- ASIC-top SCC audit run 45914201799 remains in progress at this update; no ASIC aok closure claim yet.
