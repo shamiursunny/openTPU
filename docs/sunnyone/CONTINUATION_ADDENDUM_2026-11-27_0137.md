@@ -100,3 +100,10 @@ The temporary `tb_top.sv` hierarchical monitor, trace test helper and temporary 
 Commit 600f3aa4822e18f03ba80d06ab86fd447189c126 makes the MIG-pair's 33-bit AW/AR outputs explicitly zero-extended into the 34-bit host mux. ASIC config run 45916680920 is validating; initial lint stages passed and host AXI simulation is running. Full-chip lint 45916680866 passed with zero errors but 76 width, 7 LATCH and 3 UNOPTFLAT warnings remain.
 
 Do not close the stream-tail random-power-up issue from trace-enabled run 45915433368. The no-trace A/B result still fails post-FSUM and passes pre-FSUM; clean no-trace RTL-tail run 45916680719 is pending. Structural/reset audit 45914912691 and prior ASIC integration 45914912733 are terminal PASS. PPA remains unauthorised; main untouched; manufacturer handoff NOT READY.
+
+
+## 2026-11-27 superseding correction — PPA artifact and ORFS_CPUS review
+
+This section supersedes the old Next actions item 3 proposing an ORFS_CPUS propagation fix. PPA run 45877786710 is terminal failed in `2_4_floorplan_pdn`; artifact 15152974135 confirms `oom_kill=1`, peak memory 16,155,115,520 bytes, host MemTotal 16,366,484 kB, and cgroup `memory.max=max`. This is a host OOM-killer event. The source `tools/asic/flow.py` already reads `ORFS_CPUS`, passes it into `run()`, and sets ORFS `NUM_CORES`; the job exported `ORFS_CPUS=2` and Docker used `--cpus 2`. There is no demonstrated propagation bug. Do not change the flow.py worker handling or add a test for that disproven issue. Do not retry PPA on the same resource class; no retry is authorised.
+
+The FSUM hardware guard remains a candidate and is not yet implemented. Verify actual RTL sequencer path and effective FSUM capability wiring before modifying it. QHL power-up failure remains open; do not treat a scoped RTL-tail pass as closing it. Manufacturer handoff remains NOT READY.
