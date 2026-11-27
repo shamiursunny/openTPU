@@ -634,7 +634,10 @@ module otpu_se_eng
     .qp_cap(t_qc), .qp_row_last(t_qrl), .qp_sub(t_qsub), .qp_d(t_qd),
     .qo_v(root_v[0] && vt_q), .qo_d(root_o),
     .cm_u('0), .cm_q('0), .cen({L{pe}}), .u_sel(1'b0), .u_a(z), .u_b(z), .u_c(z), .u_e(z), .u_y(),
-    .q_sel(1'b0), .q_a(z), .q_b(z), .q_c(z), .q_y());
+    .q_sel(1'b0), .q_a(z), .q_b(z), .q_c(z), .q_y(),
+    .dbg_en_b(pe), .dbg_root_v(root_v[0]), .dbg_vt_q(vt_q), .dbg_cap(cap),
+    .dbg_a_cap(a_cap), .dbg_q_cap(q_cap), .dbg_vt_rl(vt_rl), .dbg_vt_sub(vt_sub),
+    .dbg_kq(kq), .dbg_kh(kh), .dbg_kt(kt), .dbg_ss_act(ss_act), .dbg_sen(sen), .dbg_s_init(s_init));
   assign ss_y_v = sen && t_yv;
   assign ss_o_v = sen && t_ov;
 endmodule
