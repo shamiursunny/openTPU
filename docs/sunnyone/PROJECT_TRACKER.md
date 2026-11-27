@@ -2932,3 +2932,33 @@ The existing Yosys structural audit's zero inferred latch-cell result does not a
 - QHL diagnosis is isolated on temporary branch `sunnyone/qhl-seed1-diagnostic-2026-11-27`; do not merge its instrumentation. The first instrumented pass `45964405350` was inconclusive because the added counter could perturb unique-X initialisation and emitted no trace. Runs `45965156322`, `45965732887`, and `45966389125` reproduced the original seed-1 assertion, but parent-level trace text was not preserved before fatal termination. A subsequent diagnostic compile `45967519265` exposed an unclosed preprocessor guard in the temporary branch; it was corrected there only. Run `45967861319` is validating the next diagnostic: upstream root/FIFO/classification context is passed into the tail assertion and flushed at the failure site. No result from this run is available yet.
 - The QHL functional failure remains OPEN. No assertion weakening, pipeline-depth change, reset masking or production RTL fix is authorised until the cycle-level root/FIFO evidence identifies the cause. No diagnostic RTL edits were made on the active engineering branch.
 - No PPA retry, paid resources, manufacturer commitment or main-branch modification. Manufacturer handoff remains NOT READY.
+
+
+## 124. 2026-11-27 — latest QHL diagnostic re-poll and evidence boundary
+
+### Live repository snapshot
+- Active branch: sunnyone/commercial-profitability-architecture-2026-11-23; live HEAD at this continuation: 59d10a3878d5ed2188520222bbc1a9cc90187b0c.
+- Live compare against main: 1,001 commits ahead / 0 behind; merge base and current main SHA remain d84db55712aba0d40811d7762cb052f05d55b7e5.
+- GitHub branch API reports protection disabled for both refs. This is a repository governance/control gap only; the project rule remains that main must not be modified.
+- No RTL, test, or workflow source on the active engineering branch was changed in this continuation. No CI workflow was dispatched, cancelled or rerun.
+
+### Latest temporary-branch diagnostic result
+- QHL diagnostic run 45967861319 completed FAILURE on temporary branch commit 35dce2e57d0448988411ba98e5f931f420b8463f; job 140400790723. Artifact 15183802907, uploaded ZIP SHA-256 f0e88620f845e311a7996b1b54cf2023b73edeb2b73026ab8c7703e2c5a48926.
+- The exact no-trace QHL seed-1 test again reached the same assertion at rtl/vpu/otpu_se_tail.sv:299: kv_v=0,e2=1,e3=1; state snapshot: rst=0, pe=1, init=0, in_v=1, cfg=6f8069, ns=32, jn=14, rv=51, rr=51, en_b=1, root_v=0, vt_q=0, cap=1, a_cap=1, q_cap=0, vt_rl=1, vt_sub=122, kq=66, kh=0, kt=6, ss_act=1, sen=1, s_init=0.
+- This confirms recurrence and gives a same-cycle upstream snapshot. It does not show preceding root_v/kv_v pulse history, so it cannot distinguish tree scheduling, Q/A-kind FIFO alignment, or grant/reset phasing. The e2/e3 overlap still implies two accepted tail kv_v events seven PE cycles apart; no root-history trace was preserved.
+- Do not merge the temporary diagnostic branch or copy its instrumentation into the active branch. No functional RTL fix is justified yet; do not weaken the assertion or alter pipeline depth.
+
+### Diagnostic refinement — next safe step
+- Use a plusarg-gated, passive per-PE-cycle $display trace in the temporary diagnostic branch only; do not add counters, delay registers, or other sequential state that could perturb --x-initial unique random initialisation.
+- Emit cycle index and existing live values: root_v[0], kv_v, vt_q, cap, a_cap, q_cap, vt_rl, vt_sub, kq, kh, kt, sen, s_init, e2, e3. Keep output bounded to the failing QHL run and flush before fatal termination. If output volume is a concern, print only when either valid delay slot is active or a root/kind enqueue/dequeue occurs.
+- Compare each enqueue (cap && vt_rl) with each root dequeue (root_v[0]) and selected kind (kq[kh]). Check FIFO occupancy/order, simultaneous enqueue/dequeue, and reset/init alignment. Determine whether the seven-PE-cycle spacing is already present at root_v[0] or introduced by kind routing.
+- Keep diagnostics isolated. After evidence is obtained, remove temporary instrumentation and only then prepare a minimal production RTL correction plus deterministic regression if a real defect is demonstrated.
+
+### Other gate status
+- QHL random-power-up failure: OPEN.
+- Software waits: original job cancelled; remainder workflow 45963867548 covers outstanding cases with 33 passed and 1 optional torch-dependent skip across three jobs; do not call the original cancelled job a pass.
+- Full-chip lint warnings: OPEN (latest confirmed inventory 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 procedural LATCH diagnostics, 3 UNOPTFLAT; structural audit's zero latch/SCC results remain configuration-scoped).
+- PPA: FAILED due confirmed host OOM at floorplan PDN; no retry authorised.
+- Formal/SVA, CDC/RDC, DFT, technology SRAM mapping, production memory/host interfaces, routed physical signoff and manufacturer G0–G15 gates: OPEN.
+- No zero-cost sponsor, packaging/test coverage, sample custody or shipping agreement confirmed. Manufacturer handoff remains NOT READY.
+- Zero spend, no main writes, no cancelled-run restart, no duplicate successful regression.
