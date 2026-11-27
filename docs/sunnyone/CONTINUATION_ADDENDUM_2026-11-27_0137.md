@@ -207,3 +207,17 @@ This handoff records the latest evidence available in this conversation. It does
 3. Continue unresolved `gnt` dependency graph and width/bounds triage with exact elaborated configurations; no speculative RTL edits.
 4. Continue formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes and DMA/IOMMU, DDR controller/PHY/training/ECC, routed physical signoff, and demonstrator down-select.
 5. Manufacturer handoff remains **NOT READY**. No sponsor, no-cost fabrication, packaging, test, custody or shipping commitment is confirmed. No paid work is authorised.
+
+
+## Continuation update — isolated STREAM regression completed (2026-11-27, Asia/Dhaka)
+
+- Isolated workflow run **46037445046** completed SUCCESS on source commit **5ef0c28bdbbb1e8b2b7219b5d37d24e0d6d8a942**; job **140636330408** completed all setup/build/test/upload steps.
+- Pinned Verilator 5.044 source build succeeded on Ubuntu 24.04; project/test dependency installation succeeded.
+- Actual pytest log confirms **46 passed in 1183.29 seconds** for tests/test_stream.py. This closes the previously NOT RUN STREAM software-only module for that exact source/configuration. Artifact **15220041192**, name 'sunnyone-stream-software-only-log', ZIP SHA-256 'b4f0d0ccc61f752d8a39eaaa37c40e51ef92913796058aa2ccbcab4abd58b872'.
+- This isolated workflow did not rerun the other 14 successful software-core modules, any RTL regression groups, board suite, Qwen suite, or PPA. No duplicate tests were launched in this continuation.
+- QHL evidence remains as previously recorded: active-branch exact seed-1 regression passed 1 test on tested commit 'e123b331582495e12e7f32f81472011f0929c2cb'; subsystem QHL job in run '46016022758' passed 7 tests. Do not extrapolate to all seeds or all power-up states.
+- Board-functional evidence remains the earlier '198 passed, 8 skipped, 1 deselected' on tested commit '600f3aa4822e18f03ba80d06ab86fd447189c126'; cancelled run '46016022808' is not a pass and is not a reason to repeat the long board suite absent a specific coverage gap.
+- Latest live compare confirms the feature branch is **1,050 commits ahead, 0 behind** the unchanged main baseline 'd84db55712aba0d40811d7762cb052f05d55b7e5'. The compare integration did not expose the feature HEAD SHA; do not infer it from an older checkpoint. Re-resolve the branch ref before any future write if the exact HEAD is required.
+- The STREAM workflow file was reviewed: it is restricted to the active feature branch, builds pinned Verilator 5.044, and runs only tests/test_stream.py. No workflow change is required from this successful result.
+- Open gates remain: semantic width-warning closure; exact UNOPTFLAT dependency analysis (especially gnt); formal/SVA, CDC/RDC, DFT, SRAM technology mapping; production PCIe/SerDes, DMA/IOMMU and DDR controller/PHY/training/ECC; routed physical signoff; Track B demonstrator down-select and verified sponsorship/sample logistics. Manufacturer handoff remains **NOT READY**.
+- Zero-spend remains mandatory. No PPA retry, fabrication, packaging, lab test, paid compute, or hardware purchase is authorised. Protected main remains untouched.
