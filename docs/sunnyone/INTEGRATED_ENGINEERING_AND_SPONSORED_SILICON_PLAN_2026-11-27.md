@@ -664,3 +664,14 @@ The existing Yosys structural audit's zero inferred latch-cell result does not a
 - QHL diagnosis is isolated on temporary branch `sunnyone/qhl-seed1-diagnostic-2026-11-27`; do not merge its instrumentation. The first instrumented pass `45964405350` was inconclusive because the added counter could perturb unique-X initialisation and emitted no trace. Runs `45965156322`, `45965732887`, and `45966389125` reproduced the original seed-1 assertion, but parent-level trace text was not preserved before fatal termination. A subsequent diagnostic compile `45967519265` exposed an unclosed preprocessor guard in the temporary branch; it was corrected there only. Run `45967861319` is validating the next diagnostic: upstream root/FIFO/classification context is passed into the tail assertion and flushed at the failure site. No result from this run is available yet.
 - The QHL functional failure remains OPEN. No assertion weakening, pipeline-depth change, reset masking or production RTL fix is authorised until the cycle-level root/FIFO evidence identifies the cause. No diagnostic RTL edits were made on the active engineering branch.
 - No PPA retry, paid resources, manufacturer commitment or main-branch modification. Manufacturer handoff remains NOT READY.
+
+
+## 21. QHL random-power-up diagnostic update — 2026-11-27
+
+Latest temporary-branch diagnostic run 45967861319 (job 140400790723) is terminal FAILURE. The no-trace QHL seed-1 case reproduces the existing tail assertion with kv_v=0, e2=1, e3=1. Failure-time upstream snapshot: root_v=0, vt_q=0, cap=1, a_cap=1, q_cap=0, vt_rl=1, vt_sub=122, kq=0x66, kh=0, kt=6, sen=1, s_init=0. Artifact 15183802907; ZIP SHA-256 f0e88620f845e311a7996b1b54cf2023b73edeb2b73026ab8c7703e2c5a48926.
+
+The snapshot does not contain the preceding valid-pulse history and therefore does not identify whether the seven-PE-cycle spacing originates in the tree, kind FIFO, or stream/grant timing. QHL remains an open functional issue. Do not weaken the assertion, mask the event, or change pipeline depth.
+
+Next diagnostic is confined to the temporary branch: add a plusarg-gated passive per-PE-cycle text trace of existing root_v/kv_v, cap/a_cap/q_cap, vt_rl/vt_sub, kq/kh/kt, sen/s_init and e2/e3. Do not add sequential monitor state or counters, because the test uses unique-X random initialisation. Correlate each kind FIFO enqueue with each root dequeue and inspect occupancy/order around reset/init. Only a proven cause may justify a minimal RTL fix and deterministic regression.
+
+Active engineering branch source is unchanged by this diagnostic. No new CI was launched in this continuation. PPA remains failed due confirmed host OOM and is not authorised for retry; all no-spend, no-main-write and no-duplicate-regression constraints remain. Manufacturer handoff remains NOT READY.
