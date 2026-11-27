@@ -3003,3 +3003,14 @@ Resume trigger in a new chat: **“Continue and complete the remaining tasks.”
 6. Keep manufacturer handoff NOT READY until all mandatory gates and a documented zero-cost fabrication/testing path are independently evidenced.
 
 This handoff records the latest evidence available in this conversation. It does not claim that the QHL trace was completed, that any new test passed, or that RTL was changed. Documentation-only updates do not constitute engineering verification.
+
+
+## Continuation review — 2026-11-27 18:30 Asia/Dhaka
+
+- Live active engineering branch HEAD before this documentation update: 1537765f5b85a6050c4ee50735af537b8c019da4. Main baseline: d84db55712aba0d40811d7762cb052f05d55b7e5; GitHub currently reports main protected=false. The no-main-write project rule remains absolute.
+- Isolated QHL diagnostic branch HEAD: 64943951e89f1fe91ac20d56f34fddea66c05923. Its latest commit adds a stateless per-PE-cycle QHLTRACE and flush in rtl/vpu/otpu_se_tail.sv. Source inspection confirms no sequential trace counter/register was added.
+- Failed run 45967861319 used parent commit 35dce2e57d0448988411ba98e5f931f420b8463f, not the latest trace commit 64943951e89f1fe91ac20d56f34fddea66c05923. Therefore the new trace has not yet been exercised.
+- The isolated diagnostic workflow supports workflow_dispatch and runs only tests/test_quant_rtl.py::test_qhl_power_up_rtl[1-False]. The available GitHub integration here has no workflow-dispatch action; no new run was started. Do not claim trace evidence exists.
+- QHL remains OPEN. Do not alter production RTL, weaken assertions, change pipeline depth or mask reset until the trace establishes whether spacing originates in root scheduling, kind FIFO ordering/alignment or stream grant/reset phasing.
+- No active-branch RTL/test/workflow changes, no test reruns, no PPA retry, no paid resources and no main writes in this continuation. Manufacturer handoff remains NOT READY.
+- Next action: dispatch the exact diagnostic workflow on the diagnostic branch at 64943951e89f1fe91ac20d56f34fddea66c05923; inspect trace/artifact, then update the plan, checkpoint and handoff matrix with exact run evidence. Preserve all previously successful test evidence and cancellation constraints.
