@@ -393,11 +393,7 @@ module otpu_se_tail
     if (d_pop) d_cur <= dq[dq_h];
   end
 `ifndef SYNTHESIS
-  // the checks start once the reset has held two edges (registers start arbitrary, and so does a
-  // unit's reset register until the slice's reset pipeline fills: otpu_slice)
-  bit rst_p, rst_seen;
-  initial begin rst_p = 1'b0; rst_seen = 1'b0; end
-  always @(posedge clk) begin rst_p <= rst; if (rst && rst_p) rst_seen <= 1'b1; end
+  // Share the reset qualification declared above with the d-FIFO checks.
   always_ff @(posedge clk)
     if (!rst && rst_seen && pe && ((d_pop && dq_n == 0) || (dv && !d_pop && 32'(dq_n) == DFD)))
       $fatal(1, "otpu_se_tail: d FIFO %s", (d_pop && dq_n == 0) ? "underflow" : "overflow");
