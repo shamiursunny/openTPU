@@ -568,3 +568,19 @@ The existing Yosys structural audit's zero inferred latch-cell result does not a
 - QHL diagnosis is isolated on temporary branch `sunnyone/qhl-seed1-diagnostic-2026-11-27`; do not merge its instrumentation. The first instrumented pass `45964405350` was inconclusive because the added counter could perturb unique-X initialisation and emitted no trace. Runs `45965156322`, `45965732887`, and `45966389125` reproduced the original seed-1 assertion, but parent-level trace text was not preserved before fatal termination. A subsequent diagnostic compile `45967519265` exposed an unclosed preprocessor guard in the temporary branch; it was corrected there only. Run `45967861319` is validating the next diagnostic: upstream root/FIFO/classification context is passed into the tail assertion and flushed at the failure site. No result from this run is available yet.
 - The QHL functional failure remains OPEN. No assertion weakening, pipeline-depth change, reset masking or production RTL fix is authorised until the cycle-level root/FIFO evidence identifies the cause. No diagnostic RTL edits were made on the active engineering branch.
 - No PPA retry, paid resources, manufacturer commitment or main-branch modification. Manufacturer handoff remains NOT READY.
+
+
+## Latest continuation — QHL diagnostic terminal failure and passive-trace plan
+
+- Live feature branch HEAD before this documentation update: 59d10a3878d5ed2188520222bbc1a9cc90187b0c; live compare to main was 1,001 ahead / 0 behind. Main remains d84db55712aba0d40811d7762cb052f05d55b7e5. GitHub API currently reports protection disabled on both branches; this does not alter the project rule to leave main untouched.
+- Re-polled latest QHL temporary-branch diagnostic run 45967861319: terminal FAILURE, job 140400790723, artifact 15183802907 (ZIP SHA-256 f0e88620f845e311a7996b1b54cf2023b73edeb2b73026ab8c7703e2c5a48926). The exact no-trace seed-1 QHL test reproduced the assertion: kv_v=0, e2=1, e3=1.
+- Failure-time snapshot includes root_v=0, vt_q=0, cap=1, a_cap=1, q_cap=0, vt_rl=1, vt_sub=122, kq=0x66, kh=0, kt=6, sen=1, s_init=0. This is only a same-cycle snapshot, not the preceding root/valid history. Root cause remains unproven.
+- Keep temporary diagnostic branch isolated; do not merge it. Next diagnostic: plusarg-gated passive per-PE-cycle $display of existing root_v/kv_v, kind FIFO enqueue/dequeue and e2/e3 signals. Do not add sequential monitor state/counters that can perturb unique-X initialisation. Compare root pulses against kind FIFO occupancy and reset/init timing. Do not weaken the assertion or alter pipeline depth before evidence.
+- Tracker section 124 records the full finding and next diagnostic. Tracker update commit: 29e915b40fb5b90d73a6aaba16f7e9a5fd44a252; tracker blob: 54d78974704e0b00648021233bc19d6c07830363.
+- No RTL/test/workflow source changes and no CI dispatch in this continuation. No PPA retry (confirmed host OOM), no paid resources, no main modification, no rerun of already successful regressions. Manufacturer handoff remains NOT READY.
+
+### Resume order
+1. Read this checkpoint, CONTINUATION_ADDENDUM_2026-11-27_0137.md, INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md, PROJECT_TRACKER.md and MANUFACTURER_HANDOFF_READINESS_MATRIX.md.
+2. Re-resolve live feature HEAD and main SHA before any write; latest documentation commits may have advanced the branch beyond the source HEAD recorded above.
+3. Continue the isolated QHL passive trace only; preserve the no-main/no-spend/no-duplicate-regression constraints.
+4. Continue semantic width-warning triage, RSUM producer-metadata parity, formal/SVA, CDC/RDC, DFT, SRAM mapping, production interfaces and demonstrator/sponsor gates.
