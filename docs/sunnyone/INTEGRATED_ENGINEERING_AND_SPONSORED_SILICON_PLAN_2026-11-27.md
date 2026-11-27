@@ -597,3 +597,7 @@ Focused runs completed:
 - Loop-stack boundary: 2 passed, 228 deselected (45915615653).
 
 The clean broad RTL-tail run 45915615625 and Qwen/board/subsystem/software runs remain nonterminal. Structural/reset audit 45914912691 passed 4/4 reset tests and 3/3 structural tops with zero SCCs and zero latch cells. Manufacturer handoff remains NOT READY; PPA remains blocked by the previously diagnosed memory limit and no retry is authorised.
+
+## 25. Power-up validation qualification — 2026-11-27
+
+The trace-enabled seed-3 pass 45915433368 is supplementary only because it changes Verilator instrumentation and potentially the `--x-initial unique` pattern. No-trace A/B run 45914084753 failed with the FSUM-guard source and passed with the pre-FSUM source. The stream-tail init-flush correction remains provisional until clean no-trace RTL-tail run 45915615625 and stream RTL/ISA regressions complete. Structural/reset audit 45914912691 and ASIC integration 45914912733 are terminal PASS; other run statuses are in the current checkpoint.

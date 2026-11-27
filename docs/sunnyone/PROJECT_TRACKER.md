@@ -2815,3 +2815,9 @@ Focused regressions:
 - Sequencer loop-stack boundary: 2 passed, 228 deselected (45915615653).
 
 Broad clean RTL-tail 45915615625 is still running. Qwen, board-functional, subsystem/memory and software/ISA runs remain nonterminal. Structural/reset audit 45914912691 is PASS: reset 4/4 and three elaborated tops each 0 SCC / 0 latch cells. No PPA retry or spend; manufacturer handoff remains NOT READY.
+
+## 119. 2026-11-27 correction — trace-enabled power-up pass is not no-trace closure
+
+The exact seed-3 pass 45915433368 was trace-enabled (`OTPU_TRACE_POWERUP=1`), which changes Verilator instrumentation and may change the `--x-initial unique` pattern. No-trace A/B run 45914084753 reproduced the failure on the FSUM-guard source and passed on the pre-FSUM source. Therefore the stream-tail init-flush candidate remains PROVISIONAL until clean no-trace RTL-tail run 45915615625 and stream RTL/ISA comparisons finish. Do not close the seed-3 issue on the trace run alone.
+
+The temporary testbench monitor, trace helper and A/B workflow were removed/restored in commits 6290b360 and 425e794. A failure-only simulation diagnostic remains in `rtl/vpu/otpu_se_tail.sv`; it is excluded from synthesis. Structural/reset audit 45914912691 and ASIC integration 45914912733 are terminal PASS. Full run ledger is in CURRENT_CONTINUATION_CHECKPOINT_2026-11-27.md.

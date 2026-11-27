@@ -495,3 +495,11 @@ Main is still d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched. Preserve n
 - Clean broad RTL-tail workflow 45915615625 remains IN PROGRESS. Qwen, board-functional, subsystem/memory and software/ISA workflows also remain queued/in progress as separately listed in GitHub. Do not mark their gates complete until terminal logs are inspected.
 - Structural audit 45914912691 remains PASS: reset 4/4; one-copy, two-slice and actual ASIC top each 0 SCC / 0 latch cells.
 - No PPA rerun. Manufacturer handoff remains NOT READY.
+
+## 2026-11-27 correction — trace-enabled seed-3 result is supplementary only
+
+The prior wording that the exact seed-3 power-up case “passes” refers specifically to trace-enabled run 45915433368 (1 passed in 40.33 s, with RTL/ISA memory comparison). That run sets `OTPU_TRACE_POWERUP=1`; tracing changes Verilator instrumentation and can change the `--x-initial unique` pattern. It is not sufficient to close the no-trace failure.
+
+The no-trace A/B run 45914084753 reproduced `test_random_power_up[1-3]`: the FSUM-guard source failed and the pre-FSUM source passed. The candidate tail-init flush fix must therefore remain PROVISIONAL until clean non-trace broad RTL-tail run 45915615625 and the stream RTL/ISA suite complete. Do not state that seed-3 is closed before inspecting those terminal logs.
+
+The temporary `tb_top.sv` hierarchical monitor, trace test helper and temporary A/B workflow were removed/restored in commits 6290b360 and 425e794. A failure-only `$display` diagnostic remains inside the simulation-only tail assertion in `rtl/vpu/otpu_se_tail.sv`; it does not affect synthesis. Structural/reset audit 45914912691 is terminal PASS (reset 4/4; three tops 0 SCC/0 inferred latches), and ASIC integration 45914912733 is terminal PASS. See the current checkpoint for all other run states.
