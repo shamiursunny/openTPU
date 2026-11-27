@@ -1757,7 +1757,7 @@ module otpu_vpu
     // Diagnostic-only, stateless cycle trace. Print throughout active stream windows so the
     // parent monitor runs before the tail's same-edge assertion can terminate simulation.
     always @(posedge clk)
-      if (!rst && (ss_act || s_init || root_v || q_cap || t_qc))
+      if (!rst && (ss_act || s_init || root_v || q_cap || t_qc)) begin
         $display("QHLTRACE time=%0t en_b=%0d sen=%0d s_init=%0d ss_act=%0d in_v=%0d s_mt_v=%0d s_mt_final=%0d s_mt_row_last=%0d s_mt_sub=%0d root_v=%0d vt_q=%0d kv_v=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d t_qc=%0d t_qrl=%0d t_qsub=%0d kq=%h kh=%0d kt=%0d",
                  $time, en_b, sen, s_init, ss_act, s_in_v, s_mt.v, s_mt.final_,
                  s_mt.row_last, s_mt.sub, root_v, vt_q, root_v && !vt_q, cap,
