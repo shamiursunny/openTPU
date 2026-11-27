@@ -67,3 +67,8 @@ Most conservative candidate, not yet implemented:
 ## Continuation command
 In a new chat, the user can type: **Continue and complete the remaining tasks.**
 Read the current checkpoint, this addendum, integrated plan, tracker and manufacturer readiness matrix; then re-resolve the live branch HEAD and poll the outstanding run IDs before editing anything.
+
+
+## 2026-11-27 continuation — seed-3 fix validated; clean regression pending
+
+The exact prior power-up failure test_random_power_up[1-3] now passes on the stream-tail init-flush fix (run 45915433368, source f2559a3bead2f2058808f81890ae0a9b91d074a0, 1 passed in 40.33 s with RTL/ISA memory comparison). The fix is in RTL commit 024928752fef7ab774502d2a19f49111cc86b1ff; temporary diagnostic code and workflows were removed in 6290b360 and 425e794. Full clean RTL-tail regression 45915615625 is still running. Full-chip lint 45915615693 passes with 0 errors but 76 width warnings, 7 LATCH and 3 UNOPTFLAT remain. Reset audit power-up stage passed in 45914912691; structural SCC/latch stage and four-DIMM WG8 integration run 45914912733 remain pending. Manufacturer handoff NOT READY; PPA not authorised; main untouched.
