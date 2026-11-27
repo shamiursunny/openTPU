@@ -1754,13 +1754,14 @@ module otpu_vpu
       end
     assign vt_q = kq[kh];
 `ifndef SYNTHESIS
-    // Diagnostic-only, stateless trace. This runs only in the dedicated single-test workflow.
-    // It adds no state and uses no trace/VCD mode or plusarg that could perturb random power-up.
+    // Diagnostic-only, stateless cycle trace. Print throughout active stream windows so the
+    // parent monitor runs before the tail's same-edge assertion can terminate simulation.
     always @(posedge clk)
-      if (!rst && sen)
-        $display("QHLTRACE time=%0t en_b=%0d sen=%0d s_init=%0d ss_act=%0d root_v=%0d vt_q=%0d kv_v=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d kq=%h kh=%0d kt=%0d",
-                 $time, en_b, sen, s_init, ss_act, root_v, vt_q,
-                 root_v && !vt_q, cap, a_cap, q_cap, vt_rl, vt_sub, kq, kh, kt);
+      if (!rst && (ss_act || s_init || root_v || q_cap || t_qc))
+        $display("QHLTRACE time=%0t en_b=%0d sen=%0d s_init=%0d ss_act=%0d in_v=%0d s_mt_v=%0d s_mt_final=%0d s_mt_row_last=%0d s_mt_sub=%0d root_v=%0d vt_q=%0d kv_v=%0d cap=%0d a_cap=%0d q_cap=%0d vt_rl=%0d vt_sub=%0d t_qc=%0d t_qrl=%0d t_qsub=%0d kq=%h kh=%0d kt=%0d",
+                 $time, en_b, sen, s_init, ss_act, s_in_v, s_mt.v, s_mt.final_,
+                 s_mt.row_last, s_mt.sub, root_v, vt_q, root_v && !vt_q, cap,
+                 a_cap, q_cap, vt_rl, vt_sub, t_qc, t_qrl, t_qsub, kq, kh, kt);
 `endif
 
     assign ss_y_v = sen && t_yv;
