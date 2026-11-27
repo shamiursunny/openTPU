@@ -227,3 +227,8 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Full-chip lint 45916680866 PASS, 0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH, 3 UNOPTFLAT remain.
 - No-trace power-up regression remains OPEN pending 45916680719; trace-enabled seed-3 pass is supplementary only. Reset/structural audit 45914912691 and prior ASIC integration 45914912733 are PASS.
 - Manufacturer handoff remains NOT READY; PPA not authorised.
+
+
+## 2026-11-27 additional regression evidence
+
+The latest subsystem/memory workflow 45916680829 exposed a QHL random-power-up failure: `test_qhl_power_up_rtl[1-False]` failed at `rtl/vpu/otpu_se_tail.sv:281` with `kv_v=0,e2=1,e3=1`, `init=0`; six sibling QHL tests passed. Keep the general regression/readiness gate OPEN until this is explained and corrected or the assertion invariant is rigorously revised. The separate RTL-tail selection (45916680719, 33 passed/1 skipped) does not close the QHL case. The ASIC config run 45916680920 passed; the bad AW/AR aperture assertions were expected negative-test rejections and must not be misclassified as failures. Software waits job 45916680756 was cancelled. No readiness gate is upgraded solely from these results. Manufacturer handoff remains NOT READY.
