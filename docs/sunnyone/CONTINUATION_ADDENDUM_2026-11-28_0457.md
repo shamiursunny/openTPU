@@ -82,7 +82,7 @@ This refresh changed documentation only. No RTL, ISA, PPA, hardware or paid serv
 - Next implementation: a separate integer-time discrete-event resource model that consumes the validated trace and requires explicit, versioned stage service profiles. Unknown service time/bandwidth/power values must remain unset. Validate model-level queue/resource invariants and correlate with actual `hwtrace`/`tmem_trace` outputs before using it to rank architectural alternatives.
 
 
-## 10. Resource event model and semantic trace validation — 2026-11-28 23:12 Asia/Dhaka
+## 10. Resource event model and semantic trace validation — 2026-11-28 05:12 Asia/Dhaka
 
 ### Implemented files
 - `tools/sunnyone/resource_event_model.py`: deterministic integer-time, profile-driven resource queue model.
