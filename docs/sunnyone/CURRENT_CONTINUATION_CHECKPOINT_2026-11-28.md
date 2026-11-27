@@ -124,3 +124,14 @@ Read `docs/sunnyone/UNIFIED_NPU_TPU_LPU_PETASCALE_AI_ARCHITECTURE_2026-11-28.md`
 - Current branch head observed before these commits: `5be983d46a1caca5d715ca08064c5d81b1eabf9f`. Documentation commits: north star `a2f091f0436f1960dac0a90789d5087fb9ca0a6b`; source inventory `6c80d0acfee9f4236ceac830321fff5e056977a4`. Main baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main write.
 - Important workflow caveat: software-core run `46053311585` was launched from `05879ea34eafc2559c54722c6c940b2acb9ac3ee`, not the currently observed branch HEAD. Attempt 2 has 14 module jobs SUCCESS and only waits job `140738728795` still IN_PROGRESS. Do not call matrix green or attribute it to current HEAD without ancestry reconciliation. Qwen run `46053311477` previously recorded SUCCESS; re-poll before relying on it.
 - No tests rerun, no RTL/ISA changes, no PPA, spend, hardware or QPU action. Do not rerun previously passed RTL groups 3.1/3.2/4 or cancelled run `45765362426`. Zero spend. Manufacturer handoff NOT READY.
+
+
+## 2026-11-28 — existing LLM serving and profiling infrastructure mapped
+
+- Additional source inspection: `opentpu/serve/scheduler.py` already has bounded concurrent request admission, prompt-first scheduling, round-robin active decode, token quantum (default 32), non-polling backend chunk cap (default 64), cancellation/yield checks, and card/host decode paths. `opentpu/serve/store.py` supports host RAM/disk KV context persistence, prefix matching, pinning and tiered eviction.
+- `tests/test_serve_scheduler.py` covers multi-request correctness, shared prefix, stop/max_new/cancel, disk persistence and stateful conversation continuation; not executed in this inspection.
+- Trace/profiling foundation: `opentpu/hwtrace.py`, `tools/tmem_trace.py`, `opentpu/rtlsim.py`, `opentpu/isasim.py`. Endpoint benchmark captures TTFT/latency and server usage, not wall power or independent quality. Retrieval benchmark measures ranking quality and embedding/rerank timing on labelled data.
+- Strategic consequence: build the initial LPU as measured runtime/scheduler capability around existing engines; tune existing queue, prefill/decode fairness, cache, memory and DMA paths before proposing a new hardware block. Default 32/64 token values are baselines, not optimised recommendations.
+- Inventory addendum commit: `1f30da07c54dcaa93287ef92057a0b40130305d4`.
+- Software-core run `46053311585`: last job poll still has only waits job `140738728795` IN_PROGRESS; other 14 jobs SUCCESS. Qwen run `46053311477` was rechecked in this session (see tracker update for state).
+- No new tests, RTL changes, PPA, spend or hardware actions. Historical exclusions and main no-write rule unchanged.
