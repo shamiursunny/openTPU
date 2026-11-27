@@ -530,3 +530,10 @@ Keep G3 width warnings and formal/CDC/RDC/DFT/physical gates open. PPA remains u
 PPA run 45877786710 / job 140109157212 is terminal FAILURE at ORFS `2_4_floorplan_pdn` (exit 247). Artifact 15152974135 was downloaded and inspected. It proves host OOM-killer activity: cgroup `oom_kill=1`, peak `memory.peak=16,155,115,520` bytes, host MemTotal 16,366,484 kB; cgroup `memory.max=max`. ORFS stage log reports 15,713,660 KB peak. No final PPA report or valid PPA metrics. `ORFS_CPUS=2` was correctly propagated through `tools/asic/flow.py` to `NUM_CORES=2` and Docker `--cpus=2`; the addendum's stale proposal to fix ORFS_CPUS propagation is withdrawn. No PPA retry is authorised.
 
 Continue with QHL random-power-up failure diagnosis and review the FSUM synthesizable guard candidate in the real `rtl/seq/otpu_seq.sv` path. Do not claim either fixed without focused verification. Keep formal/SVA, CDC/RDC, DFT, SRAM technology mapping and physical signoff open. Main untouched, no spend, manufacturer handoff NOT READY.
+
+
+## 2026-11-27 continuation update — FSUM guard verified as already implemented
+
+Source review found the FSUM hardware-ingress guard already present in `rtl/seq/otpu_seq.sv`; no implementation change is needed. It checks effective `FSUM` capability (including HAS_SS), permitted EXP2SUB/RSUM functions, EXP2SUB rows 1..256, columns >=64, non-scalar B mode, and pending producer before RSUM take. Invalid commands set error/halted before VPU dispatch; HALT with pending producers reports error. Tests in `tests/test_rtl.py` are verified by workflow 45915615614 job 140233980040: 11 passed, 219 deselected. The addendum's proposed guard implementation is closed as already implemented and focused RTL-pass.
+
+Do not rerun this focused suite without relevant source changes. Keep QHL power-up failure from 45916680829, broader stream/VPU regression, software waits, width warning closure, formal/SVA, CDC/RDC, DFT, technology SRAM mapping and physical signoff open. PPA run 45877786710 is confirmed host OOM; no retry authorised. Main untouched; no spend; manufacturer handoff NOT READY.
