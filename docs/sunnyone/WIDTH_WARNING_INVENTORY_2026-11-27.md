@@ -162,3 +162,15 @@ No RTL was changed. The full 79-warning inventory is retained; all SIM_ONLY labe
 ## Post-fix lint delta — 2026-11-27
 
 After the sequencer loop-stack guard narrowed the checked stack index to sp[1:0], full-chip lint run 45877786797 completed SUCCESS on source commit 28c36c52204fe2ec2ed36413b02eb6043506ccc4. Its archived log now contains 76 width warnings: 52 WIDTHEXPAND and 24 WIDTHTRUNC, down from the 79-warning baseline. The three removed WIDTHTRUNC warnings were the unsafe direct 3-bit sp indices at rtl/seq/otpu_seq.sv lines 1688–1690. This is a measured lint delta, not complete width-warning closure. The 7 simulation-only LATCH diagnostics and 3 UNOPTFLAT diagnostics remain.
+
+
+
+## 2026-11-28 measured remediation delta
+
+Baseline inventory above is retained as historical source evidence. On source commit `05879ea34eafc2559c54722c6c940b2acb9ac3ee`, two classes of VPU truncation diagnostics were corrected without changing selected indices:
+- 24 VPU function-mask selects now use an explicit 5-bit cast. The source constants `V_ADD..V_MAC` are all within 0..23, so the 5-bit index selects the same bit in the 24-bit mask.
+- The row-sum buffer now uses `RBW = $clog2(NRB / LANES)` and exact `[LW +: RBW]` part-selects for both write and read indices. The synthesizable sequencer rejects FSUM producer shapes outside rows 1..256, cols >=64 and non-scalar B mode; the VPU enables RDOT buffering only for <=256 rows with stride 1. `rows_done` is a zero-based row counter reset at begin; the last legal index is 255. The flush starts at zero and advances by LANES; the final valid group begins at or before 255. Existing FSUM tests cover the inclusive 256-row boundary and reject 257 rows.
+
+Full-chip lint run `46053311384` on the corrected source passed with 52 WIDTHEXPAND and 7 WIDTHTRUNC warnings (59 width warnings total), down from 52 + 24 = 76. The seven remaining truncation diagnostics are five MXU array-index warnings and two behavioral DRAM associative-array `exists()` condition warnings. The two DRAM warnings are simulation-model code; confirm the exact ASIC source closure excludes this model. The five MXU indices remain OPEN until their individual range guards and array bounds are proven.
+
+Dedicated regression run `46053329340` did not reach simulation: apt Verilator 5.020 failed compiling an existing `otpu_se_tail.sv` instantiation. Workflow now pins Verilator 5.044; run `46053471843` is pending/in progress. No functional regression pass is claimed until it completes.
