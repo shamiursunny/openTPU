@@ -484,3 +484,14 @@ Main is still d84db55712aba0d40811d7762cb052f05d55b7e5 and untouched. Preserve n
 - Full-chip lint 45915615693 passed with 0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT diagnostics remain to triage. Do not equate the 7 Verilator LATCH warnings with inferred synthesized latch cells: the three audited elaborations contain zero latch cells.
 - Four-DIMM WG8 host AXI integration 45914912733 and the clean full RTL-tail suite remain in progress. No PPA rerun; prior OOM diagnosis remains.
 - Manufacturer handoff remains NOT READY. Width closure, full RTL-tail result, four-DIMM integration, formal/SVA, CDC/RDC, DFT and physical/timing gates remain open.
+
+## 2026-11-27 integration and focused regression terminal update
+
+- ASIC/target configuration workflow 45914912733: SUCCESS. Chip, memory and WG8 DDR4 top lint stages completed; four-DIMM host/accelerator AXI contention simulation passed. Evidence: four DIMM hmuxes; simultaneous host/accelerator AW/AR contention; alternating grants; ordered two-beat W bursts; B/R ID routing; independent backpressure. Simulation finished at 320 ns.
+- ASIC config lint emitted 99 WIDTH warning occurrences and 3 UNOPTFLAT occurrences across its top elaborations. These are not cleared by the structural SCC result; width cleanup remains open. The two MIG-pair AW/AR port width mismatches (33-bit pair output into 34-bit host mux signal) need explicit zero-extension via 33-bit intermediate nets, preserving the existing 34-bit address checks.
+- FSUM guard focused workflow 45915615614: 11 passed, 219 deselected (153.05 s).
+- Isolated 128K one-copy TMEM workflow 45915615624: 2 passed, 228 deselected (118.59 s).
+- Sequencer loop-stack boundary workflow 45915615653: 2 passed, 228 deselected (51.10 s).
+- Clean broad RTL-tail workflow 45915615625 remains IN PROGRESS. Qwen, board-functional, subsystem/memory and software/ISA workflows also remain queued/in progress as separately listed in GitHub. Do not mark their gates complete until terminal logs are inspected.
+- Structural audit 45914912691 remains PASS: reset 4/4; one-copy, two-slice and actual ASIC top each 0 SCC / 0 latch cells.
+- No PPA rerun. Manufacturer handoff remains NOT READY.
