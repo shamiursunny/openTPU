@@ -503,3 +503,12 @@ The prior wording that the exact seed-3 power-up case “passes” refers specif
 The no-trace A/B run 45914084753 reproduced `test_random_power_up[1-3]`: the FSUM-guard source failed and the pre-FSUM source passed. The candidate tail-init flush fix must therefore remain PROVISIONAL until clean non-trace broad RTL-tail run 45915615625 and the stream RTL/ISA suite complete. Do not state that seed-3 is closed before inspecting those terminal logs.
 
 The temporary `tb_top.sv` hierarchical monitor, trace test helper and temporary A/B workflow were removed/restored in commits 6290b360 and 425e794. A failure-only `$display` diagnostic remains inside the simulation-only tail assertion in `rtl/vpu/otpu_se_tail.sv`; it does not affect synthesis. Structural/reset audit 45914912691 is terminal PASS (reset 4/4; three tops 0 SCC/0 inferred latches), and ASIC integration 45914912733 is terminal PASS. See the current checkpoint for all other run states.
+
+
+## 2026-11-27 — current ASIC width fix and no-trace verification state
+
+Latest source commit: 600f3aa4822e18f03ba80d06ab86fd447189c126. It explicitly zero-extends 33-bit otpu_mig_pair AW/AR outputs into 34-bit host-mux nets through PAIR_AW intermediate signals. ASIC config run 45916680920 is validating the change; control/compute, native-memory and four-DIMM AXI lint stages passed, host AXI simulation is running. Full-chip lint 45916680866 passed with 0 errors but the 76 width, 7 LATCH and 3 UNOPTFLAT warnings remain in the generic full-chip lint set.
+
+Critical power-up qualification: trace-enabled seed-3 pass 45915433368 is supplementary only. No-trace A/B 45914084753 still showed pre-FSUM pass / post-FSUM failure. Candidate init-flush fix remains provisional until clean no-trace broad RTL-tail run 45916680719 and stream RTL/ISA suite finish. Earlier no-trace run 45915615625 was cancelled during its test step by a subsequent commit; it is inconclusive.
+
+Reset audit 45914912691 and ASIC integration 45914912733 are terminal PASS; new reset audit 45916680730 is running on the current AW/AR fix. Focused FSUM 11/11, loop-stack 2/2 and isolated 128K TMEM 2/2 passed on commit 6290b360. Qwen, software, subsystem/WG8 and board runs are pending/queued under 45916680844, 45916680756, 45916680829 and 45916680721. See tracker section 120 for full evidence. Main remains untouched; PPA not authorised; manufacturer handoff NOT READY.
