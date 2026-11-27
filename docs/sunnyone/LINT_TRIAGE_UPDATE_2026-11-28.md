@@ -62,3 +62,9 @@ The RTL source commit matched existing broad `rtl/**` push filters. It automatic
 - Do not rerun historical groups solely to reconfirm passed evidence.
 - No physical silicon, production performance, routed signoff or manufacturer acceptance claim.
 - Manufacturer handoff remains **NOT READY**.
+
+
+
+## Source-closure confirmation for behavioral DRAM warnings
+
+The two `otpu_dram.sv` `exists()` diagnostics are confirmed SIM_ONLY for ASIC synthesis: `tools/asic/flow.py:sources()` uses `opentpu.target.sources()`; its `CORE` list contains the synthesizable TMEM/ACTRAM/sequencer/VPU/DMA/MXU/slice core but not `rtl/mem/otpu_dram.sv`. The behavioral associative-array model is therefore not in the ASIC source closure. Keep these two generic full-chip simulation-lint diagnostics visible, but do not classify them as ASIC hardware-width defects or alter simulation-model behaviour to silence them.
