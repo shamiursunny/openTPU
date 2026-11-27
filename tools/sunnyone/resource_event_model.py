@@ -190,6 +190,7 @@ class ResourceEventModel:
             raise ValueError("trace and service profile tick_unit differ")
         self._trace_hash = header["replay_sha256"]
         chunk = _positive_int("trace prefill_chunk_tokens", header["prefill_chunk_tokens"])
+        self._trace_chunk = chunk
 
         for event in events:
             kind = event.get("kind")
@@ -199,10 +200,16 @@ class ResourceEventModel:
 
         while self._events:
             tick = self._events[0][0]
-            self._now = tick
             batch: list[tuple[int, int, int, str, str, dict[str, Any]]] = []
             while self._events and self._events[0][0] == tick:
                 batch.append(heapq.heappop(self._events))
+            batch = [item for item in batch if item[3] != "STAGE_COMPLETE" or
+                     (item[5]["resource"] in self.resources and
+                      item[4] in self.resources[item[5]["resource"]].active and
+                      self.resources[item[5]["resource"]].active[item[4]][0] == tick)]
+            if not batch:
+                continue
+            self._now = tick
             # Resource completions (priority 0) are handled before exogenous events.
             batch.sort(key=lambda item: (item[1], item[2]))
             for _, _, _, kind, request_id, payload in batch:
@@ -280,7 +287,6 @@ class ResourceEventModel:
                 start = self._now
                 end = start + duration
                 resource.active[request_id] = (end, start, units)
-                resource.busy_ticks += duration
                 resource.queue_wait_ticks += start - enqueued_tick
                 resource.operations += 1
                 state.queue_wait_ticks += start - enqueued_tick
@@ -290,7 +296,10 @@ class ResourceEventModel:
         state = self.requests.get(request_id)
         resource = self.resources[payload["resource"]]
         active = resource.active.pop(request_id, None)
-        if active is None or state is None or state.terminal_reason is not None:
+        if active is None:
+            return
+        resource.busy_ticks += self._now - active[1]
+        if state is None or state.terminal_reason is not None:
             return
         if state.phase == "DECODE" and state.first_token_tick is None:
             state.first_token_tick = self._now
@@ -302,7 +311,9 @@ class ResourceEventModel:
         state.terminal_reason = reason
         # Abort immediately releases any active resource and invalidates its queued completion.
         for resource in self.resources.values():
-            resource.active.pop(state.request_id, None)
+            active = resource.active.pop(state.request_id, None)
+            if active is not None:
+                resource.busy_ticks += self._now - active[1]
             if resource.waiting:
                 resource.waiting = deque(item for item in resource.waiting if item[1] != state.request_id)
 
