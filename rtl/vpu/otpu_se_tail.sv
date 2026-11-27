@@ -273,8 +273,11 @@ module otpu_se_tail
   otpu_delay #(.W(8), .N(SL)) u_rd (.clk, .en(pe), .d(rr), .q(rd));
 `ifndef SYNTHESIS
   always_ff @(posedge clk)
-    if (!rst && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1)
+    if (!rst && pe && 32'(kv_v) + 32'(e2) + 32'(e3) > 1) begin
+      $display("otpu_se_tail: state rst=%0d pe=%0d init=%0d in_v=%0d cfg=%h ns=%0d x0=%h jn=%0d kv_v=%0d e2=%0d e3=%0d rv=%0d rr=%0d",
+               rst, pe, init, in_v, cfg, ns, x0, jn, kv_v, e2, e3, rv, rr);
       $fatal(1, "otpu_se_tail: two rows' d slots meet (kv_v %0d e2 %0d e3 %0d)", kv_v, e2, e3);
+    end
 `endif
   // a pair's head at D: slot 1's row (rr, with its kv) and slot 3's (2 SL pe cycles later)
   logic  hd1, hd3;

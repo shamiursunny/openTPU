@@ -53,10 +53,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: fsum-guard
-            ref: ebd3e4c95d9adb027fe01b81342492e4bf7f4e9a
-          - label: pre-fsum-guard
-            ref: 0d367ba1906b8e187e6e2feb2db576364d85b4fb
+          - label: current-fsum-guard-debug
+            ref: ${{ github.sha }}
     name: Power-up A/B (${{ matrix.label }})
     steps:
       - uses: actions/checkout@v4
