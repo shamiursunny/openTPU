@@ -3324,3 +3324,13 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Source/interface/workload spec blob: `d224ab00f35871a9c9fdd8e423b508ff245800c8`; source inventory blob after link: `18c055222993e8c022e0b5191ba4999acebb1493`.
 - Live branch HEAD at this confirmation: `52dd39718a0c17a133619e43e48b7b3699aa9bc1`; compare to main: 1,110 ahead / 0 behind. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched. Re-poll final branch and blob SHAs after the checkpoint save.
 - The waits-only retry job `140775908058` remained IN_PROGRESS at the last live poll; this remains the sole outstanding test recovery. No duplicate module jobs.
+
+
+## 139. 2026-11-28 — deterministic workload trace generator validated
+
+- Implemented `tools/sunnyone/workload_trace.py` (commit `3b03f52ad525f7f4c38d212dbd2ecab7a83a9353`) for validated request-level workload inputs and deterministic JSONL event generation. Events cover arrival, fault, cancellation and deadline; integer ticks, stable same-timestamp ordering, explicit request/model/checkpoint/tokenizer/template metadata and replay SHA-256 are enforced.
+- Added `tests/test_sunnyone_workload_trace.py` (commit `b8451c5393bc22d02512182349395bfca27c2913`), 10 focused unit tests. Updated the isolated harness compile step (workflow commit `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`).
+- Workflow `46080190053`, job `140777139012`, terminal SUCCESS on tested head `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`. Exact log: combined SUNNYONE harness **16 tests in 0.513s, OK** (10 workload trace, 3 endpoint benchmark, 3 retrieval metrics). Superseded workflow `46080182042` was cancelled by the workflow concurrency rule and replaced by the passing run.
+- The generator is input-trace-only. It does not model resource service, engine cycles, performance, power, energy or temperature. No performance claim may be inferred.
+- Updated source/workload spec commit `ca4df9a19bb2f62d71d169ce368a52a58b438b7c`; updated continuation addendum commit `6bf9a5479093abde62c49053eaa84a0784913349`.
+- Next: build the separate integer-time discrete-event resource model with explicit, versioned service profiles; no invented service times or energy coefficients. Correlate its events with actual RTL traces. The waits-only software regression job `140775908058` was still IN_PROGRESS at the last poll; keep polling that exact job and do not rerun the other 14 successful modules.
