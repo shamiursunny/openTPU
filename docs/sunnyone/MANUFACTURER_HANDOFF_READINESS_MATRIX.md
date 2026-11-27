@@ -232,3 +232,8 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 ## 2026-11-27 additional regression evidence
 
 The latest subsystem/memory workflow 45916680829 exposed a QHL random-power-up failure: `test_qhl_power_up_rtl[1-False]` failed at `rtl/vpu/otpu_se_tail.sv:281` with `kv_v=0,e2=1,e3=1`, `init=0`; six sibling QHL tests passed. Keep the general regression/readiness gate OPEN until this is explained and corrected or the assertion invariant is rigorously revised. The separate RTL-tail selection (45916680719, 33 passed/1 skipped) does not close the QHL case. The ASIC config run 45916680920 passed; the bad AW/AR aperture assertions were expected negative-test rejections and must not be misclassified as failures. Software waits job 45916680756 was cancelled. No readiness gate is upgraded solely from these results. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-27 — PPA resource failure evidence
+
+PPA run 45877786710 is FAILED at ORFS floorplan PDN (exit 247). Downloaded artifact 15152974135 confirms host OOM-killer activity: `oom_kill=1`, peak cgroup-accounted memory 16,155,115,520 bytes, host MemTotal 16,366,484 kB, while cgroup `memory.max=max`. This is not a completed PPA result and supplies no signoff area/timing/power metrics. The run had `ORFS_CPUS=2` correctly propagated to ORFS `NUM_CORES=2` and Docker `--cpus=2`; prior suspected propagation mismatch is disproven for this source. No PPA retry authorised. Physical implementation and timing/power signoff remain OPEN / BLOCKED. No handoff readiness upgrade.
