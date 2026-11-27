@@ -68,3 +68,8 @@ The RTL source commit matched existing broad `rtl/**` push filters. It automatic
 ## Source-closure confirmation for behavioral DRAM warnings
 
 The two `otpu_dram.sv` `exists()` diagnostics are confirmed SIM_ONLY for ASIC synthesis: `tools/asic/flow.py:sources()` uses `opentpu.target.sources()`; its `CORE` list contains the synthesizable TMEM/ACTRAM/sequencer/VPU/DMA/MXU/slice core but not `rtl/mem/otpu_dram.sv`. The behavioral associative-array model is therefore not in the ASIC source closure. Keep these two generic full-chip simulation-lint diagnostics visible, but do not classify them as ASIC hardware-width defects or alter simulation-model behaviour to silence them.
+
+
+## 2026-11-28 focused VPU regression final result
+
+The pinned-toolchain regression described in section 3 is now complete. Workflow `46053471843` / job `140690259477` succeeded on source `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`: `tests/test_se_vpu.py` reported **31 passed in 476.99s**; raw FSUM ingress and 256-row boundary tests reported **11 passed, 219 deselected in 211.80s**. Artifact `15225689330` contains both summaries. This closes the focused regression gate for the recorded VPU change only; it does not close full-chip lint or broader functional signoff. The earlier apt Verilator 5.020 build failure `46053329340` remains a toolchain failure, not a functional RTL failure.
