@@ -3292,3 +3292,13 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - RTL trace tooling can decode unit dispatch/grants/completions and TMEM access contention. Endpoint benchmark measures TTFT/latency and reported token usage but explicitly does not measure wall power or independently score output quality. Retrieval benchmark reports ranking metrics on labelled data.
 - Revised lowest-cost direction: first benchmark and tune existing scheduler/runtime/cache and trace/profile pipeline; do not add dedicated LPU silicon unless measured bottleneck remains after software and existing MXU/VPU/TMEM/DMA optimisation.
 - Current software-core workflow `46053311585`: targeted waits job `140738728795` remains IN_PROGRESS; other 14 jobs SUCCESS. Qwen workflow `46053311477` must be re-polled for current state. No new tests launched.
+
+
+## 136. 2026-11-28 — workflow ancestry reconciled after plan commits
+
+- Live branch head after plan/inventory/checkpoint commits: `696bd657500a0cfbf2ea42e38afa7fb6adc0e888`.
+- GitHub compare confirms workflow source `05879ea34eafc2559c54722c6c940b2acb9ac3ee` is an ancestor of the current branch (current branch is 42 commits ahead, 0 behind that source). Thus the workflows did run against an ancestor revision, not an unrelated history; they do not validate the 42 subsequent commits or the new documentation.
+- Current branch comparison against main baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`: 1,103 ahead / 0 behind. Main remains untouched.
+- Qwen run `46053311477`: terminal SUCCESS. Attribute only to source SHA `05879ea...` and its configured scope; not a physical performance, power or fine-tuning result.
+- Software-core run `46053311585`: attempt 2 remains IN_PROGRESS because isolated waits job `140738728795` is still executing; other 14 jobs are SUCCESS. No overall pass claim. Continue polling this exact job; do not launch another suite.
+- Next engineering path: use existing scheduler/cache/trace tools; create deterministic workloads and baseline measurements. No new tests launched in this step.
