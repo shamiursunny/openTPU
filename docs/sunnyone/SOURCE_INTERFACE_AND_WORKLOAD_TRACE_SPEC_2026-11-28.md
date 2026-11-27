@@ -151,3 +151,12 @@ Energy and thermal reporting are deliberately conditional:
 6. Tune the existing scheduler/cache/compiler/runtime before proposing new RTL. Any hardware proposal needs a measured bottleneck, interface/error contract, resource estimate, formal properties and focused tests.
 
 No RTL, ISA, PPA, workflow, hardware or external service was changed or run while preparing this map. Manufacturer handoff remains NOT READY.
+
+
+## 9. Trace generator implementation status — 2026-11-28
+
+- Implemented `tools/sunnyone/workload_trace.py` (commit `3b03f52ad525f7f4c38d212dbd2ecab7a83a9353`). It validates a JSON workload specification, emits request arrival/fault/cancel/deadline events, applies deterministic integer-tick ordering and writes canonical JSONL with a SHA-256 replay hash.
+- Implemented `tests/test_sunnyone_workload_trace.py` (commit `b8451c5393bc22d02512182349395bfca27c2913`) covering deterministic bytes/hash, equal-timestamp ordering, defaults, invalid ticks, duplicate IDs, invalid fault fields, unknown fields and absence of invented service/energy values.
+- Updated `.github/workflows/sunnyone-workload-harness.yml` to compile the generator (commit `88e3f5636d9d1818e59e8309e7bd26fa7c07e807`). Workflow `46080190053`, job `140777139012`, completed SUCCESS on that exact head. The combined SUNNYONE deterministic harness ran **16 tests in 0.513s: OK**, including 10 workload-trace tests, 3 endpoint benchmark tests and 3 retrieval metric tests.
+- Superseded harness run `46080182042` was cancelled by the workflow concurrency rule when the workflow-file update pushed the newer revision; the replacement `46080190053` is the successful evidence. No other CI suite was triggered by this targeted harness change.
+- This is an exogenous request-trace generator only. It does not yet model resource service time, compute cycles, throughput, power, energy or thermal behaviour. Those remain the next separate implementation and require explicit versioned service profiles.
