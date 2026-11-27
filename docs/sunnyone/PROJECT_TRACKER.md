@@ -3234,3 +3234,15 @@ See `MATRIX_FIRST_QUANTUM_HYBRID_ARCHITECTURE_2026-11-28.md`.
 - Qwen workflow `46053311477`: SUCCESS after every step, including real-checkpoint RTL selection and eight tiny board-model cases.
 - Software-core workflow `46053311585`: workflow conclusion CANCELLED; waits job CANCELLED, other listed module jobs SUCCESS. Do not report the full software matrix as passed. Identify the exact waits test coverage gap before considering an isolated run.
 - New architecture document is documentation-only. No RTL, test, workflow, PPA, hardware or external quantum service was changed or run. Manufacturer handoff remains NOT READY; zero-spend and historical test exclusions remain.
+
+
+## 131. 2026-11-28 — MXU raw-command bounds investigation and isolated waits recovery
+
+See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
+
+- Confirmed ISA contract: `0 < M <= ACT_ROWS`; RMAX/ASCALE/PAIR require `M <= MCOLS`; PAIR additionally `2*M <= MCOLS`.
+- RTL trace: `cmd_e.M` is copied directly from `cmd.w6[23:16]`; command acceptance is on `start`. The MXU dimension/PAIR/RMAX/ASCALE checks are within `ifndef SYNTHESIS`, hence simulation-only. RMAX/ASCALE's `M<=MCOLS` assertion is additionally conditional on `GA` (WG>1), leaving WG=1 without that assertion. Synthesizable RMAX lane writes index `mx_key[MW'(mx_i+k)]` under the derived lane mask.
+- Sequencer raw-command checks include the FSUM-specific `fsum_bad` guard; reviewed dispatch has no corresponding generic MM shape guard. This is a potential malformed-program hardware bounds-safety gap, not a demonstrated legal-program failure.
+- No RTL patch made: the MXU has no general error output, so the correct reject path must be designed against the sequencer/wrapper status contract. Required boundary tests and assertions are specified in the investigation note. No casts, clamps or warning suppressions.
+- Software-core run `46053311585`: 14 module jobs succeeded; only `tests/test_waits.py` job `140689717010` was cancelled. GitHub accepted a targeted rerun of that single job (attempt 2). At note creation it was in progress; no other jobs repeated.
+- No broad regression, protected-main write, PPA retry or spend. Manufacturer handoff remains NOT READY.
