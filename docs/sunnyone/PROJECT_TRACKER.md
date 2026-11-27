@@ -3334,3 +3334,15 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - The generator is input-trace-only. It does not model resource service, engine cycles, performance, power, energy or temperature. No performance claim may be inferred.
 - Updated source/workload spec commit `ca4df9a19bb2f62d71d169ce368a52a58b438b7c`; updated continuation addendum commit `6bf9a5479093abde62c49053eaa84a0784913349`.
 - Next: build the separate integer-time discrete-event resource model with explicit, versioned service profiles; no invented service times or energy coefficients. Correlate its events with actual RTL traces. The waits-only software regression job `140775908058` was still IN_PROGRESS at the last poll; keep polling that exact job and do not rerun the other 14 successful modules.
+
+
+## 140. 2026-11-28 — resource event model and trace lifecycle validation
+
+- Implemented `tools/sunnyone/resource_event_model.py` and 18 focused tests. It consumes validated workload JSONL and mandatory explicit/versioned service profiles; supports prefill chunking, token-by-token decode, ordered phase stages, FIFO resource queues, finite capacities, cancellations/faults, deadlines, TTFT and resource occupancy.
+- Hardened trace input validation: exact event schema, hash/count/sequence/order, request identity, required arrival metadata, positive token lengths, arrival-before-control, unique controls and fault-kind validation.
+- Workflow `46081103514`, job `140780031472`, tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`: **SUCCESS, 34 tests passed in 0.517s** (18 model, 10 trace generator, 3 endpoint, 3 retrieval). No failed tests in final tested revision. Intermediate failures from earlier iterations were corrected and retained in run history.
+- Added `docs/sunnyone/RESOURCE_EVENT_MODEL_SPEC_2026-11-28.md`; updated `SOURCE_INTERFACE_AND_WORKLOAD_TRACE_SPEC_2026-11-28.md` and continuation addendum. The model has no production or RTL-calibrated profile; synthetic unit-test profiles only. No chip throughput/power/energy/thermal/cost claims.
+- Calibration inputs inspected: `opentpu/hwtrace.py` D/S/G/E plus U/P/Q/H groups, and `tools/tmem_trace.py` TMEM read/write/instruction/flow statistics. No trace correlation adapter exists yet.
+- Next: implement exact-source trace correlation, explicit scheduler admission/tenant-fairness semantics, W1/W2/W3 fixtures, then MXU bounds, width warning review, formal/CDC/DFT/physical gates.
+- Software-core waits-only retry `140775908058` in run `46053311585` remains IN_PROGRESS at the latest check. It is attempt 3; other 14 module jobs remain passed and must not be rerun.
+- Manufacturer handoff remains NOT READY. No RTL/ISA/PPA source, paid compute, fabrication or hardware spend changed in this milestone.
