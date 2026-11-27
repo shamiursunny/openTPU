@@ -57,3 +57,13 @@ All listed runs were queried from the live repository:
 
 ## Resume
 Read this addendum, `CURRENT_CONTINUATION_CHECKPOINT_2026-11-28.md`, the integrated plan, `PROJECT_TRACKER.md` and `MANUFACTURER_HANDOFF_READINESS_MATRIX.md`; then re-resolve the live branch HEAD and Actions states before any write or test.
+
+
+## MXU RMAX index safety follow-up — source/ISA cross-check
+
+A deeper review of `rtl/mxu/otpu_mxu.sv` and `docs/isa.md` refined the open MXU index issue:
+- ISA source blob `89a2886ab775717db26b856f267397bcbd3cb8ba`, MM contract around lines 230–250: RMAX and ASCALE require `M <= MCOLS`; PAIR also requires `M <= MCOLS` (and `2*M <= MCOLS` for PAIR). RMAX/ASCALE with weight groups are allowed only under GALL.
+- MXU source blob at review `3dfdec588933cdc5823d1780bd8b251aba0098e7`: `c_M = h.M`; `h.M` is loaded directly from `cmd.w6[23:16]`; `mx_key` has depth `MCOLS`. RMAX lane enables are derived from `mx_i + k < c_M`, and the synthesizable write reads `mx_key[MW'(mx_i+k)]` when `mxm[k]` is set.
+- The source review found no explicit RMAX/ASCALE/PAIR `M <= MCOLS` rejection in `otpu_mxu.sv` or the sequencer's current MM command validation. The ISA legality precondition is therefore documented, but its hardware enforcement for malformed raw instructions is not yet established.
+- Treat this as a **potential malformed-command bounds-safety gap**, not a proven failure for legal ISA programs. Before any RTL patch, trace the command loader/program validation contract and all MXU/seq parameter wiring. If malformed instructions can reach the MXU, design a synthesizable error/reject path for the unsupported shapes and add focused raw-command boundary tests. Do not narrow/cast the index merely to silence lint.
+- The `dlane_a` access at line 2247 remains source-guarded by 32-bit `j+k < MCOLS`; its sum is representable in `MW=$clog2(MCOLS)+1` and remains below the array bound under that guard. Generic lint still reports the wider-than-needed index.
