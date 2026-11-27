@@ -144,3 +144,41 @@ Read `docs/sunnyone/UNIFIED_NPU_TPU_LPU_PETASCALE_AI_ARCHITECTURE_2026-11-28.md`
 - Workflow source `05879ea34eafc2559c54722c6c940b2acb9ac3ee` is an ancestor of current branch (42 commits behind HEAD, 0 ahead). Existing CI evidence therefore covers that ancestor only, not later commits or new docs.
 - Qwen run `46053311477` is terminal SUCCESS on the ancestor source, limited to its configured RTL/model-checkpoint scope.
 - Software-core run `46053311585` attempt 2 remains IN_PROGRESS only for waits job `140738728795`; other 14 module jobs are SUCCESS. Poll this exact job; no duplicate CI.
+
+
+## 2026-11-28 04:57 Asia/Dhaka — continuation refresh
+
+Read first on the next continuation:
+1. `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0457.md`
+2. `docs/sunnyone/SOURCE_INTERFACE_AND_WORKLOAD_TRACE_SPEC_2026-11-28.md`
+3. `docs/sunnyone/INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md`
+4. `docs/sunnyone/PROJECT_TRACKER.md`
+5. `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
+
+### Live state and constraints
+- Repository: `shamiursunny/openTPU`.
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Feature branch HEAD at the start of this refresh: `fbb5e5f601e16225712f94812a8d41b3517397e5`; documentation commits in this refresh: source/workload spec `53012371e598c8ce546e91770caaff93f8cf0063`, inventory link `986d54c0fccfa57a2c5c566c7c483f7551427811`, tracker update `a2463c647e70aee5d571ea13de7814d30ca05d77`. Re-poll the live branch ref after the final checkpoint/addendum commits.
+- Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare before this checkpoint update: 1,107 ahead / 0 behind. GitHub API reports main branch protection disabled (`protected=false)); never write to main regardless.
+- Zero spend. No PPA retry, no paid compute/PDK/IP, no fabrication, packaging, hardware or lab expenditure without explicit approval. Do not rerun historical RTL groups 3.1/3.2/4 or cancelled run `45765362426`.
+
+### Latest test reconciliation
+- VPU focused workflow `46053471843`: SUCCESS; 31 `test_se_vpu.py` tests plus 11 raw FSUM ingress/boundary tests passed (219 deselected), source `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`, artifact `15225689330`.
+- Qwen workflow `46053311477`: SUCCESS on source `05879ea34eafc2559c54722c6c940b2acb9ac3ee`; real Qwen3/Qwen3.5 checkpoints, selected RTL tests and eight tiny board-model tests completed. Simulation only.
+- Board, subsystem/memory, tail, reset audit, ASIC config and full-chip lint runs `46053311399`, `46053311328`, `46053311551`, `46053311560`, `46053311358`, `46053311384` are terminal SUCCESS on the same ancestor source `05879ea...`. Lint is not warning-free: 52 WIDTHEXPAND, 7 WIDTHTRUNC, 7 LATCH diagnostics and 3 UNOPTFLAT remain.
+- Software-core run `46053311585`: 14 module jobs succeeded. Only waits module job was cancelled at about 85%; attempt 3 retry of that single job is job `140775908058`, IN_PROGRESS at last poll. Poll this job only; do not rerun other modules.
+- Tested source ancestry: VPU source `40ce5cbd...` is 42 commits behind current branch at the ancestry check; software/Qwen source `05879ea...` is 44 commits behind. Preserve this limitation.
+
+### New source/workload map
+- New document: `SOURCE_INTERFACE_AND_WORKLOAD_TRACE_SPEC_2026-11-28.md`. It records source blob IDs and verified ASIC wrapper/compute/slice, unit handshake, TMEM, memory-channel and software LPU boundaries.
+- W1 single-request, W2 concurrent mixed, W3 burst/contention/cancel/fault, and conditional W4 long-context/KV pressure are defined as deterministic fixture classes. The next implementation is a request-trace generator and explicit-profile event model. Unknown service times must remain unset; no fabricated cycle, bandwidth, power or energy values.
+- Existing software scheduler defaults (32-token quantum, 64-token non-polling chunk cap) are baselines, not optimised values. Correlate scheduler/event traces with `opentpu/hwtrace.py` and `tools/tmem_trace.py` before considering RTL changes.
+
+### Remaining engineering gates
+1. Finish the isolated waits-only job and archive exact pytest summary.
+2. Implement and test deterministic workload trace schema/generator; then build the resource event model using explicit, versioned service profiles only.
+3. Prove MXU `mx_key` command bounds for all supported configurations; design synthesizable rejection only if malformed raw programs can reach the path.
+4. Continue semantic width-warning review, formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes, DMA/IOMMU, DDR controller/PHY/training/ECC, routed physical/timing/power/thermal qualification.
+5. Keep Track A full accelerator separate from Track B demonstrator. No down-select/fabrication until technical, PDK, area/timing, DFT and full sponsorship/sample logistics are evidenced.
+
+Manufacturer handoff remains **NOT READY**. This refresh changed documentation only; no RTL, ISA, test or workflow source was modified and no new test was launched except the previously accepted waits-only job rerun.
