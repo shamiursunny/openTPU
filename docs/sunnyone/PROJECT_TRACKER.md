@@ -3201,3 +3201,11 @@ See `CONTINUATION_ADDENDUM_2026-11-28_0220.md` and `CURRENT_CONTINUATION_CHECKPO
 - MXU `dlane_a` index has a source-level guard proof; the synthesizable `mx_key` access at line 2663 still requires full `c_M`/MCOLS proof before any RTL change.
 - Feature branch at the pre-documentation poll was `75a02e23bfb1b841be4805914659c4823252c370`; compare was 1,072 ahead / 0 behind protected baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`. All documentation changes remain on the feature branch.
 - No PPA retry or spending. Manufacturer handoff remains **NOT READY**; formal/SVA, CDC/RDC, DFT, technology mapping, production interfaces, DDR PHY, routed physical signoff, power/thermal and demonstrator sponsorship gates remain open.
+
+
+## 128. 2026-11-28 — MXU RMAX bounds-safety review
+
+- ISA document `docs/isa.md` (blob `89a2886ab775717db26b856f267397bcbd3cb8ba`) requires `M <= MCOLS` for RMAX and ASCALE; PAIR also requires `M <= MCOLS` and `2*M <= MCOLS`. RMAX/ASCALE with weight groups are restricted to GALL.
+- In `rtl/mxu/otpu_mxu.sv`, `c_M=h.M`, `h.M` is loaded from command `w6[23:16]`, and `mx_key` has `MCOLS` entries. RMAX lane enables depend on `mx_i+k<c_M`; the `mx_key` access is gated by the lane mask.
+- No explicit RMAX/ASCALE/PAIR `M<=MCOLS` reject guard was found in the reviewed MXU or sequencer command path. This is a potential malformed-command bounds-safety gap, not a proven legal-program functional defect. Trace raw program loading, parameter wiring and the hardware legality contract before any RTL edit. If malformed commands can reach this point, add a synthesizable rejection path and focused raw-command tests.
+- Do not silence the MXU index warning with a cast/narrowing until the bound is enforced or proven across every supported configuration. See the 2026-11-28 02:20 continuation addendum follow-up.
