@@ -570,3 +570,10 @@ ASIC-top structural SCC/latch audit 45914201799 is pending at this checkpoint; d
 The corrected A/B power-up run showed that the pre-FSUM snapshot passed and post-FSUM snapshot failed at the tail's D-slot valid overlap. The follow-up diagnostic (45914665954) showed the overlap during init with rst=0, pe=1, kv_v=0, e2=1 and e3=1. The candidate correction in commit 024928752fef7ab774502d2a19f49111cc86b1ff flushes e2/e3/dv on rst||init and suppresses the assertion only on the synchronous init flush edge. This is not yet accepted: prove that it does not discard valid final outputs from the preceding stream, using RTL-vs-ISA comparisons and the current tail/reset audits (45914912747 and 45914912691).
 
 The debug artifact contains a program, DRAM image, sync metadata and textual trace, not a VCD. Do not describe it as a waveform. ASIC-top structural audit had an infrastructure/script failure due to literal escaped newlines; corrected in d43fa38047b250e008e9d25b039708f621b96282 and re-running under 45914912691. Generic SCC results remain scoped to tested configurations until this ASIC-top audit is terminal.
+
+
+## Stream-tail candidate fix — targeted pass, full regression pending
+
+The init-flush candidate (RTL commit 024928752fef7ab774502d2a19f49111cc86b1ff) passes the exact previously failing test_random_power_up[1-3] on run 45915433368 (1 passed, 40.33 s, RTL/ISA comparison completed). This validates the deterministic seed-3 failure correction, but broad stream-tail regression run 45915615625 remains in progress. The temporary tracing and A/B harness was removed by commits 6290b360 and 425e794; the standard unique-random test remains.
+
+Full-chip lint 45915615693 passed with zero errors but still reports 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings. Reset/power-up stage passed in 45914912691; ASIC-top SCC/latch stage is still running. Four-DIMM WG8 integration 45914912733 remains open. Do not claim complete G1/G2 or manufacturer readiness until broad RTL/ISA, ASIC structural and integration evidence is terminal and reconciled.
