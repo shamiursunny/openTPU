@@ -543,3 +543,16 @@ Full incident evidence: docs/sunnyone/PPA_TRIGGER_INCIDENT_2026-11-27.md.
 Two Yosys/Slang flattened-netlist runs passed (45913401437 and independent repeat 45913488085). The one-copy slice and S=2 `otpu_top` each report zero SCCs and zero inferred latch cells. This closes the actual combinational-loop question for generic `gnt`, `pq`, and `sc_gl` in the tested configurations; Verilator UNOPTFLAT warnings remain emitted but are not actual SCCs in those configurations. The two-slice top blackboxes the behavioral associative-array DRAM model; the real slice/collective logic remains elaborated.
 
 The separate ASIC `aok` UNOPTFLAT warning is not covered and remains OPEN. Generic latch absence is not an all-ASIC configuration proof. Continue with ASIC-top SCC analysis, width-warning closure (76 generic warnings plus ASIC DMA/native-DRAM/AW-AR warnings), explicit MIG address extension, formal/SVA and CDC/RDC. Report: docs/sunnyone/STRUCTURAL_SCC_AND_LATCH_AUDIT_2026-11-27.md.
+
+
+## 2026-11-27 continuation reconciliation — power-up, FSUM and structural evidence
+
+The latest live repository reconciliation is recorded in PROJECT_TRACKER.md section 116 and the current continuation checkpoint. Do not use the earlier task order without incorporating these updates.
+
+The FSUM hardware guard has targeted evidence (run 45911471194, 11 passed), but hardware still lacks a producer metadata FIFO to enforce exact oldest-producer RSUM destination/row-count matching. Generic structural SCC/latch audits (45913401437 and 45913488085) report zero SCC and zero inferred latch cells in the tested one-copy slice and S=2 top; ASIC-top aok and ASIC-wide latch evidence remain open. Generic lint remains at 76 width warnings, with additional ASIC-specific width warnings.
+
+A random power-up A/B workflow (45913977727) attempted the exact seed-3 test on pre-FSUM and post-FSUM snapshots, but both jobs failed before simulation because the Ubuntu 24.04 apt Verilator did not recognise --no-assert-case. This is a toolchain failure and provides no comparison. Separately, RTL-tail run 45911471173 reached simulation and failed test_random_power_up[1-3] at otpu_se_tail.sv:277 because kv_v, e2 and e3 overlapped (0,1,1). Treat this as a real unresolved assertion/regression until a compatible Verilator A/B comparison and cycle-level proof establish cause. Do not suppress the assertion or attribute it to FSUM without evidence.
+
+The prior WG8 PPA failure has confirmed cgroup oom_kill=1 at near-host-memory peak on the 16 GB runner. No equivalent-runner retry is acceptable; PPA remains unauthorised without explicit approval. Manufacturer handoff remains NOT READY. Track A full product architecture and Track B small demonstrator remain separate; no PDK, sponsorship, fabrication, packaging, sample access or shipping is confirmed.
+
+Immediate engineering order: (1) pin and capability-check a Verilator toolchain supporting --no-assert-case, then obtain the intended A/B evidence; (2) investigate the otpu_se_tail slot-overlap failure without weakening assertions; (3) implement exact RSUM producer metadata matching and directed tests; (4) close ASIC-top aok SCC/latch and width/AW/AR issues; (5) expand formal/SVA and CDC/RDC; (6) continue memory/interface/DFT/physical/board/manufacturer gates. Preserve zero-spend and protected-main project rules.
