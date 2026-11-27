@@ -176,3 +176,34 @@ Resume trigger in a new chat: **“Continue and complete the remaining tasks.”
 6. Keep manufacturer handoff NOT READY until all mandatory gates and a documented zero-cost fabrication/testing path are independently evidenced.
 
 This handoff records the latest evidence available in this conversation. It does not claim that the QHL trace was completed, that any new test passed, or that RTL was changed. Documentation-only updates do not constitute engineering verification.
+
+
+## Continuation update — board evidence reconciliation, Qwen checkpoint verification and isolated STREAM recovery
+**Supersession notice:** The QHL diagnostic work described as pending in the original 0137 addendum was subsequently completed for the targeted seed-1 assertion case. Use the newer QHL disposition in the current checkpoint and integrated plan. This addendum now records the later board/Qwen/STREAM evidence as follows.
+### Board-functional evidence reconciliation
+- Earlier board-only workflow run `45916680721`, tested commit `600f3aa4822e18f03ba80d06ab86fd447189c126`, completed SUCCESS. Its exact pytest summary was `198 passed, 8 skipped, 1 deselected in 4192.79s`. Eight skips were because optional PyTorch was not installed; one test was deliberately deselected (`axil_iso_resets_apart`). Artifact `15165798436` (`sunnyone-board-functional-only-log`).
+- Later run `46016022808` on `672a4fc13f9f708582f4fca0462a32363654ff93` was CANCELLED; it did not produce a new board result.
+- Commit comparison `600f3aa...672a4fc` shows the only RTL source file changed in that interval was `rtl/vpu/otpu_se_tail.sv`; the change was the simulation-only reset qualification of an assertion, with no datapath/functional logic change. All other compared changes were docs/workflow files. Therefore the earlier 198-pass board evidence remains useful for the unchanged board-functional scope, but is not an exact-current-commit rerun. Do not rerun the ~70-minute board suite solely to reconfirm; retain the exact tested SHA and limitation.
+
+### Real Qwen checkpoint evidence
+- Qwen verification workflow `46016022711` completed SUCCESS on commit `672a4fc13f9f708582f4fca0462a32363654ff93`, after downloading and checksum-verifying real Qwen3-0.6B and Qwen3.5-0.8B safetensors checkpoints (1,503,300,328 and 1,746,942,600 bytes respectively).
+- Board RTL selection: `tests/test_models_on_board_rtl.py -k "qwen3 or qwen35"`: 6 passed, 4 deselected.
+- Board model selection: eight Qwen3 board-model cases including two-slice, generation and four-slice WG cases: 8 passed, 199 deselected.
+- Artifact `15213496541`. This is evidence for the tested checkpoint/model/board-simulation configurations, not a physical FPGA measurement, silicon benchmark, model fine-tuning result, or production throughput claim.
+
+### Full-chip lint interpretation
+- Run `46016022722` completed SUCCESS for the full-chip Verilator lint command, artifact `15206381709`. The command uses `-Wno-fatal`; success means lint completed, not that warnings are cleared.
+- The log retains 79 width warnings and three UNOPTFLAT warnings (`gnt`, `sc_gl`, `pq`) plus seven LATCH diagnostics in simulation-only sequencer oracle blocks. The existing lint triage classifies the seven LATCH warnings as excluded by `SYNTHESIS`; `pq` and `sc_gl` remain probable but unproven tool-dependency over-approximations; `gnt` remains unresolved/high priority. ASIC-config `aok` and AW/AR width findings remain separate open items. No blanket waiver or warning suppression is approved.
+- Static source review of VPU row-sum buffer indices confirmed legal RDOT buffer use is restricted to rows <= 256 and the flush write condition bounds the active rows. The wider index diagnostics are still OPEN pending a robust hardware-side invalid-input/bounds proof and directed boundary tests; no cast/narrowing change was made.
+
+### Isolated STREAM software recovery
+- The previous software-core run `46016022887` failed only at Verilator installation on the Ubuntu 26.04 runner because the Microsoft package repository returned HTTP 403. The stream pytest module never ran; the other 14 software modules succeeded.
+- Added `.github/workflows/sunnyone-stream-software-only.yml` in commit `5ef0c28bdbbb1e8b2b7219b5d37d24e0d6d8a942`. It isolates `tests/test_stream.py`, uses Ubuntu 24.04, builds pinned Verilator 5.044 from source, and deliberately does not rerun the other 14 modules or RTL matrices.
+- Run `46037445046` was automatically triggered by that workflow-file-only commit. At the time of this checkpoint, its sole job `140636330408` was still IN_PROGRESS at step 4 (pinned Verilator build); the Python dependencies and STREAM pytest steps had not started. Do not claim a STREAM result until this run is terminal and its log has been inspected.
+
+### Current gates and next actions
+1. Poll run `46037445046`; if it passes the build, inspect the exact `tests/test_stream.py` pytest summary. If build fails, inspect the failing step before revising the workflow; do not rerun the 14 successful software modules.
+2. Preserve the board result as `198 passed, 8 skipped, 1 deselected` at SHA `600f3aa...`; do not rerun solely because run `46016022808` was cancelled, since the intervening RTL change is assertion-only.
+3. Continue unresolved `gnt` dependency graph and width/bounds triage with exact elaborated configurations; no speculative RTL edits.
+4. Continue formal/SVA, CDC/RDC, DFT, SRAM technology mapping, production PCIe/SerDes and DMA/IOMMU, DDR controller/PHY/training/ECC, routed physical signoff, and demonstrator down-select.
+5. Manufacturer handoff remains **NOT READY**. No sponsor, no-cost fabrication, packaging, test, custody or shipping commitment is confirmed. No paid work is authorised.
