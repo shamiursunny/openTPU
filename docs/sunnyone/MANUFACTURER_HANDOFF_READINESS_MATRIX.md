@@ -191,3 +191,11 @@ ASIC `aok` UNOPTFLAT remains OPEN pending ASIC-top structural SCC analysis. ASIC
 - Random-power-up regression: A/B pre-FSUM passes, post-FSUM guard fails at stream init with e2/e3 valid overlap. Debug artifact 15161492847 captures textual trace/program/DRAM/sync files (no VCD).
 - Candidate stream-tail correction in 024928752fef7ab774502d2a19f49111cc86b1ff flushes e2/e3/dv on rst||init. NOT YET VERIFIED. RTL-tail run 45914912747 and reset/ASIC structural run 45914912691 are in progress; preserve this gate as OPEN until both relevant regression and RTL-vs-ISA output checks pass.
 - ASIC-top SCC audit attempt 45914201799 failed in the generated SRAM stub; corrected in d43fa38047b250e008e9d25b039708f621b96282 and re-running in 45914912691. No ASIC-top closure claim yet.
+
+
+## 2026-11-27 stream-tail validation update
+
+- Stream-tail init flush candidate: targeted exact seed-3 random-power-up regression PASS (45915433368, 1 passed in 40.33 s, RTL/ISA comparison complete). Broad clean RTL-tail run 45915615625 still IN PROGRESS; keep the overall stream gate PARTIAL until it passes.
+- Full-chip lint 45915615693 PASS, 0 errors; 52 WIDTHEXPAND, 24 WIDTHTRUNC, 7 LATCH and 3 UNOPTFLAT warnings remain open. Do not equate Verilator LATCH warnings with synthesized latch-cell counts.
+- Reset/power-up audit step PASS in run 45914912691; ASIC-top flattened SCC/latch stage still IN PROGRESS. Four-DIMM WG8 host AXI integration run 45914912733 still IN PROGRESS.
+- Manufacturer handoff remains NOT READY. PPA not authorised; RSUM producer metadata FIFO, ASIC proof, width, formal, CDC/RDC, DFT and physical gates remain open.
