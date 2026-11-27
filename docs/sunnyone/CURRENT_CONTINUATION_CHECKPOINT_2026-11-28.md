@@ -135,3 +135,12 @@ Read `docs/sunnyone/UNIFIED_NPU_TPU_LPU_PETASCALE_AI_ARCHITECTURE_2026-11-28.md`
 - Inventory addendum commit: `1f30da07c54dcaa93287ef92057a0b40130305d4`.
 - Software-core run `46053311585`: last job poll still has only waits job `140738728795` IN_PROGRESS; other 14 jobs SUCCESS. Qwen run `46053311477` was rechecked in this session (see tracker update for state).
 - No new tests, RTL changes, PPA, spend or hardware actions. Historical exclusions and main no-write rule unchanged.
+
+
+## Final live reconciliation — 2026-11-28
+
+- Branch HEAD: `696bd657500a0cfbf2ea42e38afa7fb6adc0e888`.
+- Compare: current branch is 1,103 commits ahead / 0 behind main baseline `d84db55712aba0d40811d7762cb052f05d55b7e5`; main untouched.
+- Workflow source `05879ea34eafc2559c54722c6c940b2acb9ac3ee` is an ancestor of current branch (42 commits behind HEAD, 0 ahead). Existing CI evidence therefore covers that ancestor only, not later commits or new docs.
+- Qwen run `46053311477` is terminal SUCCESS on the ancestor source, limited to its configured RTL/model-checkpoint scope.
+- Software-core run `46053311585` attempt 2 remains IN_PROGRESS only for waits job `140738728795`; other 14 module jobs are SUCCESS. Poll this exact job; no duplicate CI.
