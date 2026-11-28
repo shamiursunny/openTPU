@@ -362,3 +362,16 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - MXU malformed-command guard remains OPEN. Next patch must pass MCOLS/ACT_ROWS from slice to sequencer, reject malformed MM commands before dispatch, and prove zero TMEM/DRAM side effects with raw instruction tests. Preserve legal grouped MM workloads.
 - Inspect and control the broad RTL workflow blast radius before any RTL push. Do not rerun passed RTL groups 3.1/3.2/4 solely for confirmation. No PPA run; zero spend.
 - Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-28 20:35 Asia/Dhaka — live continuation and target FIFO invariant review
+
+See `CONTINUATION_ADDENDUM_2026-11-28_2035.md` for exact source blob references, Actions poll and the detailed MM-guard / target-validation review.
+
+- Live feature HEAD before this documentation save: `490aa9d65d9d0e3212dca43f161dfaf5a0fe2e5`; main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, 1,205 commits ahead / 0 behind. No main writes.
+- Latest branch Actions poll: no queued or in-progress runs. Last relevant success remains workload harness `46132183828`, 47 passed on its exact tested SHA `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`; subsequent failures/cancellations are not passes.
+- Reconfirmed MM malformed-command guard is still OPEN. The known slice-to-sequencer instance does not pass MCOLS/effective ACT_ROWS; the R-stage pre-dispatch reject branch is the correct insertion point after the full contract is proven.
+- Reconfirmed `Target.act_rows` resolves ACT_ROWS=0 to MCOLS. Target loader currently lacks a `FIFO_DEPTH >= ACT_BLOCKS` invariant and target tests lack a negative case. The derived current-target invariant is sufficient to cover the documented maximum row-prefill capacity, but it is target/uarch validation, not an ISA rule.
+- No RTL, test, workflow, ISA or PPA source was changed; no tests were launched. This was a deliberate safety stop pending exhaustive sequencer hierarchy/variant inventory and focused validation containment.
+- Next order: exhaustive instantiation/variant inventory; add target FIFO invariant and focused invalid-target test; complete MM mode/capability contract; prepare isolated raw-word guard tests/workflow; only then implement the synthesizable pre-dispatch guard.
+- Zero spend; no PPA retry; no main writes; no duplicate successful regressions; manufacturer handoff remains **NOT READY**.
