@@ -3353,3 +3353,12 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Final model-validation evidence remains workflow `46081103514`, job `140780031472`, tested source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`: 34/34 passed.
 - Continuation checkpoint was refreshed in commit `b1da6ec2f3ace9c91edaa42952f65c260fdf87be`; it explicitly records active branch/main baseline, current CI recovery and the exact next-step sequence.
 - The waits-only recovery job `140775908058` remains IN_PROGRESS on attempt 3; do not rerun the other 14 successful software modules. Manufacturer handoff remains NOT READY.
+
+
+## 142. 2026-11-28 — waits recovery completed and AI-X profitability north star saved
+
+- Software-core workflow `46053311585`, attempt 3, tested source `05879ea34eafc2559c54722c6c940b2acb9ac3ee`: terminal SUCCESS. Waits-only job `140775908058`: **268 passed, 2 skipped in 1953.87s**. All 15 module jobs terminal SUCCESS. Artifact `15237666850`; ZIP SHA-256 `47048b1aecc1fff9f40500e11190ef4cc24a9945bd6c2c71b2551c46ca2ac554`. The 14 other modules were not rerun by the recovery. This evidence applies to the exact recorded ancestor source/configuration.
+- Created governing `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` (commit `40b6f8078d2d7a424a255f1d7db716cab373b657`) and linked its objective in the integrated plan. Maximise quality-qualified useful tokens/s, tokens/J and tokens per total cost; minimise energy/token, idle power, heat, total cost, latency tails, failures/downtime and maintenance complexity.
+- Architecture direction: unified TPU/MXU, software-first LPU-like scheduling/KV/context role, NPU/VPU vector, shared measured memory/interconnect, programmable runtime/compiler/ISA and evidence-based power control. No dedicated LPU hardware without measured net benefit. Quantum-inspired classical methods remain optional research only. Track A full product and Track B demonstrator stay separate.
+- Next: exact-source RTL/TMEM trace correlation; document existing scheduler admission/round-robin/cancellation/context semantics and distinguish these from tenant fairness; W1/W2/W3 fixtures; calibrated profiles only; MXU bounds, width/formal/CDC/DFT/memory/production-interface/physical and sponsorship gates.
+- No RTL/ISA/workflow/PPA source changes and no tests launched in this documentation/reconciliation step. Manufacturer handoff remains NOT READY. Main remains untouched; zero spend.
