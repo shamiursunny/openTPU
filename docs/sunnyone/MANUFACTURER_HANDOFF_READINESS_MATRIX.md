@@ -475,3 +475,8 @@ This is a status update, not a gate closure. See `docs/sunnyone/CONTINUATION_ADD
 - Five MXU index warnings, 52 width expansions, formal/SVA, CDC/RDC, DFT, technology mapping, production interfaces and physical signoff remain open.
 
 **Release decision remains NOT READY for manufacturer handoff.**
+
+
+## 2026-11-28 20:17 — MM malformed-command gate
+
+The synthesizable MM guard remains OPEN. The ISA/simulator cross-audit confirms the guard must cover N/KB/M, ACT_ROWS/ACT_BLOCKS, MCOLS/RMAX/ASCALE, PAIR/WF/k0, RSC/NVFP4, exact WG/GALL group semantics, KT, SPLMM, alignment and MXU stream-FIFO capacity. The sequencer currently lacks several required configuration parameters. No speculative partial guard was committed. First close exact elaboration/capability propagation and narrow workflow path filters; then add raw-word tests proving pre-dispatch rejection and no TMEM/DRAM side effects while retaining legal boundary cases. See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md`. G3/release remain OPEN; manufacturer handoff NOT READY.
