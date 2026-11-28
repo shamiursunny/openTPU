@@ -3533,3 +3533,11 @@ No code/test/workflow changed and no tests run. Target-wide FIFO_DEPTH >= ACT_BL
 - No RTL, tests, workflows or PPA source changed; no tests launched. Do not push RTL until a dedicated exact-SHA raw-word test route is available; broad `rtl/**` path filters risk duplicate successful suites and no safe workflow-dispatch action is exposed.
 - Next: complete address-range boundary ownership and sequencer instantiation/feature propagation inventory; prepare raw-word negative and legal-control matrix; establish isolated CI dispatch; only then implement the minimal widened-arithmetic R-stage guard. Preserve successful RTL groups 3.1/3.2/4 and cancelled run `45765362426`; no PPA retry or spend.
 - Manufacturer handoff remains **NOT READY**.
+
+
+## 161. 2026-11-28 — integrated plan and handoff matrix reconciled
+
+- Appended the 21:38 MM legality/FIFO correction to the integrated engineering and sponsored-silicon plan (commit `a03c1032566c1577a8221cd27d2bdb3f51fc0373`; blob `9ae0d7da8073a2ef6c96be0282bfd62b5cb6297f`).
+- Added the MM guard as an explicit open release blocker in `MANUFACTURER_HANDOFF_READINESS_MATRIX.md` (final markdown correction commit `9ddeb06cd3501fee8d08331e51a9c1e440f37746`; blob `61c7fb04822cb490949342e0955d1cd1bc07618a`).
+- The detailed source audit remains `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md`; docs/isa.md and docs/weight_groups.md contain the corrected natural/grouped FIFO-residency distinction.
+- No RTL, tests, workflow or PPA source changed. No tests launched. Manufacturer handoff NOT READY; zero spend; protected main untouched.
