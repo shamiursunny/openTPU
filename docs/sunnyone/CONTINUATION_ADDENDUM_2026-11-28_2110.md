@@ -39,3 +39,41 @@ The sequencer receives resolved instruction words in `dcmd` before setting `p_v`
 
 ## Resume next
 **Continue and complete the remaining tasks.** Resume with a precise MM legality truth table cross-checked among ISA, simulator, compiler, sequencer and MXU. Then specify the minimal synthesizable pre-dispatch predicate and isolated raw-word tests. Do not add `FIFO_DEPTH >= ACT_BLOCKS`.
+
+
+## Cross-source MM legality matrix — reviewed 21:20 Asia/Dhaka
+
+### Common static fields
+| Check | Contract / predicate | Current source coverage |
+|---|---|---|
+| N, KB, M | N >= 1, KB >= 1, M >= 1 | ISA simulator checks N/KB and 0 < M; RTL decode needs explicit guard |
+| ACT rows | R = PAIR ? 2*M : M; R <= ACT_ROWS | ISA simulator; MXU simulation assertion checks M <= ROWS (PAIR separately limits 2*M <= MCOLS) |
+| ACT blocks | ab + (SPL ? KB-1 : KB) <= ACT_BLOCKS | ISA simulator; sequencer lacks exact geometry params |
+| PAIR | 4-bit only, even k0, 2*M <= MCOLS, no groups | ISA simulator and MXU simulation assertions |
+| RSC | not NVFP4 | ISA simulator; no synthesizable sequencer guard |
+| ASCALE | requires UNIT and ACC | ISA simulator; sequencer lacks this MM guard |
+| Groups | exact rd exponent for WG (int8) or 2*WG (4-bit); WG>1 requires groups; no PAIR | ISA simulator and MXU simulation assertions; sequencer has WG but no MM legality guard |
+| Group RMAX/ASCALE | supported only on GALL/WG>1 and M <= MCOLS | ISA simulator documents GALL rule; MXU simulation check gates M<=MCOLS under GA |
+| Replay FIFO | non-group row when M>MCOLS: int8 KB, 4-bit ceil(KB/2) <= DEPTH | MXU simulation assertion only; absent from ISA simulator's Config |
+| Group replay FIFO | WG>1, grouped command, M>1: KB <= DEPTH | MXU simulation assertion only |
+| KT | grouped, capability KT, k0=0, not NVFP4; pair stride condition after clearing rs bit0 | ISA simulator and MXU simulation assertions |
+| SPL | SPLMM capability; KB 2/3, grouped int8 RSC, k0=0, HLD>0 and P-aligned; not UNIT/PAIR/KT/RMAX/ASCALE; ACT bound uses KB-1 | ISA simulator and MXU simulation assertions; sequencer lacks SPLMM capability input |
+| Group addresses | sa, rs and HLD multiples of P=WG*D | ISA simulator; sequencer guard must use resolved dcmd addresses and widened arithmetic |
+| Dynamic KT data | last ACT block's upper half must be zero | ISA simulator checks memory contents; cannot be established by raw instruction decode alone |
+
+### Material mismatches / unresolved semantics
+1. The sequencer currently receives WG but not MCOLS, ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, KT or SPLMM. The slice already has these values: MCOLS, ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, WG, KT and MXU_SPL. A future guard must pass the resolved capability/geometry parameters to the sequencer; GALL is derived from WG>1 in the MXU.
+2. The MXU's command-shape and FIFO assertions are under ifndef SYNTHESIS. They are useful simulation oracles, not production rejection.
+3. The simulator checks ACT data/scale contents, address ranges and target feature availability; the sequencer can reject only static fields and address arithmetic available at dispatch. A design decision is required for dynamic-data failures: producer guarantees, hardware preflight, or explicit runtime error handling. Do not claim decode proves memory contents.
+4. The documented MM contract says RMAX/ASCALE need M<=MCOLS. The current MXU simulation assertion explicitly checks that bound inside GA (WG>1). Reconcile whether the non-GA path is guaranteed by another path or has a missing assertion before coding; preserve simulator/ISA behavior.
+5. The simulator does not currently know FIFO_DEPTH (it's a target uarch parameter rather than Config's architectural field). Decide whether to extend target-aware simulation validation or keep FIFO depth explicitly target/RTL-only, and document that split. Do not silently treat a simulator pass as proof of FIFO capacity.
+6. Arithmetic for ab + KB, 2*M, ceil(KB/2), (2*KB - 1)*P and group strides must be widened before comparison. Raw fields are narrow and unsized expression promotion can otherwise truncate or overflow.
+
+### Implementation sequence (still not executed)
+A. Resolve items 4–5 and write a normative truth table with legal/illegal raw command examples.
+B. Add sequencer parameters from slice and implement mm_bad in the R stage alongside fsum_bad, rejecting before p_v is asserted.
+C. Add directed raw-word tests for each predicate, each boundary, and each legal mode (ordinary, replayed row, grouped, GALL, KT, SPL). Verify error, no ustart, no DRAM request and no TMEM/ACT writes.
+D. Verify the test-only MXU assertions remain aligned with the new synthesized guard; add no duplicate or stronger restrictions.
+E. Do not push the RTL change until a narrow, exact-SHA workflow can run the dedicated suite without re-running protected historical suites. The connected GitHub tools currently expose no workflow-dispatch action, so the implementation is paused rather than launched into broad CI.
+
+No tests were run and no source files were changed by this matrix review.
