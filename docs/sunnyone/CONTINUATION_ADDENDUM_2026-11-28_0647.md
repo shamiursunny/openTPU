@@ -34,3 +34,8 @@ Architecture direction: unified TPU/MXU matrix engine; LPU-like scheduler/KV/con
 6. Benchmark/tune the existing scheduler quantum/chunking and cache/context lifecycle before considering dedicated LPU silicon.
 
 No RTL, ISA, workflow or PPA source was changed in this continuation. No new tests were launched; existing waits evidence was polled and inspected. No PPA retry, paid compute, fabrication or hardware spend. Manufacturer handoff remains **NOT READY**.
+
+
+## Authoritative strategy source hierarchy
+
+The governing user-approved source is `docs/sunnyone/SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`. It takes precedence over the concise supporting summary `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` created during this continuation. The authoritative source fixes the commercial objective while keeping implementation choices evidence-led; retain its full-system economics, quality, reliability, idle-power, thermal, scale-out and evidence requirements. The existing V1 logical design candidate and commercial profitability measurement model remain complementary, with implementation status and external interfaces qualified exactly as documented.
