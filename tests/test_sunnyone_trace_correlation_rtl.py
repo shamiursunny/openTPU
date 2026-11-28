@@ -1,6 +1,5 @@
 """One small RTL co-simulation proving the hardware/TMEM trace join."""
 import hashlib
-import json
 import os
 import shutil
 import tempfile
@@ -41,10 +40,6 @@ class TraceCorrelationRTLTests(unittest.TestCase):
                 tmem_trace_sha256=hashlib.sha256(raw_tmem).hexdigest(),
             )
 
-        print("TRACE_DEBUG_HARDWARE\\n" + hardware_trace)
-        print("TRACE_DEBUG_TMEM", [(c, info & 15, (info >> 4) & 15, (info >> 24) & 255, value)
-                                  for c, info, value in segments[0]])
-        print("TRACE_DEBUG_CORRELATION", json.dumps(report["correlation"], sort_keys=True))
         self.assertEqual(report["correlation"]["matched_instruction_intervals"], 1, json.dumps(report["correlation"], sort_keys=True))
         self.assertEqual(report["correlation"]["unmatched_tmem_starts"], 0)
         self.assertEqual(report["correlation"]["unmatched_hardware_starts"], 0)

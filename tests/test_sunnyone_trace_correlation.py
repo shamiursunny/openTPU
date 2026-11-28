@@ -53,7 +53,7 @@ class TraceCorrelationTests(unittest.TestCase):
         self.assertFalse(report["attribution_limits"]["request_level_available"])
         self.assertFalse(report["calibration"]["profile_eligible"])
 
-    def test_start_cycle_mismatch_is_not_force_matched(self):
+    def test_cycle_offsets_are_reported_without_false_unmatched_status(self):
         hw = hardware([
             "T0 D c=1 s=0 pc=4 op=10 w1=0 w2=0 w3=0",
             "T0 S c=2 s=0 u=0 r=2",
@@ -61,7 +61,25 @@ class TraceCorrelationTests(unittest.TestCase):
         ])
         tm = [record(3, 4, port=0, opcode=0x10, value=1), record(8, 5, port=0)]
         report = correlate(hw, tm, source_commit=SHA, config=CONFIG)
-        self.assertEqual(report["correlation"]["matched_instruction_intervals"], 0)
+        self.assertEqual(report["correlation"]["sequence_matched_instruction_intervals"], 1)
+        self.assertEqual(report["correlation"]["unmatched_tmem_starts"], 0)
+        self.assertEqual(report["correlation"]["unmatched_hardware_starts"], 0)
+        alignment = report["correlation"]["instructions"][0]["cycle_alignment"]
+        self.assertEqual(alignment["start_offset_tmem_minus_hardware"], 1)
+        self.assertEqual(alignment["completion_offset_tmem_minus_hardware"], 0)
+        self.assertEqual(alignment["duration_delta_tmem_minus_hardware"], -1)
+
+    def test_opcode_sequence_mismatch_is_not_paired(self):
+        hw = hardware([
+            "T0 D c=1 s=0 pc=4 op=10 w1=0 w2=0 w3=0",
+            "T0 S c=2 s=0 u=0 r=2",
+            "T0 E c=8 s=0",
+        ])
+        tm = [record(3, 4, port=0, opcode=0x20, value=1), record(8, 5, port=0)]
+        report = correlate(hw, tm, source_commit=SHA, config=CONFIG)
+        self.assertEqual(report["correlation"]["sequence_matched_instruction_intervals"], 0)
+        self.assertEqual(report["correlation"]["unit_sequence_checks"]["DMA"]["status"],
+                         "opcode_sequence_mismatch")
         self.assertEqual(report["correlation"]["unmatched_tmem_starts"], 1)
         self.assertEqual(report["correlation"]["unmatched_hardware_starts"], 1)
 

@@ -1,6 +1,6 @@
 """Loss-aware correlation of the slice instruction trace and TMEM access trace.
 
-This tool correlates only exact unit/start/opcode/completion intervals. TMEM accesses do not
+This tool correlates ordered per-unit opcode sequences and reports each trace's cycle offsets. TMEM accesses do not
 carry a workload request ID or sequencer slot, so request-level attribution is deliberately
 not inferred. Cycle-boundary and overlapping intervals remain unassigned/ambiguous.
 """
@@ -273,52 +273,92 @@ def correlate(
 
     hw, hw_meta = _parse_hardware_trace(hardware_trace, slice_id)
     intervals, events, tm_meta = _decode_tmem(tmem_records)
-    starts_by_key: dict[tuple[int, int, int], list[dict]] = defaultdict(list)
+    hardware_by_unit: dict[int, list[dict]] = defaultdict(list)
+    tmem_by_unit: dict[int, list[dict]] = defaultdict(list)
     for item in hw:
         if item["unit"] is not None and item["start_cycle"] is not None:
-            starts_by_key[(item["unit"], item["start_cycle"], item["opcode"])].append(item)
+            hardware_by_unit[item["unit"]].append(item)
+    for interval in intervals:
+        tmem_by_unit[interval["unit"]].append(interval)
+    for unit in range(len(_UNIT_NAMES)):
+        hardware_by_unit[unit].sort(key=lambda x: (x["start_cycle"], x["hardware_id"]))
+        tmem_by_unit[unit].sort(key=lambda x: (x["cycle"], x["record_index"]))
 
     matched = 0
     start_matched = 0
     unmatched_tmem = 0
+    unmatched_hw = 0
     ambiguous_starts = 0
-    completion_mismatches = 0
-    for interval in intervals:
-        key = (interval["unit"], interval["cycle"], interval["opcode"])
-        candidates = starts_by_key.get(key, [])
-        if len(candidates) == 1:
-            candidate = candidates[0]
-            interval["hardware_id"] = candidate["hardware_id"]
-            start_matched += 1
-            if interval["done_cycle"] is not None and candidate["done_cycle"] is not None:
-                if interval["done_cycle"] == candidate["done_cycle"]:
-                    interval["correlation_status"] = "matched"
-                    matched += 1
-                    candidate["correlation_status"] = "matched"
-                else:
-                    interval["correlation_status"] = "completion_cycle_mismatch"
-                    candidate["correlation_status"] = "completion_cycle_mismatch"
-                    completion_mismatches += 1
-            else:
-                interval["correlation_status"] = "incomplete_pair"
-                candidate["correlation_status"] = "incomplete_pair"
-        elif len(candidates) > 1:
-            interval["correlation_status"] = "ambiguous_start"
-            ambiguous_starts += 1
-        else:
-            interval["correlation_status"] = "unmatched_start"
-            unmatched_tmem += 1
+    ambiguous_hardware = 0
+    unit_sequence_checks = {}
+    start_offsets: dict[str, list[int]] = defaultdict(list)
+    completion_offsets: dict[str, list[int]] = defaultdict(list)
+    duration_deltas: dict[str, list[int]] = defaultdict(list)
 
-    matched_hardware_ids = {
-        item["hardware_id"] for item in intervals
-        if item["correlation_status"] in ("matched", "completion_cycle_mismatch", "incomplete_pair")
-        and item["hardware_id"] is not None
-    }
-    unmatched_hw = sum(
-        1 for item in hw
-        if item["unit"] is not None and item["start_cycle"] is not None
-        and item["hardware_id"] not in matched_hardware_ids
-    )
+    for unit, unit_name in enumerate(_UNIT_NAMES):
+        hlist, tlist = hardware_by_unit[unit], tmem_by_unit[unit]
+        check = {
+            "hardware_starts": len(hlist), "tmem_starts": len(tlist),
+            "matched_intervals": 0, "status": "not_matched",
+        }
+        hcycles = [x["start_cycle"] for x in hlist]
+        tcycles = [x["cycle"] for x in tlist]
+        if len(set(hcycles)) != len(hcycles) or len(set(tcycles)) != len(tcycles):
+            check["status"] = "ambiguous_same_cycle_start_order"
+            ambiguous_starts += len(tlist)
+            ambiguous_hardware += len(hlist)
+        elif len(hlist) != len(tlist):
+            check["status"] = "start_count_mismatch"
+            unmatched_hw += len(hlist)
+            unmatched_tmem += len(tlist)
+            for x in hlist:
+                x["correlation_status"] = "unmatched_start_count"
+            for x in tlist:
+                x["correlation_status"] = "unmatched_start_count"
+        elif [x["opcode"] for x in hlist] != [x["opcode"] for x in tlist]:
+            check["status"] = "opcode_sequence_mismatch"
+            unmatched_hw += len(hlist)
+            unmatched_tmem += len(tlist)
+            for x in hlist:
+                x["correlation_status"] = "unmatched_opcode_sequence"
+            for x in tlist:
+                x["correlation_status"] = "unmatched_opcode_sequence"
+        else:
+            check["status"] = "sequence_matched"
+            for hitem, titem in zip(hlist, tlist):
+                hitem["correlation_status"] = "sequence_matched"
+                titem["hardware_id"] = hitem["hardware_id"]
+                start_matched += 1
+                start_delta = titem["cycle"] - hitem["start_cycle"]
+                start_offsets[unit_name].append(start_delta)
+                done_delta = None
+                duration_delta = None
+                if titem["done_cycle"] is not None and hitem["done_cycle"] is not None:
+                    done_delta = titem["done_cycle"] - hitem["done_cycle"]
+                    h_duration = hitem["done_cycle"] - hitem["start_cycle"]
+                    t_duration = titem["done_cycle"] - titem["cycle"]
+                    duration_delta = t_duration - h_duration
+                    completion_offsets[unit_name].append(done_delta)
+                    duration_deltas[unit_name].append(duration_delta)
+                    titem["correlation_status"] = "sequence_matched"
+                    matched += 1
+                else:
+                    titem["correlation_status"] = "incomplete_pair"
+                    hitem["correlation_status"] = "incomplete_pair"
+                titem["cycle_alignment"] = {
+                    "start_offset_tmem_minus_hardware": start_delta,
+                    "completion_offset_tmem_minus_hardware": done_delta,
+                    "duration_delta_tmem_minus_hardware": duration_delta,
+                }
+                check["matched_intervals"] += 1
+        unit_sequence_checks[unit_name] = check
+
+    def offset_report(values: dict[str, list[int]]) -> dict:
+        return {
+            name: {"offsets": values.get(name, []),
+                   "consistent": len(set(values.get(name, []))) <= 1}
+            for name in _UNIT_NAMES
+        }
 
     per_unit = {
         name: {
@@ -429,11 +469,25 @@ def correlate(
         "tmem_trace": tm_meta,
         "correlation": {
             "matched_instruction_intervals": matched,
+            "sequence_matched_instruction_intervals": matched,
             "start_matched_intervals": start_matched,
             "unmatched_tmem_starts": unmatched_tmem,
             "unmatched_hardware_starts": unmatched_hw,
             "ambiguous_tmem_starts": ambiguous_starts,
-            "completion_cycle_mismatches": completion_mismatches,
+            "ambiguous_hardware_starts": ambiguous_hardware,
+            "cycle_exact_start_count": sum(
+                1 for values in start_offsets.values() for value in values if value == 0),
+            "cycle_exact_completion_count": sum(
+                1 for values in completion_offsets.values() for value in values if value == 0),
+            "unit_sequence_checks": unit_sequence_checks,
+            "start_cycle_offsets_by_unit": offset_report(start_offsets),
+            "completion_cycle_offsets_by_unit": offset_report(completion_offsets),
+            "duration_deltas_by_unit": offset_report(duration_deltas),
+            "cycle_domains": {
+                "hardware": "resettable sequencer/slice trace counter",
+                "tmem": "tt_cyc counter in otpu_slice; increments during reset",
+                "method": "ordered per-unit opcode sequence; offsets are reported, never normalized away",
+            },
             "instructions": [
                 {
                     "tmem_id": x["tmem_id"], "hardware_id": x["hardware_id"],
@@ -451,6 +505,7 @@ def correlate(
                     "instruction_count": x["instruction_count"],
                     "field_23_16": x["field_23_16"], "flags": x["flags"],
                     "correlation_status": x["correlation_status"],
+                    "cycle_alignment": x.get("cycle_alignment"),
                     "accesses": x["accesses"],
                     "lost_group_events": x.get("lost_group_events", 0),
                 }
