@@ -20,6 +20,8 @@ _EVENT = re.compile(r"^T(\d+) ([DSEGHUPQ]) c=(\d+)(.*)$")
 _KV = re.compile(r"(\w+)=([0-9a-fA-F]+)")
 _READ_PORT_UNIT = (1, 0, 2, 3, 3, 2, 2, 4)  # MXU DMA Q VPU VPU Q Q COLL
 _WRITE_PORT_UNIT = (0, 1, 4, 3)             # DMA MXU COLL VPU
+_READ_PORT_NAMES = ("MXU", "DMA", "Q", "VA", "VB", "Q3", "Q2", "COLL")
+_WRITE_PORT_NAMES = ("DMA", "MXU", "COLL", "VPU")
 _LOSS_GROUP_UNIT = (0, 4, 3, 1, 2)          # DMA COLL VPU MXU QUANT
 _UNIT_NAMES = ("DMA", "MXU", "QUANT", "VPU", "COLL")
 
@@ -171,6 +173,7 @@ def _decode_tmem(records: Sequence[Sequence[int]]) -> tuple[list[dict], list[dic
                 word_count = 1
             accesses.append({
                 "cycle": cycle, "unit": mapping[port], "port": port,
+                "port_name": (_WRITE_PORT_NAMES if write else _READ_PORT_NAMES)[port],
                 "write": write, "kind": kind, "words": word_count,
                 "address": value, "record_index": index,
             })
@@ -322,6 +325,7 @@ def correlate(
             "read_records": 0, "read_words": 0, "write_records": 0, "write_words": 0,
             "assigned_records": 0, "assigned_words": 0, "ambiguous_records": 0,
             "boundary_records": 0, "unassigned_records": 0, "lost_group_events": 0,
+            "assigned_lost_group_events": 0,
         }
         for name in _UNIT_NAMES
     }
@@ -329,7 +333,18 @@ def correlate(
         "read_records": 0, "read_words": 0, "write_records": 0, "write_words": 0,
         "assigned_records": 0, "assigned_words": 0, "ambiguous_records": 0,
         "boundary_records": 0, "incomplete_interval_records": 0, "unassigned_records": 0,
-        "invalid_records": 0,
+        "invalid_records": sum(tm_meta["anomalies"].get(k, 0) for k in
+                                ("invalid_access_port", "zero_lane_access", "non_one_hot_scattered_lane")),
+    }
+    by_port = {
+        "read": {name: {"records": 0, "words": 0, "assigned_records": 0,
+                         "assigned_words": 0, "ambiguous_records": 0,
+                         "boundary_records": 0, "unassigned_records": 0}
+                 for name in _READ_PORT_NAMES},
+        "write": {name: {"records": 0, "words": 0, "assigned_records": 0,
+                          "assigned_words": 0, "ambiguous_records": 0,
+                          "boundary_records": 0, "unassigned_records": 0}
+                  for name in _WRITE_PORT_NAMES},
     }
     loss_summary = {
         "unit_events": 0, "assigned": 0, "ambiguous": 0, "boundary": 0,
@@ -340,10 +355,11 @@ def correlate(
         if "_loss" in event:
             loss = event["_loss"]
             loss_summary["unit_events"] += 1
+            per_unit[_UNIT_NAMES[loss["unit"]]]["lost_group_events"] += 1
             status, owner = _owner(loss["cycle"], loss["unit"], intervals)
             if status == "assigned":
                 loss_summary["assigned"] += 1
-                per_unit[_UNIT_NAMES[loss["unit"]]]["lost_group_events"] += 1
+                per_unit[_UNIT_NAMES[loss["unit"]]]["assigned_lost_group_events"] += 1
                 owner.setdefault("lost_group_events", 0)
                 owner["lost_group_events"] += 1
             elif status in ("boundary", "ambiguous", "incomplete_interval"):
@@ -358,12 +374,18 @@ def correlate(
         unit_row = per_unit[unit_name]
         unit_row["read_records" if not event["write"] else "write_records"] += 1
         unit_row["read_words" if not event["write"] else "write_words"] += event["words"]
+        port_group = "write" if event["write"] else "read"
+        port_row = by_port[port_group][event["port_name"]]
+        port_row["records"] += 1
+        port_row["words"] += event["words"]
         status, owner = _owner(event["cycle"], event["unit"], intervals)
         if status == "assigned":
             access_summary["assigned_records"] += 1
             access_summary["assigned_words"] += event["words"]
             unit_row["assigned_records"] += 1
             unit_row["assigned_words"] += event["words"]
+            port_row["assigned_records"] += 1
+            port_row["assigned_words"] += event["words"]
             key_records = "read_records" if not event["write"] else "write_records"
             key_words = "read_words" if not event["write"] else "write_words"
             owner["accesses"][key_records] += 1
@@ -371,15 +393,19 @@ def correlate(
         elif status == "ambiguous":
             access_summary["ambiguous_records"] += 1
             unit_row["ambiguous_records"] += 1
+            port_row["ambiguous_records"] += 1
         elif status == "boundary":
             access_summary["boundary_records"] += 1
             unit_row["boundary_records"] += 1
+            port_row["boundary_records"] += 1
         elif status == "incomplete_interval":
             access_summary["incomplete_interval_records"] += 1
             unit_row["unassigned_records"] += 1
+            port_row["unassigned_records"] += 1
         else:
             access_summary["unassigned_records"] += 1
             unit_row["unassigned_records"] += 1
+            port_row["unassigned_records"] += 1
 
     config_bytes = json.dumps(config, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
     return {
@@ -411,6 +437,15 @@ def correlate(
             "instructions": [
                 {
                     "tmem_id": x["tmem_id"], "hardware_id": x["hardware_id"],
+                    "hardware": ({
+                        "slot": hw[x["hardware_id"]]["slot"],
+                        "pc": hw[x["hardware_id"]]["pc"],
+                        "dispatch_cycle": hw[x["hardware_id"]]["dispatch_cycle"],
+                        "ready_cycle": hw[x["hardware_id"]]["ready_cycle"],
+                        "start_cycle": hw[x["hardware_id"]]["start_cycle"],
+                        "grant_cycle": hw[x["hardware_id"]]["grant_cycle"],
+                        "done_cycle": hw[x["hardware_id"]]["done_cycle"],
+                    } if x["hardware_id"] is not None else None),
                     "unit": _UNIT_NAMES[x["unit"]], "opcode": x["opcode"],
                     "start_cycle": x["cycle"], "done_cycle": x["done_cycle"],
                     "instruction_count": x["instruction_count"],
@@ -426,6 +461,7 @@ def correlate(
             "accesses": access_summary,
             "lost_groups": loss_summary,
             "by_unit": per_unit,
+            "by_port": by_port,
         },
         "attribution_limits": {
             "request_level_available": False,

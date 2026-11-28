@@ -45,6 +45,11 @@ class TraceCorrelationTests(unittest.TestCase):
         self.assertEqual(inst["unit"], "MXU")
         self.assertEqual(inst["accesses"]["read_words"], 2)
         self.assertEqual(inst["accesses"]["write_words"], 1)
+        self.assertEqual(inst["hardware"]["slot"], 3)
+        self.assertEqual(inst["hardware"]["dispatch_cycle"], 2)
+        self.assertEqual(report["tmem_activity"]["by_port"]["read"]["MXU"]["assigned_words"], 2)
+        self.assertEqual(report["tmem_activity"]["by_port"]["write"]["MXU"]["assigned_words"], 1)
+        self.assertEqual(report["tmem_activity"]["by_unit"]["MXU"]["lost_group_events"], 1)
         self.assertFalse(report["attribution_limits"]["request_level_available"])
         self.assertFalse(report["calibration"]["profile_eligible"])
 
