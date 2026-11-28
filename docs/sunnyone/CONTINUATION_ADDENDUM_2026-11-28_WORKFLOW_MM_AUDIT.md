@@ -132,3 +132,9 @@ The complete TOML section scan (including `[variants.*]`, not only base `[arch]`
 - `ypcb-00338:m8` overrides MCOLS to 8; `:m4` keeps MCOLS 4.
 - The variants retain the target's other base geometry unless explicitly overridden. Guard tests must use the resolved target configuration (base + variant), not parse only the base sections.
 - `bcu1525-x2:b2` is the mandatory positive SPLMM elaboration/test case; include a disabled-SPLMM variant negative test as well.
+
+
+## FIFO capacity implication across every current target
+The resolved target TOML scan also shows `ACT_BLOCKS <= FIFO_DEPTH` for all eight current base targets (32<=64 for nangate45-small; 128<=1024 or 2048 for the others). Every legal MM has `ab + KB <= ACT_BLOCKS` (SPL reads KB-1 ACT blocks), hence `KB <= ACT_BLOCKS <= FIFO_DEPTH`; for 4-bit natural rows the chunk count is only ceil(KB/2). This implies the MXU's whole-row chunk prefill fits the current target FIFO for every semantically legal MM. The existing replay-specific `$fatal` checks are therefore redundant for these targets, assuming the parameter values are resolved as inspected.
+- Preferred control: add/retain a target elaboration invariant `FIFO_DEPTH >= ACT_BLOCKS` in the appropriate top/target validation, and keep the ISA-level MM guard focused on ACT block bounds. If the sequencer is to independently enforce physical admission, pass FIFO_DEPTH and test it; do not duplicate the same condition without a stated reason.
+- This implication must be added to target validation tests so future target variants cannot silently break it. It is a derived invariant from the current target matrix, not a universal ISA guarantee.
