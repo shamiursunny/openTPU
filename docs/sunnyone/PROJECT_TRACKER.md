@@ -3554,3 +3554,15 @@ See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2145.md` for exact source bl
 - No RTL/test/workflow/PPA source changed and no tests were launched. No safe workflow-dispatch action is exposed by the connected GitHub interface; do not push an RTL change into broad `rtl/**` CI without a proven isolated exact-SHA route.
 - Latest relevant workload harness evidence remains run `46132183828`: 47 passed on exact tested source `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`. Historical successful suites remain preserved; no duplicate group 3.1/3.2/4 rerun.
 - Manufacturer handoff remains **NOT READY**. Zero spend, no PPA retry, no protected-main writes.
+
+
+## 163. 2026-11-28 22:00 — simulation-first manufacturer delivery objective confirmed
+
+User confirmed that the goal is to complete all feasible engineering and verification through simulation and submit a fully documented design to a manufacturer for physical validation and potential bulk production. This replaces any assumption that the project must self-fabricate a physical sample. Governing details: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2200_SIMULATION_FIRST_HANDOFF.md`.
+
+- Complete all open-source simulation, RTL/software, formal where tractable, lint, synthesis-estimation, interface, workload, reproducibility and documentation work before handoff.
+- Manufacturer owns foundry/PDK-specific physical implementation, hard macros/PHYs, routed signoff, DRC/LVS, extracted STA, IR/EM, package/board SI/PI, physical power/thermal measurements, silicon bring-up, yield, reliability, qualification and bulk production.
+- RISC-V ISA compatibility does not imply universal board/SoC plug-and-play. Build processor-independent accelerator core, standard host adapters, register/DMA/interrupt/reset/clock/memory contracts, software runtime and explicit supported-host compatibility matrix. Only claim adapters/interfaces actually implemented and verified.
+- Reclassify the earlier sponsorship/fabrication work package as manufacturer engagement after the simulation-qualified handoff dossier; Track B physical demonstrator is optional unless requested or risk-justified.
+- Dedicated MM raw-word test estimate remains 30–45 parameterised scenarios; it is not a verified current test count. Do not state an exact total remaining pytest count until pinned-commit collection and planned formal/CDC/interface tests are enumerated.
+- Documentation-only update; no RTL changed, no tests run. Protected main remains unchanged.
