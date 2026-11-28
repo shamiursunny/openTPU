@@ -3429,3 +3429,16 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Before implementation, inspect every sequencer instantiation and CI path filters to avoid broad duplicate regressions. No RTL, test, workflow or PPA change was made in this continuation.
 - Continue exact-source interval correlation between RTL hardware trace and TMEM trace; no per-request attribution or calibrated profile is claimed.
 - Manufacturer handoff remains **NOT READY**. Zero spend; no PPA retry; no main write; no repeated successful RTL groups 3.1/3.2/4; do not restart run `45765362426`.
+
+
+## 150. 2026-11-28 — loss-aware trace correlation implemented and RTL co-simulation verified
+
+- Added `tools/sunnyone/trace_correlation.py` and unit tests. The adapter parses slice D/S/G/E records and TMEM binary kinds 0–6, 15; reports per-unit/per-port read/write counts, arbitration losses, incomplete/unmatched/ambiguous records, source/config/trace hashes and per-instruction interval summaries.
+- Added one real Verilator co-simulation test: 256-word DMA LD with `+trace` and `+tmtrace`. Final workflow `46132183828`, job `140939555937`, exact commit `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`: **47 passed in 52.079s**.
+- The real trace proved the two cycle domains are not identical: hardware D/S/E cycles 5/6/53; TMEM start/done cycles 11/57 in the diagnostic capture. `tt_cyc` increments through reset; the sequencer/slice trace counter resets. Matching is therefore by ordered per-unit opcode sequence with count/order checks; start/completion offsets and duration deltas are reported, not normalized.
+- DMA TMEM writes were uniquely attributable to the closed DMA instruction interval in the integration run. Boundary/overlap/open intervals remain ambiguous or unassigned. No workload request ID is present, so no W1/W2/W3 request-level attribution is claimed. No calibration or silicon performance claim.
+- W1/W2/W3 synthetic fixture tests remain verified by run `46090474983`: 37 passed on exact commit `28704f25f87179e5653188bf0cc40f43ee681168`.
+- Fixed retrieval benchmark test isolation so optional NumPy/sentence-transformers stubs no longer pollute later imports.
+- Live branch before this doc save: `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`; 1,184 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. Main remains off-limits and GitHub reports main protection disabled.
+- Next: implement the synthesizable MXU malformed-command guard only after a controlled serial CI plan. Propagate MCOLS/ACT_ROWS into sequencer; add raw MM negative tests proving no dispatch/TMEM/DRAM side effects; preserve legal grouped MM. Do not trigger duplicate successful RTL groups 3.1/3.2/4 or the WG8 PPA workflow.
+- Zero spend. Manufacturer handoff remains NOT READY.

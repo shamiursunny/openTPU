@@ -349,3 +349,16 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - Re-read the current sequencer, slice, MXU and ISA sources. Synthesizable MM malformed-command rejection remains OPEN: sequencer needs the exact `MCOLS` and `ACT_ROWS` parameters propagated from the slice; MXU assertions alone are simulation-only. Raw-word RTL tests must prove error before dispatch and no TMEM/DRAM side effects.
 - No RTL/test/workflow/PPA source was changed and no new tests were launched. Next: inspect every sequencer instantiation and CI path filters, then implement and validate only the focused MM guard; continue loss-aware RTL/TMEM interval correlation and remaining verification/manufacturer gates.
 - Manufacturer handoff remains **NOT READY**. Zero spend; no PPA retry; no protected main writes; no reruns of passed RTL groups 3.1/3.2/4; never restart cancelled run `45765362426`.
+
+
+## 2026-11-28 — trace-correlation adapter closeout; next MXU guard
+
+- Live feature branch HEAD before this documentation commit: `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`; compare 1,184 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. GitHub reports `main.protected=false`; main remains strictly off-limits.
+- W1/W2/W3 fixture verification: run `46090474983`, job `140809944012`, exact commit `28704f25f87179e5653188bf0cc40f43ee681168`: 37 passed.
+- Added loss-aware hardware/TMEM trace correlation adapter, unit tests, evidence spec and one real Verilator DMA LD co-simulation with `+trace` and `+tmtrace`. Final narrow harness run `46132183828`, job `140939555937`, exact commit `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`: **47 passed in 52.079s**.
+- Real trace showed resettable hardware cycle counter versus TMEM `tt_cyc` (increments during reset): observed D/S/E cycles 5/6/53 and TMEM start/done 11/57. The adapter matches per-unit opcode sequences only with matching counts/order and reports cycle offsets/duration deltas. It does not force timestamp equality, infer request IDs, or produce calibrated profiles.
+- DMA write records/words were assigned to a unique closed DMA interval in the RTL integration test. Boundary, overlap and incomplete accesses remain unassigned/ambiguous.
+- The retrieval benchmark test now restores optional dependency stubs after import to prevent cross-test NumPy contamination.
+- MXU malformed-command guard remains OPEN. Next patch must pass MCOLS/ACT_ROWS from slice to sequencer, reject malformed MM commands before dispatch, and prove zero TMEM/DRAM side effects with raw instruction tests. Preserve legal grouped MM workloads.
+- Inspect and control the broad RTL workflow blast radius before any RTL push. Do not rerun passed RTL groups 3.1/3.2/4 solely for confirmation. No PPA run; zero spend.
+- Manufacturer handoff remains NOT READY.
