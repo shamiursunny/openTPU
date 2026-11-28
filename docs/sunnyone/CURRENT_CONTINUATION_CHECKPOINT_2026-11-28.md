@@ -3,10 +3,11 @@ Last updated: 2026-11-28 02:20 Asia/Dhaka
 
 ## Start here in every new chat
 Read this file, then:
-1. `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_MXU_ISA_RECONCILIATION.md`
-2. `docs/sunnyone/INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md`
-3. `docs/sunnyone/PROJECT_TRACKER.md`
-4. `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
+1. `docs/sunnyone/SUNNYONE_X_FINAL_EXECUTION_MASTER_PLAN_2026-11-28.md` (governing integrated execution and prototype roadmap)
+2. `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_MXU_ISA_RECONCILIATION.md`
+3. `docs/sunnyone/INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md`
+4. `docs/sunnyone/PROJECT_TRACKER.md`
+5. `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
 
 Before any code write or test, re-resolve the live branch HEAD, compare against main and current Actions states.
 
@@ -415,3 +416,15 @@ Latest continuation addendum: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_21
 - Project tracker section 161 records the reconciliation.
 - Documentation-only updates. No RTL/test/workflow/PPA source changed; no tests launched. Manufacturer handoff remains NOT READY.
 - Before next action, re-resolve the live feature HEAD and main SHA. Keep main off-limits; zero spend; no duplicate successful RTL suites; no PPA retry.
+
+
+## 2026-11-28 — final execution plan saved and reconciled
+
+- Governing roadmap: `docs/sunnyone/SUNNYONE_X_FINAL_EXECUTION_MASTER_PLAN_2026-11-28.md`; initial creation commit `f96c275f830930ae494434887d0c0580347f64b6`.
+- The master plan integrates the fixed commercial north star, existing WG8 logical candidate, simulation-first correctness and verification, W1/W2/W3 workload evidence, host/RISC-V portability contracts, high-capability ready-board prototype, manufacturer handoff and later low-cost production optimisation.
+- User accepts considering high-cost prototype hardware after engineering readiness. This is not purchase approval. No order until exact board fit, endpoint/root-port and physical connection compatibility, tool licence, current availability, total landed cost to Bangladesh and explicit spend approval are recorded.
+- Board shortlist: AMD VCU118 (practical PCIe/DDR4 accelerator candidate); Microchip PolarFire SoC Icicle Kit (RISC-V host candidate); AMD VPK180 (larger FPGA alternative if source fit and integration justify it). VCU128 and VHK158 are excluded as baseline candidates because AMD marks their evaluation kits discontinued. No board pair is yet proven compatible.
+- Updated the integrated plan, project tracker section 164 and manufacturer readiness matrix to point to the final master plan. Documentation only; no RTL, tests or workflows changed; no tests launched.
+- Current latest documentation commits from this save: master plan `f96c275f830930ae494434887d0c0580347f64b6`; checkpoint/tracker/matrix updates were saved sequentially on the feature branch. Re-resolve live branch HEAD on the next continuation.
+- Main baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5` and is off-limits. Historical successful RTL groups 3.1/3.2/4 and cancelled run `45765362426` exclusions remain.
+- Engineering status is not upgraded: MM malformed-command guard, broader verification/formal/CDC, host-interface implementation, board fit, FPGA prototype and manufacturer handoff remain OPEN/PARTIAL as recorded in the readiness matrix.
