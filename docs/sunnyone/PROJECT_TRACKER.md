@@ -3513,3 +3513,10 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 The 20:35 proposal `FIFO_DEPTH >= ACT_BLOCKS` is withdrawn: it is not a universal target invariant and must not be implemented. `otpu_mxu.sv` checks FIFO capacity only for command-dependent replay cases: replayed row M > MCOLS (int8 KB, 4-bit ceil(KB/2)) and grouped replay (WG > 1, grouped command, M > 1: KB). ACT_BLOCKS is a separate activation RAM range bound; SPL uses KB-1 ACT blocks. Full evidence and precise guard contract are in `CONTINUATION_ADDENDUM_2026-11-28_2110.md`.
 
 No code/test/workflow changed and no tests launched. Next: cross-source MM legality truth table, widened arithmetic and pre-dispatch side-effect proof; isolated raw-word workflow before RTL changes. No safe exact-SHA workflow dispatch is exposed; do not trigger broad RTL CI. Last relevant PASS remains run 46132183828 (47 passed on exact SHA 3cc1ec1d0aaee797022cc355e68e8451a13c4e6b). Main untouched; manufacturer handoff NOT READY.
+
+
+## 159. 2026-11-28 21:20 — MM legality matrix
+
+Cross-source review completed and recorded in `CONTINUATION_ADDENDUM_2026-11-28_2110.md`: static ISA legality, target capabilities, command-dependent replay FIFO bounds, group alignment/KT/SPL conditions, and dynamic ACT-content requirements are separated. Identified parameter propagation gap (sequencer lacks MCOLS/ACT_ROWS/ACT_BLOCKS/FIFO_DEPTH/KT/SPLMM), simulation-only MXU assertions, simulator's lack of FIFO_DEPTH model, and RMAX/ASCALE M<=MCOLS assertion mismatch to resolve before implementation.
+
+No code/test/workflow changed and no tests run. Target-wide FIFO_DEPTH >= ACT_BLOCKS is rejected. Next: resolve the documented/RTL RMAX-ASCALE mismatch and target-aware FIFO validation policy, then implement a minimal synthesizable pre-dispatch guard and isolated raw-word tests only when safe exact-SHA CI can be dispatched. Main untouched; manufacturer handoff NOT READY.
