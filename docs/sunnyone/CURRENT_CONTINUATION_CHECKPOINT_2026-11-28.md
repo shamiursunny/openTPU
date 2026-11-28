@@ -254,3 +254,19 @@ Zero spend. No PPA retry, no paid compute/PDK/IP, no fabrication, packaging, boa
 
 - Tracker final-save commit: `39a3cfd77bc01f04b39b86ffec23373191d96c3c`, tracker blob `0277173662d40b64e43b383b8301e4d5ccfa1d47`.
 - This checkpoint is now updated after the tracker commit. Re-fetch the live branch ref on the next continuation rather than treating any SHA written earlier in this file as the live tip.
+
+
+## 2026-11-28 06:47 continuation — authoritative north star and waits recovery
+
+This is the latest continuation entry. It supersedes pending waits status in older checkpoint entries.
+
+Read first: `SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md` (the user-approved authoritative strategy), then `CONTINUATION_ADDENDUM_2026-11-28_0647.md`, `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` (supporting summary only), the integrated plan, tracker, readiness matrix, source/interface spec and resource-model spec.
+
+- Active branch: `sunnyone/commercial-profitability-architecture-2026-11-23`. Live HEAD after this documentation save is to be re-polled and recorded; at the start of the save it was `54848e8fc43ad88abe09379ccf1e7298d9910d64`.
+- Main SHA remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched. Compare at the last final verification before this checkpoint refresh: 1,148 ahead / 0 behind. GitHub reports main protection false; strict no-write policy remains.
+- Software-core run `46053311585`, attempt 3, terminal SUCCESS on exact tested source `05879ea34eafc2559c54722c6c940b2acb9ac3ee`. Waits-only job `140775908058`: **268 passed, 2 skipped in 1953.87s**. All 15 module jobs terminal SUCCESS. Artifact `15237666850`, ZIP SHA-256 `47048b1aecc1fff9f40500e11190ef4cc24a9945bd6c2c71b2551c46ca2ac554`. The other 14 modules were not rerun by the recovery. Do not describe this ancestor-source run as validation of the current documentation HEAD.
+- The user-approved strategic objective is fixed in `SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`: maximise risk-adjusted lifetime profitability via accepted useful AI work per energy and total cost; optimise useful throughput, joules/token, idle power, cooling/thermal stability, full system cost, reliability/availability, software/deployment simplicity and scale-out. No peak-TOPS-only decisions, no claim of literally zero leakage, no invented measurements. The technical route may change only when evidence improves this same objective or correctness/safety/manufacturability/feasibility requires it.
+- Preserve the unified cooperative compute strategy: existing TPU/MXU, classical software-first LPU scheduling/KV/context lifecycle, existing NPU/VPU/stream, shared data plane, programmable runtime/compiler. Quantum-inspired methods are classical research hypotheses only; no QPU or quantum-speedup assumption. Petabyte corpus/storage is distributed-system capability, not on-chip memory or per-request attention to an entire corpus.
+- Do not treat the newly created `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` as a replacement for the authoritative user-approved north star; it is a supporting summary. Existing V1 logical design candidate and commercial profitability measurement model remain complementary source documents.
+- Next engineering action: exact-source correlation between RTL `hwtrace.py` and TMEM `tmem_trace.py`; then document existing worker admission, prefill-first and round-robin semantics, cancellation and context save/restore, and distinguish request round-robin from tenant fairness. Create W1/W2/W3 fixtures and only calibrate profiles from matching traces. Continue MXU `mx_key` bounds, width/formal/CDC/DFT/memory/interface/physical/sponsorship gates.
+- No RTL, ISA, workflow or PPA source change and no new tests in this reconciliation. Zero spend; no PPA retry; no repeated passed tests; manufacturer handoff remains **NOT READY**.
