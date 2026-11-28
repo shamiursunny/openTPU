@@ -3541,3 +3541,16 @@ No code/test/workflow changed and no tests run. Target-wide FIFO_DEPTH >= ACT_BL
 - Added the MM guard as an explicit open release blocker in `MANUFACTURER_HANDOFF_READINESS_MATRIX.md` (final markdown correction commit `9ddeb06cd3501fee8d08331e51a9c1e440f37746`; blob `61c7fb04822cb490949342e0955d1cd1bc07618a`).
 - The detailed source audit remains `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md`; docs/isa.md and docs/weight_groups.md contain the corrected natural/grouped FIFO-residency distinction.
 - No RTL, tests, workflow or PPA source changed. No tests launched. Manufacturer handoff NOT READY; zero spend; protected main untouched.
+
+
+## 162. 2026-11-28 21:45 — MM R-stage source audit and remaining-work estimate
+
+See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2145.md` for exact source blob SHAs, command-field mapping, address/bounds ownership, missing parameter propagation, test matrix estimate and expedited execution sequence.
+
+- Live branch HEAD at review start `8ac729eb58b1872ec8b0eaa2f39c38733219ec72`; documentation addendum commit `2bcb0deb61c40fdf035b01b52d2910d65516e497`. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched.
+- Static review confirms `otpu_seq` has the existing FSUM reject-before-dispatch path but no MM malformed-command predicate. `otpu_slice.u_seq` passes WG but not MCOLS/effective ACT_ROWS/ACT_BLOCKS/FIFO_DEPTH/KT/SPL; the same slice passes these capabilities/geometry to `u_mxu`. Guard must use resolved parameters and widened arithmetic.
+- Mapped MM fields: w4=N/KB/k0; w5=rs/KT bit; w6=ors/M/ab; w7=srs/SPL/HLD; w1/w2 DRAM byte addresses and w3 TMEM word address. ACT row and block bounds are separate from target-specific FIFO residency. SPL uses KB-1 ACT blocks; natural and grouped replay FIFO rules remain distinct. Do not reintroduce `FIFO_DEPTH >= ACT_BLOCKS`.
+- Remaining project plan is grouped into 14 major work packages. A first dedicated raw-word MM regression is estimated at 30–45 parameterised scenarios, not an existing or completed test count. A true repository-wide remaining pytest count is not presently enumerable because formal/SVA, CDC/RDC, DFT and physical signoff properties are not yet fully specified.
+- No RTL/test/workflow/PPA source changed and no tests were launched. No safe workflow-dispatch action is exposed by the connected GitHub interface; do not push an RTL change into broad `rtl/**` CI without a proven isolated exact-SHA route.
+- Latest relevant workload harness evidence remains run `46132183828`: 47 passed on exact tested source `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`. Historical successful suites remain preserved; no duplicate group 3.1/3.2/4 rerun.
+- Manufacturer handoff remains **NOT READY**. Zero spend, no PPA retry, no protected-main writes.
