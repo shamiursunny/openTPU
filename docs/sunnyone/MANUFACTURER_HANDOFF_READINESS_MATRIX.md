@@ -515,7 +515,7 @@ Across all eight current target base configurations, `ACT_BLOCKS <= FIFO_DEPTH` 
 
 ## MM malformed-command guard — 2026-11-28 21:38
 
-<badge>OPEN — release blocker</badge>
+**OPEN — release blocker**
 
 The synthesizable sequencer-side MM guard is not implemented. Current MXU start assertions are under `ifndef SYNTHESIS` and omit several simulator-enforced constraints: WG=1 RMAX/ASCALE M<=MCOLS; PAIR+int8 rejection and even-k0; RSC+NVFP4; ASCALE UNIT+ACC; and SPL requested without SPL capability. The sequencer also lacks the exact target geometry/capability inputs required to enforce the complete contract. See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md` for exact source blobs and the normative next steps.
 
