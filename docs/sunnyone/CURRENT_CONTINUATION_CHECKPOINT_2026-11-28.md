@@ -375,3 +375,10 @@ See `CONTINUATION_ADDENDUM_2026-11-28_2035.md` for exact source blob references,
 - No RTL, test, workflow, ISA or PPA source was changed; no tests were launched. This was a deliberate safety stop pending exhaustive sequencer hierarchy/variant inventory and focused validation containment.
 - Next order: exhaustive instantiation/variant inventory; add target FIFO invariant and focused invalid-target test; complete MM mode/capability contract; prepare isolated raw-word guard tests/workflow; only then implement the synthesizable pre-dispatch guard.
 - Zero spend; no PPA retry; no main writes; no duplicate successful regressions; manufacturer handoff remains **NOT READY**.
+
+
+## 2026-11-28 21:10 — MM FIFO invariant correction
+
+See `CONTINUATION_ADDENDUM_2026-11-28_2110.md`. The previously proposed target-wide `FIFO_DEPTH >= ACT_BLOCKS` invariant is rejected and must not be implemented. RTL evidence shows FIFO depth checks are command-dependent: replayed rows (M > MCOLS) require the effective per-row chunk count to fit DEPTH; grouped replay (WG > 1, grouped command, M > 1) requires KB <= DEPTH. ACT_BLOCKS remains a separate activation RAM bound; SPL uses KB-1 ACT blocks. The earlier 20:35 note's target-wide invariant claim is superseded.
+
+The correct next task is a cross-source MM legality truth table and a minimal widened-arithmetic synthesizable pre-dispatch predicate in otpu_seq, with isolated raw-word tests proving rejection before p_v/DRAM prefetch/TMEM or ACT side effects. No code/tests/workflow changed and no tests were run; no safe exact-SHA workflow dispatch tool is exposed, so do not trigger broad RTL CI. Latest relevant PASS remains run 46132183828 (47 passed, exact tested SHA 3cc1ec1d0aaee797022cc355e68e8451a13c4e6b). Feature branch HEAD before correction docs: 09b23124cc8ccfbd9a97c5501677b7e76040e397; main remains untouched. Manufacturer handoff NOT READY.
