@@ -490,3 +490,12 @@ The synthesizable MM guard remains OPEN. The ISA/simulator cross-audit confirms 
 - MXU FIFO-depth rule remains under investigation; inspect actual backpressure and simulator configuration before deciding whether KB greater than FIFO depth is invalid or merely stalls.
 - Full workflow mapping and exact contract: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
 - No RTL/test/workflow changes and no new tests were launched. Manufacturer handoff remains **NOT READY**.
+
+
+## Target geometry and FIFO admission audit — 2026-11-28
+
+- Target TOMLs cover MCOLS 2/4/8, WG 1/8, ACT_ROWS default/effective 2/4/8 or explicit 8/16, ACT_BLOCKS 32/128, KT on/off and FIFO_DEPTH 64/1024/2048. A hard-coded guard is unacceptable.
+- MXU replay FIFO assertions are simulation-only (`ifndef SYNTHESIS` `$fatal`) and are not the required synthesizable pre-dispatch guard. Natural replay rows use KB chunks (int8) or ceil(KB/2) (4-bit); grouped replay rows with M>1 require KB<=DEPTH. Validate the flow-control invariant before synthesizing equivalent admission logic.
+- ISA simulator Config does not model FIFO_DEPTH; this physical/uarch admission constraint is separate from ISA semantic validation.
+- ACT_ROWS=0 means effective ACT_ROWS=MCOLS in the slice. The sequencer must receive resolved effective geometry.
+- Status: **OPEN** pending target-variant inventory, formal guard design, raw-word tests, focused CI pass and later controlled broad qualification.
