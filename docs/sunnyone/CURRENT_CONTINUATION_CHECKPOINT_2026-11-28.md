@@ -319,3 +319,12 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - VPU focused workflow `46053471843` is terminal SUCCESS, job `140690259477`; exact tested source `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`; 31 VPU tests and 11 selected FSUM RTL tests passed as recorded in tracker section 146.
 - W1/W2/W3 fixture test commit `28704f25f87179e5653188bf0cc40f43ee681168` remains pending exact CI run/log retrieval; do not mark verified.
 - Re-poll the live branch compare and re-fetch this checkpoint after this commit. Continue from this file and the latest addendum using the trigger phrase **“Continue and complete the remaining tasks.”**
+
+
+## 2026-11-28 — resumed continuation: CI limitation and MXU safety design review
+
+- Read the latest checkpoint and 06:54 addendum, then re-fetched the active feature branch. Latest compare before this work: 1,167 commits ahead, 0 behind protected main; merge base is `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Rechecked W1/W2/W3 fixture test commit `28704f25f87179e5653188bf0cc40f43ee681168`. The connected commit-workflow query returns only pull-request-triggered runs and returned no runs for this push commit. No list-push-runs or workflow-dispatch action is exposed by the connected GitHub tool. Therefore W1/W2/W3 tests remain NOT VERIFIED; do not claim pass and do not trigger an unnecessary duplicate run.
+- Added `docs/sunnyone/MXU_MALFORMED_COMMAND_BOUNDS_GUARD_DESIGN_2026-11-28.md` (commit `6a62dfb4b1030b2d2c14e7173993aef919014bb3`). It records the source-grounded gap: MM checks in MXU are simulation-only; sequencer `fsum_bad` offers a safe pre-dispatch rejection pattern; sequencer lacks `MCOLS`/`ACT_ROWS` while slice and MXU know exact configured values; RMAX key writes require proven bounds. The proposed fix is to pass exact params into sequencer and reject malformed MM before dispatch, with raw RTL tests for no TMEM/DRAM side effects.
+- No RTL change and no new test execution in this review. Before patch, verify PAIR/WF_NVFP4/GALL encoding semantics from full ISA; then implement guard and tests. Keep manufacturer handoff NOT READY.
+- Tracker section 147 records this review. Main remains untouched; zero spend; no PPA retry; preserve passed evidence and avoid historical RTL groups 3.1/3.2/4.
