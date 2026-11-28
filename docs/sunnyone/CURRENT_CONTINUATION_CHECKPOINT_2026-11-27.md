@@ -843,3 +843,17 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_VPU_WIDTH_REMEDIATION.md` a
 The first focused VPU run `46053329340` failed at build with old Verilator 5.020 before tests executed; workflow is pinned to 5.044 and run `46053471843` is the valid regression attempt. Do not mark the RTL correction regression-verified until that run passes.
 
 Broad existing `rtl/**` push filters unintentionally triggered additional board, Qwen, software-core and RTL workflows. These were not intentionally requested; no workflow cancellation operation is available through the current GitHub connection. Do not initiate further broad reruns. Preserve exact prior test evidence and reconcile only relevant terminal results. Manufacturer handoff remains NOT READY; protected main and zero-spend constraints remain unchanged.
+
+
+## 2026-11-28 06:47 continuation — waits recovery and profitability north star
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0647.md` first, then `docs/sunnyone/SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md`, the integrated plan, tracker, source/interface spec and resource-model spec.
+
+- Live branch HEAD at start of this continuation: `54848e8fc43ad88abe09379ccf1e7298d9910d64`; active branch remains `sunnyone/commercial-profitability-architecture-2026-11-23`.
+- Main SHA remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main write. GitHub reports `protected=false`; maintain strict no-write rule.
+- Software-core workflow `46053311585` attempt 3 is now terminal SUCCESS. Waits-only job `140775908058`: **268 passed, 2 skipped in 1953.87s**. All 15 jobs succeeded. Artifact `15237666850`, ZIP SHA-256 `47048b1aecc1fff9f40500e11190ef4cc24a9945bd6c2c71b2551c46ca2ac554`. Exact tested source `05879ea34eafc2559c54722c6c940b2acb9ac3ee`; do not describe it as current-HEAD validation.
+- The commercial north star is now saved in `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` and linked from the integrated plan. Preserve the combined TPU/MXU + software-first LPU-like scheduler/KV role + NPU/VPU + shared measured memory/interconnect + programmable software architecture. No dedicated LPU silicon absent measured net benefit. Quantum-inspired classical research only; no quantum hardware. Track A and Track B remain distinct.
+- Immediate next task: exact-source correlation of RTL trace and TMEM activity; then formalise existing scheduler admission/round-robin/context/cancel semantics and distinguish from tenant fairness; create W1/W2/W3 workloads and only calibrate with matching traces.
+- Continue remaining MXU bounds, width-warning, formal/SVA, CDC/RDC, DFT, SRAM/DDR, production interfaces, routed physical and sponsorship gates. No PPA retry, paid compute, hardware spend, duplicate passed tests or unsupported claims. Manufacturer handoff remains **NOT READY**.
+
+Documentation save sequence: north-star doc commit `40b6f8078d2d7a424a255f1d7db716cab373b657`; addendum and updated plan/tracker/checkpoint commits are to be verified by re-fetching live branch HEAD and blob SHAs after this update.
