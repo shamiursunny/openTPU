@@ -122,3 +122,13 @@ In any new chat: **Continue and complete the remaining tasks.** Read the current
 ### Revised design decision
 - The ISA semantic malformed-word guard and the physical MXU admission guard should be explicitly separated in code/comments and tests. The former mirrors the ISA simulator; the latter mirrors target/uarch FIFO safety conditions and may differ by target.
 - Do not label every physical FIFO admission restriction as an ISA rule. Record it as a hardware configuration constraint and test it across the target matrix.
+
+
+## Target variant overrides — correction and completion
+The complete TOML section scan (including `[variants.*]`, not only base `[arch]`) found these important overrides:
+- `bcu1525-s2:kt`: KT enabled.
+- `bcu1525-wg:kt`, `:bhw`, `:bhw16`, `:wmx`, `:bhw16fs`: KT enabled even though the base `bcu1525-wg` architecture has KT disabled.
+- `bcu1525-x2:b2`: SPLMM enabled. This corrects the earlier base-section-only observation; SPLMM is enabled in at least this named target variant and must be tested.
+- `ypcb-00338:m8` overrides MCOLS to 8; `:m4` keeps MCOLS 4.
+- The variants retain the target's other base geometry unless explicitly overridden. Guard tests must use the resolved target configuration (base + variant), not parse only the base sections.
+- `bcu1525-x2:b2` is the mandatory positive SPLMM elaboration/test case; include a disabled-SPLMM variant negative test as well.
