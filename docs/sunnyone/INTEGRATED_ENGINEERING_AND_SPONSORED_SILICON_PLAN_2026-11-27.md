@@ -870,3 +870,14 @@ The structural audit `45914912691` reports zero SCCs and zero inferred latch cel
 VPU source commit `05879ea34eafc2559c54722c6c940b2acb9ac3ee` explicitly sizes the 24 function-mask indices and exact row-buffer index slices. Full-chip lint run `46053311384` passes with 59 width warnings (52 expand, 7 trunc), 17 fewer than the 76-warning baseline. The remaining five MXU index truncations and two behavioral DRAM `exists()` warnings require separate treatment; 52 expansions remain open.
 
 The VPU-focused workflow first failed at build under Verilator 5.020 before simulation; it now pins 5.044 and run `46053471843` is the required regression gate. Do not claim functional closure until that run passes. Broad `rtl/**` workflow filters caused unintended additional suites; no further broad runs are authorised. Zero-spend and no-main-write constraints remain. Manufacturer handoff NOT READY.
+
+
+## Governing AI-X profitability objective — 2026-11-28
+
+The new governing product objective and architecture decision framework is documented in `docs/sunnyone/SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` (creation commit `40b6f8078d2d7a424a255f1d7db716cab373b657`). It is aligned with, and does not replace, the integrated engineering/sponsored-silicon plan.
+
+The product objective is commercially profitable, quality-qualified LLM inference: maximise useful tokens/s, tokens/J and useful tokens per total cost; minimise energy/token, idle power, heat, manufacturing/operating cost, latency tails, failure/downtime and maintenance complexity. No unmeasured throughput, power, thermal, yield, area or cost claims.
+
+Architecture direction: unified TPU/MXU matrix engine; LPU-like scheduling/KV/context/data-movement role initially implemented in existing software/runtime; NPU/VPU vector datapath; shared, measured memory/interconnect; programmable runtime/compiler/ISA; evidence-based power/thermal control. Quantum-inspired classical methods remain optional research, not physical quantum hardware. No dedicated LPU silicon without a measured net benefit. Track A full product remains distinct from Track B demonstrator. One-slice ASIC top, Versal feasibility lead, 128 GB ECC DDR4 hypothesis, 256 GB stretch-only and retired 30 W hard ceiling remain as qualified in the governing plan.
+
+Decision rule: add hardware only when a source-backed bottleneck and reproducible baseline demonstrate a net benefit after throughput, latency, energy, cost, area, heat, yield, reliability, software and verification trade-offs. Optimise existing resources first.
