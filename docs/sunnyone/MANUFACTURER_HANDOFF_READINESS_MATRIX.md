@@ -538,3 +538,13 @@ No RTL or tests changed in this update. No test was run. Preserve zero-spend, no
 The user's confirmed goal is a fully simulation-qualified design/evidence package for manufacturer handoff; manufacturer performs physical implementation, silicon/board validation and bulk-production qualification. Do not require self-fabrication as a project gate. Before handoff, complete applicable RTL/software regressions, MM guard, formal/SVA, lint/elaboration, available CDC/RDC, open-source synthesis estimates, supported host adapters, driver/runtime, workload co-simulation and reproducible verification dossier. Manufacturer-only gates include PDK/library and macro mapping, hard PHYs, floorplan/CTS/routing, extracted STA, DRC/LVS, IR/EM, package/board SI/PI, measured silicon power/thermal/performance, yield and reliability.
 
 RISC-V ISA alone does not guarantee compatibility with every RISC-V chip or board. Publish only an explicit supported-host/interface matrix and verify each adapter, DMA, memory, interrupt, reset and clock contract. The 14 work packages remain a high-level grouping; fabrication/sponsorship is downstream manufacturer engagement, and Track B demonstrator is optional. Exact remaining executable test count remains unenumerated; MM focused test plan is 30–45 parameterised scenarios (estimate only). No RTL or test result changed in this documentation update.
+
+
+
+## Prototype and final execution strategy — 2026-11-28
+
+The user-approved strategic direction is documented in `docs/sunnyone/SUNNYONE_X_FINAL_EXECUTION_MASTER_PLAN_2026-11-28.md`. Simulation-first engineering remains mandatory. A ready-board FPGA/RISC-V prototype is intended after pre-hardware readiness; a custom pre-ready PCB is not the default. Candidate roles are AMD VCU118 accelerator FPGA, Microchip PolarFire SoC Icicle Kit RISC-V host, and AMD VPK180 larger-fabric alternative. This is a shortlist only, not a final compatible pair or purchase decision.
+
+Before hardware readiness can be marked PASS, require exact-SHA RTL synthesis/resource headroom, supported clocks/memory mapping, endpoint/root-port role and PCIe lane/generation/connector proof, DMA/BAR/interrupt/reset/clock contracts, RISC-V driver/runtime evidence, tool licence availability, current board revision/supply and full Bangladesh landed-cost quotation. User willingness to consider a high-cost prototype does not authorise purchase without exact quote and explicit approval.
+
+FPGA prototype validation is board-specific and cannot close ASIC PDK, hard PHY, routed STA, DRC/LVS, IR/EM, silicon power/thermal, yield, reliability or production qualification gates. Those remain manufacturer-dependent. Low-cost production down-select follows measured prototype evidence and manufacturer quotations.
