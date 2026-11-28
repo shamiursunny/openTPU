@@ -857,3 +857,8 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0647.md` first, then `docs/
 - Continue remaining MXU bounds, width-warning, formal/SVA, CDC/RDC, DFT, SRAM/DDR, production interfaces, routed physical and sponsorship gates. No PPA retry, paid compute, hardware spend, duplicate passed tests or unsupported claims. Manufacturer handoff remains **NOT READY**.
 
 Documentation save sequence: north-star doc commit `40b6f8078d2d7a424a255f1d7db716cab373b657`; addendum and updated plan/tracker/checkpoint commits are to be verified by re-fetching live branch HEAD and blob SHAs after this update.
+
+
+## Latest continuation pointer — 2026-11-28 18:21 Asia/Dhaka
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_1821.md` after this checkpoint. It records the live branch ref `8c65b8b33fda16a588227f64d26be7edea4b04c2`, latest Actions reconciliation (no active/queued run; final workload harness run 46132183828: 47 passed), current MXU malformed-command guard review, exact remaining work and release controls. The addendum and tracker were saved on the feature branch. Re-resolve the live ref before the next write. Manufacturer handoff remains NOT READY.
