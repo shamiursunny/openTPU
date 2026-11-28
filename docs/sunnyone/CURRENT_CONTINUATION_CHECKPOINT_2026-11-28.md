@@ -279,3 +279,11 @@ Created `docs/sunnyone/SCHEDULER_ADMISSION_AND_FAIRNESS_SPEC_2026-11-28.md` (com
 Source-grounded findings: default `max_running=8` is configurable; `quantum=32` and non-polling `CHUNK=64` are defaults, not tuned optima. Waiting requests are FIFO-admitted while capacity remains; newly admitted requests get their turn before the next running-request round-robin turn. Admitted running requests rotate by request-level round-robin. Cancellations are pruned in waiting/running lists. When one request owns the engine alone it can continue; additional arrivals trigger yielding after the in-flight token where supported. Context save/restore and idle-save pre-emption are host/runtime mechanisms.
 
 No tenant identity or per-tenant accounting exists in the inspected selection path; request round-robin is not tenant fairness. No starvation bound is established. W1/W2/W3 experiments must measure the actual scheduler semantics; tenant fairness needs an explicit policy before modelling. No scheduler source or tests changed.
+
+
+## Final verification metadata — 2026-11-28 continuation
+
+- Feature branch HEAD immediately before this checkpoint metadata update: `d325caca8ceb63c39b6a1c3d5a70e34500510c34`.
+- Latest re-fetched blobs: checkpoint `cbc501427b59be87dce878699c2d5d5c3ccb36cb`; addendum `644ec17a19d8e583560d6b9561133e632dc24451`; tracker `d86ef2784b7fa136811b13ee8d00c296e5a82a17`; integrated plan `a895a485d1c47e8b0da5bb112ec5327c76b20d1c`; scheduler spec `3c489451dca78325de7b009c101f8e7589e7f032`.
+- North-star hierarchy: authoritative `SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`; supporting summary `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md`.
+- Final re-fetch of the branch ref is required after this metadata commit. Main baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main writes.
