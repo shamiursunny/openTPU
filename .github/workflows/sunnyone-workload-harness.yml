@@ -34,8 +34,6 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y verilator
       - name: Install project dependencies
         run: python -m pip install --upgrade pip && python -m pip install -e .
-      - name: Verify NumPy scalar runtime
-        run: python -c "import numpy as np; print(np.__file__, repr(np.float32), np.float32(1.0)); import opentpu.fp32 as F; print('openTPU F32:', repr(F.F32), F.F32(1.0))"
       - name: Compile benchmark tools
         run: python -m py_compile tools/sunnyone/endpoint_benchmark.py tools/sunnyone/retrieval_benchmark.py tools/sunnyone/workload_trace.py tools/sunnyone/resource_event_model.py tools/sunnyone/trace_correlation.py
       - name: Run deterministic SUNNYONE tests

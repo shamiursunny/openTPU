@@ -10,9 +10,23 @@ import sys
 class Fake:
     def __getattr__(self, name):
         return object
+_MISSING = object()
+_numpy_before = sys.modules.get("numpy", _MISSING)
+_sentence_before = sys.modules.get("sentence_transformers", _MISSING)
 sys.modules.setdefault("numpy", Fake())
 sys.modules.setdefault("sentence_transformers", Fake())
-spec.loader.exec_module(module)
+try:
+    spec.loader.exec_module(module)
+finally:
+    # Keep these optional-dependency stubs local to this import. Other tests may need real NumPy.
+    if _numpy_before is _MISSING:
+        sys.modules.pop("numpy", None)
+    else:
+        sys.modules["numpy"] = _numpy_before
+    if _sentence_before is _MISSING:
+        sys.modules.pop("sentence_transformers", None)
+    else:
+        sys.modules["sentence_transformers"] = _sentence_before
 
 class RetrievalMetricTests(unittest.TestCase):
     # Metrics are unit-tested without downloading model weights.

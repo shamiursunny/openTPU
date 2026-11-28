@@ -8,8 +8,6 @@ from pathlib import Path
 
 import numpy as np
 
-print('NumPy scalar diagnostic:', np.__file__, repr(np.float32), np.float32(1.0))
-
 from opentpu import Config, isa as I, rtlsim
 from tools.sunnyone.trace_correlation import correlate, read_tmem_segments
 
