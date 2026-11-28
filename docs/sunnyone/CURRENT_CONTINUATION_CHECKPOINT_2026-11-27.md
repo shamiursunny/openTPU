@@ -862,3 +862,8 @@ Documentation save sequence: north-star doc commit `40b6f8078d2d7a424a255f1d7db7
 ## Latest continuation pointer — 2026-11-28 18:21 Asia/Dhaka
 
 Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_1821.md` after this checkpoint. It records the live branch ref `8c65b8b33fda16a588227f64d26be7edea4b04c2`, latest Actions reconciliation (no active/queued run; final workload harness run 46132183828: 47 passed), current MXU malformed-command guard review, exact remaining work and release controls. The addendum and tracker were saved on the feature branch. Re-resolve the live ref before the next write. Manufacturer handoff remains NOT READY.
+
+
+## Latest continuation pointer — 2026-11-28 20:17 Asia/Dhaka
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md` after this checkpoint. It records live branch reconciliation (HEAD before documentation save `8c46dee94e90f1072d4571fb3a1260ee6efd61b2`), latest Actions state (no active/queued runs; workload harness run `46132183828` SUCCESS, 47 passed), the exact MM ISA/simulator/RTL parameter audit, why no speculative RTL patch was made, and the ordered narrow-CI/guard implementation gate. Manufacturer handoff remains NOT READY. Protected main and zero-spend/no-duplicate-test controls remain mandatory.
