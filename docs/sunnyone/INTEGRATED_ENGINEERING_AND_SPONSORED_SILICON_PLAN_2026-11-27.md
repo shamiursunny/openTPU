@@ -895,3 +895,21 @@ The source-grounded review in `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_21
 The synthesizable MM pre-dispatch guard remains OPEN. otpu_seq must receive exact resolved MCOLS, ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, KT and SPLMM capabilities from otpu_slice/target integration; do not hard-code. Source review also identified MXU assertion omissions relative to the ISA simulator: WG=1 RMAX/ASCALE M<=MCOLS, PAIR+int8, PAIR even-k0, RSC+NVFP4, ASCALE UNIT+ACC, and SPL when unsupported. Complete the normative truth table, address-range ownership and all instantiation/feature propagation review before patching. No RTL/test/workflow/PPA source was changed and no tests were run in this review.
 
 CI containment remains a prerequisite: broad rtl/** push filters fan out into multiple historical suites, and no safe workflow-dispatch action is exposed by the connected GitHub tools. Do not push an unverified RTL patch or repeat successful RTL groups 3.1/3.2/4. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-28 — governing final execution plan and FPGA prototype transition
+
+The user-approved final execution roadmap is `docs/sunnyone/SUNNYONE_X_FINAL_EXECUTION_MASTER_PLAN_2026-11-28.md`. It is authoritative for the integrated order of work, including the user's updated decision to consider a high-capability ready-board FPGA/RISC-V prototype after simulation and engineering readiness, then optimise for low-cost production. The fixed product objective remains governed by `SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`; the master execution plan does not supersede that objective.
+
+Clarification of the delivery sequence:
+1. Simulation/RTL/software/formal/lint/interface/workload evidence first.
+2. Board-fit synthesis and host/interface compatibility assessment second.
+3. Ready commercial FPGA evaluation board plus RISC-V host/reference board third, only after exact fit, link, tool licence, supply and landed-cost checks and explicit purchase approval.
+4. Manufacturer handoff and process-specific physical implementation next.
+5. Low-cost production architecture/BOM down-select after board evidence and manufacturer quotes.
+
+Shortlist, not final purchase selection: AMD VCU118 as practical PCIe/DDR4 accelerator candidate; Microchip PolarFire SoC Icicle Kit as RISC-V host candidate; AMD VPK180 as a larger-fabric alternative if fit evidence justifies it. The VCU128 and VHK158 are not baseline candidates because AMD marks their evaluation kits discontinued. No board pair is yet proven compatible. Do not treat a RISC-V ISA label as plug-and-play host compatibility.
+
+The user's willingness to consider a high-cost prototype is not an open-ended spend approval. Require an exact current quote, total landed cost to Bangladesh, tool licence, accessories and explicit approval before ordering. No custom early PCB by default. FPGA measurements are board-specific and do not establish ASIC PPA, silicon power/thermal, yield or production readiness.
+
+No change to the underlying logical V1 architecture, no RTL change and no test result is implied by this strategic update. MM guard and verification/interface blockers remain open.
