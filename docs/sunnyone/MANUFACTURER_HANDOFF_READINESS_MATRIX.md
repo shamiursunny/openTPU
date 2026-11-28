@@ -511,3 +511,14 @@ The synthesizable MM guard remains OPEN. The ISA/simulator cross-audit confirms 
 ## FIFO capacity implication — 2026-11-28
 
 Across all eight current target base configurations, `ACT_BLOCKS <= FIFO_DEPTH` (32<=64 at nangate45-small; 128<=1024/2048 elsewhere). Because a legal MM's `ab + KB <= ACT_BLOCKS`, its K chunks fit the FIFO; 4-bit natural rows need only ceil(KB/2). This is a target-derived invariant, not an ISA guarantee. Add a target validation/elaboration assertion so future variants preserve it; avoid unnecessary duplicate sequencer logic unless the guard contract explicitly includes FIFO admission. Full reasoning is in the workflow/MM audit addendum.
+
+
+## MM malformed-command guard — 2026-11-28 21:38
+
+<badge>OPEN — release blocker</badge>
+
+The synthesizable sequencer-side MM guard is not implemented. Current MXU start assertions are under `ifndef SYNTHESIS` and omit several simulator-enforced constraints: WG=1 RMAX/ASCALE M<=MCOLS; PAIR+int8 rejection and even-k0; RSC+NVFP4; ASCALE UNIT+ACC; and SPL requested without SPL capability. The sequencer also lacks the exact target geometry/capability inputs required to enforce the complete contract. See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md` for exact source blobs and the normative next steps.
+
+FIFO admission is mode-specific: natural WG=1 replay at M>MCOLS uses KB int8 chunks or ceil(KB/2) packed-4-bit chunks; grouped WG>1/GALL replay at M>1 requires KB<=DEPTH. FIFO_DEPTH is not modeled by the ISA simulator. The proposed universal FIFO_DEPTH>=ACT_BLOCKS rule is withdrawn.
+
+No RTL or tests changed and no verification was run for this audit. Do not push the guard until a dedicated exact-SHA raw-word test route can execute without broad duplicate regressions. Manufacturer handoff remains NOT READY.
