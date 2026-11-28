@@ -3370,3 +3370,11 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Software-core workflow `46053311585` attempt 3 is now SUCCESS; waits-only job `140775908058` reported **268 passed, 2 skipped**. All 15 jobs terminal SUCCESS; exact source `05879ea34eafc2559c54722c6c940b2acb9ac3ee`; artifact `15237666850`; SHA-256 `47048b1aecc1fff9f40500e11190ef4cc24a9945bd6c2c71b2551c46ca2ac554`. No rerun of other modules.
 - Latest continuation checkpoint is `CURRENT_CONTINUATION_CHECKPOINT_2026-11-28.md`. Next engineering work: source-exact RTL/TMEM trace correlation; model existing scheduler admission/prefill-first/round-robin/context lifecycle and do not falsely call request RR tenant fairness; W1/W2/W3 controlled traces; calibration only from matched traces. Continue MXU bounds and remaining verification/manufacturer gates.
 - No RTL/workflow/ISA/PPA change or test launched in this reconciliation. Manufacturer handoff NOT READY; zero spend; main untouched.
+
+
+## 144. 2026-11-28 — runtime admission and fairness source review
+
+- Created `SCHEDULER_ADMISSION_AND_FAIRNESS_SPEC_2026-11-28.md` (commit `61f7750920764ebbcb5c6efd3f3618098510def5`) from scheduler blob `7346daae1bfe08b1acd71965cd14e5b00d82211d`.
+- Existing worker: FIFO waiting queue; default configurable `max_running=8`; new request admission/prefill turn before next running turn while capacity remains; request-level round-robin among admitted running requests; cancellation pruning; single-owner continuation; yielding after in-flight token when other work waits; KV/context save/restore and idle-save pre-emption.
+- `quantum=32` and `CHUNK=64` are software defaults, not optimised or measured hardware parameters. No tenant identity/per-tenant accounting in inspected selection path; request RR is not tenant fairness. No starvation bound claimed.
+- Next: exact-source RTL/TMEM trace correlation and W1/W2/W3 tests. Keep tenant fairness undefined until policy specified. No runtime code/tests changed.
