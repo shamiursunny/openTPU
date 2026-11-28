@@ -270,3 +270,12 @@ Read first: `SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md` (the user-
 - Do not treat the newly created `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` as a replacement for the authoritative user-approved north star; it is a supporting summary. Existing V1 logical design candidate and commercial profitability measurement model remain complementary source documents.
 - Next engineering action: exact-source correlation between RTL `hwtrace.py` and TMEM `tmem_trace.py`; then document existing worker admission, prefill-first and round-robin semantics, cancellation and context save/restore, and distinguish request round-robin from tenant fairness. Create W1/W2/W3 fixtures and only calibrate profiles from matching traces. Continue MXU `mx_key` bounds, width/formal/CDC/DFT/memory/interface/physical/sponsorship gates.
 - No RTL, ISA, workflow or PPA source change and no new tests in this reconciliation. Zero spend; no PPA retry; no repeated passed tests; manufacturer handoff remains **NOT READY**.
+
+
+## 2026-11-28 — scheduler semantics source review
+
+Created `docs/sunnyone/SCHEDULER_ADMISSION_AND_FAIRNESS_SPEC_2026-11-28.md` (commit `61f7750920764ebbcb5c6efd3f3618098510def5`) from `opentpu/serve/scheduler.py` blob `7346daae1bfe08b1acd71965cd14e5b00d82211d`.
+
+Source-grounded findings: default `max_running=8` is configurable; `quantum=32` and non-polling `CHUNK=64` are defaults, not tuned optima. Waiting requests are FIFO-admitted while capacity remains; newly admitted requests get their turn before the next running-request round-robin turn. Admitted running requests rotate by request-level round-robin. Cancellations are pruned in waiting/running lists. When one request owns the engine alone it can continue; additional arrivals trigger yielding after the in-flight token where supported. Context save/restore and idle-save pre-emption are host/runtime mechanisms.
+
+No tenant identity or per-tenant accounting exists in the inspected selection path; request round-robin is not tenant fairness. No starvation bound is established. W1/W2/W3 experiments must measure the actual scheduler semantics; tenant fairness needs an explicit policy before modelling. No scheduler source or tests changed.
