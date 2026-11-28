@@ -3389,3 +3389,12 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Existing runtime scheduler semantics remain source-grounded in `SCHEDULER_ADMISSION_AND_FAIRNESS_SPEC_2026-11-28.md`; request round-robin is not tenant fairness. W1/W2/W3 fixtures do not themselves simulate scheduler policy or establish fairness.
 - Next: poll VPU focused workflow `46053471843`; retrieve the new workload-harness CI run and inspect the exact log; then implement interval-level trace correlation with explicit loss/ambiguity reporting. Continue MXU bounds, width/formal/CDC/DFT/memory/interface/physical and sponsorship gates.
 - Manufacturer handoff remains NOT READY. Zero spend; no PPA retry; main untouched; no duplicate successful tests.
+
+
+## 146. 2026-11-28 — focused VPU regression completed
+
+- VPU focused workflow `46053471843`, job `140690259477`, terminal SUCCESS. Exact log confirms `tests/test_se_vpu.py`: **31 passed in 476.99s**; selected FSUM RTL tests: **11 passed, 219 deselected in 211.80s**. Pinned Verilator 5.044 build and dependency installation succeeded.
+- Artifact `15225689330`; ZIP SHA-256 `8c528b19d9a69e5d7a0053fb5bddd931072e33ec9cee4dfc539ef6a91b7187bd`.
+- Workflow checked out exact source SHA `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`. The result is limited to the named VPU/FSUM suites and that source/configuration; not all VPU paths, all MXU bounds, full-chip correctness or physical signoff.
+- No test rerun was launched. Continue polling the separate W1/W2/W3 fixture harness triggered by `28704f25...`; do not mark those tests passed until its exact log is available.
+- Manufacturer handoff remains NOT READY; zero spend; no PPA retry; main untouched.
