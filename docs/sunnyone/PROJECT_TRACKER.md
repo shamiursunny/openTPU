@@ -3473,3 +3473,12 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - No RTL/test/workflow source changed and no tests dispatched; this was a deliberate safety stop. Full evidence and next actions: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
 - Live HEAD at audit start `104aedc9d9d32b9a193ded4721467e5e44e20b0c`; main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched. No active/queued Actions runs at latest poll. Main branch protection is reported disabled.
 - Manufacturer handoff NOT READY. Zero spend, no duplicate successful RTL groups 3.1/3.2/4, no PPA retries, no fabricated silicon claims.
+
+
+## 154. 2026-11-28 — Target geometry and physical FIFO guard reconciliation
+
+- Audited all eight target TOMLs. The active hardware family spans MCOLS 2/4/8, WG 1/8, ACT_ROWS defaulting to MCOLS or explicit 8/16, ACT_BLOCKS 32/128, KT enabled and disabled, and FIFO_DEPTH 64/1024/2048. The guard must use effective target values, not defaults.
+- Confirmed the MXU's replay FIFO constraints exist only as `ifndef SYNTHESIS` `$fatal` assertions at MXU start: natural replay M>MCOLS uses KB chunks for int8 / ceil(KB/2) for 4-bit; grouped replay M>1 requires KB<=DEPTH. They are not synthesizable sequencer rejects.
+- Confirmed ISA simulator Config has no FIFO_DEPTH field and Machine._mm does not validate physical chunk-FIFO capacity. Separate ISA semantic malformed-word rules from target-specific hardware admission constraints; do not claim the simulator covers FIFO safety.
+- Slice's ACT_ROWS parameter may be 0, meaning effective ACT_ROWS=MCOLS. Propagate resolved row count or implement an explicit effective parameter. Exact findings and target matrix are appended to `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
+- No source or test changes; no CI run. Continue with elaboration/variant inventory and FIFO flow-control proof before RTL implementation. Manufacturer handoff remains NOT READY.
