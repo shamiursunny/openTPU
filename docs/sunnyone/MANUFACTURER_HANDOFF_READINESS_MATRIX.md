@@ -522,3 +522,12 @@ The synthesizable sequencer-side MM guard is not implemented. Current MXU start 
 FIFO admission is mode-specific: natural WG=1 replay at M>MCOLS uses KB int8 chunks or ceil(KB/2) packed-4-bit chunks; grouped WG>1/GALL replay at M>1 requires KB<=DEPTH. FIFO_DEPTH is not modeled by the ISA simulator. The proposed universal FIFO_DEPTH>=ACT_BLOCKS rule is withdrawn.
 
 No RTL or tests changed and no verification was run for this audit. Do not push the guard until a dedicated exact-SHA raw-word test route can execute without broad duplicate regressions. Manufacturer handoff remains NOT READY.
+
+
+## 2026-11-28 21:45 — MM guard parameter propagation and remaining release work
+
+**MM guard: OPEN — release blocker.** The R-stage source audit confirms the sequencer has an FSUM-specific reject-before-dispatch pattern but no MM legality guard. The slice already owns and passes MCOLS, effective ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, KT and SPL capability to the MXU; these must be propagated to the sequencer without hard-coded defaults. Use widened arithmetic for `PAIR ? 2*M : M`, `ab + (SPL ? KB-1 : KB)`, replay chunk counts and KT stride bounds. Preserve the distinction between ACT_ROWS, ACT_BLOCKS and mode-specific FIFO residency. Do not implement the withdrawn universal `FIFO_DEPTH >= ACT_BLOCKS` rule.
+
+**Remaining plan:** 14 major work packages across MM guard/CI, residual lint/bounds, formal/SVA, CDC/RDC, DFT, SRAM mapping, production PCIe/SerDes/DMA/IOMMU/DDR interfaces, routed physical PPA, measured power/thermal/reliability, Track B demonstrator and full-cost sponsorship/sample logistics, plus Track A workload/economic validation. The focused MM raw-word suite is estimated at 30–45 parameterised scenarios; this is a planning estimate, not an existing test count. Full manufacturer readiness remains NOT READY.
+
+No RTL or tests changed in this update. No test was run. Preserve zero-spend, no-main-write and no-duplicate-successful-regression rules.
