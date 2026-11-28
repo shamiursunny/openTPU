@@ -405,3 +405,13 @@ Latest continuation addendum: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_21
 - No RTL/test/workflow/PPA source changed; no tests launched. Do not push RTL until isolated exact-SHA raw-word verification can run without triggering broad duplicate RTL suites. No safe workflow-dispatch action is exposed in the connected GitHub tools.
 - Next: finish address-range boundary ownership and sequencer instance/capability propagation inventory; complete raw-word negative and legal-control matrix; establish isolated CI dispatch; then implement the minimal widened-arithmetic synthesizable R-stage guard. Preserve historical passed RTL groups 3.1/3.2/4 and never restart cancelled run 45765362426. No PPA retry, no spend.
 - Manufacturer handoff remains **NOT READY**.
+
+
+## 2026-11-28 final save — continuation docs reconciled
+
+- Latest engineering addendum: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md`.
+- Integrated plan now includes the corrected MM FIFO rule and open synthesizable guard (commit `a03c1032566c1577a8221cd27d2bdb3f51fc0373`).
+- Manufacturer handoff matrix explicitly records MM guard as an OPEN release blocker (final matrix commit `9ddeb06cd3501fee8d08331e51a9c1e440f37746`).
+- Project tracker section 161 records the reconciliation.
+- Documentation-only updates. No RTL/test/workflow/PPA source changed; no tests launched. Manufacturer handoff remains NOT READY.
+- Before next action, re-resolve the live feature HEAD and main SHA. Keep main off-limits; zero spend; no duplicate successful RTL suites; no PPA retry.
