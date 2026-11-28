@@ -3,7 +3,7 @@ Last updated: 2026-11-28 02:20 Asia/Dhaka
 
 ## Start here in every new chat
 Read this file, then:
-1. `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_0220.md`
+1. `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_MXU_ISA_RECONCILIATION.md`
 2. `docs/sunnyone/INTEGRATED_ENGINEERING_AND_SPONSORED_SILICON_PLAN_2026-11-27.md`
 3. `docs/sunnyone/PROJECT_TRACKER.md`
 4. `docs/sunnyone/MANUFACTURER_HANDOFF_READINESS_MATRIX.md`
@@ -328,3 +328,14 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - Added `docs/sunnyone/MXU_MALFORMED_COMMAND_BOUNDS_GUARD_DESIGN_2026-11-28.md` (commit `6a62dfb4b1030b2d2c14e7173993aef919014bb3`). It records the source-grounded gap: MM checks in MXU are simulation-only; sequencer `fsum_bad` offers a safe pre-dispatch rejection pattern; sequencer lacks `MCOLS`/`ACT_ROWS` while slice and MXU know exact configured values; RMAX key writes require proven bounds. The proposed fix is to pass exact params into sequencer and reject malformed MM before dispatch, with raw RTL tests for no TMEM/DRAM side effects.
 - No RTL change and no new test execution in this review. Before patch, verify PAIR/WF_NVFP4/GALL encoding semantics from full ISA; then implement guard and tests. Keep manufacturer handoff NOT READY.
 - Tracker section 147 records this review. Main remains untouched; zero spend; no PPA retry; preserve passed evidence and avoid historical RTL groups 3.1/3.2/4.
+
+
+## Latest continuation — 2026-11-28 MXU ISA reconciliation
+- Current verified branch HEAD before this documentation save: `1da02135d5498572956619ffefc9368f60198a03`; live compare 1,170 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`.
+- Read primary ISA `docs/isa.md` and reconciled malformed MM constraints: N>=1, KB>=1, 0<M<=ACT_ROWS; RMAX/ASCALE/PAIR require M<=MCOLS; PAIR is 4-bit only, 2*M<=MCOLS, and not with WG; RMAX/ASCALE with WG only under GALL; ASCALE requires UNIT+ACC; RSC is prohibited with WF=3/NVFP4; WG>1 requires grouped MM mode.
+- Sequencer currently receives WG but not MCOLS/ACT_ROWS. Slice has exact values and passes them to MXU/ACT RAM. A synthesizable guard must receive those exact parameters; hard-coded MCOLS values are prohibited.
+- Existing MXU command legality assertions are simulation-only. Existing sequencer `fsum_bad` demonstrates pre-dispatch rejection pattern, but no MM guard has yet been implemented.
+- Re-polled evidence: VPU run `46053471843` SUCCESS (31 VPU + 11 selected FSUM tests, 219 deselected); software-core run `46053311585` attempt 3 SUCCESS (15 jobs, waits 268 passed/2 skipped); resource harness `46081103514` SUCCESS (34 tests); lint run `46053311384` completed with 59 width warnings. Exact source SHA scope is recorded in the MXU ISA reconciliation addendum.
+- W1/W2/W3 fixture tests remain NOT VERIFIED; exact push-run log unavailable via current connector. No blind rerun.
+- Next: finish full ISA/compiler/simulator legality audit; inspect every sequencer instantiation; implement width-safe synthesizable MM rejection and raw-word negative RTL tests; focused-only validation; trace interval audit; continue remaining lint/formal/CDC/DFT/memory/interface/physical/sponsorship gates.
+- No RTL/test/workflow change in this continuation. Manufacturer handoff remains NOT READY. Main untouched, zero spend, no PPA retry, no protected RTL-group reruns.
