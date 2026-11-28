@@ -287,3 +287,16 @@ No tenant identity or per-tenant accounting exists in the inspected selection pa
 - Latest re-fetched blobs: checkpoint `cbc501427b59be87dce878699c2d5d5c3ccb36cb`; addendum `644ec17a19d8e583560d6b9561133e632dc24451`; tracker `d86ef2784b7fa136811b13ee8d00c296e5a82a17`; integrated plan `a895a485d1c47e8b0da5bb112ec5327c76b20d1c`; scheduler spec `3c489451dca78325de7b009c101f8e7589e7f032`.
 - North-star hierarchy: authoritative `SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`; supporting summary `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md`.
 - Final re-fetch of the branch ref is required after this metadata commit. Main baseline remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; no main writes.
+
+
+## 2026-11-28 06:54 Asia/Dhaka — W1/W2/W3 fixtures and trace-correlation continuation
+
+Read the authoritative north star first, then the latest addendum `CONTINUATION_ADDENDUM_2026-11-28_0654.md`, the 06:47 addendum, integrated plan, tracker, readiness matrix, source/interface spec, resource-model spec and scheduler semantics spec.
+
+- Added synthetic fixtures W1 single request, W2 staggered mixed concurrency, W3 ten-request burst/cancel/fault/deadline under `workloads/sunnyone/`.
+- Added three fixture tests in `tests/test_sunnyone_workload_scenarios.py`, commit `28704f25f87179e5653188bf0cc40f43ee681168`. These tests are committed but CI terminal status has not yet been independently retrieved; do not mark passed until the isolated workload harness log confirms.
+- Trace-source review: `hwtrace.py` records dispatch slots and unit readiness; `tmem_trace.py` records per-cycle addresses/ports and per-unit instruction starts/completions but does not carry a shared request/slot ID on each access. Implement unit/interval correlation with explicit unmatched/loss/ambiguity reporting; do not attribute overlapping aggregate TMEM accesses to individual requests.
+- New addendum: `CONTINUATION_ADDENDUM_2026-11-28_0654.md`; tracker section 145 records the same milestone. Re-fetch final blobs and branch compare after this checkpoint save.
+- Outstanding immediate polls: VPU focused run `46053471843` and the new workload harness triggered by test commit `28704f25...`. No broad regression rerun.
+- Continue MXU `mx_key` bounds, semantic width-warning closure, formal/SVA, CDC/RDC, DFT, SRAM/DDR mapping, production interfaces, routed physical signoff and Track B sponsorship/feasibility.
+- Main baseline `d84db55712aba0d40811d7762cb052f05d55b7e5` remains off-limits. Zero spend; no PPA retry; manufacturer handoff NOT READY.
