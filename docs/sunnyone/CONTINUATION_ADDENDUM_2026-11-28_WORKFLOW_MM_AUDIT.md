@@ -97,3 +97,28 @@ The simulator's `Machine._mm` validates:
 
 ## Resume command
 In any new chat: **Continue and complete the remaining tasks.** Read the current checkpoint, this workflow/MM audit addendum, the integrated plan, tracker and manufacturer readiness matrix; then re-resolve live GitHub state before writes.
+
+
+## Follow-up target and FIFO audit (same continuation)
+### Current target geometry sampled from all eight target TOMLs
+- `bcu1525-s2`: MCOLS 8, WG 8, ACT_BLOCKS 128, ACT_ROWS 16, KT enabled, FIFO_DEPTH 2048.
+- `bcu1525-wg`: MCOLS 8, WG 8, ACT_BLOCKS 128, ACT_ROWS 16, KT disabled, FIFO_DEPTH 2048.
+- `bcu1525-x2`: MCOLS 8, WG 8, ACT_BLOCKS 128, ACT_ROWS 16, KT enabled, FIFO_DEPTH 2048.
+- `bcu1525`: MCOLS 4, ACT_BLOCKS 128, ACT_ROWS 0 (slice semantics: defaults to MCOLS), FIFO_DEPTH 1024.
+- `nangate45-small`: MCOLS 2, ACT_BLOCKS 32, ACT_ROWS 0, FIFO_DEPTH 64.
+- `nangate45-wg8`: MCOLS 8, WG 8, ACT_BLOCKS 128, ACT_ROWS 16, KT enabled, FIFO_DEPTH 2048.
+- `nangate45`: MCOLS 4, ACT_BLOCKS 128, ACT_ROWS 8, FIFO_DEPTH 1024.
+- `ypcb-00338`: MCOLS 4, ACT_BLOCKS 128, ACT_ROWS 16, FIFO_DEPTH 1024.
+- This matrix confirms the guard cannot assume MCOLS=8, ACT_ROWS=MCOLS, WG=1, or a single FIFO depth. The actual `ACT_ROWS=0` slice convention means ACT_ROWS defaults to MCOLS and must be propagated as an effective row count (e.g. a localparam `ACT_ROWS_E = (ACT_ROWS == 0) ? MCOLS : ACT_ROWS`) or the guard parameter must carry the already-resolved value. Check every elaboration/variant, not just target defaults.
+- The sampled TOMLs did not show an enabled SPLMM entry in the reported architecture sections; still propagate the actual `MXU_SPL != 0` value rather than assuming SPLMM is universally off. Confirm all variant overrides before code changes.
+
+### Important FIFO discrepancy resolved
+- The MXU RTL documents that replayed rows/groups must fit its chunk FIFO and has explicit runtime checks for: replayed natural rows (M>MCOLS), and grouped rows (WG>1, GRP, M>1). Those checks are inside `ifndef SYNTHESIS`, use `$fatal`, and execute at MXU start; they are simulation assertions, not a synthesizable sequencer reject.
+- The simulator `Config` has no `FIFO_DEPTH` field and `Machine._mm` does not model the target's physical chunk-FIFO capacity. Therefore it is incorrect to claim the ISA simulator validates this capacity. Treat the target-specific FIFO capacity as a hardware/uarch admission constraint, and encode the exact existing MXU conditions (not a blanket KB cap) in the synthesizable guard only if those checks are required to prevent deadlock/overflow.
+- For natural M>MCOLS rows, the RTL assertion computes the needed chunks as KB for int8 and ceil(KB/2) for 4-bit. For grouped M>1, it requires KB <= DEPTH. The natural M<=MCOLS path does not get that assertion. Confirm the underlying FIFO flow-control invariants before turning these conditions into sequencer rejection.
+- The MXU has separate runtime assertions for M<=ROWS, PAIR, group size, GALL/no PAIR, grouped RMAX/ASCALE M bound, SPL and KT. They are also under `ifndef SYNTHESIS`; a synthesizable `mm_bad` must not rely on them.
+- `otpu_slice` passes exact `FIFO_DEPTH` to `otpu_mxu DEPTH`, and target TOMLs use depths 64, 1024 or 2048. The sequencer needs the exact effective depth if and only if the validated guard contract includes the FIFO admission rule.
+
+### Revised design decision
+- The ISA semantic malformed-word guard and the physical MXU admission guard should be explicitly separated in code/comments and tests. The former mirrors the ISA simulator; the latter mirrors target/uarch FIFO safety conditions and may differ by target.
+- Do not label every physical FIFO admission restriction as an ISA rule. Record it as a hardware configuration constraint and test it across the target matrix.
