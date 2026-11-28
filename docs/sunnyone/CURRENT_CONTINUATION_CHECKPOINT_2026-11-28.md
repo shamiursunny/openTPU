@@ -309,3 +309,13 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - This closes only the focused VPU/FSUM test scope for that source/configuration. Do not infer MXU bounds, all VPU paths, formal closure or physical signoff.
 - W1/W2/W3 fixture test commit `28704f25f87179e5653188bf0cc40f43ee681168` remains awaiting exact CI run/log retrieval; it is NOT VERIFIED yet.
 - Tracker section 146 records this result. Main baseline unchanged and off-limits; zero spend; no PPA retry; manufacturer handoff NOT READY.
+
+
+## Final save verification — 2026-11-28 continuation
+
+- Latest checkpoint update before this metadata entry: commit `5f47ddfbec259c89a4cdff93b99132b9cd5bcc00`.
+- Re-fetched current blobs before this final metadata entry: checkpoint `e2ed9a3093a58ae4a35b3fb7f4a73031af430797`; tracker `c66735582e77c8144677d7e91d2404b1f008528f`; 06:54 addendum `c5d0712f1ebfcb8b6845a0c2f6e294b7e075b2a0`; integrated plan `a895a485d1c47e8b0da5bb112ec5327c76b20d1c`; readiness matrix `20e6642ed518a063a79eca8021e96ffcdb6fac75`.
+- Final compare before this metadata entry: feature branch **1,166 ahead / 0 behind** main; merge base and main SHA remain `d84db55712aba0d40811d7762cb052f05d55b7e5`. Main remains untouched.
+- VPU focused workflow `46053471843` is terminal SUCCESS, job `140690259477`; exact tested source `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`; 31 VPU tests and 11 selected FSUM RTL tests passed as recorded in tracker section 146.
+- W1/W2/W3 fixture test commit `28704f25f87179e5653188bf0cc40f43ee681168` remains pending exact CI run/log retrieval; do not mark verified.
+- Re-poll the live branch compare and re-fetch this checkpoint after this commit. Continue from this file and the latest addendum using the trigger phrase **“Continue and complete the remaining tasks.”**
