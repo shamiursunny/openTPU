@@ -3482,3 +3482,10 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Confirmed ISA simulator Config has no FIFO_DEPTH field and Machine._mm does not validate physical chunk-FIFO capacity. Separate ISA semantic malformed-word rules from target-specific hardware admission constraints; do not claim the simulator covers FIFO safety.
 - Slice's ACT_ROWS parameter may be 0, meaning effective ACT_ROWS=MCOLS. Propagate resolved row count or implement an explicit effective parameter. Exact findings and target matrix are appended to `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
 - No source or test changes; no CI run. Continue with elaboration/variant inventory and FIFO flow-control proof before RTL implementation. Manufacturer handoff remains NOT READY.
+
+
+## 155. 2026-11-28 — Target variant override audit
+
+- Extended the target TOML audit to include every `[variants.*]` section. Found KT enabled by variants `bcu1525-s2:kt`, `bcu1525-wg:kt`, `:bhw`, `:bhw16`, `:wmx`, `:bhw16fs`; found SPLMM enabled by `bcu1525-x2:b2`; and YPCB `:m8` changes MCOLS to 8 while `:m4` keeps 4.
+- Correction to the earlier base-section-only observation: SPLMM is enabled in at least `bcu1525-x2:b2`. Use resolved target+variant settings in tests, not base TOML alone. Add positive SPLMM and negative disabled-SPLMM cases.
+- Detailed evidence appended to `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
