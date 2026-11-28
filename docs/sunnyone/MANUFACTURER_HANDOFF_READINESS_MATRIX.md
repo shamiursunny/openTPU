@@ -531,3 +531,10 @@ No RTL or tests changed and no verification was run for this audit. Do not push 
 **Remaining plan:** 14 major work packages across MM guard/CI, residual lint/bounds, formal/SVA, CDC/RDC, DFT, SRAM mapping, production PCIe/SerDes/DMA/IOMMU/DDR interfaces, routed physical PPA, measured power/thermal/reliability, Track B demonstrator and full-cost sponsorship/sample logistics, plus Track A workload/economic validation. The focused MM raw-word suite is estimated at 30–45 parameterised scenarios; this is a planning estimate, not an existing test count. Full manufacturer readiness remains NOT READY.
 
 No RTL or tests changed in this update. No test was run. Preserve zero-spend, no-main-write and no-duplicate-successful-regression rules.
+
+
+## 2026-11-28 22:00 — simulation-first delivery boundary
+
+The user's confirmed goal is a fully simulation-qualified design/evidence package for manufacturer handoff; manufacturer performs physical implementation, silicon/board validation and bulk-production qualification. Do not require self-fabrication as a project gate. Before handoff, complete applicable RTL/software regressions, MM guard, formal/SVA, lint/elaboration, available CDC/RDC, open-source synthesis estimates, supported host adapters, driver/runtime, workload co-simulation and reproducible verification dossier. Manufacturer-only gates include PDK/library and macro mapping, hard PHYs, floorplan/CTS/routing, extracted STA, DRC/LVS, IR/EM, package/board SI/PI, measured silicon power/thermal/performance, yield and reliability.
+
+RISC-V ISA alone does not guarantee compatibility with every RISC-V chip or board. Publish only an explicit supported-host/interface matrix and verify each adapter, DMA, memory, interrupt, reset and clock contract. The 14 work packages remain a high-level grouping; fabrication/sponsorship is downstream manufacturer engagement, and Track B demonstrator is optional. Exact remaining executable test count remains unenumerated; MM focused test plan is 30–45 parameterised scenarios (estimate only). No RTL or test result changed in this documentation update.
