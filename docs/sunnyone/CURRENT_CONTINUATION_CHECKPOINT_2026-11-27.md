@@ -877,3 +877,8 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md` after
 ## Latest continuation pointer — 2026-11-28 21:45 Asia/Dhaka
 
 Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2145.md` after the 21:38 MM source audit. It records live branch HEAD at review start `8ac729eb58b1872ec8b0eaa2f39c38733219ec72`, exact R-stage/command-field/ACT-bounds findings, missing slice-to-sequencer parameter propagation, the 14-work-package remaining estimate and 30–45 proposed MM raw-word scenarios. The addendum and tracker/matrix/checkpoint documentation saves are documentation-only; no RTL/tests were changed or run. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; manufacturer handoff remains NOT READY. Re-resolve live HEAD before the next write.
+
+
+## Latest user-confirmed delivery strategy — 2026-11-28 22:00 Asia/Dhaka
+
+The user wants all feasible design work completed via simulation and a complete evidence package handed to a manufacturer, who handles physical testing and potential bulk production. Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2200_SIMULATION_FIRST_HANDOFF.md`. Key boundary: no self-fabrication required; simulation-qualified is not silicon-validated. Build and verify an explicit supported RISC-V host/interface matrix; do not promise universal board compatibility from ISA compatibility alone. Complete RTL/MM guard, software, regression, formal/lint/CDC where supported, synthesis estimates, interfaces, workloads and handoff dossier; manufacturer handles PDK, routed signoff, DRC/LVS, hard PHYs, package, silicon measurements, yield and production qualification. Documentation-only; no RTL changed/tests run. Re-resolve live HEAD before next write.
