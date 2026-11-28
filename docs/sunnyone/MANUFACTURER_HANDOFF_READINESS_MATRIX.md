@@ -506,3 +506,8 @@ The synthesizable MM guard remains OPEN. The ISA/simulator cross-audit confirms 
 - Target variants matter: `bcu1525-s2:kt` and multiple `bcu1525-wg:*` variants enable KT; `bcu1525-x2:b2` enables SPLMM; `ypcb-00338:m8` changes MCOLS to 8. Base TOML-only review is insufficient.
 - Required guard test matrix must resolve base plus variant, include positive KT and SPLMM variants, and include disabled-capability negative controls.
 - Evidence and exact variant names: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
+
+
+## FIFO capacity implication — 2026-11-28
+
+Across all eight current target base configurations, `ACT_BLOCKS <= FIFO_DEPTH` (32<=64 at nangate45-small; 128<=1024/2048 elsewhere). Because a legal MM's `ab + KB <= ACT_BLOCKS`, its K chunks fit the FIFO; 4-bit natural rows need only ceil(KB/2). This is a target-derived invariant, not an ISA guarantee. Add a target validation/elaboration assertion so future variants preserve it; avoid unnecessary duplicate sequencer logic unless the guard contract explicitly includes FIFO admission. Full reasoning is in the workflow/MM audit addendum.
