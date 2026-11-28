@@ -3566,3 +3566,18 @@ User confirmed that the goal is to complete all feasible engineering and verific
 - Reclassify the earlier sponsorship/fabrication work package as manufacturer engagement after the simulation-qualified handoff dossier; Track B physical demonstrator is optional unless requested or risk-justified.
 - Dedicated MM raw-word test estimate remains 30–45 parameterised scenarios; it is not a verified current test count. Do not state an exact total remaining pytest count until pinned-commit collection and planned formal/CDC/interface tests are enumerated.
 - Documentation-only update; no RTL changed, no tests run. Protected main remains unchanged.
+
+
+
+## 164. 2026-11-28 — final SUNNYONE X execution plan and prototype direction
+
+Governing consolidated execution plan: `docs/sunnyone/SUNNYONE_X_FINAL_EXECUTION_MASTER_PLAN_2026-11-28.md` (created in commit `f96c275f830930ae494434887d0c0580347f64b6`). This reconciles the user's fixed commercial objective with simulation-first completion, ready-board FPGA/RISC-V prototyping, manufacturer handoff and later low-cost production.
+
+- User is willing to consider high-cost prototype hardware after the engineering readiness gates; this is not an exact purchase authorisation. No purchase or licence spend until current total landed quote and explicit approval.
+- No custom pre-ready PCB by default. Separate the roles: FPGA accelerator board and RISC-V host/reference board.
+- Candidate shortlist: AMD VCU118 (practical PCIe/DDR4 accelerator candidate), Microchip PolarFire SoC Icicle Kit (5-core RISC-V host candidate), AMD VPK180 (larger FPGA upgrade candidate). VCU128 and VHK158 are marked discontinued by AMD and are not baseline purchase candidates.
+- No final board pair selected until exact RTL synthesis/resource fit, PCIe endpoint/root-port and physical connection compatibility, memory mapping, tool licensing, current supply and Bangladesh landed cost are verified.
+- FPGA prototype validation is distinct from ASIC physical signoff. Manufacturer retains foundry/PDK, hard PHY/macro, routed physical design, silicon power/thermal/performance, yield and production qualification.
+- Production BOM and process optimisation occur after prototype evidence and manufacturer quotations; no arbitrary wattage cap or unsupported profitability claim.
+
+No RTL, tests or workflows changed; no tests launched. Existing MM guard, lint/formal/CDC, interface and workload blockers remain open. Preserve zero-spend controls, main-branch no-write rule, cancelled run 45765362426 and successful RTL groups 3.1/3.2/4.
