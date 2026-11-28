@@ -3417,3 +3417,15 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Confirmed sequencer currently has WG but lacks MCOLS/ACT_ROWS; slice has both exact elaborated values. Hardware guard must receive both from slice. Existing MXU legality assertions are simulation-only; they are not a hardware safety boundary.
 - Added `CONTINUATION_ADDENDUM_2026-11-28_MXU_ISA_RECONCILIATION.md` with source blob SHAs, exact semantics, evidence re-poll, and next implementation/test gates.
 - No RTL change or tests in this step. The synthesizable guard and raw-command negative tests remain OPEN. W1/W2/W3 scenario tests remain NOT VERIFIED pending exact push-run log. Manufacturer handoff NOT READY; main untouched; zero spend; no PPA retry; protected RTL groups not rerun.
+
+
+## 149. 2026-11-28 — W1/W2/W3 fixture tests verified; MXU guard remains next
+
+- Located push-triggered workload harness run `46090474983`, job `140809944012`, terminal SUCCESS on exact commit `28704f25f87179e5653188bf0cc40f43ee681168`.
+- Actual log: **37 tests passed in 0.557s**. This includes the three W1 single-request, W2 staggered mixed-concurrency and W3 burst/cancel/fault/deadline fixture tests. It also includes the narrow Sunnyone endpoint, resource-event model, retrieval and workload-trace test modules.
+- This is fixture/schema/order/deterministic replay verification only. It is not RTL execution, measured accelerator performance, scheduler tenant fairness, or calibrated hardware/power/energy evidence.
+- Re-polled current branch before save: HEAD `949896622631cc8993733fdc41f82620ce770ed9`; compare 1,173 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. GitHub reports main protection disabled; main remains strictly off-limits.
+- Re-read current sequencer/slice/MXU RTL and primary ISA. The synthesizable MM malformed-command guard is still OPEN. The next RTL patch must pass exact MCOLS/ACT_ROWS from slice to sequencer, enforce ISA MM bounds and mode legality before dispatch, and add raw-word negative RTL tests for zero dispatch and no TMEM/DRAM side effects. Do not narrow `mx_key` until this is proven.
+- Before implementation, inspect every sequencer instantiation and CI path filters to avoid broad duplicate regressions. No RTL, test, workflow or PPA change was made in this continuation.
+- Continue exact-source interval correlation between RTL hardware trace and TMEM trace; no per-request attribution or calibrated profile is claimed.
+- Manufacturer handoff remains **NOT READY**. Zero spend; no PPA retry; no main write; no repeated successful RTL groups 3.1/3.2/4; do not restart run `45765362426`.

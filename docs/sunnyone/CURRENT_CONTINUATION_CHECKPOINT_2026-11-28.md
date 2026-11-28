@@ -339,3 +339,13 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - W1/W2/W3 fixture tests remain NOT VERIFIED; exact push-run log unavailable via current connector. No blind rerun.
 - Next: finish full ISA/compiler/simulator legality audit; inspect every sequencer instantiation; implement width-safe synthesizable MM rejection and raw-word negative RTL tests; focused-only validation; trace interval audit; continue remaining lint/formal/CDC/DFT/memory/interface/physical/sponsorship gates.
 - No RTL/test/workflow change in this continuation. Manufacturer handoff remains NOT READY. Main untouched, zero spend, no PPA retry, no protected RTL-group reruns.
+
+
+## 2026-11-28 15:14 Asia/Dhaka — W1/W2/W3 verification and MXU guard continuation
+
+- Live branch HEAD before this documentation save: `949896622631cc8993733fdc41f82620ce770ed9`; live compare: 1,173 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. GitHub reports `main.protected=false`; main remains strictly off-limits.
+- Newly retrieved push-triggered workflow `46090474983`, job `140809944012`, tested commit `28704f25f87179e5653188bf0cc40f43ee681168`: terminal SUCCESS, **37 passed in 0.557s**. The log explicitly confirms W1, W2 and W3 fixture tests. These are synthetic fixture/schema/determinism tests, not RTL execution or performance calibration.
+- Prior resource harness `46081103514`: 34 passed on exact source `0ab52a61659a4746eb3375d7e5f146f3fbf192ae`. Keep the exact-SHA scopes separate.
+- Re-read the current sequencer, slice, MXU and ISA sources. Synthesizable MM malformed-command rejection remains OPEN: sequencer needs the exact `MCOLS` and `ACT_ROWS` parameters propagated from the slice; MXU assertions alone are simulation-only. Raw-word RTL tests must prove error before dispatch and no TMEM/DRAM side effects.
+- No RTL/test/workflow/PPA source was changed and no new tests were launched. Next: inspect every sequencer instantiation and CI path filters, then implement and validate only the focused MM guard; continue loss-aware RTL/TMEM interval correlation and remaining verification/manufacturer gates.
+- Manufacturer handoff remains **NOT READY**. Zero spend; no PPA retry; no protected main writes; no reruns of passed RTL groups 3.1/3.2/4; never restart cancelled run `45765362426`.
