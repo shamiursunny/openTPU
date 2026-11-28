@@ -3452,3 +3452,13 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Re-read sequencer/slice/MXU/ISA. The synthesizable MM malformed-command guard is not present; exact MCOLS/ACT_ROWS parameter propagation and raw-word negative RTL tests remain the next implementation gate. No RTL patch was made because all MM flag/shape/group interactions must be enforced without rejecting legal modes.
 - PPA remains failed with host OOM-killer evidence; no retry authorised. Formal/SVA, CDC/RDC, width closure, memory/interface/DFT/physical signoff and sponsor/sample logistics remain open. Manufacturer handoff NOT READY.
 - Zero spend; no main writes; no reruns of protected RTL groups 3.1/3.2/4; cancelled run 45765362426 remains excluded.
+
+
+## 152. 2026-11-28 20:17 — MM malformed-command audit and CI safety gate
+
+- Reconciled live feature HEAD `8c46dee94e90f1072d4571fb3a1260ee6efd61b2`; three commits since addendum 18:21 were documentation-only. Main `d84db55712aba0d40811d7762cb052f05d55b7e5` untouched; protection is reported disabled.
+- Latest Actions poll: no queued/in-progress runs. Final workload harness run `46132183828` SUCCESS, 47 passed in 52.079s on its exact source SHA. Earlier auto-triggered failures/cancellations are not passes.
+- Cross-audited ISA, encoder, simulator, compiler, sequencer and slice. Sequencer has no synthesizable MM guard and lacks MCOLS/ACT_ROWS/ACT_BLOCKS/KT/SPLMM/FIFO-capacity contract; simulator checks additional grouped GALL, PAIR, RSC/NVFP4, ASCALE, KT, SPLMM, alignment and stream FIFO constraints.
+- No RTL patch or tests were launched. Deliberate stop pending complete capability/parameter contract and workflow path-filter audit; an incomplete guard could accept malformed commands or reject legal modes, and broad filters risk duplicate protected suites.
+- Detailed evidence and ordered next actions: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md`.
+- Manufacturer handoff NOT READY. Zero spend; no PPA retry; no main writes; no duplicate successful RTL groups 3.1/3.2/4; do not restart `45765362426`.
