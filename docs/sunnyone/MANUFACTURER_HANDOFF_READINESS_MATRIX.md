@@ -480,3 +480,13 @@ This is a status update, not a gate closure. See `docs/sunnyone/CONTINUATION_ADD
 ## 2026-11-28 20:17 — MM malformed-command gate
 
 The synthesizable MM guard remains OPEN. The ISA/simulator cross-audit confirms the guard must cover N/KB/M, ACT_ROWS/ACT_BLOCKS, MCOLS/RMAX/ASCALE, PAIR/WF/k0, RSC/NVFP4, exact WG/GALL group semantics, KT, SPLMM, alignment and MXU stream-FIFO capacity. The sequencer currently lacks several required configuration parameters. No speculative partial guard was committed. First close exact elaboration/capability propagation and narrow workflow path filters; then add raw-word tests proving pre-dispatch rejection and no TMEM/DRAM side effects while retaining legal boundary cases. See `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md`. G3/release remain OPEN; manufacturer handoff NOT READY.
+
+
+## 2026-11-28 — MM guard and CI containment gate
+
+- **MM malformed-command guard: OPEN.** Sequencer lacks the exact MCOLS, ACT_ROWS, ACT_BLOCKS, MXU FIFO depth, KT and SPLMM configuration currently held by `otpu_slice`. Do not claim pre-dispatch MM safety until those exact values are propagated and the complete simulator/ISA constraints are implemented.
+- **CI containment: PLAN DEFINED, NOT EXECUTED.** All 25 workflows were inspected. Sequencer/slice RTL changes fan out into numerous broad RTL, ASIC, reset, board, Qwen and subsystem workflows. The planned focused flow is a dedicated MM raw-word workflow, a skip-CI source commit, and manual dispatch against the exact SHA. No workflow was added or dispatched in this continuation.
+- Required test evidence: raw encoded malformed MM commands rejected before dispatch, no TMEM/DRAM side effects, and legal boundary controls for natural/grouped/PAIR/KT/SPL modes. Runtime memory-content checks (e.g. KT ACT tail zero) must not be misrepresented as static decode checks.
+- MXU FIFO-depth rule remains under investigation; inspect actual backpressure and simulator configuration before deciding whether KB greater than FIFO depth is invalid or merely stalls.
+- Full workflow mapping and exact contract: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
+- No RTL/test/workflow changes and no new tests were launched. Manufacturer handoff remains **NOT READY**.
