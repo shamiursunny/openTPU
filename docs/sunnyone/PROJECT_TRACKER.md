@@ -3462,3 +3462,14 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - No RTL patch or tests were launched. Deliberate stop pending complete capability/parameter contract and workflow path-filter audit; an incomplete guard could accept malformed commands or reject legal modes, and broad filters risk duplicate protected suites.
 - Detailed evidence and ordered next actions: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md`.
 - Manufacturer handoff NOT READY. Zero spend; no PPA retry; no main writes; no duplicate successful RTL groups 3.1/3.2/4; do not restart `45765362426`.
+
+
+## 153. 2026-11-28 — Complete push-workflow path audit and MM guard contract
+
+- Inspected all 25 workflow files. Sequencer edits can trigger ASIC config, FSUM guard, full-chip lint, loop-stack guard, Qwen real-RTL, reset audit, RTL functional, RTL subsystems, RTL tail and software-core. Slice edits additionally trigger board-functional-only and experimental TMEM. Several are broad `rtl/**` filters.
+- Established focused CI containment: create dedicated MM-guard workflow and raw-word test module; use supported skip-CI commit convention for the focused RTL push; manually dispatch only the narrow workflow against exact SHA. No broad workflow dispatch until serial qualification is planned. This is a strategy, not completed CI evidence.
+- Confirmed `otpu_slice` already owns MCOLS, ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, WG, KT and MXU_SPL; MXU gets these values, sequencer currently does not. MM guard must receive exact parameters from slice, not hard-coded duplicates.
+- Reconciled simulator checks: N/KB, ACT rows/blocks, MCOLS, PAIR, RSC/NVFP4, ASCALE, WG/GALL group sizing, alignment, KT and SPL. Widen arithmetic; distinguish runtime ACT content checks from static decode checks. MXU FIFO depth behavior still requires exact issuer/simulator audit before deciding a KB cap.
+- No RTL/test/workflow source changed and no tests dispatched; this was a deliberate safety stop. Full evidence and next actions: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
+- Live HEAD at audit start `104aedc9d9d32b9a193ded4721467e5e44e20b0c`; main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched. No active/queued Actions runs at latest poll. Main branch protection is reported disabled.
+- Manufacturer handoff NOT READY. Zero spend, no duplicate successful RTL groups 3.1/3.2/4, no PPA retries, no fabricated silicon claims.
