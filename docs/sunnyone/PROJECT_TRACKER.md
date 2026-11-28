@@ -3442,3 +3442,13 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Live branch before this doc save: `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`; 1,184 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. Main remains off-limits and GitHub reports main protection disabled.
 - Next: implement the synthesizable MXU malformed-command guard only after a controlled serial CI plan. Propagate MCOLS/ACT_ROWS into sequencer; add raw MM negative tests proving no dispatch/TMEM/DRAM side effects; preserve legal grouped MM. Do not trigger duplicate successful RTL groups 3.1/3.2/4 or the WG8 PPA workflow.
 - Zero spend. Manufacturer handoff remains NOT READY.
+
+
+## 151. 2026-11-28 — continuation state reconciled; MXU guard remains open
+
+- Created `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_1821.md` after re-resolving live branch ref `8c65b8b33fda16a588227f64d26be7edea4b04c2`; the latest pre-save commit was documentation-only. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`, untouched; GitHub reports protection disabled.
+- Re-polled the latest branch Actions page: no queued or in-progress run. Final workload harness run `46132183828` / job `140939555937` SUCCESS; actual log confirms 47 passed in 52.079s, including real Verilator trace-correlation co-simulation and W1/W2/W3 fixture coverage. Earlier failed auto-triggered attempts are not passes.
+- Focused VPU/FSUM result `46053471843` remains 31 + 11 selected tests passed on its exact source SHA. No duplicate test launched.
+- Re-read sequencer/slice/MXU/ISA. The synthesizable MM malformed-command guard is not present; exact MCOLS/ACT_ROWS parameter propagation and raw-word negative RTL tests remain the next implementation gate. No RTL patch was made because all MM flag/shape/group interactions must be enforced without rejecting legal modes.
+- PPA remains failed with host OOM-killer evidence; no retry authorised. Formal/SVA, CDC/RDC, width closure, memory/interface/DFT/physical signoff and sponsor/sample logistics remain open. Manufacturer handoff NOT READY.
+- Zero spend; no main writes; no reruns of protected RTL groups 3.1/3.2/4; cancelled run 45765362426 remains excluded.
