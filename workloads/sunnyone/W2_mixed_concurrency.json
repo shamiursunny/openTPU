@@ -1,0 +1,62 @@
+{
+  "origin": "synthetic_fixture",
+  "tick_unit": "sim_tick",
+  "prefill_chunk_tokens": 64,
+  "kv_page_tokens": 16,
+  "scenario_seed": 20261128,
+  "scenario_id": "W2_mixed_concurrency",
+  "requests": [
+    {
+      "request_id": "w2-r1",
+      "tenant_id": "tenant-a",
+      "model_id": "fixture-model-v1",
+      "checkpoint_id": "fixture-checkpoint-v1",
+      "tokenizer_id": "fixture-tokenizer-v1",
+      "template_id": "fixture-template-v1",
+      "arrival_tick": 0,
+      "prompt_tokens": 96,
+      "max_new_tokens": 24,
+      "quality_gate": "fixture-schema-only",
+      "seed": 20261128
+    },
+    {
+      "request_id": "w2-r2",
+      "tenant_id": "tenant-b",
+      "model_id": "fixture-model-v1",
+      "checkpoint_id": "fixture-checkpoint-v1",
+      "tokenizer_id": "fixture-tokenizer-v1",
+      "template_id": "fixture-template-v1",
+      "arrival_tick": 4,
+      "prompt_tokens": 64,
+      "max_new_tokens": 32,
+      "quality_gate": "fixture-schema-only",
+      "seed": 20261128
+    },
+    {
+      "request_id": "w2-r3",
+      "tenant_id": "tenant-a",
+      "model_id": "fixture-model-v1",
+      "checkpoint_id": "fixture-checkpoint-v1",
+      "tokenizer_id": "fixture-tokenizer-v1",
+      "template_id": "fixture-template-v1",
+      "arrival_tick": 8,
+      "prompt_tokens": 128,
+      "max_new_tokens": 16,
+      "quality_gate": "fixture-schema-only",
+      "seed": 20261128
+    },
+    {
+      "request_id": "w2-r4",
+      "tenant_id": "tenant-c",
+      "model_id": "fixture-model-v1",
+      "checkpoint_id": "fixture-checkpoint-v1",
+      "tokenizer_id": "fixture-tokenizer-v1",
+      "template_id": "fixture-template-v1",
+      "arrival_tick": 12,
+      "prompt_tokens": 48,
+      "max_new_tokens": 40,
+      "quality_gate": "fixture-schema-only",
+      "seed": 20261128
+    }
+  ]
+}
