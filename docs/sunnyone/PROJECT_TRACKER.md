@@ -3378,3 +3378,14 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Existing worker: FIFO waiting queue; default configurable `max_running=8`; new request admission/prefill turn before next running turn while capacity remains; request-level round-robin among admitted running requests; cancellation pruning; single-owner continuation; yielding after in-flight token when other work waits; KV/context save/restore and idle-save pre-emption.
 - `quantum=32` and `CHUNK=64` are software defaults, not optimised or measured hardware parameters. No tenant identity/per-tenant accounting in inspected selection path; request RR is not tenant fairness. No starvation bound claimed.
 - Next: exact-source RTL/TMEM trace correlation and W1/W2/W3 tests. Keep tenant fairness undefined until policy specified. No runtime code/tests changed.
+
+
+## 145. 2026-11-28 — W1/W2/W3 workload fixtures committed; trace attribution boundary documented
+
+- Added synthetic request fixtures: `workloads/sunnyone/W1_single_request.json`, `W2_mixed_concurrency.json`, and `W3_burst_cancel_fault.json`. They exercise one-request baseline, staggered mixed concurrency across three fixture tenants, and a ten-request burst with cancellation, injected fault and deadline events. These are input traces only; no service profile, hardware latency or energy is encoded.
+- Added `tests/test_sunnyone_workload_scenarios.py` with three deterministic schema/order/shape tests. Commits: W1 `d82c337d130746c298d7bc4e9e9592b35beed555`; W2 `0fbef0f5bc4eb5da6bf10a75dab74679d46ba14e`; W3 `3eb81325e07c0e41a66edc69f5ee6a1bfee8f663`; tests `28704f25f87179e5653188bf0cc40f43ee681168`. CI result has not yet been retrieved; tests remain NOT VERIFIED.
+- Created `CONTINUATION_ADDENDUM_2026-11-28_0654.md` (commit `b40fd932e37cf22e7181c2ece53b28a0fed960aa`).
+- Trace-source audit confirms D/S/G/E hardware events include dispatch slot and unit-ready information, while TMEM access records include cycle/port/address but no shared request/slot ID. Safe current scope is loss-aware unit/interval correlation, not per-request TMEM attribution under overlapping operations. Do not join by timestamp alone or infer request-level bytes/latency.
+- Existing runtime scheduler semantics remain source-grounded in `SCHEDULER_ADMISSION_AND_FAIRNESS_SPEC_2026-11-28.md`; request round-robin is not tenant fairness. W1/W2/W3 fixtures do not themselves simulate scheduler policy or establish fairness.
+- Next: poll VPU focused workflow `46053471843`; retrieve the new workload-harness CI run and inspect the exact log; then implement interval-level trace correlation with explicit loss/ambiguity reporting. Continue MXU bounds, width/formal/CDC/DFT/memory/interface/physical and sponsorship gates.
+- Manufacturer handoff remains NOT READY. Zero spend; no PPA retry; main untouched; no duplicate successful tests.
