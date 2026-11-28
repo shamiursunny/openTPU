@@ -300,3 +300,12 @@ Read the authoritative north star first, then the latest addendum `CONTINUATION_
 - Outstanding immediate polls: VPU focused run `46053471843` and the new workload harness triggered by test commit `28704f25...`. No broad regression rerun.
 - Continue MXU `mx_key` bounds, semantic width-warning closure, formal/SVA, CDC/RDC, DFT, SRAM/DDR mapping, production interfaces, routed physical signoff and Track B sponsorship/feasibility.
 - Main baseline `d84db55712aba0d40811d7762cb052f05d55b7e5` remains off-limits. Zero spend; no PPA retry; manufacturer handoff NOT READY.
+
+
+## 2026-11-28 — focused VPU regression polled and inspected
+
+- Workflow `46053471843`, job `140690259477`, terminal SUCCESS on checked-out source `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`.
+- Actual log: VPU stream/VOP/reduction/FSUM differential suite **31 passed in 476.99s**; additional selected FSUM ingress/maximum-row RTL cases **11 passed, 219 deselected in 211.80s**. Artifact `15225689330`, ZIP SHA-256 `8c528b19d9a69e5d7a0053fb5bddd931072e33ec9cee4dfc539ef6a91b7187bd`.
+- This closes only the focused VPU/FSUM test scope for that source/configuration. Do not infer MXU bounds, all VPU paths, formal closure or physical signoff.
+- W1/W2/W3 fixture test commit `28704f25f87179e5653188bf0cc40f43ee681168` remains awaiting exact CI run/log retrieval; it is NOT VERIFIED yet.
+- Tracker section 146 records this result. Main baseline unchanged and off-limits; zero spend; no PPA retry; manufacturer handoff NOT READY.
