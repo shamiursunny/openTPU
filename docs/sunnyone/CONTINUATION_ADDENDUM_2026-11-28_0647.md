@@ -39,3 +39,12 @@ No RTL, ISA, workflow or PPA source was changed in this continuation. No new tes
 ## Authoritative strategy source hierarchy
 
 The governing user-approved source is `docs/sunnyone/SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`. It takes precedence over the concise supporting summary `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` created during this continuation. The authoritative source fixes the commercial objective while keeping implementation choices evidence-led; retain its full-system economics, quality, reliability, idle-power, thermal, scale-out and evidence requirements. The existing V1 logical design candidate and commercial profitability measurement model remain complementary, with implementation status and external interfaces qualified exactly as documented.
+
+
+## 2026-11-28 — scheduler semantics source review
+
+Created `docs/sunnyone/SCHEDULER_ADMISSION_AND_FAIRNESS_SPEC_2026-11-28.md` (commit `61f7750920764ebbcb5c6efd3f3618098510def5`) from `opentpu/serve/scheduler.py` blob `7346daae1bfe08b1acd71965cd14e5b00d82211d`.
+
+Source-grounded findings: default `max_running=8` is configurable; `quantum=32` and non-polling `CHUNK=64` are defaults, not tuned optima. Waiting requests are FIFO-admitted while capacity remains; newly admitted requests get their turn before the next running-request round-robin turn. Admitted running requests rotate by request-level round-robin. Cancellations are pruned in waiting/running lists. When one request owns the engine alone it can continue; additional arrivals trigger yielding after the in-flight token where supported. Context save/restore and idle-save pre-emption are host/runtime mechanisms.
+
+No tenant identity or per-tenant accounting exists in the inspected selection path; request round-robin is not tenant fairness. No starvation bound is established. W1/W2/W3 experiments must measure the actual scheduler semantics; tenant fairness needs an explicit policy before modelling. No scheduler source or tests changed.
