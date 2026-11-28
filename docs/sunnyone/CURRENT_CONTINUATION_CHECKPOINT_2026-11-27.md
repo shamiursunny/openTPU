@@ -867,3 +867,8 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_1821.md` after this checkpo
 ## Latest continuation pointer — 2026-11-28 20:17 Asia/Dhaka
 
 Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md` after this checkpoint. It records live branch reconciliation (HEAD before documentation save `8c46dee94e90f1072d4571fb3a1260ee6efd61b2`), latest Actions state (no active/queued runs; workload harness run `46132183828` SUCCESS, 47 passed), the exact MM ISA/simulator/RTL parameter audit, why no speculative RTL patch was made, and the ordered narrow-CI/guard implementation gate. Manufacturer handoff remains NOT READY. Protected main and zero-spend/no-duplicate-test controls remain mandatory.
+
+
+## Latest continuation pointer — 2026-11-28 workflow/MM audit
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md` after the preceding addenda. It records inspection of all 25 workflows, the exact push-trigger fan-out for `rtl/seq/otpu_seq.sv` and `rtl/top/otpu_slice.sv`, the controlled skip-CI plus manually dispatched narrow guard strategy, exact slice-to-MXU vs missing slice-to-sequencer parameter wiring, complete ISA/simulator MM malformed-word checks, and isolated raw-word test plan. Live HEAD at audit start was `104aedc9d9d32b9a193ded4721467e5e44e20b0c`; main remains `d84db55712aba0d40811d7762cb052f05d55b7e5` and untouched. No RTL/test code or workflows changed and no tests were dispatched. No Actions run is queued or active. Manufacturer handoff remains NOT READY.
