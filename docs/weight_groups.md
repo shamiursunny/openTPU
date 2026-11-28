@@ -72,7 +72,9 @@ groups.
   instruction carries its own R, so the footprint (`otpu_pkg`, `opentpu/waits.py`) needs no
   Config. An R other than 1 and the format's is an error. A grouped MM never has PAIR (a grouped
   4-bit MM is at full rate without it). k0, KB, M, ab, ACC, UNIT, RSC are unchanged; an MM with
-  M > MCOLS needs `KB <= DEPTH` group chunks in the MXU's FIFO, as a replayed row does.
+  A grouped MM reuses each group's KB chunks across its M activation rows; when M > 1, KB must
+  fit the MXU's target FIFO DEPTH. This is a uarch admission condition, not an ISA Config check:
+  the current ISA simulator does not model FIFO_DEPTH.
 - **Footprint**: DRAM read `[sa, sa + (ceil(N/R) - 1)*rs + chunks*R*D)`, scales `[ssa, ssa +
   (ceil(N/R) - 1)*srs + SwP + (k0 + KB)*E)` (RSC: `+ 4R`); at R = 1 both are the natural MM's.
 - **QST GRP** (flag bit 2): the appends of grouped run-time operands. A K row is KB pieces of D
