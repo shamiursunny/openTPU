@@ -499,3 +499,10 @@ The synthesizable MM guard remains OPEN. The ISA/simulator cross-audit confirms 
 - ISA simulator Config does not model FIFO_DEPTH; this physical/uarch admission constraint is separate from ISA semantic validation.
 - ACT_ROWS=0 means effective ACT_ROWS=MCOLS in the slice. The sequencer must receive resolved effective geometry.
 - Status: **OPEN** pending target-variant inventory, formal guard design, raw-word tests, focused CI pass and later controlled broad qualification.
+
+
+## Target variant override gate — 2026-11-28
+
+- Target variants matter: `bcu1525-s2:kt` and multiple `bcu1525-wg:*` variants enable KT; `bcu1525-x2:b2` enables SPLMM; `ypcb-00338:m8` changes MCOLS to 8. Base TOML-only review is insufficient.
+- Required guard test matrix must resolve base plus variant, include positive KT and SPLMM variants, and include disabled-capability negative controls.
+- Evidence and exact variant names: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
