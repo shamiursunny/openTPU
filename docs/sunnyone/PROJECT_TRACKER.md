@@ -3489,3 +3489,9 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Extended the target TOML audit to include every `[variants.*]` section. Found KT enabled by variants `bcu1525-s2:kt`, `bcu1525-wg:kt`, `:bhw`, `:bhw16`, `:wmx`, `:bhw16fs`; found SPLMM enabled by `bcu1525-x2:b2`; and YPCB `:m8` changes MCOLS to 8 while `:m4` keeps 4.
 - Correction to the earlier base-section-only observation: SPLMM is enabled in at least `bcu1525-x2:b2`. Use resolved target+variant settings in tests, not base TOML alone. Add positive SPLMM and negative disabled-SPLMM cases.
 - Detailed evidence appended to `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md`.
+
+
+## 156. 2026-11-28 — FIFO capacity invariant derived
+
+- Across all eight current target base configurations, `ACT_BLOCKS <= FIFO_DEPTH` (smallest: 32<=64; others: 128<=1024/2048). Since legal MM ACT range requires `ab + KB <= ACT_BLOCKS`, the maximum K chunks fit the physical FIFO; 4-bit natural rows require ceil(KB/2). This makes replay/group FIFO capacity safe for the current targets, conditional on target values being resolved correctly.
+- This is a target-derived invariant, not an ISA rule. Add target validation/elaboration assertion for future variants; avoid duplicating a FIFO cap in the sequencer unless a separate requirement is established. Full derivation in the workflow/MM audit addendum.
