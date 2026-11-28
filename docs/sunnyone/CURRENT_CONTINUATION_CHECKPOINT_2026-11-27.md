@@ -882,3 +882,18 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2145.md` after the 21:38 MM
 ## Latest user-confirmed delivery strategy — 2026-11-28 22:00 Asia/Dhaka
 
 The user wants all feasible design work completed via simulation and a complete evidence package handed to a manufacturer, who handles physical testing and potential bulk production. Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2200_SIMULATION_FIRST_HANDOFF.md`. Key boundary: no self-fabrication required; simulation-qualified is not silicon-validated. Build and verify an explicit supported RISC-V host/interface matrix; do not promise universal board compatibility from ISA compatibility alone. Complete RTL/MM guard, software, regression, formal/lint/CDC where supported, synthesis estimates, interfaces, workloads and handoff dossier; manufacturer handles PDK, routed signoff, DRC/LVS, hard PHYs, package, silicon measurements, yield and production qualification. Documentation-only; no RTL changed/tests run. Re-resolve live HEAD before next write.
+
+
+
+## 2026-11-28 — final execution master plan and ready-board prototype strategy
+
+The user asked for a complete review, finalisation and durable save of the SUNNYONE X plan, and confirmed willingness to consider a high-cost prototype after engineering readiness, followed by economical production. The governing consolidated plan is now `docs/sunnyone/SUNNYONE_X_FINAL_EXECUTION_MASTER_PLAN_2026-11-28.md` (creation commit `f96c275f830930ae494434887d0c0580347f64b6`). It integrates the fixed commercial north star, current WG8 logical baseline, simulation-first engineering, ready evaluation-board prototype, RISC-V host compatibility, manufacturer handoff and low-cost production down-select.
+
+- Simulation/RTL/formal/lint/interface/workload evidence remains first. No custom pre-ready PCB is the default.
+- FPGA accelerator and RISC-V host are separate roles. Leading practical candidates: AMD VCU118 for PCIe/DDR4 accelerator RTL; Microchip PolarFire SoC Icicle Kit for five-core RISC-V host/software. AMD VPK180 is a larger-capacity upgrade candidate, not automatically the best integration choice. VCU128 and VHK158 are excluded as baseline purchases because AMD marks them discontinued.
+- The exact FPGA/host pair is NOT finally selected: current RTL synthesis/resource fit, PCIe endpoint/root-port compatibility, physical connector/cabling, clocks/reset, DMA/IOMMU, tool licences and current Bangladesh landed cost must be checked first.
+- The user's willingness to consider a high-cost prototype is not a purchase order. No hardware, licence, shipping, customs or other expense without exact quote and explicit approval.
+- FPGA results will be labelled board-specific and must not be represented as ASIC frequency, power, energy/token, yield or production qualification.
+- Manufacturer owns process-specific PHY/macro integration, physical signoff, silicon validation, yield, qualification and production. Production cost optimisation follows evidence from prototype and manufacturer quotes.
+
+No RTL, test or workflow source changed and no tests were launched by this plan save. Main remains prohibited for writes. Current engineering blockers and historical test exclusions remain in force.
