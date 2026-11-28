@@ -872,3 +872,8 @@ Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2017.md` after this checkpo
 ## Latest continuation pointer — 2026-11-28 workflow/MM audit
 
 Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_WORKFLOW_MM_AUDIT.md` after the preceding addenda. It records inspection of all 25 workflows, the exact push-trigger fan-out for `rtl/seq/otpu_seq.sv` and `rtl/top/otpu_slice.sv`, the controlled skip-CI plus manually dispatched narrow guard strategy, exact slice-to-MXU vs missing slice-to-sequencer parameter wiring, complete ISA/simulator MM malformed-word checks, and isolated raw-word test plan. Live HEAD at audit start was `104aedc9d9d32b9a193ded4721467e5e44e20b0c`; main remains `d84db55712aba0d40811d7762cb052f05d55b7e5` and untouched. No RTL/test code or workflows changed and no tests were dispatched. No Actions run is queued or active. Manufacturer handoff remains NOT READY.
+
+
+## Latest continuation pointer — 2026-11-28 21:45 Asia/Dhaka
+
+Read `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2145.md` after the 21:38 MM source audit. It records live branch HEAD at review start `8ac729eb58b1872ec8b0eaa2f39c38733219ec72`, exact R-stage/command-field/ACT-bounds findings, missing slice-to-sequencer parameter propagation, the 14-work-package remaining estimate and 30–45 proposed MM raw-word scenarios. The addendum and tracker/matrix/checkpoint documentation saves are documentation-only; no RTL/tests were changed or run. Main remains `d84db55712aba0d40811d7762cb052f05d55b7e5`; manufacturer handoff remains NOT READY. Re-resolve live HEAD before the next write.
