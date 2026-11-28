@@ -242,9 +242,11 @@ not with `WF = 3`). The streamed rows are D-byte aligned (`sa` and `rs` are mult
 the MXU streams whole D-byte DRAM chunks. `N >= 1`, `KB >= 1` and `0 < M <= ACT_ROWS`; RMAX,
 ASCALE and PAIR need `M <= MCOLS` (PAIR: `2*M <= MCOLS`; not with weight groups; RMAX and
 ASCALE with weight groups only under GALL, "Every MM in groups"), and an MM
-with `M > MCOLS` needs its streamed row to fit the MXU's chunk FIFO (`KB` chunks for int8,
-`ceil(KB/2)` for 4-bit, `KB` a group; the board: 1024; a replayed row stays in the FIFO until
-its last group).
+The FIFO residency rule is target/uarch-specific and differs by mode. In natural WG=1 mode,
+when M > MCOLS the streamed row is replayed and must fit the chunk FIFO: KB chunks for int8,
+ceil(KB/2) for packed 4-bit. In grouped WG>1/GALL mode, a group's KB chunks are reused across
+the M activation rows, so when M > 1 the whole group must fit the FIFO (KB <= DEPTH). The ISA
+simulator does not model FIFO_DEPTH; a simulator pass alone does not prove this hardware limit.
 
 Each output is one exact integer: every product of a block's group (a sub-block of `D/4`
 elements; NVFP4's weights: of `D/8`) is scaled by a power of two, `B`, that the weights' and
