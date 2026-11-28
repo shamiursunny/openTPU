@@ -1,5 +1,6 @@
 """One small RTL co-simulation proving the hardware/TMEM trace join."""
 import hashlib
+import json
 import os
 import shutil
 import tempfile
