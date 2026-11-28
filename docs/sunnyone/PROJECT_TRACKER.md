@@ -3495,3 +3495,14 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 
 - Across all eight current target base configurations, `ACT_BLOCKS <= FIFO_DEPTH` (smallest: 32<=64; others: 128<=1024/2048). Since legal MM ACT range requires `ab + KB <= ACT_BLOCKS`, the maximum K chunks fit the physical FIFO; 4-bit natural rows require ceil(KB/2). This makes replay/group FIFO capacity safe for the current targets, conditional on target values being resolved correctly.
 - This is a target-derived invariant, not an ISA rule. Add target validation/elaboration assertion for future variants; avoid duplicating a FIFO cap in the sequencer unless a separate requirement is established. Full derivation in the workflow/MM audit addendum.
+
+
+## 157. 2026-11-28 20:35 — live state and target FIFO invariant review
+
+- Live branch HEAD before documentation save: `490aa9d65d9d0e3212dca43f161dfaf5a0fe2e5`; main `d84db55712aba0d40811d7762cb052f05d55b7e5`; compare 1,205 ahead / 0 behind. Main untouched. No Actions run queued or in progress.
+- Last relevant workload-harness PASS remains run `46132183828`: 47 passed in 52.079s on exact source SHA `3cc1ec1d0aaee797022cc355e68e8451a13c4e6b`. Later failed/cancelled attempts are not passes.
+- Source re-review confirms MM malformed-command guard remains OPEN; sequencer has no MM pre-dispatch predicate and the slice-to-sequencer connection does not yet propagate MCOLS/effective ACT_ROWS. Full contract and all hierarchy/variant instantiations must be inventoried before patching.
+- New target-validation finding: `opentpu/target.py` resolves `ACT_ROWS=0` to MCOLS but does not enforce `FIFO_DEPTH >= ACT_BLOCKS`; `tests/test_target.py` has no negative case. The current eight base target files satisfy this invariant, and the documented MM block bound implies it is a sufficient target-level condition for the MXU's row-prefill capacity. It must be checked against all resolved variants and added as target/uarch validation, not mislabelled an ISA rule.
+- No RTL/test/workflow/ISA/PPA source changed and no tests launched. Detailed review and next steps: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2035.md`.
+- Next: exhaustive sequencer hierarchy and resolved target/variant inventory; focused target FIFO invariant test; complete MM capability/mode contract; dedicated raw-word guard workflow/test; then implement only the proven pre-dispatch guard.
+- Zero spend; no PPA retry; no main writes; no duplicate successful regressions; manufacturer handoff **NOT READY**.
