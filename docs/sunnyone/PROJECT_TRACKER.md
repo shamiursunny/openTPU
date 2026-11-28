@@ -3398,3 +3398,14 @@ See `MXU_COMMAND_BOUNDS_AND_WAITS_CONTINUATION_2026-11-28.md`.
 - Workflow checked out exact source SHA `40ce5cbd6f615215fbb8b7ee21b04aa541f451b6`. The result is limited to the named VPU/FSUM suites and that source/configuration; not all VPU paths, all MXU bounds, full-chip correctness or physical signoff.
 - No test rerun was launched. Continue polling the separate W1/W2/W3 fixture harness triggered by `28704f25...`; do not mark those tests passed until its exact log is available.
 - Manufacturer handoff remains NOT READY; zero spend; no PPA retry; main untouched.
+
+
+## 147. 2026-11-28 — MXU malformed-command bounds guard design review
+
+- Reviewed the synthesizable command path in `rtl/seq/otpu_seq.sv`, sequencer instantiation in `rtl/top/otpu_slice.sv`, MXU parameters/guards/indexing in `rtl/mxu/otpu_mxu.sv`, ASIC parameter defaults and MM ISA contract.
+- Confirmed the sequencer currently has a proven pattern for rejecting malformed raw FSUM instructions before dispatch (`fsum_bad`), but its parameter list lacks `MCOLS` and `ACT_ROWS`. The slice has both parameters and passes `MCOLS` plus `ROWS=ACT_ROWS` to the MXU. A correct MM guard must receive the exact same elaborated values; do not hard-code ASIC MCOLS=4 or generic MCOLS=8.
+- The MXU's main MM legality assertions are under `ifndef SYNTHESIS`. RMAX/ASCALE `M <= MCOLS` assertion is also gated by `GA`, leaving WG=1 outside that particular assertion. The RMAX write path accesses `mx_key[MW'(mx_i + k)]` under `mxm[k]`; bounds must be enforced before dispatch in synthesizable logic.
+- Added `MXU_MALFORMED_COMMAND_BOUNDS_GUARD_DESIGN_2026-11-28.md` (commit `6a62dfb4b1030b2d2c14e7173993aef919014bb3`). It specifies the parameter propagation, universal and mode-dependent ISA bounds, rejection point before dispatch, raw instruction test matrix and open design questions.
+- No RTL or tests were modified/run for this review. This remains an open safety gate, not a verified fix. Required next: confirm PAIR/WF_NVFP4/GALL exact combinations from full ISA documents; implement the minimal sequencer guard with `MCOLS`/`ACT_ROWS` passed from slice; add raw RTL boundary tests proving error before dispatch and no TMEM/DRAM side effects; then run focused MXU and relevant lint/formal checks.
+- W1/W2/W3 fixture test commit `28704f25f87179e5653188bf0cc40f43ee681168` remains committed but CI is NOT VERIFIED. The connected `fetch_commit_workflow_runs` endpoint returns only pull-request-triggered runs; it returned an empty list for this push commit. No repository-wide push-run listing/dispatch action is exposed in the current GitHub tool connection. Do not infer the test outcome or rerun the suite blindly; retrieve the matching push run through the GitHub Actions UI/API when available.
+- No PPA retry, paid resource, hardware or main-branch write. Manufacturer handoff remains NOT READY.
