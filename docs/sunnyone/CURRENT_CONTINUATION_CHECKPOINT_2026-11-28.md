@@ -389,3 +389,19 @@ The correct next task is a cross-source MM legality truth table and a minimal wi
 The detailed matrix is appended to `CONTINUATION_ADDENDUM_2026-11-28_2110.md`. Confirmed distinct classes: architectural MM shape/ranges; target capability (WG/GALL, KT, SPLMM); command-dependent FIFO capacity; grouped alignment/stride; and dynamic ACT-content conditions. The sequencer has WG but not MCOLS/ACT_ROWS/ACT_BLOCKS/FIFO_DEPTH/KT/SPLMM; slice has the source parameters. MXU's shape/FIFO assertions are simulation-only. The simulator does not model FIFO_DEPTH, and the documented RMAX/ASCALE M<=MCOLS bound needs reconciliation with the current MXU assertion, which gates that check under GA. Dynamic KT upper-half-zero is a memory-content condition, not statically provable at decode.
 
 No RTL or tests were changed; no tests launched. No safe exact-SHA workflow dispatch tool is exposed, so sequencer implementation remains paused until isolated test execution is available. Do not add FIFO_DEPTH >= ACT_BLOCKS. Latest code PASS remains run 46132183828, 47 passed on exact SHA 3cc1ec1d0aaee797022cc355e68e8451a13c4e6b. Main untouched; manufacturer handoff NOT READY.
+
+
+## 2026-11-28 21:38 — MM guard source audit and FIFO correction
+
+Latest continuation addendum: `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md`. Read it after this checkpoint and before implementation.
+
+- Live branch at review start: `ac78a95bb59911b6d8ffa3e27ee930d6b9e5f329`; compare 1,214 ahead / 0 behind main `d84db55712aba0d40811d7762cb052f05d55b7e5`. Main remains untouched and off-limits; GitHub reports protection disabled.
+- Actions API poll: zero queued and zero in-progress runs.
+- Re-fetched current source: ISA, sequencer, slice, MXU, ISA simulator/encoder, target loader/tests and workflow filters. Full source blob inventory and exact conclusions are in the addendum.
+- MM guard remains NOT IMPLEMENTED. Sequencer lacks MCOLS, ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, KT and SPLMM inputs; slice owns the resolved parameters. Do not hard-code.
+- MXU simulation-only assertion omissions relative to the simulator: WG=1 RMAX/ASCALE M<=MCOLS; PAIR+int8 rejection; PAIR even-k0; RSC+NVFP4; ASCALE UNIT+ACC; and SPL unsupported-feature rejection. The simulator also checks ACT-block range and target/mode semantics. These are source-review gaps, not a claim that legal compiler workloads fail.
+- FIFO correction: natural WG=1 replay at M>MCOLS requires KB int8 chunks or ceil(KB/2) packed-4-bit chunks to fit DEPTH; grouped WG>1/GALL replay at M>1 requires KB<=DEPTH. FIFO_DEPTH is not modeled by ISA simulator. Universal FIFO_DEPTH>=ACT_BLOCKS is withdrawn.
+- Docs updated in commits `68969e9231fefd3967781b48fc217078dac512c7` (`docs/isa.md`), `6dbb13c18bd4dc3bbdb3d07a7494cc8898dfc84b` (`docs/weight_groups.md`), and `508e637c343b28f2e6b5f4c52c6221f185661554` (addendum).
+- No RTL/test/workflow/PPA source changed; no tests launched. Do not push RTL until isolated exact-SHA raw-word verification can run without triggering broad duplicate RTL suites. No safe workflow-dispatch action is exposed in the connected GitHub tools.
+- Next: finish address-range boundary ownership and sequencer instance/capability propagation inventory; complete raw-word negative and legal-control matrix; establish isolated CI dispatch; then implement the minimal widened-arithmetic synthesizable R-stage guard. Preserve historical passed RTL groups 3.1/3.2/4 and never restart cancelled run 45765362426. No PPA retry, no spend.
+- Manufacturer handoff remains **NOT READY**.
