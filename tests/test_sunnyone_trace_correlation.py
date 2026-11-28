@@ -64,9 +64,9 @@ class TraceCorrelationTests(unittest.TestCase):
         tm = [
             record(2, 4, port=1, opcode=0x20, value=1),
             record(5, 4, port=1, opcode=0x20, value=2),
+            record(6, 0, port=0, lanes=1, value=32),
             record(8, 5, port=1),
             record(10, 5, port=1),
-            record(6, 0, port=0, lanes=1, value=32),
         ]
         report = correlate("", tm, source_commit=SHA, config=CONFIG)
         self.assertEqual(report["tmem_activity"]["accesses"]["ambiguous_records"], 1)
@@ -74,9 +74,9 @@ class TraceCorrelationTests(unittest.TestCase):
 
     def test_cycle_boundary_access_is_not_force_assigned(self):
         tm = [
+            record(2, 0, port=0, lanes=1, value=32),
             record(2, 4, port=1, opcode=0x20, value=1),
             record(8, 5, port=1),
-            record(2, 0, port=0, lanes=1, value=32),
         ]
         report = correlate("", tm, source_commit=SHA, config=CONFIG)
         self.assertEqual(report["tmem_activity"]["accesses"]["boundary_records"], 1)
