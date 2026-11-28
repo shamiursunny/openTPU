@@ -1,0 +1,24 @@
+{
+  "origin": "synthetic_fixture",
+  "tick_unit": "sim_tick",
+  "prefill_chunk_tokens": 64,
+  "kv_page_tokens": 16,
+  "scenario_seed": 20261128,
+  "scenario_id": "W1_single_request",
+  "requests": [
+    {
+      "request_id": "w1-r1",
+      "tenant_id": "tenant-a",
+      "model_id": "fixture-model-v1",
+      "checkpoint_id": "fixture-checkpoint-v1",
+      "tokenizer_id": "fixture-tokenizer-v1",
+      "template_id": "fixture-template-v1",
+      "arrival_tick": 0,
+      "prompt_tokens": 128,
+      "max_new_tokens": 32,
+      "quality_gate": "fixture-schema-only",
+      "seed": 20261128,
+      "context_tokens": 160
+    }
+  ]
+}
