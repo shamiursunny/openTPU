@@ -886,3 +886,12 @@ Decision rule: add hardware only when a source-backed bottleneck and reproducibl
 ## Authoritative strategy hierarchy — 2026-11-28
 
 The user-approved strategic source is `docs/sunnyone/SUNNYONE_X_ULTIMATE_COMMERCIAL_NORTH_STAR_2026-11-28.md`. It is authoritative for the fixed commercial objective and evidence-led design decision rule. `SUNNYONE_AI-X_PROFITABILITY_NORTH_STAR_2026-11-28.md` is a concise supporting summary and must not supersede the authoritative north star. The existing `SUNNYONE_AI-X_V1_FINAL_LOGICAL_DESIGN_CANDIDATE_A1.12.11.16.54.md` records the current logical V1 candidate and its explicit unimplemented external interfaces; `SUNNYONE_AI-X_COMMERCIAL_PROFITABILITY_MEASUREMENT_MODEL.md` governs economic measurement and TCO. These sources are complementary, not permission to claim implementation or qualification that has not been evidenced.
+
+
+## 2026-11-28 21:38 — MM legality and FIFO-residency correction
+
+The source-grounded review in `docs/sunnyone/CONTINUATION_ADDENDUM_2026-11-28_2138.md` supersedes earlier MM FIFO prose where it differs. Natural WG=1 replay at M>MCOLS requires KB int8 chunks or ceil(KB/2) packed-4-bit chunks to fit DEPTH. Grouped WG>1/GALL replay at M>1 requires KB<=DEPTH because each group's chunks are reused across the M activation rows. FIFO_DEPTH is not represented in the ISA simulator Config. The universal FIFO_DEPTH>=ACT_BLOCKS proposal is withdrawn.
+
+The synthesizable MM pre-dispatch guard remains OPEN. otpu_seq must receive exact resolved MCOLS, ACT_ROWS, ACT_BLOCKS, FIFO_DEPTH, KT and SPLMM capabilities from otpu_slice/target integration; do not hard-code. Source review also identified MXU assertion omissions relative to the ISA simulator: WG=1 RMAX/ASCALE M<=MCOLS, PAIR+int8, PAIR even-k0, RSC+NVFP4, ASCALE UNIT+ACC, and SPL when unsupported. Complete the normative truth table, address-range ownership and all instantiation/feature propagation review before patching. No RTL/test/workflow/PPA source was changed and no tests were run in this review.
+
+CI containment remains a prerequisite: broad rtl/** push filters fan out into multiple historical suites, and no safe workflow-dispatch action is exposed by the connected GitHub tools. Do not push an unverified RTL patch or repeat successful RTL groups 3.1/3.2/4. Manufacturer handoff remains NOT READY.
